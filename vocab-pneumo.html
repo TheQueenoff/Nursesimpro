@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Pneumologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --sky:#0284c7;--sky-d:#0c4a6e;--sky-l:#f0f9ff;--sky-m:#bae6fd;--sky-b:#e0f2fe;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --teal:#0d9488;--teal-l:#f0fdfa;--teal-m:#99f6e4;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--sky-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--sky-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--sky-l);color:var(--sky);border:1px solid var(--sky-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--sky-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--sky-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--sky-b);border:1px solid var(--sky-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#0c4a6e;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--sky));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--sky));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--sky-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--sky-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(12,74,110,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--sky);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--sky-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--sky-d)}
+.tb-mode{background:var(--sky-l);color:var(--sky);border:1px solid var(--sky-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--sky-d),var(--sky));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--sky);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--sky-d),#075985);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(12,74,110,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--sky-l);border:1px solid var(--sky-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--sky)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--sky);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--sky-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--sky);background:var(--sky-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--sky);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--sky-d)}
+.next-btn{width:100%;padding:12px;background:var(--sky-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(12,74,110,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--sky)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s;letter-spacing:.02em}
+.frappe-input:focus{border-color:var(--sky)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px;padding:0 2px}
+.frappe-hint span{color:var(--sky);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--sky-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--sky)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--sky);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--sky-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:.01em;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--sky);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--sky);background:var(--sky-l);color:var(--sky-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--sky-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--sky)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--sky-d),var(--sky))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--sky-d);color:white;box-shadow:0 2px 10px rgba(12,74,110,.3)}.rb.p:hover{background:var(--sky)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--sky-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🫁</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🫁 Pneumologie</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🫁</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Pneumologie</div>
+        <div class="w-hero-desc">65 termes couvrant toute la pneumologie clinique : anatomie, physiologie, explorations fonctionnelles, pathologies obstructives et restrictives, urgences, gazométrie, traitements et ventilation. Le vocabulaire complet pour vos stages et examens.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">65</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">9</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Contenu validé — Recommandations SPLF/HAS/GOLD/GINA 2024.</strong> Ce module est basé sur les référentiels officiels en vigueur. Il ne remplace pas les protocoles institutionnels de votre établissement de stage. En cas de doute clinique, référez-vous toujours à votre encadrant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#0284c7;--mb:#f0f9ff" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#f0f9ff;border-color:#bae6fd;color:#0284c7">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former le terme médical. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">65 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🫁</div><span class="tb-logo-text">Pneumo</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/65</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🫁</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Pneumologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--sky)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Contenu basé sur recommandations SPLF/HAS/GOLD/GINA 2024 — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── ANATOMIE (9) ──
+{id:'trachee',t:`Trachée`,cat:`Anatomie`,
+ def:`Conduit cartilagineux (16–20 anneaux en C) reliant le larynx aux bronches souches. Longueur : 10–12 cm. Se bifurque en carène (Th4–Th5) en bronche souche droite et gauche.`,
+ ex:`L'intubation sélective (sonde dans une bronche souche) est une complication fréquente d'une intubation trop profonde. Vérification radiologique systématique.`,
+ mnemo:`Du grec trakheia = rugueux (paroi cartilagineuse)`},
+{id:'bronches',t:`Bronches`,cat:`Anatomie`,
+ def:`Conduits aériens issus de la bifurcation trachéale. Bronche souche droite plus verticale (risque d'inhalation plus élevé) que la gauche. Se divisent en bronches lobaires puis segmentaires.`,
+ ex:`La bronchite aiguë est une inflammation des bronches, souvent virale, ne nécessitant pas d'antibiotiques sauf surinfection bactérienne.`,
+ mnemo:`Du grec bronkhos = gorge, conduit`},
+{id:'bronchioles',t:`Bronchioles`,cat:`Anatomie`,
+ def:`Petites voies aériennes de diamètre < 2 mm, dépourvues de cartilage. Comprennent les bronchioles terminales (conduction) et respiratoires (échanges gazeux). Très sensibles au bronchospasme.`,
+ ex:`Les bronchioles sont le siège principal de l'obstruction dans l'asthme et la BPCO.`,
+ mnemo:`Diminutif de bronche — petites bronches`},
+{id:'alveoles',t:`Alvéoles pulmonaires`,cat:`Anatomie`,
+ def:`Minuscules sacs à paroi ultra-mince (0,1–0,2 µm) où se réalisent les échanges gazeux entre air et sang. 300–500 millions d'alvéoles pour une surface totale de 70–100 m².`,
+ ex:`Dans le SDRA, les alvéoles se remplissent de liquide inflammatoire (oedème lésionnel) empêchant l'hématose.`,
+ mnemo:`Du latin alveolus = petite cavité creuse`},
+{id:'plevre',t:`Plèvre`,cat:`Anatomie`,
+ def:`Double membrane séreuse entourant chaque poumon. Feuillet viscéral (au contact du poumon) et feuillet pariétal (contre la paroi thoracique). La cavité pleurale contient 10–15 mL de liquide lubrifiant.`,
+ ex:`Un épanchement pleural liquidien (pleurésie) ou aérique (pneumothorax) comprime le poumon sous-jacent.`,
+ mnemo:`Du grec pleura = côté, flanc`},
+{id:'diaphragme',t:`Diaphragme`,cat:`Anatomie`,
+ def:`Principal muscle inspiratoire, en forme de dôme, séparant thorax et abdomen. S'abaisse à l'inspiration (augmentant le volume thoracique) et remonte à l'expiration. Innervé par le nerf phrénique (C3-C4-C5).`,
+ ex:`La paralysie phrénique unilatérale entraîne une élévation de la coupole diaphragmatique visible à la radio thoracique.`,
+ mnemo:`Du grec diaphragma = cloison, séparation`},
+{id:'surfactant',t:`Surfactant`,cat:`Anatomie`,
+ def:`Mélange de phospholipides (90%) et protéines sécrété par les pneumocytes de type II. Réduit la tension superficielle alvéolaire, prévenant le collapsus alvéolaire en fin d'expiration.`,
+ ex:`La prématurité entraîne une carence en surfactant (syndrome de détresse respiratoire du nouveau-né). Traitement : surfactant exogène + corticoïdes prénataux.`,
+ mnemo:`Surface + actant = agent actif à la surface alvéolaire`},
+{id:'hile',t:`Hile pulmonaire`,cat:`Anatomie`,
+ def:`Zone de connexion entre le poumon et le médiastin par laquelle entrent et sortent la bronche souche, l'artère pulmonaire, les veines pulmonaires, les vaisseaux lymphatiques et les nerfs.`,
+ ex:`Un élargissement hilaire à la radio évoque une adénopathie médiastinale (sarcoïdose, lymphome, cancer bronchique).`,
+ mnemo:`Du latin hilum = petite chose, zone d'attachement`},
+{id:'lobes',t:`Lobes pulmonaires`,cat:`Anatomie`,
+ def:`Divisions anatomiques des poumons séparées par des scissures pleurales. Poumon droit : 3 lobes (supérieur, moyen, inférieur). Poumon gauche : 2 lobes (supérieur avec lingula, inférieur).`,
+ ex:`Une pneumonie du lobe moyen droit (pneumonie de la petite scissure) peut être invisible en face sur la radio thoracique.`,
+ mnemo:`Lobe droit = 3 / Lobe gauche = 2 (place au coeur)`},
+// ── PHYSIOLOGIE (8) ──
+{id:'ventilation',t:`Ventilation`,cat:`Physiologie`,
+ def:`Renouvellement de l'air dans les poumons assurant l'apport en O2 et l'élimination du CO2. Ventilation alvéolaire = (Vt − espace mort) × FR. Normale au repos : 5–6 L/min.`,
+ ex:`Surveillance infirmière : fréquence respiratoire normale 12–20 cycles/min. FR > 25 : détresse respiratoire.`,
+ mnemo:`Ventil- = vent, mouvement d'air`},
+{id:'hematose',t:`Hématose`,cat:`Physiologie`,
+ def:`Ensemble des échanges gazeux au niveau des alvéoles : O2 passe du gaz alvéolaire au sang, CO2 du sang au gaz alvéolaire. Dépend de la ventilation, de la perfusion et de leur rapport (rapport V/Q).`,
+ ex:`Un rapport V/Q perturbé (shunt droit-gauche dans le SDRA, espace mort dans l'EP) altère l'hématose.`,
+ mnemo:`Du grec haima = sang + -ose = processus`},
+{id:'compliance',t:`Compliance pulmonaire`,cat:`Physiologie`,
+ def:`Distensibilité du tissu pulmonaire. Exprimée en L/cmH2O. Compliance normale : 0,2 L/cmH2O. Diminuée dans la fibrose (poumon rigide) ; augmentée dans l'emphysème (destruction du parenchyme).`,
+ ex:`En ventilation mécanique, une compliance basse se traduit par des pressions d'insufflation élevées pour le même volume courant.`,
+ mnemo:`Compliance = capacité à se déformer sous pression`},
+{id:'vems',t:`VEMS (Volume Expiratoire Maximal Seconde)`,cat:`Physiologie`,
+ def:`Volume d'air expiré lors de la première seconde d'une expiration forcée maximale. Valeur normale ≥ 80% de la valeur prédite selon âge, sexe et taille. Marqueur principal de l'obstruction bronchique.`,
+ ex:`BPCO GOLD 2 : 50% ≤ VEMS < 80% du prédit, avec VEMS/CVF < 0,70 post-bronchodilatateur.`,
+ mnemo:`VEMS = volume en 1 seconde — mesure la vitesse d'expiration`},
+{id:'cvf',t:`CVF (Capacité Vitale Forcée)`,cat:`Physiologie`,
+ def:`Volume total d'air expiré lors d'une expiration forcée complète après inspiration maximale. Normale ≥ 80% du prédit. Diminuée dans les syndromes restrictifs.`,
+ ex:`Syndrome restrictif pur : CVF diminuée, VEMS diminué proportionnellement, rapport VEMS/CVF normal ou augmenté.`,
+ mnemo:`CVF = tout l'air qu'on peut expirer en forçant`},
+{id:'tiffeneau',t:`Rapport de Tiffeneau (VEMS/CVF)`,cat:`Physiologie`,
+ def:`Rapport entre le VEMS et la CVF. Normale ≥ 0,70 (70%). Un rapport < 0,70 post-bronchodilatateur définit le syndrome obstructif selon les recommandations GOLD 2024.`,
+ ex:`Asthme : obstruction réversible (VEMS/CVF < 0,70 avant bronchodilatateur, normalisé ou + 12% et + 200 mL après). BPCO : obstruction non réversible.`,
+ mnemo:`Robert Tiffeneau (1910–1961), médecin français — son rapport différencie obstruction et restriction`},
+{id:'cpt',t:`CPT (Capacité Pulmonaire Totale)`,cat:`Physiologie`,
+ def:`Volume total d'air contenu dans les poumons après une inspiration maximale. CPT = CVF + VR. Normale : 5–7 L. Augmentée dans l'emphysème (distension), diminuée dans les syndromes restrictifs.`,
+ ex:`CPT augmentée + VR augmenté + VEMS/CVF < 0,70 = syndrome obstructif avec distension (BPCO avancée).`,
+ mnemo:`CPT = CVF + VR = tout l'air dans les poumons en pleine inspiration`},
+{id:'espace_mort',t:`Espace mort`,cat:`Physiologie`,
+ def:`Volume des voies aériennes conductives ne participant pas aux échanges gazeux. Espace mort anatomique : 150 mL environ. Espace mort physiologique = anatomique + alvéoles ventilées mais non perfusées.`,
+ ex:`En ventilation mécanique, l'augmentation de l'espace mort (EP massive) nécessite d'augmenter le volume courant ou la fréquence.`,
+ mnemo:`Espace mort = volume ventilé mais inutile pour les échanges`},
+// ── EFR ET GAZOMÉTRIE (7) ──
+{id:'spirometrie',t:`Spirométrie`,cat:`EFR & Gazométrie`,
+ def:`Examen mesurant les volumes et débits pulmonaires lors de manœuvres respiratoires forcées ou lentes. Dépiste et classe les syndromes obstructifs (VEMS/CVF < 0,70) et restrictifs (CVF < 80%).`,
+ ex:`Spirométrie obligatoire pour le diagnostic de BPCO. Ne jamais poser le diagnostic sur les symptômes seuls.`,
+ mnemo:`Spiro- = souffler + -métrie = mesure`},
+{id:'dlco',t:`DLCO (Diffusion alvéolo-capillaire du CO)`,cat:`EFR & Gazométrie`,
+ def:`Mesure de la capacité de transfert du CO à travers la membrane alvéolo-capillaire. Normale 75–140% du prédit. Diminuée dans emphysème, FPI, HTAP. Normale dans l'asthme.`,
+ ex:`DLCO effondrée + distension thoracique = emphysème. DLCO effondrée + restriction = fibrose pulmonaire.`,
+ mnemo:`DLCO = capacité du poumon à transférer les gaz`},
+{id:'gazometrie',t:`Gazométrie artérielle`,cat:`EFR & Gazométrie`,
+ def:`Analyse du sang artériel mesurant pH (7,38–7,42), PaO2 (80–100 mmHg), PaCO2 (35–45 mmHg), HCO3⁻ (22–26 mmol/L) et SaO2 (≥ 95%). Examen de référence pour évaluer les échanges gazeux et l'équilibre acido-basique.`,
+ ex:`Prélèvement artériel radial après test d'Allen. Compression 5–10 min après. Tube hépariné, glace, analyse dans l'heure.`,
+ mnemo:`GDS = mesure directe des gaz dissous dans le sang artériel`},
+{id:'hypoxemie',t:`Hypoxémie`,cat:`EFR & Gazométrie`,
+ def:`PaO2 < 80 mmHg en gazométrie artérielle (air ambiant). Sévère < 60 mmHg. Causes principales : hypoventilation, trouble diffusion, shunt, inadéquation V/Q. À distinguer de l'hypoxie (manque d'O2 tissulaire).`,
+ ex:`SpO2 < 95% à l'oxymètre de pouls doit faire suspecter une hypoxémie. Confirmation par gazométrie.`,
+ mnemo:`hypo- = dessous + oxémie = O2 dans le sang`},
+{id:'hypercapnie',t:`Hypercapnie`,cat:`EFR & Gazométrie`,
+ def:`PaCO2 > 45 mmHg en gazométrie artérielle. Signe d'hypoventilation alvéolaire. Aiguë : acidose respiratoire (pH < 7,38). Chronique : compensée par une élévation des bicarbonates (BPCO stade avancé).`,
+ ex:`Patient BPCO hypercapnique chronique : objectif SpO2 88–92% sous O2 pour éviter la levée du stimulus hypoxique.`,
+ mnemo:`hyper- = au-dessus + capnie = CO2 (du grec kapnos = fumée)`},
+{id:'peak_flow',t:`Débit expiratoire de pointe (DEP / Peak-Flow)`,cat:`EFR & Gazométrie`,
+ def:`Débit maximal atteint lors d'une expiration forcée. Mesure simple, au lit du patient, avec un débitmètre portatif. Utilisé dans la surveillance de l'asthme. Exprimé en L/min.`,
+ ex:`Asthme aigu grave : DEP < 40% de la théorique ou meilleure valeur personnelle. Hospitalisation urgente.`,
+ mnemo:`Peak = pic + flow = débit — débit au sommet de l'expiration`},
+{id:'tm6',t:`Test de marche de 6 minutes (TM6)`,cat:`EFR & Gazométrie`,
+ def:`Test fonctionnel mesurant la distance parcourue en 6 minutes à allure libre. Évalue la capacité à l'exercice dans les maladies respiratoires chroniques (BPCO, fibrose). Normale : 400–700 m selon âge et sexe.`,
+ ex:`TM6 < 350 m dans la BPCO = facteur pronostique péjoratif. Indicateur pour la réhabilitation respiratoire.`,
+ mnemo:`TM6 = combien de mètres en 6 minutes à son propre rythme`},
+// ── PATHOLOGIES OBSTRUCTIVES (7) ──
+{id:'bpco',t:`BPCO`,cat:`Pathologies obstructives`,
+ def:`Bronchopneumopathie Chronique Obstructive. Maladie évitable et traitable, caractérisée par une obstruction bronchique non réversible (VEMS/CVF < 0,70 post-bronchodilatateur). Principale cause : tabac (85% des cas). Stades GOLD 1 à 4 selon le VEMS% prédit.`,
+ ex:`Trépied BPCO : dyspnée progressive, toux chronique, expectoration. Traitement de fond : arrêt tabac + bronchodilatateurs inhalés longue durée (BDLA).`,
+ mnemo:`BPCO = obstruction définitive, tabagisme, pas de réversibilité`},
+{id:'asthme',t:`Asthme`,cat:`Pathologies obstructives`,
+ def:`Maladie inflammatoire chronique des voies aériennes avec obstruction réversible. Diagnostic sur réversibilité > 12% ET > 200 mL du VEMS après bronchodilatateur (GINA 2023), ou variabilité du DEP > 10%.`,
+ ex:`Crise d'asthme aigu grave : DEP < 40%, FR > 30, FC > 120, SpO2 < 92%. Urgence absolue.`,
+ mnemo:`Asthme = obstruction réversible, inflammation, hyperréactivité bronchique`},
+{id:'emphyseme',t:`Emphysème`,cat:`Pathologies obstructives`,
+ def:`Destruction permanente et irréversible des parois alvéolaires distalement aux bronchioles terminales, entraînant une perte d'élasticité et une distension pulmonaire. Forme principale de BPCO.`,
+ ex:`Signes radiologiques : distension thoracique, aplatissement diaphragmes, hyperclarté, cardiomégalie masquée.`,
+ mnemo:`em- = dans + physema = gonflement (grec)`},
+{id:'bronchite_chron',t:`Bronchite chronique`,cat:`Pathologies obstructives`,
+ def:`Hypersécrétion muqueuse bronchique chronique définie cliniquement par une toux productive pendant au moins 3 mois par an 2 années consécutives, en l'absence d'autre cause.`,
+ ex:`La bronchite chronique peut évoluer vers la BPCO si l'obstruction s'installe. Arrêt tabac = seule mesure modifiant l'histoire naturelle.`,
+ mnemo:`bronchite + chrono = inflammation bronchique qui dure`},
+{id:'bronchectasies',t:`Bronchectasies`,cat:`Pathologies obstructives`,
+ def:`Dilatation permanente et irréversible des bronches par destruction de leur paroi, secondaire à des infections répétées. Anciennement appelées dilatation des bronches (DDB).`,
+ ex:`Signes : toux productive purulente chronique, hémoptysies récidivantes. Scanner thoracique : signe de la bague à chaton.`,
+ mnemo:`bronches + ectasie = élargissement permanent des bronches`},
+{id:'mucoviscidose',t:`Mucoviscidose`,cat:`Pathologies obstructives`,
+ def:`Maladie génétique autosomique récessive (gène CFTR) entraînant une hyperviscosité des sécrétions exocrines (pulmonaires, pancréatiques, digestives). Première maladie génétique grave en France.`,
+ ex:`Suivi IDE : kinésithérapie respiratoire pluriquotidienne, aérosolthérapie, nutrition hypercalorique. Dépistage néonatal systématique.`,
+ mnemo:`muco = mucus + viscose = épais + idose = maladie génétique`},
+{id:'saos',t:`SAOS (Syndrome d'Apnées Obstructives du Sommeil)`,cat:`Pathologies obstructives`,
+ def:`Obstruction répétée des voies aériennes supérieures pendant le sommeil entraînant des apnées > 10 secondes (IAH ≥ 15/h, ou ≥ 5/h avec symptômes). Facteurs de risque : obésité, sexe masculin, âge.`,
+ ex:`Traitement de première intention : PPC (Pression Positive Continue) nocturne. Éducation sur l'observance : 4h/nuit minimum pour remboursement CPAM.`,
+ mnemo:`SAOS = apnées la nuit → somnolence le jour → risque cardiovasculaire`},
+// ── PATHOLOGIES RESTRICTIVES ET INTERSTITIELLES (5) ──
+{id:'fpi',t:`Fibrose Pulmonaire Idiopathique (FPI)`,cat:`Pathologies restrictives`,
+ def:`Pneumopathie interstitielle fibrosante chronique, progressive et irréversible, d'étiologie inconnue. Touche essentiellement les hommes > 60 ans. Scanner thoracique : aspect en rayons de miel, bronchectasies de traction.`,
+ ex:`Pronostic sévère : survie médiane 3–5 ans au diagnostic. Traitements antifibrotiques (pirfénidone, nintédanib) ralentissent la progression. Transplantation pulmonaire discutée.`,
+ mnemo:`FPI = fibrose + idiopathique (cause inconnue) + irréversible`},
+{id:'sarcoïdose',t:`Sarcoïdose`,cat:`Pathologies restrictives`,
+ def:`Granulomatose systémique d'étiologie inconnue, caractérisée par des granulomes épithélioïdes sans nécrose caséeuse. Atteinte pulmonaire dans 90% des cas. Stades 0 à IV selon la radiographie.`,
+ ex:`Syndrome de Löfgren : forme aiguë bénigne (érythème noueux + arthrites + adénopathies hilaires bilatérales). Souvent résolutive spontanément.`,
+ mnemo:`sarco- = chair + -idose = ressemble à, maladie granulomateuse`},
+{id:'pid',t:`Pneumopathie Interstitielle Diffuse (PID)`,cat:`Pathologies restrictives`,
+ def:`Groupe de maladies atteignant le tissu interstitiel pulmonaire (parois alvéolaires, tissu conjonctif). Caractérisées par un syndrome restrictif, une baisse de la DLCO et des opacités réticulaires au scanner.`,
+ ex:`Causes : FPI, sarcoïdose, pneumopathie d'hypersensibilité (poumon de fermier), connectivites, médicaments.`,
+ mnemo:`PID = interstitium = tissu entre les alvéoles et les capillaires`},
+{id:'pneumopathie_hyp',t:`Pneumopathie d'hypersensibilité`,cat:`Pathologies restrictives`,
+ def:`Réaction inflammatoire pulmonaire à médiation immune déclenchée par l'inhalation répétée d'antigènes organiques (moisissures, fientes d'oiseaux, poussières agricoles). Ex : poumon de fermier (Saccharopolyspora rectivirgula).`,
+ ex:`Poumon de fermier : fièvre, dyspnée, toux 4–8h après exposition au foin moisi. Éviction de l'antigène = traitement principal.`,
+ mnemo:`Hyper- = excessif + sensibilité = réaction immune au poumon`},
+{id:'pleuresie',t:`Pleurésie`,cat:`Pathologies restrictives`,
+ def:`Épanchement liquidien dans la cavité pleurale. Exsudat (protéines > 30 g/L, critères de Light) : infection, cancer, EP. Transsudat (protéines < 30 g/L) : IC, hypoalbuminémie, cirrhose.`,
+ ex:`Signes cliniques : abolition des MV, matité à la percussion, douleur pleurale. Ponction pleurale diagnostique et thérapeutique.`,
+ mnemo:`pleuro- = plèvre + -ésie = processus inflammatoire ou épanchement`},
+// ── URGENCES RESPIRATOIRES (7) ──
+{id:'pneumonie',t:`Pneumonie aiguë communautaire (PAC)`,cat:`Urgences respiratoires`,
+ def:`Infection aiguë du parenchyme pulmonaire acquise en dehors de l'hôpital. Germes fréquents : Streptococcus pneumoniae (+ fréquent), Mycoplasma pneumoniae (sujet jeune), Legionella. Score de gravité : CRB-65.`,
+ ex:`CRB-65 : Confusion, FR ≥ 30, PAS < 90 ou PAD ≤ 60, âge ≥ 65 ans. Score 0 = traitement ambulatoire possible. Score ≥ 2 = hospitalisation.`,
+ mnemo:`pneumo- = poumon + -nie = état pathologique`},
+{id:'pneumothorax',t:`Pneumothorax`,cat:`Urgences respiratoires`,
+ def:`Présence d'air dans la cavité pleurale entraînant un collapsus pulmonaire partiel ou total. Spontané primaire (sujet jeune sans pathologie), secondaire (sur BPCO, FPI), traumatique ou iatrogène.`,
+ ex:`Signes : douleur thoracique latérale brutale + dyspnée + abolition MV unilatérale. Pneumothorax compressif (hypotension, déviation trachée) = urgence vitale absolue.`,
+ mnemo:`pneumo- = air + -thorax = thorax (air dans le thorax)`},
+{id:'ep',t:`Embolie Pulmonaire (EP)`,cat:`Urgences respiratoires`,
+ def:`Obstruction d'une ou plusieurs artères pulmonaires par un thrombus, provenant le plus souvent d'une TVP des membres inférieurs. Mortalité élevée si non traitée. Score de Wells pour la probabilité clinique.`,
+ ex:`Signes non spécifiques : dyspnée, tachycardie, douleur thoracique, hémoptysie. Diagnostic : angioscanner thoracique. D-dimères : valeur prédictive négative excellente si probabilité faible.`,
+ mnemo:`embole = caillot + pulmonaire = dans les poumons`},
+{id:'sdra',t:`SDRA (Syndrome de Détresse Respiratoire Aiguë)`,cat:`Urgences respiratoires`,
+ def:`Insuffisance respiratoire aiguë hypoxémique sévère par lésion alvéolaire diffuse. Critères de Berlin 2012 : début < 1 semaine, opacités bilatérales, non cardiogénique, PaO2/FiO2 < 300 mmHg avec PEEP ≥ 5 cmH2O. Sévère si PaO2/FiO2 < 100.`,
+ ex:`Causes : pneumonie grave, sepsis, inhalation. Traitement : ventilation protectrice (Vt 6 mL/kg, Pplat < 30 cmH2O), décubitus ventral si PaO2/FiO2 < 150.`,
+ mnemo:`SDRA = alvéoles inondées + hypoxémie réfractaire`},
+{id:'ira',t:`Insuffisance Respiratoire Aiguë (IRA)`,cat:`Urgences respiratoires`,
+ def:`Défaillance aiguë de la fonction respiratoire entraînant une hypoxémie (PaO2 < 60 mmHg) avec ou sans hypercapnie. Peut être de type I (hypoxémique) ou type II (hypercapnique). Urgence vitale.`,
+ ex:`Signes de gravité : tirage, balancement thoraco-abdominal, cyanose, agitation, troubles de conscience, épuisement. Intubation si nécessaire.`,
+ mnemo:`IR = insuffisance respiratoire + A = aiguë, brutale`},
+{id:'atelec',t:`Atélectasie`,cat:`Urgences respiratoires`,
+ def:`Collapsus d'un territoire pulmonaire (lobe, segment) par obstruction bronchique, compression externe ou perte de surfactant. Complication fréquente post-opératoire et chez les patients alités.`,
+ ex:`Prévention infirmière : kinésithérapie respiratoire, mobilisation précoce, aspirations si nécessaire, sevrage tabagique préopératoire.`,
+ mnemo:`a- = sans + télectasie = expansion complète (du grec telos = fin + ektasis = étirement)`},
+{id:'oap',t:`Oedème Aigu Pulmonaire (OAP)`,cat:`Urgences respiratoires`,
+ def:`Inondation alvéolaire par transsudation liquidienne. OAP cardiogénique (IC gauche aiguë) ou lésionnel (SDRA). Signes : orthopnée, crachats mousseux rosés, crépitants bilatéraux, hypoxémie sévère.`,
+ ex:`OAP cardiogénique : position demi-assise, O2 haute concentration ou VNI, furosémide IV, dérivés nitrés. Appel médecin urgent.`,
+ mnemo:`O = oedème + A = aigu + P = pulmonaire — liquide dans les alvéoles`},
+// ── SYMPTÔMES (8) ──
+{id:'dyspnee',t:`Dyspnée`,cat:`Symptômes`,
+ def:`Sensation subjective de difficulté à respirer. Cotée selon l'échelle mMRC (0 à 4) dans la BPCO ou NYHA (I à IV) dans l'IC. Peut être inspiratoire (obstruction haute), expiratoire (obstruction basse) ou mixte.`,
+ ex:`mMRC 2 : dyspnée à la marche en terrain plat. mMRC 4 : dyspnée au moindre effort ou au repos.`,
+ mnemo:`dys- = difficile + -pnée = respiration`},
+{id:'toux',t:`Toux`,cat:`Symptômes`,
+ def:`Réflexe de défense des voies aériennes entraînant une expiration forcée et bruyante. Toux sèche (irritative, virale, ECA-inhibiteurs) ou productive (bronchite, pneumonie). Chronique si > 8 semaines.`,
+ ex:`Toux chronique : 3 causes principales à évoquer : rhinorrhée postérieure, RGO, asthme (syndrome de la toux équivalent asthmatique).`,
+ mnemo:`Toux = réflexe de nettoyage des voies aériennes`},
+{id:'hemoptysie',t:`Hémoptysie`,cat:`Symptômes`,
+ def:`Expectoration de sang provenant des voies aériennes inférieures (sous-glottiques), lors d'un effort de toux. À distinguer de l'hématémèse (sang digestif) et de l'épistaxis déglutie.`,
+ ex:`Hémoptysie : grandes causes à évoquer : cancer bronchique, tuberculose, bronchectasies, EP, endocardite. Urgence si abondante (> 150 mL/24h).`,
+ mnemo:`hémo- = sang + -ptysie = cracher (du grec ptysis)`},
+{id:'expectoration',t:`Expectoration`,cat:`Symptômes`,
+ def:`Rejet par la bouche de sécrétions provenant des voies aériennes. Couleur : muqueuse (virale), purulente/verdâtre (bactérienne), rouillée (pneumocoque), rosée mousseuse (OAP).`,
+ ex:`La couleur et la consistance des expectorations orientent le diagnostic et le choix de l'antibiothérapie.`,
+ mnemo:`expectorer = cracher dehors (ex- = hors + spuere = cracher)`},
+{id:'wheezing',t:`Wheezing (sibilances)`,cat:`Symptômes`,
+ def:`Sifflement expiratoire audible, produit par le rétrécissement des voies aériennes intrathoraciques. Signe de bronchospasme. Présent dans l'asthme, la BPCO exacerbée, la bronchiolite.`,
+ ex:`Attention : l'absence de wheezing dans une crise grave peut signer un silence auscultatoire = poumon muet = extrême gravité.`,
+ mnemo:`Wheezing = sifflement (anglais) = bronches rétrécies`},
+{id:'cyanose',t:`Cyanose`,cat:`Symptômes`,
+ def:`Coloration bleutée des téguments et muqueuses par excès de désoxyhémoglobine (> 5 g/dL). Centrale (hypoxémie, shunt cardiaque droit-gauche) ou périphérique (vasoconstriction). Visible sur les lèvres, langue, ongles.`,
+ ex:`La cyanose n'est pas perceptible en cas d'anémie sévère malgré une hypoxémie profonde (peu de désoxyhémoglobine en valeur absolue).`,
+ mnemo:`cyano- = bleu foncé (du grec kuanos) + -ose = état`},
+{id:'tirage',t:`Tirage`,cat:`Symptômes`,
+ def:`Dépression inspiratoire visible des espaces intercostaux, creux sus-claviculaire et sus-sternal, liée à l'utilisation des muscles respiratoires accessoires en cas d'obstruction ou de détresse respiratoire.`,
+ ex:`Tirage sous-costal chez le nourrisson : signe de détresse respiratoire grave nécessitant une prise en charge immédiate.`,
+ mnemo:`Tirage = les muscles tirent sur le thorax pour inspirer contre une résistance`},
+{id:'hippocratisme',t:`Hippocratisme digital`,cat:`Symptômes`,
+ def:`Élargissement bulbeux des extrémités des doigts avec perte de l'angle de Lovibond (normal 160°). Signe d'hypoxie chronique tissulaire. Associé au cancer bronchique, bronchectasies, FPI, cardiopathies cyanogènes.`,
+ ex:`Test de Schamroth : losange visible entre deux doigts dos à dos = normal. Absence de losange = hippocratisme.`,
+ mnemo:`Hippocrate l'a décrit 2500 ans avant la pneumologie moderne`},
+// ── TRAITEMENTS ET VENTILATION (9) ──
+{id:'bdca',t:`Bronchodilatateurs à courte durée d'action (BDCA)`,cat:`Traitements`,
+ def:`Médicaments inhalés relaxant les muscles lisses bronchiques pour lever le bronchospasme. Bêta-2 agonistes BDCA (salbutamol, terbutaline) et anticholinergiques BDCA (ipratropium). Durée d'action : 4–6h.`,
+ ex:`Salbutamol (Ventoline) : traitement de secours de la crise d'asthme et de l'exacerbation BPCO. Aérosolthérapie ou inhalateur doseur.`,
+ mnemo:`BDCA = soulagement rapide en crise, pas traitement de fond`},
+{id:'bdla',t:`Bronchodilatateurs à longue durée d'action (BDLA)`,cat:`Traitements`,
+ def:`Bêta-2 agonistes BDLA (formotérol, salmétérol, indacatérol) ou anticholinergiques BDLA (tiotropium, glycopyrronium). Durée d'action : 12–24h. Traitement de fond de la BPCO et asthme persistant.`,
+ ex:`Tiotropium (Spiriva) : anticholinergique BDLA 1 prise/jour. Réduction des exacerbations de BPCO. Rinçage buccal non nécessaire (pas de corticoïdes).`,
+ mnemo:`BDLA = long terme, fond, prévention des exacerbations`},
+{id:'csi',t:`Corticostéroïdes inhalés (CSI)`,cat:`Traitements`,
+ def:`Anti-inflammatoires locaux réduisant l'inflammation bronchique. Indiqués dans l'asthme persistant léger à sévère. Dans la BPCO, associés aux BDLA si exacerbations fréquentes (≥ 2/an) ou éosinophilie sanguine ≥ 300/µL.`,
+ ex:`Beclométasone, budésonide, fluticasone. Technique d'inhalation : inspiration lente et profonde. Rinçage de bouche obligatoire après chaque prise pour éviter la candidose oropharyngée.`,
+ mnemo:`CSI = anti-inflammatoire local + rinçage bouche obligatoire`},
+{id:'old',t:`Oxygénothérapie Longue Durée (OLD)`,cat:`Traitements`,
+ def:`Administration chronique d'O2 ≥ 15h/j pour les BPCO en insuffisance respiratoire chronique. Indications : PaO2 ≤ 55 mmHg, ou PaO2 ≤ 60 mmHg avec polyglobulie, HTAP ou désaturations nocturnes (recommandations HAS).`,
+ ex:`Objectif : PaO2 > 60 mmHg ou SpO2 > 90%. Débit prescrit par le médecin. Contre-indication : tabagisme actif (risque incendie). Surveillance : 2h après toute modification de débit.`,
+ mnemo:`OLD = O2 chronique ≥ 15h/j pour maintenir la vie`},
+{id:'vni',t:`Ventilation Non Invasive (VNI)`,cat:`Traitements`,
+ def:`Assistance ventilatoire via masque (facial ou nasal) sans intubation. Modes BiPAP ou CPAP. Indications principales : exacerbation BPCO avec acidose respiratoire (pH < 7,35, PaCO2 > 45), OAP cardiogénique, insuffisance respiratoire chronique.`,
+ ex:`Surveillance infirmière VNI : fuites masque, synchronisation patient-machine, tolérance cutanée (matelas nasal), efficacité (gazométrie, FC, FR, SpO2).`,
+ mnemo:`VNI = aide la respiration sans intubation, via masque`},
+{id:'intubation',t:`Intubation trachéale`,cat:`Traitements`,
+ def:`Mise en place d'une sonde endotrachéale (SET) dans la trachée par voie orale ou nasale pour assurer la ventilation mécanique. Geste médical, préparé par l'infirmier(e).`,
+ ex:`Préparation IDE : laryngoscope vérifié, SET de plusieurs tailles, mandrin, aspiration prête, seringue gonfler le ballonnet, fixation, capnographe.`,
+ mnemo:`Intubation = tuyau dans la trachée pour ventiler mécaniquement`},
+{id:'vm',t:`Ventilation Mécanique (VM)`,cat:`Traitements`,
+ def:`Assistance ou suppléance de la ventilation par respirateur. Volume contrôlé (Vt fixe, pression variable) ou pression contrôlée (pression fixe, Vt variable). Ventilation protectrice SDRA : Vt 6 mL/kg poids idéal, Pplat ≤ 30 cmH2O.`,
+ ex:`Alarmes à connaître : haute pression (obstruction, bronchospasme), bas volume (déconnexion, fuite), apnée (arrêt). Ne jamais couper une alarme sans en identifier la cause.`,
+ mnemo:`VM = machine qui respire à la place du patient`},
+{id:'drainage',t:`Drainage pleural`,cat:`Traitements`,
+ def:`Évacuation d'un épanchement pleural (liquidien ou aérique) via un drain thoracique relié à un système de recueil sous eau ou à aspiration. Pose médicale, surveillance infirmière.`,
+ ex:`Surveillance drain thoracique : bullage (air), oscillation du liquide avec la respiration, quantité et aspect du liquide, douleur, position du patient, étanchéité du système.`,
+ mnemo:`Drain thoracique = tuyau dans la plèvre pour évacuer l'épanchement`},
+{id:'aerosol',t:`Aérosolthérapie`,cat:`Traitements`,
+ def:`Administration de médicaments sous forme de fines particules en suspension dans l'air, inhalées directement jusqu'aux bronches et alvéoles. Techniques : nébuliseur pneumatique, ultrasonique, maille vibrante.`,
+ ex:`Technique correcte : position assise, embout buccal ou masque adapté, respiration lente et profonde, apnée de 2–3s, expiration lente. Durée : 10–15 min. Rinçage buccal après corticoïdes.`,
+ mnemo:`Aérosol = air + sol = particules solides/liquides en suspension dans l'air`},
+// ── RACINES PNEUMOLOGIQUES (5) ──
+{id:'pneumo_rac',t:`Pneumo- / Pneumat-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque désignant l'air, les poumons ou ce qui est relatif à la respiration. Racine la plus polyvalente en pneumologie.`,
+ ex:`Pneumonie, pneumothorax, pneumopathie, pneumologue, pneumatocèle.`,
+ mnemo:`pneuma = souffle, air en grec`},
+{id:'broncho_rac',t:`Broncho-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque désignant les bronches. Utilisé dans tous les termes relatifs aux voies aériennes conductives.`,
+ ex:`Bronchite, bronchospasme, bronchodilatateur, bronchoscopie, bronchectasie, bronchiole.`,
+ mnemo:`bronkhos = gorge, tuyau en grec`},
+{id:'pnee_rac',t:`-Pnée`,cat:`Racines`,
+ def:`Suffixe d'origine grecque désignant la respiration. Précédé d'un préfixe qualifiant le type de respiration.`,
+ ex:`Dyspnée (difficile), tachypnée (rapide), bradypnée (lente), apnée (sans), orthopnée (vertiale), hyperpnée (profonde).`,
+ mnemo:`pnein = souffler, respirer en grec`},
+{id:'thoraco_rac',t:`Thoraco- / -thorax`,cat:`Racines`,
+ def:`Préfixe ou suffixe désignant le thorax (cage thoracique). Utilisé dans les termes relatifs aux structures thoraciques.`,
+ ex:`Thoracocentèse (ponction pleurale), pneumothorax (air dans le thorax), hémothorax (sang), thoracoscopie.`,
+ mnemo:`thorax = poitrine, cage thoracique en grec et latin`},
+{id:'pleuro_rac',t:`Pleuro-`,cat:`Racines`,
+ def:`Préfixe désignant la plèvre. Utilisé dans les termes relatifs aux membranes pleurales et aux épanchements pleuraux.`,
+ ex:`Pleurésie, pleurite, pleuropneumonie, pleurodèse (symphyse pleurale pour prévenir les récidives de pneumothorax).`,
+ mnemo:`pleura = côté, flanc en grec — membrane latérale du poumon`},
+// ── MICROBIOLOGIE RESPIRATOIRE (5) ──
+{id:'pneumocoque',t:`Streptococcus pneumoniae (Pneumocoque)`,cat:`Microbiologie`,
+ def:`Bactérie la plus fréquente des pneumonies communautaires (PAC) de l'adulte. Cocci Gram positif, encapsulé. Sensible à l'amoxicilline (si non-résistant). Vaccin pneumococcique recommandé pour les sujets à risque.`,
+ ex:`Pneumonie franche lobaire aiguë (PFLA) à pneumocoque : début brutal, fièvre > 39°C, douleur thoracique, expectoration rouillée, condensation radiologique.`,
+ mnemo:`pneumo- = poumon + coque = sphère → bactérie sphérique du poumon`},
+{id:'legionelle',t:`Legionella pneumophila`,cat:`Microbiologie`,
+ def:`Bacille Gram négatif intracellulaire transmis par voie aérienne (aérosols contaminés : tours aéroréfrigérantes, douches, climatiseurs). Cause de légionellose (maladie des légionnaires). Non transmissible interhumain.`,
+ ex:`Légionellose : pneumonie atypique sévère, hypoxémie, hyponatrémie, cytolyse hépatique, bradycardie relative. Antigène urinaire Legionella = diagnostic rapide. Traitement : fluoroquinolones ou macrolides.`,
+ mnemo:`Légionelle = légionnaire (American Legion 1976, premier cas décrit)`},
+{id:'tuberculose',t:`Tuberculose pulmonaire`,cat:`Microbiologie`,
+ def:`Infection par Mycobacterium tuberculosis (bacille de Koch). Transmission aérienne interhumaine. Forme pulmonaire (90%) : toux chronique, hémoptysie, amaigrissement, sueurs nocturnes. Déclaration obligatoire.`,
+ ex:`Isolement aérien (chambre seule, ventilation négative ou porte fermée + masque FFP2) jusqu'à 3 frottis négatifs. Traitement 6 mois : 2 RHZE + 4 RH (Rifampicine, Isoniazide, Pyrazinamide, Éthambutol).`,
+ mnemo:`BK = Bacille de Koch, décrit en 1882 — maladie à déclaration obligatoire`},
+{id:'covid',t:`Pneumopathie à SARS-CoV-2 (COVID-19)`,cat:`Microbiologie`,
+ def:`Pneumonie virale due au coronavirus SARS-CoV-2. Présentation : pneumonie bilatérale en verre dépoli, hypoxémie parfois silencieuse. Formes sévères : SDRA, coagulopathie, syndrome inflammatoire.`,
+ ex:`Précautions contact + gouttelettes. Masque chirurgical minimum, FFP2 si geste aérosolisant (intubation, aérosolthérapie, aspiration).`,
+ mnemo:`SARS-CoV-2 = Severe Acute Respiratory Syndrome Coronavirus 2`},
+{id:'grippe',t:`Grippe (Influenza)`,cat:`Microbiologie`,
+ def:`Infection virale aiguë des voies respiratoires par virus Influenza A ou B. Début brutal : fièvre, myalgies, céphalées, toux sèche. Complications : pneumonie grippale, surinfection bactérienne (pneumocoque, staphylocoque).`,
+ ex:`Vaccin grippe : recommandé chaque automne aux soignants, ≥ 65 ans, femmes enceintes, immunodéprimés. Traitement antiviral (oseltamivir) si < 48h et sujet à risque.`,
+ mnemo:`Grippe = grippa en allemand = qui empoigne, saisit brutalement`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Pneumothorax`,def:`Présence d'air dans la cavité pleurale entraînant un collapsus pulmonaire.`,
+ pieces:[`pneumo-`,`broncho-`,`-thorax`,`-ite`,`-pnée`],correct:[`pneumo-`,`-thorax`],
+ meaning:`pneumo- (air/poumon) + -thorax (thorax) = air dans le thorax`},
+{term:`Pneumonie`,def:`Infection aiguë du parenchyme pulmonaire.`,
+ pieces:[`pneumo-`,`pleuro-`,`-nie`,`-ite`,`-ose`],correct:[`pneumo-`,`-nie`],
+ meaning:`pneumo- (poumon) + -nie = état pathologique du poumon`},
+{term:`Bronchite`,def:`Inflammation des bronches, souvent virale.`,
+ pieces:[`broncho-`,`pneumo-`,`-ite`,`-ose`,`-pathie`],correct:[`broncho-`,`-ite`],
+ meaning:`broncho- (bronches) + -ite (inflammation) = inflammation des bronches`},
+{term:`Bronchospasme`,def:`Contraction des muscles lisses bronchiques entraînant un rétrécissement des voies aériennes.`,
+ pieces:[`broncho-`,`pneumo-`,`-spasme`,`-ite`,`-lyse`],correct:[`broncho-`,`-spasme`],
+ meaning:`broncho- (bronches) + -spasme (contraction) = contraction des bronches`},
+{term:`Dyspnée`,def:`Sensation subjective de difficulté à respirer.`,
+ pieces:[`dys-`,`ortho-`,`brady-`,`-pnée`,`-cardie`],correct:[`dys-`,`-pnée`],
+ meaning:`dys- (difficile) + -pnée (respiration) = respiration difficile`},
+{term:`Tachypnée`,def:`Fréquence respiratoire supérieure à 20 cycles par minute.`,
+ pieces:[`tachy-`,`brady-`,`dys-`,`-pnée`,`-cardie`],correct:[`tachy-`,`-pnée`],
+ meaning:`tachy- (rapide) + -pnée (respiration) = respiration rapide`},
+{term:`Bradypnée`,def:`Fréquence respiratoire inférieure à 12 cycles par minute.`,
+ pieces:[`brady-`,`tachy-`,`dys-`,`-pnée`,`-cardie`],correct:[`brady-`,`-pnée`],
+ meaning:`brady- (lent) + -pnée (respiration) = respiration lente`},
+{term:`Orthopnée`,def:`Dyspnée survenant en position allongée, soulagée en position assise.`,
+ pieces:[`ortho-`,`dys-`,`brady-`,`-pnée`,`-pathie`],correct:[`ortho-`,`-pnée`],
+ meaning:`ortho- (droit/vertical) + -pnée (respiration) = respiration possible seulement en position verticale`},
+{term:`Pleurésie`,def:`Épanchement liquidien dans la cavité pleurale.`,
+ pieces:[`pleuro-`,`pneumo-`,`-ésie`,`-ite`,`-ose`],correct:[`pleuro-`,`-ésie`],
+ meaning:`pleuro- (plèvre) + -ésie = état de la plèvre avec épanchement`},
+{term:`Hémoptysie`,def:`Expectoration de sang provenant des voies aériennes inférieures.`,
+ pieces:[`hémo-`,`pneumo-`,`-ptysie`,`-ite`,`-lyse`],correct:[`hémo-`,`-ptysie`],
+ meaning:`hémo- (sang) + -ptysie (cracher) = cracher du sang venant des poumons`},
+{term:`Thoracocentèse`,def:`Ponction pleurale évacuatrice ou diagnostique.`,
+ pieces:[`thoraco-`,`broncho-`,`-centèse`,`-ite`,`-scopie`],correct:[`thoraco-`,`-centèse`],
+ meaning:`thoraco- (thorax) + -centèse (ponction) = ponction du thorax`},
+{term:`Bronchoscopie`,def:`Examen endoscopique des voies aériennes via un fibroscope.`,
+ pieces:[`broncho-`,`pneumo-`,`-scopie`,`-ite`,`-centèse`],correct:[`broncho-`,`-scopie`],
+ meaning:`broncho- (bronches) + -scopie (regarder) = regarder à l'intérieur des bronches`},
+];
+
+/* ════ STATE ════ */
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[],cqList=[];
+
+function selectMode(m,btn){
+  document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));
+  btn.classList.add(`sel`);mode=m;
+}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;
+  totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  document.getElementById(`lives-pill`).style.display=`none`;
+  if(mode===`qcm`) questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`) questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`){cqList=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);questions=cqList;}
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const pool3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];
+    const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){
+      if(i===ci) choices.push(flip?t.t:t.def.substring(0,90)+`…`);
+      else{const d=pool3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}
+    }
+    return{term:t.t,cat:t.cat,def:t.def,
+      q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,
+      questionText:flip?t.def.substring(0,140):null,
+      choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,ex:t.ex,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`) loadQCM();
+  else if(mode===`frappe`) loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">🫁 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Terme médical</div><div class="tc-term">${q.term}</div><div class="tc-cat">🫁 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{
+    const b=document.createElement(`button`);b.className=`choice`;
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);
+  });
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];
+  if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition — Quel est ce terme ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">🫁 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez le terme médical correspondant :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();
+  inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;
+  const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t);const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">🫁 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme médical :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;
+  s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--sky)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`Le terme était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);
+  document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Étymologie :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Vocabulaire maîtrisé`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#f0f9ff`,tc:`#0284c7`,brd:`#bae6fd`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent en QCM ! Essayez le Mode Frappe pour mémoriser sans choix multiples.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Maîtrise parfaite. Le Mode Examen avec 15 secondes est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 Connaître pneumo-/broncho-/-pnée/-thorax vous permet de décoder tout terme respiratoire.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en pneumologie. Passez au module Infectiologie.`);
+  if(note<10)cons.push(`📚 Commencez par les catégories Anatomie et Physiologie avant les pathologies.`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 puis passez au mode plus difficile.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`EFR & Gazométrie`)cons.push(`🫧 Valeurs clés : PaO2 80–100 mmHg, PaCO2 35–45 mmHg, VEMS/CVF < 0,70 = obstruction, Tiffeneau.`);
+    if(cat===`Pathologies obstructives`)cons.push(`🌬️ BPCO = obstruction non réversible (tabac). Asthme = réversible > 12% et > 200 mL post-BD.`);
+    if(cat===`Urgences respiratoires`)cons.push(`🚨 SDRA Berlin 2012 : PaO2/FiO2 < 300. Pneumothorax compressif = urgence vitale absolue.`);
+    if(cat===`Traitements`)cons.push(`💊 BDCA = secours (salbutamol). BDLA = fond (tiotropium). OLD ≥ 15h/j si PaO2 ≤ 55 mmHg.`);
+    if(cat===`Microbiologie`)cons.push(`🦠 PAC : pneumocoque le plus fréquent. Légionelle : eau + antigène urinaire. Tuberculose : isolement FFP2 + déclaration obligatoire.`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise complète de toutes les catégories. Excellent travail.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

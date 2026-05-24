@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Endocrinologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --vt:#7e22ce;--vt-d:#581c87;--vt-l:#faf5ff;--vt-m:#d8b4fe;--vt-b:#f3e8ff;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--vt-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--vt-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--vt-l);color:var(--vt);border:1px solid var(--vt-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--vt-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--vt-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--vt-b);border:1px solid var(--vt-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#581c87;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--vt));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--vt));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--vt-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--vt-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(88,28,135,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--vt);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--vt-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--vt-d)}
+.tb-mode{background:var(--vt-l);color:var(--vt);border:1px solid var(--vt-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--vt-d),var(--vt));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--vt);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--vt-d),#6b21a8);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(88,28,135,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--vt-l);border:1px solid var(--vt-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--vt)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--vt);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--vt-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--vt);background:var(--vt-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--vt);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--vt-d)}
+.next-btn{width:100%;padding:12px;background:var(--vt-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(88,28,135,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--vt)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+.frappe-input:focus{border-color:var(--vt)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.frappe-hint span{color:var(--vt);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--vt-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--vt)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--vt);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--vt-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--vt);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--vt);background:var(--vt-l);color:var(--vt-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--vt-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--vt)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--vt-d),var(--vt))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--vt-d);color:white;box-shadow:0 2px 10px rgba(88,28,135,.3)}.rb.p:hover{background:var(--vt)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--vt-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🍃</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🍃 Endocrinologie</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🍃</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Endocrinologie</div>
+        <div class="w-hero-desc">70 termes couvrant toute l'endocrinologie clinique : glandes endocrines, diabètes type 1 et 2, complications aiguës et chroniques, insulines, antidiabétiques oraux, thyroïde, surrénales, parathyroïdes, hypophyse et hormones sexuelles. Indispensable pour vos stages MCO et SSR.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">70</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">11</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Contenu validé — Recommandations HAS/SFE/SFD/ADA 2024.</strong> Ce module est basé sur les référentiels officiels en vigueur. Il ne remplace pas les protocoles institutionnels de votre établissement de stage. En cas de doute clinique, référez-vous toujours à votre encadrant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#7e22ce;--mb:#faf5ff" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#faf5ff;border-color:#d8b4fe;color:#7e22ce">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former le terme endocrinien. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">70 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🍃</div><span class="tb-logo-text">Endocrino</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/70</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🍃</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Endocrinologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--vt)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Contenu basé sur recommandations HAS/SFE/SFD/ADA 2024 — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── GLANDES ENDOCRINES (6) ──
+{id:`hormone`,t:`Hormone`,cat:`Anatomie endocrine`,
+ def:`Substance chimique sécrétée par une glande endocrine, transportée par le sang vers des cellules cibles porteuses de récepteurs spécifiques. Régule de nombreuses fonctions métaboliques, croissance, reproduction, stress.`,
+ ex:`Régulation par feed-back négatif : si l'hormone cible est élevée, l'axe hypothalamo-hypophysaire freine la production. Exemple : T4 élevée → TSH freinée.`,
+ mnemo:`Hormone = messager chimique du sang vers une cellule cible avec récepteur`},
+{id:`hypophyse`,t:`Hypophyse`,cat:`Anatomie endocrine`,
+ def:`Glande endocrine située dans la selle turcique, divisée en antéhypophyse (adénohypophyse) et posthypophyse (neurohypophyse). Sécrète de nombreuses hormones contrôlant les autres glandes : TSH, ACTH, FSH/LH, GH, prolactine, ADH, ocytocine.`,
+ ex:`Adénome hypophysaire : prolactinome (le plus fréquent), corticotrope (Cushing), somatotrope (acromégalie). Symptômes selon l'hormone sécrétée et compression de structures voisines (chiasma optique).`,
+ mnemo:`Hypophyse = chef d'orchestre des autres glandes endocrines`},
+{id:`hypothalamus`,t:`Hypothalamus`,cat:`Anatomie endocrine`,
+ def:`Région du diencéphale contrôlant l'hypophyse via des hormones de libération (RH) ou inhibitrices. Centre de régulation des fonctions végétatives : faim, soif, température, rythme veille/sommeil. Connexions neurologiques et endocrines.`,
+ ex:`Axe hypothalamo-hypophysaire : TRH → TSH → T3/T4. CRH → ACTH → cortisol. GnRH → FSH/LH → œstrogènes/testostérone. Feed-back négatif essentiel.`,
+ mnemo:`Hypothalamus = chef au-dessus de l'hypophyse = libère les RH`},
+{id:`thyroide`,t:`Thyroïde`,cat:`Anatomie endocrine`,
+ def:`Glande endocrine en forme de papillon située à la base du cou en avant de la trachée. Sécrète les hormones thyroïdiennes T3 et T4 sous contrôle de la TSH hypophysaire. Rôle : régulation du métabolisme, croissance, développement.`,
+ ex:`Goitre = augmentation diffuse de la thyroïde. Nodule thyroïdien : palpation + écho ± cytoponction. Recherche cancer si suspect (TIRADS 4-5).`,
+ mnemo:`Thyroïde = papillon devant la trachée = T3/T4 = métabolisme`},
+{id:`surrenales`,t:`Glandes surrénales`,cat:`Anatomie endocrine`,
+ def:`Deux glandes situées au-dessus des reins, chacune divisée en cortex (corticosurrénale) et médulla (médullosurrénale). Cortex : minéralocorticoïdes (aldostérone), glucocorticoïdes (cortisol), androgènes. Médulla : catécholamines (adrénaline, noradrénaline).`,
+ ex:`Insuffisance surrénale aiguë (Addison décompensée) : hypotension + déshydratation + hyperkaliémie + hyponatrémie + hypoglycémie = urgence vitale, hydrocortisone IV 100 mg.`,
+ mnemo:`Surrénales = au-dessus des reins = cortisol + aldostérone + adrénaline`},
+{id:`pancreas`,t:`Pancréas endocrine`,cat:`Anatomie endocrine`,
+ def:`Îlots de Langerhans dispersés dans le pancréas (1-2% du tissu). Cellules bêta (insuline), alpha (glucagon), delta (somatostatine), PP (polypeptide pancréatique). Régulation glycémique fine.`,
+ ex:`Diabète type 1 : destruction auto-immune des cellules bêta → insulinopénie absolue. Diabète type 2 : insulinorésistance + insulinopénie progressive.`,
+ mnemo:`Pancréas endocrine = îlots de Langerhans = insuline (bêta) + glucagon (alpha)`},
+// ── DIABÈTE - GÉNÉRALITÉS (8) ──
+{id:`diabete`,t:`Diabète sucré`,cat:`Diabète généralités`,
+ def:`Maladie métabolique chronique caractérisée par une hyperglycémie chronique due à un défaut de sécrétion d'insuline et/ou d'action de l'insuline. Diagnostic : glycémie à jeun ≥ 7 mmol/L à 2 reprises, OU glycémie ≥ 11,1 mmol/L + symptômes, OU HbA1c ≥ 6,5%.`,
+ ex:`Symptômes cardinaux ("syndrome polyuro-polydipsique") : polyurie, polydipsie, asthénie, amaigrissement (T1), souvent absents en T2 (diagnostic fortuit ou sur complications).`,
+ mnemo:`Diabète = glycémie à jeun ≥ 7 mmol/L à 2 reprises = hyperglycémie chronique`},
+{id:`diabete_t1`,t:`Diabète de type 1`,cat:`Diabète généralités`,
+ def:`Maladie auto-immune avec destruction des cellules bêta des îlots de Langerhans, entraînant une insulinopénie absolue. Anticorps anti-GAD, anti-IA2, anti-îlots (ICA). Survient surtout chez l'enfant ou l'adulte jeune. Insulinothérapie EXCLUSIVE à vie.`,
+ ex:`Découverte typique : syndrome polyuro-polydipsique + amaigrissement + asthénie chez l'adolescent ou jeune adulte. Acidocétose inaugurale dans 30-40% des cas. Hospitalisation à diagnostic.`,
+ mnemo:`Diabète T1 = auto-immun = insulinopénie absolue = insuline à vie`},
+{id:`diabete_t2`,t:`Diabète de type 2`,cat:`Diabète généralités`,
+ def:`Maladie métabolique avec insulinorésistance + insulinopénie progressive. 90% des diabètes. Souvent associé au syndrome métabolique (obésité abdominale, HTA, dyslipidémie). Forme la plus fréquente, généralement après 40 ans, mais en augmentation chez les jeunes.`,
+ ex:`Cible HbA1c ≤ 7% en général (HAS 2023, modulable selon l'âge, comorbidités, espérance de vie). Traitement : metformine 1ère intention, puis selon comorbidités cardio-rénales.`,
+ mnemo:`Diabète T2 = insulinorésistance + insulinopénie = metformine 1ère ligne`},
+{id:`hba1c`,t:`HbA1c (Hémoglobine glyquée)`,cat:`Diabète généralités`,
+ def:`Reflet de la glycémie moyenne des 3 derniers mois (durée de vie des GR). Marqueur de surveillance et de cible thérapeutique chez le diabétique. Normale < 5,7%. Diabète : ≥ 6,5%. Cible générale T2 : ≤ 7% (HAS 2023).`,
+ ex:`Faussement basse : anémie hémolytique, hémoglobinopathie. Faussement élevée : urémie, IRC. Surveillance tous les 3 mois en diabète déséquilibré, tous les 6 mois si stable.`,
+ mnemo:`HbA1c < 5,7% normale / ≥ 6,5% diabète / cible ≤ 7% T2`},
+{id:`gad`,t:`Anticorps anti-GAD`,cat:`Diabète généralités`,
+ def:`Auto-anticorps dirigés contre la décarboxylase de l'acide glutamique, exprimée par les cellules bêta du pancréas. Marqueur d'auto-immunité du diabète de type 1. Présents chez 70-80% des patients T1 au diagnostic. Persistent longtemps après le début.`,
+ ex:`Diagnostic différentiel T1 vs T2 : anti-GAD + anti-IA2 + anti-ICA + peptide C bas = T1. LADA (Latent Autoimmune Diabetes in Adults) : T1 d'évolution lente chez l'adulte, anti-GAD positifs.`,
+ mnemo:`Anti-GAD = signature auto-immune du T1 = 70-80% des T1`},
+{id:`peptide_c`,t:`Peptide C`,cat:`Diabète généralités`,
+ def:`Marqueur de la sécrétion endogène d'insuline (libéré en quantité équimolaire à l'insuline lors de la dégradation de la pro-insuline). Permet de distinguer insulinosécrétion endogène (peptide C élevé) d'apport exogène (peptide C bas).`,
+ ex:`T1 : peptide C effondré (insulinopénie). T2 : peptide C normal ou élevé (insulinorésistance). Hypoglycémie d'origine factice : insuline élevée + peptide C bas (insuline exogène).`,
+ mnemo:`Peptide C = mesure insuline endogène = bas en T1 / normal-haut en T2`},
+{id:`syndrome_meta`,t:`Syndrome métabolique`,cat:`Diabète généralités`,
+ def:`Association de critères cardiovasculaires augmentant le risque de diabète T2 et MCV. Critères NCEP-ATP III (3 critères ou plus) : tour de taille H > 102 cm / F > 88 cm, TG ≥ 1,7 mmol/L, HDL H < 1,03 / F < 1,29 mmol/L, PA ≥ 130/85, glycémie à jeun ≥ 5,6 mmol/L.`,
+ ex:`Prise en charge globale : amaigrissement, activité physique, traitement de chaque facteur de risque. Mesure du tour de taille systématique en consultation diabète/cardio.`,
+ mnemo:`Syndrome métabolique = obésité abdo + TG + HDL bas + HTA + glycémie = ≥ 3 critères`},
+{id:`diabete_gest`,t:`Diabète gestationnel`,cat:`Diabète généralités`,
+ def:`Trouble de la tolérance glucidique apparaissant ou diagnostiqué pour la première fois pendant la grossesse, généralement au 2e ou 3e trimestre. Dépistage HGPO 75g entre 24-28 SA chez femme à risque. Diagnostic si T0 ≥ 5,1 OU T1h ≥ 10,0 OU T2h ≥ 8,5 mmol/L.`,
+ ex:`Risques fœtaux : macrosomie, hypoglycémie néonatale, détresse respiratoire. Risques maternels : HTA gravidique, prééclampsie, diabète T2 ultérieur. Surveillance glycémique pluriquotidienne, régime, insuline si insuffisant.`,
+ mnemo:`Diabète gestationnel = HGPO 75g à 24-28 SA = T0 5,1 / T1h 10 / T2h 8,5 mmol/L`},
+// ── COMPLICATIONS DU DIABÈTE (5) ──
+{id:`acidocetose`,t:`Acidocétose diabétique (ACD)`,cat:`Complications diabète`,
+ def:`Décompensation aiguë du diabète, surtout T1, par carence absolue en insuline. Triade : hyperglycémie > 14 mmol/L + cétonémie > 3 mmol/L + acidose métabolique (pH < 7,30, HCO3- < 18). Signes : déshydratation, dyspnée de Kussmaul, haleine acétonique.`,
+ ex:`Urgence : insulinothérapie IV continue à la seringue électrique + réhydratation NaCl 0,9% + correction kaliémie + surveillance horaire. Recherche du facteur déclenchant (infection, oubli insuline, pathologie aiguë).`,
+ mnemo:`ACD = T1 + insuline IV + réhydratation + KCl + surveillance horaire`},
+{id:`coma_hyper`,t:`Coma hyperosmolaire`,cat:`Complications diabète`,
+ def:`Décompensation aiguë du diabète T2, surtout chez le sujet âgé. Hyperglycémie majeure > 33 mmol/L + osmolarité plasmatique > 320 mosmol/L + déshydratation sévère SANS cétose significative + pH > 7,30. Mortalité élevée 15-20%.`,
+ ex:`Réhydratation lente prudente (risque d'œdème cérébral si trop rapide). Insulinothérapie progressive après début de réhydratation. Recherche du facteur déclenchant : infection, AVC, traitements diurétiques.`,
+ mnemo:`Coma hyperosmolaire = T2 âgé + glycémie > 33 + déshydratation = sans cétose`},
+{id:`hypoglycemie`,t:`Hypoglycémie`,cat:`Complications diabète`,
+ def:`Glycémie < 3,9 mmol/L (0,70 g/L). Sévère si < 3,0 mmol/L OU nécessitant l'aide d'un tiers. Triade de Whipple : symptômes + glycémie basse + résolution après resucrage. Causes : surdosage insuline ou sulfamides, repas sauté, activité physique inhabituelle.`,
+ ex:`Resucrage : 15 g de sucres rapides PO si conscient (3 sucres, jus de fruit), répéter à 15 min si non corrigé. Si inconscient : glucagon 1 mg IM/SC (entourage) ou G30 IV (soignant) puis perfusion G10%.`,
+ mnemo:`Hypoglycémie = < 3,9 mmol/L = resucrage 15 g si conscient / glucagon ou G30 si non`},
+{id:`retinopathie`,t:`Rétinopathie diabétique`,cat:`Complications diabète`,
+ def:`Atteinte microvasculaire de la rétine, complication majeure du diabète. Stades : non proliférante (microanévrismes, hémorragies, exsudats) puis proliférante (néovascularisation, hémorragie vitréenne, décollement). Cause majeure de cécité acquise chez l'adulte.`,
+ ex:`Dépistage par fond d'œil annuel ou photographies du fond d'œil. Traitement : équilibre glycémique + tensionnel + photocoagulation au laser, anti-VEGF intravitréens si œdème maculaire diabétique.`,
+ mnemo:`Rétinopathie diabétique = fond d'œil annuel = micro-anévrismes → néovaisseaux`},
+{id:`nephropathie`,t:`Néphropathie diabétique`,cat:`Complications diabète`,
+ def:`Atteinte rénale du diabète, première cause d'IRC terminale en France. Évolution : microalbuminurie (30-300 mg/24h) → protéinurie macroscopique (> 300 mg/24h) → IRC progressive → IRT. Surveillance : microalbuminurie annuelle + DFG estimé.`,
+ ex:`Néphroprotection précoce dès microalbuminurie : IEC ou ARA-II (même si normotendu), équilibre glycémique strict, tensionnel < 130/80 mmHg, sevrage tabagique, restriction protéique modérée.`,
+ mnemo:`Néphropathie diabétique = microalbuminurie 30-300 mg/24h = IEC/ARA2 même si TA normale`},
+// ── INSULINES ET TRAITEMENTS (8) ──
+{id:`insuline`,t:`Insuline`,cat:`Insulines & Traitements`,
+ def:`Hormone hypoglycémiante sécrétée par les cellules bêta du pancréas en réponse à l'hyperglycémie. Permet l'entrée du glucose dans les cellules (musculaires, adipeuses), la glycogénogenèse hépatique, l'inhibition de la lipolyse. Anabolisante.`,
+ ex:`Voies d'administration : SC (rotation des sites : abdomen, cuisses, bras, fesses), IV en hôpital. Conservation : 1 mois à T° ambiante après ouverture, sinon réfrigérateur 4°C. Ne JAMAIS congeler.`,
+ mnemo:`Insuline = hormone qui fait baisser la glycémie = SC en pratique courante`},
+{id:`insuline_rapide`,t:`Insuline rapide / ultra-rapide`,cat:`Insulines & Traitements`,
+ def:`Insulines à action rapide injectées avant les repas pour couvrir le pic glycémique post-prandial. Insuline humaine ordinaire (Actrapid, Umuline rapide) : début 30 min, pic 2-4h, durée 6-8h. Analogues ultra-rapides (Humalog, NovoRapid, Apidra) : début 15 min, pic 1h, durée 3-5h.`,
+ ex:`Analogues ultra-rapides : à injecter juste avant le repas (vs 15-30 min avant pour l'humaine ordinaire). Indiqués pour les bolus prandiaux dans les schémas basal-bolus.`,
+ mnemo:`Insuline rapide = bolus avant repas = ultra-rapide juste avant / humaine 15-30 min avant`},
+{id:`insuline_lente`,t:`Insuline lente / basale`,cat:`Insulines & Traitements`,
+ def:`Insulines à action prolongée procurant une insulinémie de base 24h. NPH (intermédiaire) : durée 12-16h, deux injections/j. Analogues lents : glargine (Lantus 24h, Toujeo 36h), détémir (Levemir 18-24h), dégludec (Tresiba 42h, plus stable). Une à deux injections/j.`,
+ ex:`Schéma basal-bolus en T1 : insuline lente 1x/j (matin ou soir) + bolus rapide à chaque repas selon glycémie capillaire et ingesta glucidiques. Adaptation des doses par insulinothérapie fonctionnelle.`,
+ mnemo:`Insuline lente = basale 24h = glargine, détémir, dégludec`},
+{id:`metformine`,t:`Metformine`,cat:`Insulines & Traitements`,
+ def:`Biguanide, antidiabétique oral de 1ère intention dans le diabète T2 (HAS, ADA). Mécanisme : diminue la production hépatique de glucose, augmente la sensibilité à l'insuline. NE PROVOQUE PAS d'hypoglycémie en monothérapie. Dose 500-2000 mg/j en 2-3 prises pendant les repas.`,
+ ex:`Effets secondaires : digestifs (diarrhée, nausées) - augmentation progressive des doses, prise pendant repas. Contre-indiquée si DFG < 30 mL/min (risque acidose lactique). À arrêter 48h avant injection iodée.`,
+ mnemo:`Metformine = T2 1ère ligne = pas d'hypo + CI si DFG < 30 + pendant repas`},
+{id:`sulfamides`,t:`Sulfamides hypoglycémiants`,cat:`Insulines & Traitements`,
+ def:`Antidiabétiques oraux stimulant la sécrétion d'insuline par les cellules bêta. Glimépiride (Amarel), gliclazide (Diamicron). Indications : T2 en deuxième ligne après metformine. Risque principal : HYPOGLYCÉMIE (parfois sévère et prolongée).`,
+ ex:`Adaptation des doses chez le sujet âgé et l'IR. Information patient : reconnaître les signes d'hypoglycémie, resucrage adapté, prévention des hypoglycémies par horaires de prises stricts (avant repas).`,
+ mnemo:`Sulfamides = stimulent l'insuline endogène = risque d'hypoglycémie +++`},
+{id:`glp1`,t:`Analogues du GLP-1 (GLP-1 RA)`,cat:`Insulines & Traitements`,
+ def:`Antidiabétiques injectables SC mimant l'action du GLP-1 (Glucagon-Like Peptide 1). Stimulent la sécrétion d'insuline glucose-dépendante, freinent le glucagon, ralentissent la vidange gastrique. Liraglutide (Victoza), sémaglutide (Ozempic, Rybelsus oral). Bénéfices : perte de poids, baisse HbA1c, bénéfice CV.`,
+ ex:`Indication : T2 avec MCV établie ou risque CV élevé, surpoids/obésité. Effets secondaires : nausées (souvent transitoires), risque rare de pancréatite. Indication étendue à l'obésité non diabétique pour le sémaglutide à forte dose.`,
+ mnemo:`GLP-1 RA = injection SC = perte de poids + bénéfice CV (Ozempic)`},
+{id:`gliflozines`,t:`Gliflozines (inhibiteurs SGLT2)`,cat:`Insulines & Traitements`,
+ def:`Antidiabétiques oraux inhibant le co-transporteur SGLT2 du tubule proximal rénal. Augmentent la glycosurie et la natriurèse. Dapagliflozine (Forxiga), empagliflozine (Jardiance). Bénéfices CV (IC) et rénaux (néphroprotection) majeurs, indépendants du diabète.`,
+ ex:`Indications : T2 avec MCV/IC, IC à FE réduite (même non diabétique), néphropathie chronique. Effets secondaires : infections génitales mycosiques (surtout femmes), risque d'acidocétose euglycémique (surveiller cétones si symptômes).`,
+ mnemo:`Gliflozines = SGLT2 = glycosurie + bénéfice cœur + reins`},
+{id:`gliptines`,t:`Gliptines (inhibiteurs DPP-4)`,cat:`Insulines & Traitements`,
+ def:`Antidiabétiques oraux inhibant la dipeptidyl peptidase-4, augmentant les concentrations de GLP-1 endogène. Sitagliptine (Januvia), vildagliptine (Galvus), saxagliptine. Indication : T2 en bithérapie ou trithérapie. Bonne tolérance, peu d'hypoglycémies.`,
+ ex:`Effets secondaires rares : pancréatite, douleurs articulaires. Adapter la dose selon la fonction rénale. N'entraînent pas de prise de poids (effet neutre). Pas de bénéfice CV ou rénal majeur démontré.`,
+ mnemo:`Gliptines = DPP-4 = bonne tolérance + neutre sur le poids`},
+// ── THYROÏDE - PATHOLOGIES (6) ──
+{id:`hypothyroidie`,t:`Hypothyroïdie`,cat:`Thyroïde`,
+ def:`Insuffisance de production des hormones thyroïdiennes. Diagnostic : TSH élevée + T4L basse. Cause principale en France : thyroïdite d'Hashimoto (auto-immune, anti-TPO positifs). Symptômes : asthénie, frilosité, prise de poids, bradycardie, constipation, sécheresse cutanée.`,
+ ex:`Traitement : lévothyroxine (Lévothyrox, L-Thyroxin Henning) à dose progressive. Prise à jeun le matin, à distance des autres médicaments. Surveillance TSH 6-8 semaines après chaque modification de dose.`,
+ mnemo:`Hypothyroïdie = TSH élevée + T4L basse = lévothyroxine à jeun le matin`},
+{id:`hyperthyroidie`,t:`Hyperthyroïdie`,cat:`Thyroïde`,
+ def:`Excès de production d'hormones thyroïdiennes. Diagnostic : TSH effondrée + T4L et/ou T3L élevées. Causes principales : maladie de Basedow (auto-immune), nodule toxique, thyroïdite. Symptômes : tachycardie, amaigrissement, thermophobie, tremblements, irritabilité, diarrhée.`,
+ ex:`Crise thyrotoxique : urgence vitale (fièvre, tachycardie sévère, troubles psy, défaillances). Bêtabloquants pour les symptômes adrénergiques. Antithyroïdiens de synthèse (carbimazole, propylthiouracile). Iode radioactif ou chirurgie selon le cas.`,
+ mnemo:`Hyperthyroïdie = TSH basse + T4L haute = ATS + bêtabloquant + iode/chirurgie`},
+{id:`basedow`,t:`Maladie de Basedow`,cat:`Thyroïde`,
+ def:`Hyperthyroïdie auto-immune par auto-anticorps activateurs du récepteur de la TSH (TRAK ou TSHRAb). Goitre vasculaire diffus + signes thyrotoxiques + signes oculaires (exophtalmie, ophtalmopathie basedowienne) + parfois myxœdème prétibial. Femme jeune surtout.`,
+ ex:`Bilan : TSH effondrée, T4L élevée, TRAK positifs, scintigraphie thyroïdienne (hyperfixation diffuse). Traitement : antithyroïdiens 12-18 mois, iode radioactif, chirurgie. Sevrage tabagique impératif (aggrave l'ophtalmopathie).`,
+ mnemo:`Basedow = TRAK + exophtalmie + femme jeune + traitement médical/iode/chirurgie`},
+{id:`hashimoto`,t:`Thyroïdite de Hashimoto`,cat:`Thyroïde`,
+ def:`Thyroïdite chronique auto-immune lymphocytaire, principale cause d'hypothyroïdie en France. Anticorps anti-TPO (90%) et anti-thyroglobuline. Atrophie thyroïdienne progressive ou goitre ferme. Femme > 50 ans préférentiellement. Risque accru de lymphome thyroïdien à long terme.`,
+ ex:`Évolution lente vers l'hypothyroïdie. Surveillance TSH + anti-TPO. Traitement substitutif par lévothyroxine si hypothyroïdie patente (TSH > 10) ou symptomatique. Surveillance échographique en cas de goitre.`,
+ mnemo:`Hashimoto = anti-TPO + hypothyroïdie auto-immune = lévothyroxine`},
+{id:`l_thyroxine`,t:`Lévothyroxine`,cat:`Thyroïde`,
+ def:`Hormone thyroïdienne T4 synthétique. Traitement substitutif de référence dans l'hypothyroïdie. Dose adaptée selon l'âge, le poids et la TSH cible (généralement 1,6 µg/kg/j chez l'adulte jeune). Lévothyrox, L-Thyroxin Henning, Tcaps, Thyrofix, Euthyrox.`,
+ ex:`Conditions de prise : à jeun le matin, 30 min avant le petit-déjeuner, à distance des aliments riches en calcium ou fer. Interactions : IPP (réduit l'absorption), millepertuis, anticonvulsivants. Surveillance TSH 6-8 semaines après tout changement.`,
+ mnemo:`Lévothyroxine = T4 synthétique = à jeun le matin + TSH après 6-8 semaines`},
+{id:`ats`,t:`Antithyroïdiens de synthèse (ATS)`,cat:`Thyroïde`,
+ def:`Médicaments inhibant la synthèse des hormones thyroïdiennes. Carbimazole (Néo-Mercazole) : 1ère ligne, effet en 2-3 semaines. Propylthiouracile (PTU) : 2e ligne, ou 1er trimestre de grossesse. Indication : hyperthyroïdie auto-immune (Basedow), nodule toxique, traitement court avant iode/chirurgie.`,
+ ex:`Effet secondaire grave : agranulocytose (NFS de référence + tout signe infectieux = NFS urgente). Hépatite cytolytique. Carte de surveillance + éducation patient impérative. Tératogénique : carbimazole CI en début de grossesse.`,
+ mnemo:`ATS = inhibent thyroïde = surveillance NFS = agranulocytose si fièvre`},
+// ── SURRÉNALES (5) ──
+{id:`cortisol`,t:`Cortisol`,cat:`Surrénales`,
+ def:`Glucocorticoïde principal sécrété par la zone fasciculée du cortex surrénal sous contrôle de l'ACTH hypophysaire. Rôles : hyperglycémie (néoglucogenèse), anti-inflammatoire, immunosuppresseur, catabolisme protéique. Sécrétion cyclique (pic matinal 8h, nadir 23h).`,
+ ex:`Bilan : cortisolémie 8h et 16h (rythme nycthéméral), cortisol libre urinaire 24h (CLU), test de freinage à la dexaméthasone (Cushing). Test au Synacthène pour évaluer la réserve surrénalienne (Addison).`,
+ mnemo:`Cortisol = hormone du stress = pic matinal + freinage négatif sur ACTH`},
+{id:`addison`,t:`Maladie d'Addison`,cat:`Surrénales`,
+ def:`Insuffisance surrénale primaire chronique par destruction du cortex surrénal. Causes principales : auto-immune (rétraction corticale), tuberculose. Triade : asthénie + mélanodermie (peau pigmentée) + amaigrissement. Hypotension orthostatique, hyponatrémie, hyperkaliémie, hypoglycémie.`,
+ ex:`Bilan : cortisol bas + ACTH élevée (origine périphérique). Test au Synacthène : pas de réponse. Anticorps anti-21-hydroxylase. Traitement à vie : hydrocortisone 20-30 mg/j en 2-3 prises + 9α-fluorohydrocortisone (substitution minéralocorticoïde).`,
+ mnemo:`Addison = insuffisance surrénale primaire = mélanodermie + cortisol bas + ACTH haute`},
+{id:`isa`,t:`Insuffisance surrénale aiguë`,cat:`Surrénales`,
+ def:`Décompensation aiguë de l'insuffisance surrénale, urgence vitale absolue. Déclenchée par stress (infection, chirurgie, traumatisme), arrêt brutal de corticothérapie prolongée, oubli de traitement substitutif. Tableau : choc, déshydratation, troubles de conscience, douleurs abdominales pseudo-chirurgicales, hyponatrémie, hyperkaliémie, hypoglycémie.`,
+ ex:`Conduite urgente : hydrocortisone 100 mg IV bolus puis 100 mg/6h, remplissage NaCl 0,9% + glucosé, correction des troubles ioniques. Recherche du facteur déclenchant. Education patient : carte d'urgence + augmentation des doses en cas de stress.`,
+ mnemo:`ISA = urgence absolue = hydrocortisone 100 mg IV + remplissage NaCl + glucose`},
+{id:`cushing`,t:`Syndrome de Cushing`,cat:`Surrénales`,
+ def:`Hypercortisolisme chronique d'origine endogène (adénome hypophysaire = maladie de Cushing 70%, tumeur surrénalienne, sécrétion ectopique paranéoplasique) ou exogène (corticothérapie prolongée). Faciès lunaire + obésité tronculaire + vergetures pourpres + HTA + diabète + ostéoporose + amyotrophie + atteinte psychique.`,
+ ex:`Diagnostic : CLU 24h élevé, cortisol salivaire 23h, test de freinage à la dexaméthasone. Étiologie : ACTH (élevée → maladie de Cushing ; basse → cause surrénalienne). Imagerie selon orientation. Traitement étiologique selon la cause.`,
+ mnemo:`Cushing = hypercortisolisme = obésité tronculaire + faciès lunaire + vergetures + HTA`},
+{id:`pheochromocytome`,t:`Phéochromocytome`,cat:`Surrénales`,
+ def:`Tumeur de la médulla surrénale sécrétant des catécholamines (adrénaline, noradrénaline) en excès. Classique "10% tumor" : 10% bilatéral, 10% extra-surrénalien (paragangliome), 10% malin, 10% familial. Triade de Ménard : céphalées + sueurs + palpitations + HTA paroxystique.`,
+ ex:`Diagnostic : métanéphrines plasmatiques ou urinaires (24h). IRM ou TDM surrénalienne. Traitement : préparation par alpha-bloquants AVANT bêtabloquants (sinon crise hypertensive paradoxale), puis chirurgie. Recherche de mutation génétique (NEM2, VHL, NF1).`,
+ mnemo:`Phéochromocytome = catécholamines + HTA paroxystique + alpha-bloquants AVANT bêta`},
+// ── PARATHYROÏDES & MÉTABOLISME PHOSPHO-CALCIQUE (3) ──
+{id:`pth`,t:`PTH (Parathormone)`,cat:`Parathyroïdes`,
+ def:`Hormone sécrétée par les 4 glandes parathyroïdes (à la face postérieure de la thyroïde). Régule la calcémie et la phosphatémie. Augmente la calcémie (résorption osseuse, réabsorption rénale du Ca, activation vit D), diminue la phosphatémie (excrétion urinaire). Sécrétion stimulée par hypocalcémie.`,
+ ex:`Bilan : PTH + calcémie corrigée + phosphatémie + vitamine D. Hyperparathyroïdie primaire : adénome parathyroïdien, hypercalcémie + PTH élevée. Hypoparathyroïdie : post-chirurgical, hypocalcémie + PTH basse.`,
+ mnemo:`PTH = hormone des 4 parathyroïdes = augmente la calcémie + baisse la phosphatémie`},
+{id:`hyperpara`,t:`Hyperparathyroïdie primaire`,cat:`Parathyroïdes`,
+ def:`Sécrétion excessive de PTH par adénome parathyroïdien (90%) ou hyperplasie. Cause la plus fréquente d'hypercalcémie en ambulatoire. Symptômes : "bones, stones, abdominal groans, psychic moans" (douleurs osseuses, lithiases urinaires, douleurs abdominales, troubles psychiques). Souvent asymptomatique.`,
+ ex:`Bilan : calcémie élevée + PTH élevée. Imagerie : échographie cervicale, scintigraphie au MIBI. Traitement chirurgical (parathyroïdectomie) si symptomatique ou critères définis. Surveillance simple dans certains cas.`,
+ mnemo:`Hyperparathyroïdie 1aire = hypercalcémie + PTH élevée = adénome parathyroïdien`},
+{id:`hypocal`,t:`Hypocalcémie`,cat:`Parathyroïdes`,
+ def:`Calcémie corrigée < 2,20 mmol/L. Symptômes : signes neuro-musculaires (paresthésies péribuccales et acrales, crampes, tétanie, signe de Chvostek + et Trousseau +), troubles cardiaques (allongement QT, arythmies). Causes : hypoparathyroïdie, hypovitaminose D, IRC, malabsorption.`,
+ ex:`Hypocalcémie aiguë symptomatique : urgence, calcium IV (gluconate de calcium 10% 10 mL en 10 min, puis perfusion). Surveillance ECG. Recherche de la cause. Apport calcique + vit D si déficit.`,
+ mnemo:`Hypocalcémie < 2,20 mmol/L = signes neuromusculaires + Chvostek/Trousseau + QT long`},
+// ── HYPOPHYSE & HORMONES (5) ──
+{id:`adenome`,t:`Adénome hypophysaire`,cat:`Hypophyse`,
+ def:`Tumeur bénigne de l'antéhypophyse, fonctionnelle (secrétante) ou non fonctionnelle. Microadénome (< 10 mm) ou macroadénome (≥ 10 mm). Symptômes : selon l'hormone sécrétée + signes de compression (céphalées, troubles visuels par compression du chiasma optique = hémianopsie bitemporale).`,
+ ex:`Prolactinome : le plus fréquent (galactorrhée, aménorrhée, infertilité). Acromégalie : adénome somatotrope. Cushing : adénome corticotrope. Bilan : IRM hypophysaire + bilan hormonal complet + champ visuel.`,
+ mnemo:`Adénome hypophysaire = prolactine, GH, ACTH ou non secrétant + IRM + champ visuel`},
+{id:`prolactine`,t:`Prolactinome / Hyperprolactinémie`,cat:`Hypophyse`,
+ def:`Adénome hypophysaire à prolactine, le plus fréquent. Hyperprolactinémie symptomatique : aménorrhée-galactorrhée chez la femme, troubles érectiles + galactorrhée chez l'homme. Causes non tumorales : grossesse, médicaments (neuroleptiques, antiémétiques), hypothyroïdie périphérique.`,
+ ex:`Diagnostic : prolactine plasmatique > 200 ng/mL = très évocateur. IRM hypophysaire pour confirmer. Traitement médical 1ère ligne : agonistes dopaminergiques (cabergoline, bromocriptine). Chirurgie en 2e intention.`,
+ mnemo:`Prolactinome = aménorrhée-galactorrhée + cabergoline 1ère ligne`},
+{id:`gh`,t:`Acromégalie / Hormone de croissance (GH)`,cat:`Hypophyse`,
+ def:`Adénome somatotrope sécrétant excès d'hormone de croissance (GH). Chez l'adulte (épiphyses fermées) : acromégalie (élargissement extrémités, prognathisme, sueurs, HTA, diabète). Chez l'enfant (épiphyses ouvertes) : gigantisme. Diagnostic par dosage IGF-1 et test au GH après HGPO.`,
+ ex:`Risques : MCV, cancer colique. Bilan complémentaire : coloscopie, échocardiographie. Traitement : chirurgie 1ère intention (transsphénoïdale), analogues de la somatostatine (octréotide) ou anti-récepteur GH (pegvisomant) si insuffisant.`,
+ mnemo:`Acromégalie = GH excessive adulte = mains/pieds gros + prognathisme + diabète`},
+{id:`adh`,t:`ADH (Hormone antidiurétique / Vasopressine)`,cat:`Hypophyse`,
+ def:`Hormone sécrétée par la posthypophyse en réponse à l'hyperosmolalité ou hypovolémie. Augmente la réabsorption d'eau au tube collecteur rénal. Régule l'osmolalité plasmatique et la volémie. Effet vasoconstricteur à fortes doses.`,
+ ex:`Diabète insipide : déficit en ADH (central) ou résistance rénale (néphrogénique) → polyurie + polydipsie + urines diluées. SIADH : sécrétion inappropriée d'ADH → hyponatrémie hypotonique avec urines concentrées (cancer pulmonaire, TC, médicaments).`,
+ mnemo:`ADH = retient l'eau au rein = manque (DI) ou excès (SIADH)`},
+{id:`menopause`,t:`Ménopause`,cat:`Hormones sexuelles`,
+ def:`Arrêt définitif des règles par épuisement folliculaire ovarien. Diagnostic clinique : aménorrhée > 12 mois consécutifs après 45 ans. Bilan biologique non systématique : FSH élevée (> 30 UI/L) + œstradiol bas. Symptômes : bouffées de chaleur, sueurs nocturnes, sécheresse vaginale, troubles du sommeil, ostéoporose à terme.`,
+ ex:`Traitement hormonal substitutif (THS) : œstroprogestatif si utérus, œstrogène seul si hystérectomie. Indication : symptômes invalidants. Bilan préalable : mammographie, FCV, examen gynéco. Discussion bénéfice/risque (CV, cancer).`,
+ mnemo:`Ménopause = aménorrhée 12 mois après 45 ans = FSH élevée + œstradiol bas`},
+// ── RACINES ENDOCRINES (4) ──
+{id:`endo_rac`,t:`Endo- / -crine`,cat:`Racines`,
+ def:`Endo- (préfixe grec) = en dedans, à l'intérieur. -crine (du grec krinein = sécréter, séparer). Endocrine désigne une glande sécrétant ses hormones directement dans le sang (vs exocrine = sécrétion vers l'extérieur via canal).`,
+ ex:`Endocrine (sang), exocrine (canal), paracrine (cellules voisines), autocrine (cellule elle-même), neurocrine (neurones).`,
+ mnemo:`Endo- = en dedans + -crine = sécréter = hormone vers le sang`},
+{id:`thyro_rac`,t:`Thyro- / -thyroïdie`,cat:`Racines`,
+ def:`Thyro- = relatif à la thyroïde (du grec thureos = bouclier, par allusion à la forme du cartilage thyroïde). Suffixe -thyroïdie utilisé avec hyper/hypo pour désigner les pathologies thyroïdiennes.`,
+ ex:`Thyroïde, thyroïdectomie, thyroïdite, hypothyroïdie, hyperthyroïdie, thyréostimuline (TSH), parathyroïde.`,
+ mnemo:`Thyreos = bouclier en grec = thyroïde et tout ce qui s'y rapporte`},
+{id:`gluco_rac`,t:`Gluco- / -glycémie`,cat:`Racines`,
+ def:`Gluco- (latin) ou glyco- (grec) = sucre, glucose. Préfixe utilisé pour tout ce qui est lié au glucose et au métabolisme glucidique. -émie indique la concentration sanguine.`,
+ ex:`Glucose, glycémie, glycosurie, glucagon, glucocorticoïde, hyperglycémie, hypoglycémie, glycogène.`,
+ mnemo:`gluco-/glyco- = sucre = tout ce qui touche au glucose`},
+{id:`hyper_hypo_rac`,t:`Hyper- / Hypo- (rappel)`,cat:`Racines`,
+ def:`Préfixes d'origine grecque universels en endocrinologie : hyper- (au-dessus de la normale) et hypo- (en dessous de la normale). Précèdent le nom d'une hormone ou d'un paramètre biologique.`,
+ ex:`Hyperthyroïdie/Hypothyroïdie, Hypercortisolisme/Hypocortisolisme, Hyperglycémie/Hypoglycémie, Hyperparathyroïdie/Hypoparathyroïdie, Hypernatrémie/Hyponatrémie.`,
+ mnemo:`hyper- = trop / hypo- = pas assez = en endocrinologie comme en biologie`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Hyperglycémie`,def:`Élévation pathologique de la glycémie au-dessus de la normale.`,
+ pieces:[`hyper-`,`hypo-`,`glyc-`,`-émie`,`-urie`],correct:[`hyper-`,`glyc-`,`-émie`],
+ meaning:`hyper- (au-dessus) + glyc- (sucre) + -émie (sang) = sucre élevé dans le sang`},
+{term:`Hypoglycémie`,def:`Glycémie inférieure à 3,9 mmol/L pouvant entraîner des troubles graves.`,
+ pieces:[`hypo-`,`hyper-`,`glyc-`,`-émie`,`-urie`],correct:[`hypo-`,`glyc-`,`-émie`],
+ meaning:`hypo- (en dessous) + glyc- (sucre) + -émie (sang) = sucre bas dans le sang`},
+{term:`Hyperthyroïdie`,def:`Excès de production des hormones thyroïdiennes (TSH effondrée + T4L élevée).`,
+ pieces:[`hyper-`,`hypo-`,`thyr-`,`-oïdie`,`-émie`],correct:[`hyper-`,`thyr-`,`-oïdie`],
+ meaning:`hyper- (excès) + thyr- (thyroïde) + -oïdie (état) = thyroïde en excès`},
+{term:`Hypothyroïdie`,def:`Insuffisance de production des hormones thyroïdiennes (TSH élevée + T4L basse).`,
+ pieces:[`hypo-`,`hyper-`,`thyr-`,`-oïdie`,`-émie`],correct:[`hypo-`,`thyr-`,`-oïdie`],
+ meaning:`hypo- (insuffisance) + thyr- (thyroïde) + -oïdie (état) = thyroïde insuffisante`},
+{term:`Glycosurie`,def:`Présence anormale de glucose dans les urines, signe d'hyperglycémie.`,
+ pieces:[`glyc-`,`hémat-`,`-urie`,`-émie`,`-pénie`],correct:[`glyc-`,`-urie`],
+ meaning:`glyc- (sucre) + -urie (urine) = sucre dans les urines`},
+{term:`Polyurie`,def:`Augmentation du volume des urines (> 3 L/24h), classique du diabète.`,
+ pieces:[`poly-`,`oligo-`,`an-`,`-urie`,`-dipsie`],correct:[`poly-`,`-urie`],
+ meaning:`poly- (beaucoup) + -urie (urine) = beaucoup d'urines`},
+{term:`Polydipsie`,def:`Soif excessive avec consommation hydrique abondante.`,
+ pieces:[`poly-`,`oligo-`,`a-`,`-dipsie`,`-urie`],correct:[`poly-`,`-dipsie`],
+ meaning:`poly- (beaucoup) + -dipsie (soif) = soif excessive`},
+{term:`Acromégalie`,def:`Maladie due à un excès de GH chez l'adulte avec élargissement des extrémités.`,
+ pieces:[`acro-`,`micro-`,`macro-`,`-mégalie`,`-pénie`],correct:[`acro-`,`-mégalie`],
+ meaning:`acro- (extrémités) + -mégalie (grand) = élargissement des extrémités`},
+{term:`Goitre`,def:`Augmentation de volume de la thyroïde (peut être diffus ou nodulaire).`,
+ pieces:[`thyro-`,`para-`,`hyper-`,`-mégalie`,`-pathie`],correct:[`thyro-`,`-mégalie`],
+ meaning:`thyro- (thyroïde) + -mégalie (gros volume) = thyroïde augmentée`},
+{term:`Hypocalcémie`,def:`Calcémie inférieure à 2,20 mmol/L pouvant entraîner des signes neuromusculaires.`,
+ pieces:[`hypo-`,`hyper-`,`calc-`,`-émie`,`-urie`],correct:[`hypo-`,`calc-`,`-émie`],
+ meaning:`hypo- (en dessous) + calc- (calcium) + -émie (sang) = calcium bas`},
+{term:`Hypercalcémie`,def:`Calcémie supérieure à 2,65 mmol/L, souvent due à une hyperparathyroïdie.`,
+ pieces:[`hyper-`,`hypo-`,`calc-`,`-émie`,`-urie`],correct:[`hyper-`,`calc-`,`-émie`],
+ meaning:`hyper- (au-dessus) + calc- (calcium) + -émie (sang) = calcium élevé`},
+{term:`Hyperprolactinémie`,def:`Élévation pathologique de la prolactine, cause d'aménorrhée-galactorrhée.`,
+ pieces:[`hyper-`,`hypo-`,`prolactin-`,`-émie`,`-urie`],correct:[`hyper-`,`prolactin-`,`-émie`],
+ meaning:`hyper- (excès) + prolactin- (prolactine) + -émie (sang) = excès de prolactine dans le sang`},
+];
+
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[];
+
+function selectMode(m,btn){document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));btn.classList.add(`sel`);mode=m;}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  if(mode===`qcm`)questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`)questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`)questions=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const p3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){if(i===ci)choices.push(flip?t.t:t.def.substring(0,90)+`…`);else{const d=p3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}}
+    return{term:t.t,cat:t.cat,def:t.def,q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,questionText:flip?t.def.substring(0,140):null,choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`)loadQCM();
+  else if(mode===`frappe`)loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">🍃 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Terme médical</div><div class="tc-term">${q.term}</div><div class="tc-cat">🍃 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{const b=document.createElement(`button`);b.className=`choice`;b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);});
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}});
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition — Quel est ce terme ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">🍃 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez le terme médical correspondant :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t.split(`(`)[0].trim());const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">🍃 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme endocrinien :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--vt)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`Le terme était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Astuce :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Vocabulaire maîtrisé`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#faf5ff`,tc:`#7e22ce`,brd:`#d8b4fe`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent ! Essayez le Mode Frappe pour mémoriser sans choix multiples.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Parfait. Le Mode Examen avec 15 secondes est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 hyper-/hypo- + thyr-/glyc-/calc- + -émie/-oïdie = vous décodez tout l'endocrinologie.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en endocrinologie. Passez au module suivant.`);
+  if(note<10)cons.push(`📚 Commencez par Anatomie endocrine et Diabète généralités avant les pathologies plus pointues.`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 puis passez au mode suivant.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`Diabète généralités`)cons.push(`🩺 Diabète : glycémie à jeun ≥ 7 mmol/L à 2 reprises OU HbA1c ≥ 6,5%. Cible HbA1c T2 ≤ 7% (HAS 2023).`);
+    if(cat===`Complications diabète`)cons.push(`🚨 ACD : T1 + cétonémie > 3 mmol/L + pH < 7,30 = insuline IV. Hypoglycémie < 3,9 mmol/L = resucrage 15g.`);
+    if(cat===`Insulines & Traitements`)cons.push(`💉 Metformine 1ère ligne T2 (CI si DFG < 30). GLP-1 + gliflozines = bénéfice CV/rénal.`);
+    if(cat===`Thyroïde`)cons.push(`🦋 Hypothyroïdie : TSH élevée + T4L basse → lévothyroxine à jeun. Hyperthyroïdie : TSH effondrée + T4L haute.`);
+    if(cat===`Surrénales`)cons.push(`⚡ Insuffisance surrénale aiguë = urgence vitale = hydrocortisone 100 mg IV + remplissage NaCl.`);
+    if(cat===`Hypophyse`)cons.push(`🧠 Adénome hypophysaire le plus fréquent : prolactinome → cabergoline 1ère ligne.`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise complète sur tous les axes. Excellent travail.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

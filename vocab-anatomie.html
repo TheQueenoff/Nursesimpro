@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Anatomie & Racines</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --sl:#475569;--sl-d:#1e293b;--sl-l:#f1f5f9;--sl-m:#cbd5e1;--sl-b:#e2e8f0;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--sl-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--sl-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--sl-l);color:var(--sl);border:1px solid var(--sl-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--sl-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--sl-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--sl-b);border:1px solid var(--sl-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#1e293b;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--sl));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--sl));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--sl-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--sl-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(30,41,59,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--sl);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--sl-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--sl-d)}
+.tb-mode{background:var(--sl-l);color:var(--sl);border:1px solid var(--sl-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--sl-d),var(--sl));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--sl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--sl-d),#334155);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(30,41,59,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--sl-l);border:1px solid var(--sl-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--sl)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--sl);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--sl-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--sl);background:var(--sl-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--sl);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--sl-d)}
+.next-btn{width:100%;padding:12px;background:var(--sl-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(30,41,59,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--sl)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+.frappe-input:focus{border-color:var(--sl)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.frappe-hint span{color:var(--sl);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--sl-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--sl)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--sl);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--sl-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--sl);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--sl);background:var(--sl-l);color:var(--sl-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--sl-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--sl)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--sl-d),var(--sl))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--sl-d);color:white;box-shadow:0 2px 10px rgba(30,41,59,.3)}.rb.p:hover{background:var(--sl)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--sl-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">📖</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">📖 Anatomie & Racines</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">📖</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Anatomie & Racines</div>
+        <div class="w-hero-desc">80 termes : préfixes, racines anatomiques et suffixes médicaux. Module fondamental qui vous donne la clé pour décoder TOUS les termes médicaux. Maîtriser ces racines = comprendre des milliers de mots à partir de quelques dizaines d'éléments.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">80</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">10</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Module fondamental — Étymologie médicale grecque et latine.</strong> Ce module rassemble les éléments de base utilisés dans tout le vocabulaire médical. Maîtriser ces racines vous permet de déduire le sens de termes que vous n'avez jamais vus auparavant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#475569;--mb:#f1f5f9" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#f1f5f9;border-color:#cbd5e1;color:#475569">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, racine → sens ou sens → racine. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez le sens et tapez la racine de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former des termes médicaux complets. Le mode le plus formateur.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">80 racines en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">📖</div><span class="tb-logo-text">Racines</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/80</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">📖</div>
+      <div><div class="logo-name">Rapport — Anatomie & Racines</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--sl)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Racines à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Module fondamental d'étymologie médicale — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── PRÉFIXES SPATIAUX (10) ──
+{id:`ante`,t:`Ante- / Pré-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "avant" dans le temps ou dans l'espace. Indiquent une position antérieure ou un événement qui précède.`,
+ ex:`Antébrachial (avant-bras), prénatal (avant la naissance), préopératoire (avant l'intervention).`,
+ mnemo:`ante (latin) = avant / pré (latin) = avant`},
+{id:`post`,t:`Post- / Rétro-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "après" dans le temps ou "derrière" dans l'espace. Antonymes de ante-/pré-.`,
+ ex:`Postopératoire (après l'intervention), postnatal (après la naissance), rétrobulbaire (derrière le globe oculaire), rétrosternal.`,
+ mnemo:`post (latin) = après / rétro (latin) = en arrière`},
+{id:`sub`,t:`Sub- / Hypo-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "sous" ou "en dessous". Sub- vient du latin, hypo- du grec. Indiquent une position inférieure ou un niveau réduit.`,
+ ex:`Sublingual (sous la langue), subcutané (sous la peau), hypogastrique (sous l'estomac), hypothermie.`,
+ mnemo:`sub (latin) = sous / hypo (grec) = sous`},
+{id:`supra`,t:`Supra- / Sus- / Hyper-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "au-dessus". Supra-/sus- en latin, hyper- en grec. Indiquent une position supérieure ou un niveau augmenté.`,
+ ex:`Supraorbital (au-dessus de l'orbite), supraventriculaire, sus-pubien, hypertension (TA élevée), hyperthermie.`,
+ mnemo:`supra/sus (latin) / hyper (grec) = au-dessus`},
+{id:`inter`,t:`Inter-`,cat:`Préfixes spatiaux`,
+ def:`Préfixe signifiant "entre". Indique une position située entre deux éléments.`,
+ ex:`Intercostal (entre les côtes), interphalangien (entre les phalanges), interventriculaire, intermédiaire.`,
+ mnemo:`inter (latin) = entre`},
+{id:`intra_endo`,t:`Intra- / Endo-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "à l'intérieur". Intra- du latin, endo- du grec. Désignent une position interne.`,
+ ex:`Intraveineux (dans la veine), intramusculaire (dans le muscle), endoscopique, endocrânien, endocarde.`,
+ mnemo:`intra (latin) / endo (grec) = à l'intérieur`},
+{id:`extra_exo`,t:`Extra- / Exo-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "à l'extérieur". Extra- du latin, exo- du grec. Antonymes de intra-/endo-.`,
+ ex:`Extracellulaire (hors de la cellule), extra-utérin, exophtalmie (œil saillant), exogène (origine externe).`,
+ mnemo:`extra (latin) / exo (grec) = à l'extérieur`},
+{id:`per_trans`,t:`Per- / Trans-`,cat:`Préfixes spatiaux`,
+ def:`Préfixes signifiant "à travers". Per- exprime un passage complet, trans- ajoute la notion de "au-delà".`,
+ ex:`Percutané (à travers la peau), peropératoire (pendant l'opération), transcutané, transrectal, transfusion.`,
+ mnemo:`per/trans (latin) = à travers`},
+{id:`para_peri`,t:`Para- / Péri-`,cat:`Préfixes spatiaux`,
+ def:`Para- (à côté de) et péri- (autour de). Tous deux d'origine grecque mais avec des nuances spatiales différentes.`,
+ ex:`Paranasal (à côté du nez), parathyroïde (à côté de la thyroïde), périorbitaire (autour de l'orbite), péricarde (autour du cœur), périnéal.`,
+ mnemo:`para (grec) = à côté / péri (grec) = autour`},
+{id:`ipsi_contro`,t:`Ipsi- / Contro- / Contra-`,cat:`Préfixes spatiaux`,
+ def:`Ipsi- = du même côté. Contro-/contra- = du côté opposé. Termes essentiels en neurologie pour décrire la latéralité des symptômes.`,
+ ex:`Ipsilatéral (même côté que la lésion), controlatéral (côté opposé). Hémiplégie controlatérale à la lésion cérébrale.`,
+ mnemo:`ipsi (latin) = même / contra (latin) = opposé`},
+// ── PRÉFIXES NUMÉRIQUES (8) ──
+{id:`mono`,t:`Mono-`,cat:`Préfixes numériques`,
+ def:`Préfixe d'origine grecque signifiant "un seul". Utilisé en médecine pour désigner un élément unique.`,
+ ex:`Monocyte (un seul noyau), mononucléose, monoarthrite (une seule articulation), monothérapie, monoplégie.`,
+ mnemo:`monos = seul, unique en grec`},
+{id:`bi_di`,t:`Bi- / Di-`,cat:`Préfixes numériques`,
+ def:`Préfixes signifiant "deux". Bi- du latin, di- du grec. Indiquent un dédoublement ou une bilatéralité.`,
+ ex:`Bilatéral (des deux côtés), biventriculaire, dichotomie, diploïde (2 chromosomes), bicuspide (2 valves).`,
+ mnemo:`bi (latin) / di (grec) = deux`},
+{id:`tri`,t:`Tri-`,cat:`Préfixes numériques`,
+ def:`Préfixe signifiant "trois". Origine commune au latin et au grec.`,
+ ex:`Tricuspide (valve à 3 cuspides), trijumeau (V nerf crânien à 3 branches), trisomie 21, trithérapie.`,
+ mnemo:`tri (latin/grec) = trois`},
+{id:`tetra_quadri`,t:`Tétra- / Quadri-`,cat:`Préfixes numériques`,
+ def:`Préfixes signifiant "quatre". Tétra- du grec, quadri- du latin. Synonymes mais formes étymologiques différentes.`,
+ ex:`Tétraplégie (paralysie 4 membres), quadriparésie, quadricuspide, tétralogie de Fallot.`,
+ mnemo:`tétra (grec) / quadri (latin) = quatre`},
+{id:`hemi`,t:`Hémi-`,cat:`Préfixes numériques`,
+ def:`Préfixe d'origine grecque signifiant "moitié, demi". Très utilisé en neurologie et anatomie.`,
+ ex:`Hémisphère cérébral, hémiplégie (paralysie d'un côté), hémianopsie, hémicolectomie.`,
+ mnemo:`hémi (grec) = moitié`},
+{id:`multi_poly`,t:`Multi- / Poly-`,cat:`Préfixes numériques`,
+ def:`Préfixes signifiant "plusieurs, nombreux". Multi- du latin, poly- du grec. Indiquent une multiplicité.`,
+ ex:`Polyarthrite (plusieurs articulations), polyurie (urine abondante), polypnée, multipare, multifocal.`,
+ mnemo:`multi (latin) / poly (grec) = plusieurs`},
+{id:`oligo`,t:`Oligo-`,cat:`Préfixes numériques`,
+ def:`Préfixe d'origine grecque signifiant "peu, en faible quantité". Antonyme de poly-.`,
+ ex:`Oligoarthrite (2-3 articulations), oligurie (urine peu abondante), oligozoospermie, oligo-éléments.`,
+ mnemo:`oligos (grec) = peu nombreux`},
+{id:`a_an`,t:`A- / An-`,cat:`Préfixes numériques`,
+ def:`Préfixe privatif d'origine grecque signifiant "absence, manque". An- devant une voyelle. Le préfixe le plus utilisé en médecine.`,
+ ex:`Aphasie (sans langage), aménorrhée (absence de règles), apnée (sans respiration), anémie, anurie, anesthésie.`,
+ mnemo:`a- = sans, privatif (grec)`},
+// ── PRÉFIXES QUANTITATIFS (8) ──
+{id:`hyper`,t:`Hyper-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "au-dessus, en excès, trop". Très utilisé en biologie pour les valeurs élevées.`,
+ ex:`Hyperglycémie (sucre trop élevé), hypertension, hyperthyroïdie, hyperthermie, hypercholestérolémie.`,
+ mnemo:`hyper (grec) = trop, en excès`},
+{id:`hypo`,t:`Hypo-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "en dessous, manque, insuffisance". Antonyme d'hyper-.`,
+ ex:`Hypoglycémie (sucre bas), hypotension, hypothyroïdie, hypothermie, hyponatrémie, hypovolémie.`,
+ mnemo:`hypo (grec) = en dessous, insuffisant`},
+{id:`pan`,t:`Pan-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "tout, complètement, généralisé". Indique une atteinte globale.`,
+ ex:`Pancytopénie (toutes les lignées sanguines basses), panartérite, pansinusite, pancarditis, pandémie.`,
+ mnemo:`pan (grec) = tout, entier`},
+{id:`iso`,t:`Iso-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "égal, identique". Désigne une équivalence ou une stabilité.`,
+ ex:`Isotonique (même tonicité), isovolémique, isothermie, isotope, isoélectrique.`,
+ mnemo:`iso (grec) = égal`},
+{id:`macro`,t:`Macro-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "grand". S'oppose à micro-. Décrit une augmentation de taille.`,
+ ex:`Macrocytose (GR trop grands), macroscopique, macroprolactinémie, macroangiopathie diabétique.`,
+ mnemo:`macros (grec) = grand`},
+{id:`micro`,t:`Micro-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "petit". Antonyme de macro-. Décrit une diminution de taille ou une échelle microscopique.`,
+ ex:`Microcytose (GR petits), microcéphalie, microscopique, microalbuminurie, microangiopathie.`,
+ mnemo:`mikros (grec) = petit`},
+{id:`mega`,t:`Méga-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "très grand, énorme". Plus intensif que macro-.`,
+ ex:`Mégacôlon, splénomégalie (grosse rate), hépatomégalie, cardiomégalie, mégalocyte.`,
+ mnemo:`megas (grec) = très grand`},
+{id:`neo`,t:`Néo-`,cat:`Préfixes quantitatifs`,
+ def:`Préfixe d'origine grecque signifiant "nouveau, récent". Désigne ce qui est nouvellement formé.`,
+ ex:`Néoplasme (tumeur = nouveau tissu), néonatal (nouveau-né), néovascularisation, néogenèse.`,
+ mnemo:`neos (grec) = nouveau`},
+// ── PRÉFIXES NÉGATIFS / MODIFICATEURS (3) ──
+{id:`dys`,t:`Dys-`,cat:`Préfixes négatifs`,
+ def:`Préfixe d'origine grecque signifiant "difficile, anormal, mauvais". Indique une altération sans absence totale (≠ a-).`,
+ ex:`Dysarthrie (articulation difficile), dysphagie (déglutition difficile), dyspnée (respiration difficile), dyslipidémie, dysplasie.`,
+ mnemo:`dys (grec) = difficulté, anomalie`},
+{id:`mal`,t:`Mal-`,cat:`Préfixes négatifs`,
+ def:`Préfixe d'origine latine signifiant "mauvais, défectueux, pathologique". Souvent utilisé pour des défauts congénitaux ou états pathologiques.`,
+ ex:`Malformation, malabsorption, malnutrition, malaise.`,
+ mnemo:`mal (latin) = mauvais`},
+{id:`auto`,t:`Auto-`,cat:`Préfixes négatifs`,
+ def:`Préfixe d'origine grecque signifiant "soi-même, par soi-même". Indique une action sur soi.`,
+ ex:`Auto-immun (attaque ses propres cellules), auto-anticorps, autotransfusion, autonome.`,
+ mnemo:`autos (grec) = soi-même`},
+// ── RACINES TÊTE & SENSORIEL (8) ──
+{id:`cephal`,t:`Céphal-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (kephalê) désignant la tête. Très utilisée pour les pathologies crâniennes et cérébrales.`,
+ ex:`Céphalée (douleur de tête), encéphale (dans la tête = cerveau), microcéphalie, hydrocéphalie, hémicéphalie.`,
+ mnemo:`kephalê (grec) = tête`},
+{id:`encephal`,t:`Encéphal-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque désignant le cerveau (littéralement "dans la tête"). Pour tout ce qui concerne le SNC.`,
+ ex:`Encéphalite (inflammation du cerveau), encéphalopathie, électroencéphalogramme (EEG), encéphalogramme.`,
+ mnemo:`en- (dans) + kephalê (tête) = ce qui est dans la tête`},
+{id:`ocul_ophtalm`,t:`Ocul- / Ophtalm-`,cat:`Racines anatomiques`,
+ def:`Ocul- (latin oculus) et ophtalm- (grec ophthalmos) = œil. Synonymes étymologiques.`,
+ ex:`Oculaire, ophtalmologue, ophtalmie, exophtalmie, intra-oculaire, oculomoteur.`,
+ mnemo:`oculus (latin) / ophthalmos (grec) = œil`},
+{id:`ot_auri`,t:`Ot- / Auri-`,cat:`Racines anatomiques`,
+ def:`Ot- (grec ous) et auri- (latin auris) = oreille. Utilisés pour les pathologies de l'oreille.`,
+ ex:`Otite (inflammation oreille), otalgie (douleur), auriculaire, otoscope, otorhinolaryngologie (ORL).`,
+ mnemo:`ous (grec) / auris (latin) = oreille`},
+{id:`rhino_nas`,t:`Rhino- / Nas-`,cat:`Racines anatomiques`,
+ def:`Rhino- (grec rhinos) et nas- (latin nasus) = nez. Synonymes courants en médecine.`,
+ ex:`Rhinite (inflammation nez), rhinorrhée (écoulement nasal), nasal, rhinoplastie, naso-gastrique.`,
+ mnemo:`rhinos (grec) / nasus (latin) = nez`},
+{id:`stomat`,t:`Stomat- / Or-`,cat:`Racines anatomiques`,
+ def:`Stomat- (grec stoma) et or- (latin os, oris) = bouche. Pour les pathologies bucco-dentaires.`,
+ ex:`Stomatite (inflammation bouche), stomatologue, oral, peroral, stomatologie.`,
+ mnemo:`stoma (grec) / os (latin) = bouche`},
+{id:`gloss_lingu`,t:`Glosso- / Lingu-`,cat:`Racines anatomiques`,
+ def:`Glosso- (grec glôssa) et lingu- (latin lingua) = langue. Désignent l'organe lingual.`,
+ ex:`Glossite (inflammation langue), glossopharyngien (IX nerf crânien), lingual, sublingual.`,
+ mnemo:`glôssa (grec) / lingua (latin) = langue`},
+{id:`pharyng_laryng`,t:`Pharyng- / Laryng-`,cat:`Racines anatomiques`,
+ def:`Pharyng- = pharynx (gorge). Laryng- = larynx (boîte vocale). Étages successifs des voies aériennes supérieures.`,
+ ex:`Pharyngite, laryngite, otorhinolaryngologie (ORL), laryngoscopie, laryngectomie.`,
+ mnemo:`pharynx (gorge) / larynx (juste en dessous, organe vocal)`},
+// ── RACINES THORAX & ABDOMEN (10) ──
+{id:`cardio`,t:`Cardio-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (kardia) désignant le cœur. La racine cardiologique fondamentale.`,
+ ex:`Cardiologie, cardiopathie, péricarde (autour du cœur), endocarde (dedans), myocarde (muscle).`,
+ mnemo:`kardia (grec) = cœur`},
+{id:`pneumo_pulmo`,t:`Pneumo- / Pulmo-`,cat:`Racines anatomiques`,
+ def:`Pneumo- (grec pneumon) et pulmo- (latin pulmo) = poumon. Pneumo- aussi pour "air".`,
+ ex:`Pneumologie, pneumonie, pneumothorax (air dans le thorax), pulmonaire, pneumopathie.`,
+ mnemo:`pneumon (grec) / pulmo (latin) = poumon`},
+{id:`broncho`,t:`Broncho-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (bronkhia) désignant les bronches. Pour toutes les pathologies bronchiques.`,
+ ex:`Bronchite, bronchopneumonie, bronchodilatateur, bronchoscopie, BPCO (bronchopneumopathie chronique obstructive).`,
+ mnemo:`bronkhia (grec) = bronches`},
+{id:`pleuro`,t:`Pleuro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (pleura) désignant la plèvre, membrane entourant les poumons.`,
+ ex:`Pleurésie (épanchement pleural), pleurite (inflammation plèvre), pleural, pleurotomie.`,
+ mnemo:`pleura (grec) = côté, flanc, plèvre`},
+{id:`gastro`,t:`Gastro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (gastêr) désignant l'estomac. Très large utilisation en gastro-entérologie.`,
+ ex:`Gastrite (inflammation estomac), gastro-entérite, gastrostomie, gastroscopie, gastralgie.`,
+ mnemo:`gastêr (grec) = estomac, ventre`},
+{id:`entero`,t:`Entéro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (enteron) désignant l'intestin (grêle surtout, mais parfois total).`,
+ ex:`Entérite, gastro-entérite, entérocolite, entéral, parentéral (à côté de l'intestin = autre voie).`,
+ mnemo:`enteron (grec) = intestin`},
+{id:`hepat`,t:`Hépat-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (hêpar) désignant le foie. Pour toutes les pathologies hépatiques.`,
+ ex:`Hépatite (inflammation foie), hépatomégalie (grosse foie), hépatologie, hépatocyte.`,
+ mnemo:`hêpar (grec) = foie`},
+{id:`nephro_ren`,t:`Néphro- / Rén-`,cat:`Racines anatomiques`,
+ def:`Néphro- (grec nephros) et rén- (latin ren) = rein. Synonymes étymologiques.`,
+ ex:`Néphrite, néphropathie, néphrologie, rénal, surrénale, néphrostomie.`,
+ mnemo:`nephros (grec) / ren (latin) = rein`},
+{id:`cyst_vesico`,t:`Cyst- / Vésico-`,cat:`Racines anatomiques`,
+ def:`Cyst- (grec kustis) et vésico- (latin vesica) = vessie ou cavité contenant du liquide.`,
+ ex:`Cystite (infection vessie), cystectomie, vésical, vésicotomie, cystoscopie. Aussi : kyste = poche liquidienne.`,
+ mnemo:`kustis (grec) / vesica (latin) = vessie, poche`},
+{id:`splen`,t:`Splén-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (splên) désignant la rate. Pour les pathologies de la rate.`,
+ ex:`Splénomégalie (rate augmentée), splénectomie (ablation rate), asplénie (sans rate), hyposplénisme.`,
+ mnemo:`splên (grec) = rate`},
+// ── RACINES OS & MUSCLES (6) ──
+{id:`osteo`,t:`Ostéo-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (osteon) désignant l'os. Racine fondamentale en rhumatologie et orthopédie.`,
+ ex:`Ostéoporose, ostéomyélite, ostéosynthèse, ostéoarthrite, ostéoblaste, ostéoclaste, ostéosarcome.`,
+ mnemo:`osteon (grec) = os`},
+{id:`arthro`,t:`Arthr- / Arthro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (arthron) désignant l'articulation. Racine omniprésente en rhumatologie.`,
+ ex:`Arthrite (inflammation), arthrose (dégénérescence), arthroscopie, arthralgie, arthroplastie.`,
+ mnemo:`arthron (grec) = articulation`},
+{id:`myo`,t:`Myo-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (mus) désignant le muscle. Pour les pathologies musculaires et myocardiques.`,
+ ex:`Myopathie, myocarde, myalgie (douleur muscle), myasthénie, myosite, myorelaxant.`,
+ mnemo:`mus, muos (grec) = muscle`},
+{id:`chondro`,t:`Chondro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (chondros) désignant le cartilage. Pour les pathologies cartilagineuses.`,
+ ex:`Chondrocyte, chondropathie, chondrome, chondrosarcome, chondromalacie, chondrocalcinose.`,
+ mnemo:`chondros (grec) = cartilage`},
+{id:`spondylo`,t:`Spondylo-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (spondulos) désignant la vertèbre. Pour les pathologies du rachis.`,
+ ex:`Spondylarthrite, spondylolisthésis, spondylose, spondylodiscite (inflammation vertèbre + disque).`,
+ mnemo:`spondulos (grec) = vertèbre`},
+{id:`tendino`,t:`Tendin-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine latine (tendo) désignant le tendon, structure reliant muscle à os.`,
+ ex:`Tendinite, tendinopathie, ténorraphie, ténotomie. Attention : ne pas confondre avec ligament (relie 2 os).`,
+ mnemo:`tendo (latin) = tendon`},
+// ── RACINES VAISSEAUX & SANG (5) ──
+{id:`angio_vas`,t:`Angio- / Vas-`,cat:`Racines anatomiques`,
+ def:`Angio- (grec angeion) et vas- (latin vas) = vaisseau. Pour pathologies vasculaires.`,
+ ex:`Angiographie, angiopathie, angiome, vasculaire, vasoconstriction, vasodilatation, vasculite.`,
+ mnemo:`angeion (grec) / vas (latin) = vaisseau`},
+{id:`phleb_ven`,t:`Phléb- / Vén-`,cat:`Racines anatomiques`,
+ def:`Phléb- (grec phlebs) et vén- (latin vena) = veine. Synonymes étymologiques.`,
+ ex:`Phlébite (inflammation veine), thrombophlébite, phlébographie, veineux, intraveineux, vénules.`,
+ mnemo:`phlebs (grec) / vena (latin) = veine`},
+{id:`arterio`,t:`Artério-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (artêria) désignant l'artère. Pour pathologies artérielles.`,
+ ex:`Artérite, artériographie, artériel, artériosclérose, athérosclérose, artériole.`,
+ mnemo:`artêria (grec) = artère`},
+{id:`hemato`,t:`Hémato- / Hémo-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (haima) désignant le sang. Racine fondamentale en hématologie.`,
+ ex:`Hématologie, hémoglobine, hémorragie (saignement), hématome, hématurie, hémolyse.`,
+ mnemo:`haima (grec) = sang`},
+{id:`lymph`,t:`Lymph-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine latine (lympha = eau claire) désignant la lymphe et le système lymphatique.`,
+ ex:`Lymphome, lymphocyte, lymphœdème, lymphadénopathie (ganglions), lymphangite.`,
+ mnemo:`lympha (latin) = eau claire, lymphe`},
+// ── RACINES NEURO & PEAU (4) ──
+{id:`neuro`,t:`Neuro-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (neuron) désignant le nerf et le système nerveux. Racine fondamentale en neurologie.`,
+ ex:`Neurologie, neurone, neuropathie, neurochirurgie, neurotransmetteur, neuroleptique.`,
+ mnemo:`neuron (grec) = nerf`},
+{id:`psych`,t:`Psych-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (psukhê) désignant l'esprit, l'âme. Pour la santé mentale et la psychiatrie.`,
+ ex:`Psychiatre, psychologie, psychotique, psychotrope, psychothérapie.`,
+ mnemo:`psukhê (grec) = âme, esprit`},
+{id:`derm`,t:`Derm- / Dermato-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (derma) désignant la peau. Racine de la dermatologie.`,
+ ex:`Dermatologie, dermatite, derme, épiderme, pyodermite, scléroderme.`,
+ mnemo:`derma (grec) = peau`},
+{id:`onycho`,t:`Onycho-`,cat:`Racines anatomiques`,
+ def:`Racine d'origine grecque (onyx) désignant l'ongle. Pour les pathologies unguéales.`,
+ ex:`Onychomycose (mycose ongle), onychophagie (rongement), onychoplastie, paronychie.`,
+ mnemo:`onyx (grec) = ongle`},
+// ── SUFFIXES ESSENTIELS (12) ──
+{id:`-ite`,t:`-ite`,cat:`Suffixes`,
+ def:`Suffixe désignant une INFLAMMATION d'un organe ou tissu. Suffixe pathologique le plus fréquent en médecine.`,
+ ex:`Néphrite (rein), hépatite (foie), arthrite (articulation), méningite (méninges), gastrite (estomac).`,
+ mnemo:`-ite = inflammation`},
+{id:`-ose`,t:`-ose`,cat:`Suffixes`,
+ def:`Suffixe désignant un ÉTAT PATHOLOGIQUE non inflammatoire. Souvent une dégénérescence ou processus chronique.`,
+ ex:`Arthrose (dégénérescence articulation), cyanose, mycose, thrombose, sclérose.`,
+ mnemo:`-ose = état pathologique non inflammatoire`},
+{id:`-ome`,t:`-ome`,cat:`Suffixes`,
+ def:`Suffixe désignant une TUMEUR ou masse anormale. Préfixe + -ome précise le type tissulaire.`,
+ ex:`Adénome (tumeur glandulaire bénigne), sarcome (tumeur maligne mésenchymateuse), carcinome, mélanome, lymphome.`,
+ mnemo:`-ome = tumeur, masse`},
+{id:`-pathie`,t:`-pathie`,cat:`Suffixes`,
+ def:`Suffixe d'origine grecque (pathos = maladie) désignant une maladie. Très utilisé pour les atteintes chroniques.`,
+ ex:`Neuropathie, cardiopathie, néphropathie, ostéopathie, encéphalopathie, myopathie.`,
+ mnemo:`-pathie = maladie en général`},
+{id:`-algie`,t:`-algie / -dynie`,cat:`Suffixes`,
+ def:`Suffixes d'origine grecque (algos / odunê) désignant la douleur d'un organe. Localisation par préfixe.`,
+ ex:`Céphalée (tête), arthralgie (articulation), myalgie (muscle), lombalgie (lombes), otalgie (oreille), gastralgie.`,
+ mnemo:`-algie = douleur`},
+{id:`-emie`,t:`-émie`,cat:`Suffixes`,
+ def:`Suffixe d'origine grecque (haima) désignant la concentration sanguine d'une substance. Utilisé en biologie.`,
+ ex:`Glycémie (sucre), kaliémie (potassium), urémie (urée), bactériémie, hyperlipidémie, calcémie.`,
+ mnemo:`-émie = dans le sang`},
+{id:`-urie`,t:`-urie`,cat:`Suffixes`,
+ def:`Suffixe d'origine grecque (ouron) désignant la présence d'une substance dans les urines.`,
+ ex:`Hématurie (sang), protéinurie (protéines), glycosurie (glucose), nitriturie, leucocyturie, cétonurie.`,
+ mnemo:`-urie = dans les urines`},
+{id:`-orrhee`,t:`-orrhée / -orragie`,cat:`Suffixes`,
+ def:`-orrhée = écoulement habituel/anormal d'un liquide. -orragie = saignement abondant. Du grec rhein (couler).`,
+ ex:`Rhinorrhée (nez), diarrhée, leucorrhée. Hémorragie (sang abondant), métrorragie (utérus), épistaxis.`,
+ mnemo:`-orrhée (couler) / -orragie (saigner abondamment)`},
+{id:`-ectomie`,t:`-ectomie`,cat:`Suffixes`,
+ def:`Suffixe désignant l'ABLATION CHIRURGICALE d'un organe. Du grec ek- (hors) + tomê (couper).`,
+ ex:`Appendicectomie, mastectomie (sein), thyroïdectomie, splénectomie, cholécystectomie (vésicule), hystérectomie.`,
+ mnemo:`-ectomie = ablation chirurgicale`},
+{id:`-tomie_stomie`,t:`-tomie / -stomie`,cat:`Suffixes`,
+ def:`-tomie = INCISION chirurgicale. -stomie = création d'un ABOUCHEMENT permanent vers l'extérieur ou un autre organe.`,
+ ex:`Laparotomie (incision abdominale), trachéotomie. Colostomie (anus artificiel), gastrostomie, trachéostomie.`,
+ mnemo:`-tomie (couper) / -stomie (créer une ouverture permanente)`},
+{id:`-scopie_graphie`,t:`-scopie / -graphie`,cat:`Suffixes`,
+ def:`-scopie = examen visuel direct (endoscope). -graphie = enregistrement sur un support (image, tracé).`,
+ ex:`Endoscopie, coloscopie, bronchoscopie. Radiographie, échographie, électrocardiographie (ECG).`,
+ mnemo:`-scopie (regarder) / -graphie (écrire, enregistrer)`},
+{id:`-plegie_paresie`,t:`-plégie / -parésie`,cat:`Suffixes`,
+ def:`-plégie = paralysie COMPLÈTE. -parésie = paralysie PARTIELLE (déficit moteur incomplet).`,
+ ex:`Hémiplégie (un côté complet), tétraplégie, paraplégie. Hémiparésie, paraparésie, monoparésie.`,
+ mnemo:`-plégie (paralysie totale) / -parésie (paralysie partielle)`},
+// ── RACINES PLUS SPÉCIFIQUES (6) ──
+{id:`hyster_metro`,t:`Hystér- / Métro- / Utér-`,cat:`Racines anatomiques`,
+ def:`Hystér- (grec hustera), métro- (grec mêtra) et utér- (latin uterus) = utérus. Trois racines synonymes.`,
+ ex:`Hystérectomie, hystéroscopie, métrorragie (saignement utérin), endomètre, utérin.`,
+ mnemo:`hustera/mêtra (grec) / uterus (latin) = utérus`},
+{id:`mast_mamm`,t:`Mast- / Mamm-`,cat:`Racines anatomiques`,
+ def:`Mast- (grec mastos) et mamm- (latin mamma) = sein. Synonymes étymologiques.`,
+ ex:`Mastectomie, mastite, mammographie, mammaire, gynécomastie.`,
+ mnemo:`mastos (grec) / mamma (latin) = sein`},
+{id:`orchid_test`,t:`Orchi- / Test-`,cat:`Racines anatomiques`,
+ def:`Orchi- (grec orkhis) et test- (latin testis) = testicule. Pour les pathologies testiculaires.`,
+ ex:`Orchite, orchidectomie, orchidopexie, testiculaire, testicule, cryptorchidie.`,
+ mnemo:`orkhis (grec) / testis (latin) = testicule`},
+{id:`gluco_glyco`,t:`Gluco- / Glyco-`,cat:`Racines métaboliques`,
+ def:`Gluco- (latin) et glyco- (grec) = sucre, glucose. Pour le métabolisme glucidique.`,
+ ex:`Glucose, glycémie, glucagon, glucocorticoïde, glycogène, hyperglycémie, glycosurie.`,
+ mnemo:`gluco (latin) / glyco (grec) = sucre`},
+{id:`lipo`,t:`Lipo-`,cat:`Racines métaboliques`,
+ def:`Racine d'origine grecque (lipos) désignant la graisse, les lipides. Pour le métabolisme lipidique.`,
+ ex:`Lipide, lipome (tumeur graisseuse), lipoprotéine, lipolyse, hyperlipidémie, liposuccion.`,
+ mnemo:`lipos (grec) = graisse`},
+{id:`litho`,t:`Litho-`,cat:`Racines métaboliques`,
+ def:`Racine d'origine grecque (lithos) désignant la pierre, le calcul. Pour les calculs (lithiases) urinaires/biliaires.`,
+ ex:`Lithiase rénale (calculs reins), cholélithiase (calculs biliaires), lithotritie (broyage des calculs), néphrolithiase.`,
+ mnemo:`lithos (grec) = pierre`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Cardiologie`,def:`Spécialité médicale étudiant le cœur et ses pathologies.`,
+ pieces:[`cardio-`,`pneumo-`,`néphro-`,`-logie`,`-pathie`],correct:[`cardio-`,`-logie`],
+ meaning:`cardio- (cœur) + -logie (étude) = étude du cœur`},
+{term:`Néphrologie`,def:`Spécialité médicale étudiant les reins et leurs maladies.`,
+ pieces:[`néphro-`,`cardio-`,`hépat-`,`-logie`,`-pathie`],correct:[`néphro-`,`-logie`],
+ meaning:`néphro- (rein) + -logie (étude) = étude des reins`},
+{term:`Hépatite`,def:`Inflammation du foie, souvent virale.`,
+ pieces:[`hépat-`,`néphro-`,`gastro-`,`-ite`,`-pathie`],correct:[`hépat-`,`-ite`],
+ meaning:`hépat- (foie) + -ite (inflammation) = inflammation du foie`},
+{term:`Gastrite`,def:`Inflammation de la muqueuse gastrique.`,
+ pieces:[`gastro-`,`hépat-`,`entéro-`,`-ite`,`-algie`],correct:[`gastro-`,`-ite`],
+ meaning:`gastro- (estomac) + -ite (inflammation) = inflammation de l'estomac`},
+{term:`Cardiopathie`,def:`Toute maladie du cœur (terme générique).`,
+ pieces:[`cardio-`,`néphro-`,`pneumo-`,`-pathie`,`-ite`],correct:[`cardio-`,`-pathie`],
+ meaning:`cardio- (cœur) + -pathie (maladie) = maladie du cœur`},
+{term:`Hématurie`,def:`Présence de sang dans les urines.`,
+ pieces:[`hémat-`,`leuco-`,`protéin-`,`-urie`,`-émie`],correct:[`hémat-`,`-urie`],
+ meaning:`hémat- (sang) + -urie (urine) = sang dans les urines`},
+{term:`Ostéomyélite`,def:`Infection de l'os et de la moelle osseuse.`,
+ pieces:[`ostéo-`,`arthro-`,`chondro-`,`-myélite`,`-pathie`],correct:[`ostéo-`,`-myélite`],
+ meaning:`ostéo- (os) + -myélite (inflammation moelle) = infection os + moelle`},
+{term:`Néphrectomie`,def:`Ablation chirurgicale d'un rein.`,
+ pieces:[`néphro-`,`gastro-`,`cardio-`,`-ectomie`,`-stomie`],correct:[`néphro-`,`-ectomie`],
+ meaning:`néphro- (rein) + -ectomie (ablation) = ablation d'un rein`},
+{term:`Bronchoscopie`,def:`Examen endoscopique des voies aériennes.`,
+ pieces:[`broncho-`,`gastro-`,`cysto-`,`-scopie`,`-graphie`],correct:[`broncho-`,`-scopie`],
+ meaning:`broncho- (bronches) + -scopie (regarder) = regarder à l'intérieur des bronches`},
+{term:`Polyurie`,def:`Augmentation pathologique du volume urinaire (> 3 L/24h).`,
+ pieces:[`poly-`,`oligo-`,`an-`,`-urie`,`-émie`],correct:[`poly-`,`-urie`],
+ meaning:`poly- (beaucoup) + -urie (urine) = beaucoup d'urines`},
+{term:`Splénomégalie`,def:`Augmentation de volume de la rate.`,
+ pieces:[`splén-`,`hépat-`,`néphro-`,`-mégalie`,`-pathie`],correct:[`splén-`,`-mégalie`],
+ meaning:`splén- (rate) + -mégalie (gros) = grosse rate`},
+{term:`Anesthésie`,def:`Suppression de la sensibilité douloureuse, totale ou locale.`,
+ pieces:[`an-`,`hyper-`,`hypo-`,`-esthésie`,`-pnée`],correct:[`an-`,`-esthésie`],
+ meaning:`an- (sans) + -esthésie (sensation) = sans sensation`},
+];
+
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[];
+
+function selectMode(m,btn){document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));btn.classList.add(`sel`);mode=m;}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  if(mode===`qcm`)questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`)questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`)questions=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const p3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){if(i===ci)choices.push(flip?t.t:t.def.substring(0,90)+`…`);else{const d=p3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}}
+    return{term:t.t,cat:t.cat,def:t.def,q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,questionText:flip?t.def.substring(0,140):null,choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`)loadQCM();
+  else if(mode===`frappe`)loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">📖 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Racine / Préfixe / Suffixe</div><div class="tc-term">${q.term}</div><div class="tc-cat">📖 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{const b=document.createElement(`button`);b.className=`choice`;b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);});
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}});
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Sens — Quelle racine correspond ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">📖 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez la racine, le préfixe ou le suffixe :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t.split(`/`)[0].trim());const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">📖 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme médical :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--sl)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La racine était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Étymologie :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Racines maîtrisées`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#f1f5f9`,tc:`#475569`,brd:`#cbd5e1`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent ! Le Mode Frappe vous fera atteindre la maîtrise totale.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Le Mode Examen avec 15s est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 Vous savez maintenant assembler les racines pour décoder n'importe quel terme médical.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en étymologie médicale. Cette base servira pour TOUS les autres modules.`);
+  if(note<10)cons.push(`📚 Commencez par les Suffixes (-ite, -ose, -pathie) puis les préfixes les plus fréquents (hyper-/hypo-/a-).`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 avant de passer au mode Frappe.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`Préfixes spatiaux`)cons.push(`📍 Spatiaux : ante/pré (avant) ↔ post/rétro (après) - intra/endo ↔ extra/exo - sub/hypo ↔ supra/hyper.`);
+    if(cat===`Préfixes numériques`)cons.push(`🔢 Numériques : mono (1) - bi/di (2) - tri (3) - tétra/quadri (4) - hémi (1/2) - poly (plusieurs) - oligo (peu).`);
+    if(cat===`Préfixes quantitatifs`)cons.push(`📊 Quantitatifs : hyper (trop) ↔ hypo (pas assez) - macro/méga (grand) ↔ micro (petit) - iso (égal) - néo (nouveau).`);
+    if(cat===`Racines anatomiques`)cons.push(`🫀 Anatomiques clés : cardio (cœur) - pneumo (poumon) - hépat (foie) - néphro (rein) - ostéo (os) - neuro (nerf) - hémat (sang).`);
+    if(cat===`Suffixes`)cons.push(`🔧 Suffixes essentiels : -ite (inflammation) - -ose (état) - -ome (tumeur) - -pathie (maladie) - -algie (douleur) - -ectomie (ablation).`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise totale du langage médical. Ces racines sont la clé de tous les autres modules.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

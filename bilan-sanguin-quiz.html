@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Quiz Bilan Sanguin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#ffffff;--surface:#f8fafc;
+  --blue:#1d4ed8;--blue2:#2563eb;--blue-l:#eff6ff;--blue-m:#bfdbfe;--blue-d:#1e3a8a;
+  --teal:#0891b2;--green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-32px) scale(0.8)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes timerWarn{0%,100%{color:var(--red);stroke:var(--red)}50%{color:var(--text)}}
+@keyframes checkIn{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+@keyframes barGrow{from{width:0}to{width:100%}}
+
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ══════════════════════════════
+   WELCOME SCREEN
+══════════════════════════════ */
+#s-welcome{background:var(--bg)}
+
+.w-header{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:var(--shadow);
+}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:var(--blue-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--blue-d)}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:500}
+.header-badge{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;letter-spacing:0.3px}
+
+.w-body{max-width:760px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:26px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:44px;flex-shrink:0}
+.w-hero-title{font-size:24px;font-weight:800;color:var(--blue-d);line-height:1.2;margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+
+.section-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+
+/* Mode cards */
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:26px}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{
+  background:var(--white);border:2px solid var(--border);border-radius:16px;
+  padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;
+  position:relative;overflow:hidden;
+}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mode-color,var(--blue));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mode-color,var(--blue));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before{opacity:1}
+.mode-card.sel{border-color:var(--mode-color,var(--blue));background:var(--mode-bg,var(--blue-l))}
+.mode-card.sel::before{opacity:1}
+.mode-icon{font-size:28px;margin-bottom:10px;display:block}
+.mode-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mode-difficulty{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mode-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mode-list{list-style:none;margin-top:8px}
+.mode-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mode-list li::before{content:'✓';color:var(--mode-color,var(--blue));font-weight:700;flex-shrink:0}
+
+/* Stats preview */
+.stats-preview{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;text-align:center}
+.sp-item{padding:8px;border-right:1px solid var(--border)}
+.sp-item:last-child{border-right:none}
+.sp-val{font-size:22px;font-weight:800;color:var(--blue-d);margin-bottom:2px}
+.sp-lbl{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+.launch-btn{
+  width:100%;padding:16px;background:var(--blue-d);border:none;border-radius:14px;
+  color:white;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;
+  box-shadow:0 4px 14px rgba(30,58,138,0.35);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.launch-btn:hover{background:var(--blue);transform:translateY(-2px);box-shadow:0 6px 20px rgba(30,58,138,0.4)}
+
+/* ══════════════════════════════
+   QUIZ SCREEN
+══════════════════════════════ */
+#s-quiz{background:var(--bg)}
+
+/* Topbar */
+#topbar{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:50;box-shadow:var(--shadow);
+}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-icon{width:28px;height:28px;background:var(--blue-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--blue-d)}
+.tb-proto{background:var(--blue-l);color:var(--blue);border:1px solid var(--blue-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700}
+
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--blue),var(--teal));transition:width 0.55s cubic-bezier(.4,0,.2,1)}
+.tb-q-label{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--blue);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220;transition:stroke 0.5s}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif}
+.t-num.warn{color:var(--red)}
+
+/* ── Mode badge in quiz ── */
+.mode-badge{display:flex;align-items:center;gap:5px;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;border:1px solid;flex-shrink:0}
+.mb-learn{background:var(--green-l);border-color:var(--green-m);color:var(--green)}
+.mb-exam{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.mb-survival{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+
+/* ── QUIZ BODY ── */
+#quiz-body{flex:1;padding:18px;max-width:700px;width:100%;margin:0 auto}
+
+/* Situation clinique */
+.clinical-card{
+  background:linear-gradient(135deg,#1e3a8a,#1d4ed8);
+  border-radius:16px;padding:18px 20px;margin-bottom:14px;
+  display:flex;align-items:flex-start;gap:14px;
+  animation:fadeUp 0.3s ease;color:white;
+  box-shadow:0 4px 20px rgba(30,58,138,0.3);
+}
+.cc-icon{font-size:28px;flex-shrink:0;background:rgba(255,255,255,0.12);width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.cc-lbl{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:4px}
+.cc-patient{font-size:14px;font-weight:800;margin-bottom:3px}
+.cc-context{font-size:12.5px;color:rgba(255,255,255,0.82);line-height:1.6;font-family:'Lora',serif;font-style:italic}
+
+/* Prescription card */
+.prescription-card{
+  background:var(--white);border:2px solid var(--border2);border-radius:14px;
+  padding:16px 18px;margin-bottom:14px;animation:slideIn 0.3s ease;
+  font-family:'Lora',serif;
+}
+.rx-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.rx-hospital{font-size:11px;font-weight:700;color:var(--blue-d);text-transform:uppercase;letter-spacing:1px}
+.rx-date{font-size:11px;color:var(--text3)}
+.rx-patient-row{display:flex;gap:20px;margin-bottom:10px}
+.rx-field{font-size:12px;color:var(--text2)}
+.rx-field strong{color:var(--text);font-weight:700}
+.rx-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px}
+.rx-items{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.rx-item{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px}
+.rx-item::before{content:'•';color:var(--blue);font-size:16px;flex-shrink:0}
+.rx-footer{display:flex;justify-content:space-between;align-items:flex-end;padding-top:10px;border-top:1px solid var(--border)}
+.rx-doctor{font-size:12px;color:var(--text2);font-style:italic}
+.rx-stamp{font-size:10px;background:var(--blue-l);border:1px solid var(--blue-m);color:var(--blue);border-radius:6px;padding:3px 8px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700}
+
+/* Tube selector */
+.tube-selector{margin-bottom:14px;animation:fadeUp 0.3s ease}
+.ts-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px}
+.tubes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+@media(max-width:480px){.tubes-grid{grid-template-columns:1fr 1fr}}
+.tube-btn{
+  background:var(--white);border:2px solid var(--border);border-radius:12px;
+  padding:12px 8px;cursor:pointer;text-align:center;transition:all 0.18s;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.tube-btn:hover{border-color:var(--border2);box-shadow:var(--shadow);transform:translateY(-1px)}
+.tube-btn.selected{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.tube-btn.correct-sel{background:var(--green-l);border-color:var(--green-m)}
+.tube-btn.wrong-sel{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s}
+.tube-btn.missed-tube{background:var(--green-l);border-color:var(--green-m);opacity:0.6}
+.tube-btn:disabled{cursor:not-allowed;transform:none}
+.tube-visual{width:22px;height:52px;border-radius:11px;border:2px solid;position:relative;overflow:hidden}
+.tube-fill{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 9px 9px}
+.tube-name{font-size:10px;font-weight:700;color:var(--text)}
+.tube-content{font-size:9px;color:var(--text3);line-height:1.3;max-width:80px;text-align:center}
+.tube-check{font-size:14px;display:none}
+.tube-btn.correct-sel .tube-check,.tube-btn.missed-tube .tube-check{display:block}
+.tube-btn.wrong-sel .tube-check{display:block}
+
+.tube-submit{width:100%;padding:12px;background:var(--blue-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;margin-bottom:12px;transition:all 0.2s}
+.tube-submit:hover{background:var(--blue)}
+.tube-submit:disabled{opacity:0.4;cursor:not-allowed}
+
+/* Question card */
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--blue-l);border:1px solid var(--blue-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.qcp-dot{width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.qcp-text{font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3);flex-shrink:0}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}
+.q-text strong{color:var(--blue-d);font-style:italic}
+.q-diff{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;border:1px solid;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Choices */
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{
+  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
+  background:var(--white);border:1.5px solid var(--border);border-radius:11px;
+  padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;
+  font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;
+  transition:all 0.16s;box-shadow:var(--shadow);
+}
+.choice:hover:not(:disabled){border-color:var(--blue);background:var(--blue-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+
+/* Explanation */
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.35s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-box.warn{background:var(--orange-l);border-color:var(--orange-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}
+.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}.exp-title.warn{color:var(--orange)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}
+.exp-body strong{color:var(--text);font-weight:700}
+.exp-rule{margin-top:11px;background:var(--white);border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--blue-d)}
+
+.next-btn{width:100%;padding:13px;background:var(--blue-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(30,58,138,0.25)}
+.next-btn.show{display:block}
+.next-btn:hover{background:var(--blue);transform:translateY(-1px)}
+
+/* Footer stats */
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+
+/* XP float */
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ══════════════════════════════
+   RESULT SCREEN
+══════════════════════════════ */
+#s-result{background:var(--bg)}
+.res-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+
+.res-body{max-width:640px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.res-grade{font-size:54px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:54px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:16px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode-info{margin-top:12px;font-size:11px;color:var(--text3)}
+
+/* Stats */
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:24px;font-weight:800;margin-bottom:3px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+
+/* Breakdown */
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:16px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+
+/* Erreurs list */
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.error-item{display:flex;align-items:flex-start;gap:9px;margin-bottom:9px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.error-item:last-child{margin-bottom:0}
+
+/* Conseils */
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:12px}
+.conseil-item{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.conseil-item:last-child{margin-bottom:0}
+
+/* Actions */
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--blue-d);color:white;box-shadow:0 2px 10px rgba(30,58,138,0.3)}.rb.p:hover{background:var(--blue)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--blue-m)}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ WELCOME ════════════════ -->
+<div class="screen active" id="s-welcome">
+  <div class="w-header">
+    <div class="logo-wrap">
+      <div class="logo-icon">💉</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div>
+    </div>
+    <div class="header-badge">🩸 Bilan sanguin</div>
+  </div>
+
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🩸</div>
+      <div>
+        <div class="w-hero-title">Quiz — Bilan sanguin</div>
+        <div class="w-hero-desc">Maîtrisez chaque étape du prélèvement veineux : protocole, ordre des tubes, gestion des complications, sécurité transfusionnelle. Trois niveaux de difficulté pour progresser jusqu'à l'autonomie complète.</div>
+      </div>
+    </div>
+
+    <div class="stats-preview">
+      <div class="sp-item"><div class="sp-val">15</div><div class="sp-lbl">Questions / mode</div></div>
+      <div class="sp-item"><div class="sp-val">3</div><div class="sp-lbl">Niveaux</div></div>
+      <div class="sp-item"><div class="sp-val">7</div><div class="sp-lbl">Catégories</div></div>
+    </div>
+
+    <div class="section-lbl">Choisissez votre mode d'entraînement</div>
+    <div class="mode-grid">
+
+      <button class="mode-card sel" style="--mode-color:#059669;--mode-bg:#ecfdf5" onclick="selectMode('learn',this)">
+        <span class="mode-icon">📚</span>
+        <span class="mode-name">Apprentissage</span>
+        <div class="mode-difficulty" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐ Débutant</div>
+        <div class="mode-desc">Les 15 étapes du protocole dans l'ordre. Apprenez chaque geste avec son explication clinique.</div>
+        <ul class="mode-list" style="--mode-color:#059669">
+          <li>Questions guidées</li>
+          <li>Explications complètes</li>
+          <li>Règles à retenir</li>
+          <li>Pas de chronomètre</li>
+        </ul>
+      </button>
+
+      <button class="mode-card" style="--mode-color:#d97706;--mode-bg:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mode-icon">🏥</span>
+        <span class="mode-name">Cas cliniques</span>
+        <div class="mode-difficulty" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mode-desc">1 prescription à analyser, puis 10 questions sur le soin. Chrono 30s. Pas d'explications.</div>
+        <ul class="mode-list" style="--mode-color:#d97706">
+          <li>Ordonnances à analyser</li>
+          <li>Sélection des tubes</li>
+          <li>Chronomètre 45 secondes</li>
+          <li>Pas d'explications pendant</li>
+        </ul>
+      </button>
+
+      <button class="mode-card" style="--mode-color:#dc2626;--mode-bg:#fef2f2" onclick="selectMode('survival',this)">
+        <span class="mode-icon">💀</span>
+        <span class="mode-name">Expert</span>
+        <div class="mode-difficulty" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626">⭐⭐⭐ Avancé</div>
+        <div class="mode-desc">Questions pièges avec réponses plausibles. 3 erreurs = terminé. Seul un expert passe.</div>
+        <ul class="mode-list" style="--mode-color:#dc2626">
+          <li>Questions pièges</li>
+          <li>3 vies seulement</li>
+          <li>Chronomètre 30 secondes</li>
+          <li>Rapport détaillé après</li>
+        </ul>
+      </button>
+
+    </div>
+
+    <button class="launch-btn" onclick="launch()">
+      <span>Commencer le quiz</span><span>→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════ QUIZ ════════════════ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-icon">🩸</div><span class="tb-logo-text">Bilan sanguin</span></div>
+    <div class="tb-proto" id="mode-badge-tb">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-q-label" id="tb-ql">Q1/15</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">45</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quiz-body">
+    <!-- Context -->
+    <div class="clinical-card" id="ctx-box" style="display:none">
+      <div class="cc-icon" id="ctx-ico">🏥</div>
+      <div style="flex:1">
+        <div class="cc-lbl">Situation clinique</div>
+        <div class="cc-patient" id="ctx-patient"></div>
+        <div class="cc-context" id="ctx-text"></div>
+      </div>
+    </div>
+
+    <!-- Prescription -->
+    <div class="prescription-card" id="rx-card" style="display:none">
+      <div class="rx-header">
+        <div class="rx-hospital" id="rx-hospital">CHU — Service de Médecine Interne</div>
+        <div class="rx-date" id="rx-date">Aujourd'hui</div>
+      </div>
+      <div class="rx-patient-row">
+        <div class="rx-field"><strong>Patient : </strong><span id="rx-patient-name">--</span></div>
+        <div class="rx-field"><strong>Né(e) le : </strong><span id="rx-dob">--</span></div>
+        <div class="rx-field"><strong>Chambre : </strong><span id="rx-room">--</span></div>
+      </div>
+      <div class="rx-title">Bilan biologique prescrit</div>
+      <div class="rx-items" id="rx-items"></div>
+      <div class="rx-footer">
+        <div class="rx-doctor" id="rx-doctor">Dr. --</div>
+        <div class="rx-stamp">URGENT</div>
+      </div>
+    </div>
+
+    <!-- Tube selector -->
+    <div class="tube-selector" id="tube-selector" style="display:none">
+      <div class="ts-label">Sélectionnez les tubes nécessaires pour cette prescription :</div>
+      <div class="tubes-grid" id="tubes-grid"></div>
+      <button class="tube-submit" id="tube-submit" onclick="submitTubes()" disabled>Valider ma sélection →</button>
+    </div>
+
+    <!-- Question card -->
+    <div class="q-card" id="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-text" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">Q1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button>
+  </div>
+
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat" id="score-live">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- ════════════════ RESULT ════════════════ -->
+<div class="screen" id="s-result">
+  <div class="res-header">
+    <div class="logo-wrap">
+      <div class="logo-icon">🩸</div>
+      <div><div class="logo-name">Rapport de compétences — Bilan sanguin</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode-info" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-card"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP gagnés</div></div>
+      <div class="rs-card"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Meilleure série</div></div>
+      <div class="rs-card"><div class="rs-val" id="rs-time" style="color:var(--blue)">0s</div><div class="rs-lbl">Temps / question</div></div>
+      <div class="rs-card"><div class="rs-val" id="rs-score" style="color:var(--blue-d)">0</div><div class="rs-lbl">Score final</div></div>
+    </div>
+    <div class="breakdown">
+      <div class="bd-title">Résultats par catégorie</div>
+      <div id="bd-items"></div>
+    </div>
+    <div class="errors-box" id="errors-box" style="display:none">
+      <div class="errors-title">❌ Questions manquées — à retravailler</div>
+      <div id="errors-list"></div>
+    </div>
+    <div class="conseils-box">
+      <div class="conseils-title">💡 Conseils personnalisés</div>
+      <div id="conseils-list"></div>
+    </div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   TUBES DEFINITIONS
+═══════════════════════════════════════════════ */
+const TUBES_DEF = {
+  jaune:  {name:"Tube JAUNE",content:"Gel séparateur / sec",color:"#ca8a04",bg:"#fef08a",fill:"#fbbf24",uses:["NFS","Biochimie","Ionogramme","Bilan hépatique","Sérologies","Bilan lipidique","Glycémie","Troponine","CRP","Bilan thyroïdien","HbA1c"]},
+  violet: {name:"Tube VIOLET",content:"EDTA anticoagulant",color:"#7c3aed",bg:"#ede9fe",fill:"#a78bfa",uses:["NFS","Hémoglobine","Plaquettes","Réticulocytes","Frottis sanguin","Groupe sanguin","RAI"]},
+  bleu:   {name:"Tube BLEU",content:"Citrate de sodium",color:"#1d4ed8",bg:"#dbeafe",fill:"#60a5fa",uses:["TP","TCA","INR","Bilan de coagulation","Fibrinogène","D-Dimères"]},
+  vert:   {name:"Tube VERT",content:"Héparine de lithium",color:"#059669",bg:"#d1fae5",fill:"#34d399",uses:["Ionogramme urgence","Ammoniémie","Dosages médicamenteux"]},
+  rouge:  {name:"Tube ROUGE",content:"Sans additif",color:"#dc2626",bg:"#fee2e2",fill:"#f87171",uses:["Sérologies spéciales","Groupes sanguins","Électrophorèse"]},
+  gris:   {name:"Tube GRIS",content:"Fluorure / oxalate",color:"#6b7280",bg:"#f3f4f6",fill:"#9ca3af",uses:["Glycémie en urgence","Test HGPO"]},
+};
+
+/* ═══════════════════════════════════════════════
+   CLINICAL CASES (mode exam)
+   Chaque cas = prescription + tubes corrects
+═══════════════════════════════════════════════ */
+const CLINICAL_CASES = [
+  {
+    patient:"M. BERNARD Jean-Paul, 58 ans",dob:"14/03/1966",room:"412",
+    hospital:"CHU — Service de Médecine Interne",doctor:"Dr. Moreau",urgent:true,
+    context:"Bilan de surveillance d'une hypertension artérielle traitée. Patient sous IEC depuis 6 mois.",
+    ctx_icon:"🫀",
+    items:["Ionogramme sanguin (Na, K, Cl, CO2)","Créatinine + urée","NFS — Numération Formule Sanguine","Glycémie à jeun"],
+    correct_tubes:["jaune","violet"],
+    explanation:"Pour ce bilan : le <strong>tube jaune</strong> (gel séparateur) est utilisé pour l'ionogramme, la créatinine, l'urée et la glycémie. Le <strong>tube violet</strong> (EDTA) est indispensable pour la NFS. Tube jaune en premier.",
+    piege:"Certains étudiants ajoutent le tube bleu (coagulation) — ce n'est pas prescrit ici.",
+    xp:20
+  },
+  {
+    patient:"Mme LEFEBVRE Jeannine, 72 ans",dob:"03/06/1952",room:"218",
+    hospital:"CHU — Service de Cardiologie",doctor:"Dr. Petit",urgent:true,
+    context:"Patiente sous AVK (Warfarine). Bilan de surveillance de l'anticoagulation + NFS de contrôle.",
+    ctx_icon:"💊",
+    items:["INR + TP + TCA (bilan de coagulation)","NFS — Numération Formule Sanguine","Ionogramme"],
+    correct_tubes:["bleu","jaune","violet"],
+    explanation:"<strong>Tube bleu</strong> (citrate de sodium) pour l'INR/TP/TCA. <strong>Tube jaune</strong> pour l'ionogramme. <strong>Tube violet</strong> pour la NFS. Ordre obligatoire : bleu → jaune → violet.",
+    piege:"L'ordre est crucial : le tube citrate (bleu) AVANT les autres pour éviter la contamination par le gel ou l'EDTA.",
+    xp:25
+  },
+  {
+    patient:"M. DURAND Pierre, 45 ans",dob:"22/11/1979",room:"305",
+    hospital:"CHU — Urgences",doctor:"Dr. Lambert",urgent:true,
+    context:"Douleur thoracique depuis 2h. Bilan en urgence pour éliminer un SCA (syndrome coronarien aigu).",
+    ctx_icon:"🚨",
+    items:["Troponine I ultra-sensible (TropI-US)","NFS","Ionogramme + créatinine","TP/TCA + fibrinogène","CRP — Protéine C réactive"],
+    correct_tubes:["bleu","jaune","violet"],
+    explanation:"<strong>Tube bleu</strong> pour le bilan de coagulation (TP/TCA/fibrinogène). <strong>Tube jaune</strong> pour la troponine, l'ionogramme, la créatinine et la CRP. <strong>Tube violet</strong> pour la NFS. Ordre : bleu → jaune → violet.",
+    piege:"En urgence, on ajoute toujours le tube bleu pour la coagulation — même si ce n'est pas visible au premier coup d'œil dans la prescription.",
+    xp:25
+  },
+  {
+    patient:"Mme MARTIN Sophie, 34 ans",dob:"08/04/1990",room:"115",
+    hospital:"CHU — Maternité",doctor:"Dr. Dupont",urgent:false,
+    context:"22 SA (semaines d'aménorrhée). Bilan prénatal du 2ème trimestre.",
+    ctx_icon:"🤰",
+    items:["NFS — Numération Formule Sanguine","Groupe sanguin ABO/Rhésus (si non réalisé)","RAI (Recherche d'Agglutinines Irrégulières)","Sérologie toxoplasmose","Glycémie à jeun"],
+    correct_tubes:["violet","jaune"],
+    explanation:"<strong>Tube violet</strong> (EDTA) pour la NFS, le groupe sanguin et les RAI. <strong>Tube jaune</strong> pour les sérologies et la glycémie. Ordre : jaune → violet selon l'ordre standard.",
+    piege:"Attention : pour un groupe sanguin + RAI, certains centres exigent 2 tubes violet. Vérifiez toujours le protocole de votre établissement.",
+    xp:20
+  },
+  {
+    patient:"M. GARCIA Carlos, 62 ans",dob:"15/07/1962",room:"524",
+    hospital:"CHU — Oncologie",doctor:"Dr. Chen",urgent:false,
+    context:"Bilan pré-chimiothérapie. Contrôle de la tolérance au traitement avant cure J21.",
+    ctx_icon:"🧬",
+    items:["NFS complète avec plaquettes","Bilan hépatique (ASAT, ALAT, GGT, Bilirubine)","Ionogramme + créatinine","Bilan lipidique (cholestérol, triglycérides)","TP"],
+    correct_tubes:["bleu","jaune","violet"],
+    explanation:"<strong>Tube bleu</strong> pour le TP. <strong>Tube jaune</strong> pour le bilan hépatique, l'ionogramme, le bilan lipidique. <strong>Tube violet</strong> pour la NFS et les plaquettes. Ordre : bleu → jaune → violet.",
+    piege:"Le bilan lipidique nécessite un tube sec (jaune) — ne pas confondre avec un tube vert (héparine) qui peut interférer avec certains dosages.",
+    xp:25
+  }
+];
+
+/* ═══════════════════════════════════════════════
+   QUESTIONS — MODE APPRENTISSAGE (facile)
+═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   MODE APPRENTISSAGE
+   Étapes affichées dans l'ordre du protocole.
+   Chaque étape = explication + pourquoi + illustration.
+   Pas de chrono, pas de pression.
+═══════════════════════════════════════════════ */
+const STEPS_LEARN = [
+  {
+    num:1, cat:"Identité & Sécurité",
+    title:"Vérifier l'identité du patient",
+    icon:"🏷️",
+    what:"Avant d'entrer dans la chambre ou dès votre arrivée, demandez au patient de décliner son <strong>nom, prénom et date de naissance</strong>. Comparez avec les étiquettes du dossier et le bracelet d'identification.",
+    why:"Un soin réalisé sur le mauvais patient est une faute grave engageant votre responsabilité civile et pénale. C'est la règle n°1, sans exception.",
+    rule:"Identité = NOM + PRÉNOM + DATE DE NAISSANCE. Toujours demandé activement, jamais deviné.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="8" width="90" height="64" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><rect x="5" y="8" width="90" height="22" rx="8" fill="#1e3a8a"/><rect x="5" y="22" width="90" height="8" fill="#1e3a8a"/><text x="50" y="21" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">IDENTITÉ PATIENT</text><rect x="14" y="36" width="48" height="5" rx="2" fill="#cbd5e1"/><rect x="14" y="45" width="66" height="5" rx="2" fill="#cbd5e1"/><rect x="14" y="54" width="38" height="5" rx="2" fill="#cbd5e1"/><circle cx="78" cy="52" r="12" fill="#059669"/><path d="M72 52 L77 57 L85 44" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    q:"Pour valider votre compréhension : comment vérifiez-vous correctement l'identité ?",
+    choices:["Je regarde le nom sur le dossier","Je demande au patient son nom ET sa date de naissance, puis je croise avec les étiquettes","Je vérifie le bracelet uniquement","Je demande son numéro de chambre"],
+    correct:1
+  },
+  {
+    num:2, cat:"Communication",
+    title:"Se présenter et expliquer le soin",
+    icon:"💬",
+    what:"Présentez-vous au patient. Expliquez-lui ce que vous allez faire, pourquoi, et comment se déroule le prélèvement. Recueillez son consentement oral.",
+    why:"Un patient informé est un patient coopératif. Il bouge moins, signale mieux ses sensations, et l'expérience est moins anxiogène. Le consentement éclairé est un droit du patient.",
+    rule:"Nom + fonction + objectif du soin + déroulement + 'Avez-vous des questions ?'",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="32" cy="32" r="18" fill="#e8b890"/><rect x="14" y="50" width="36" height="28" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1"/><rect x="42" y="58" width="12" height="4" rx="2" fill="#dc2626"/><rect x="44" y="54" width="4" height="12" rx="2" fill="#dc2626"/><rect x="58" y="22" width="36" height="26" rx="8" fill="white" stroke="#bfdbfe" stroke-width="1.5"/><polygon points="64,48 72,48 64,56" fill="white" stroke="#bfdbfe" stroke-width="1.5"/><polygon points="65,49 71,49 65,54" fill="white"/><rect x="63" y="29" width="26" height="5" rx="2" fill="#cbd5e1"/><rect x="63" y="37" width="18" height="5" rx="2" fill="#cbd5e1"/></svg>`,
+    q:"À quel moment recueillez-vous le consentement du patient pour le prélèvement ?",
+    choices:["Après avoir posé le garrot","Avant de commencer tout geste, dès l'entrée dans la chambre","Juste avant la ponction","Ce n'est pas nécessaire pour un acte de routine"],
+    correct:1
+  },
+  {
+    num:3, cat:"Matériel",
+    title:"Préparer le plateau de soin",
+    icon:"🧰",
+    what:"Rassemblez tout le matériel nécessaire sur un plateau propre : <strong>tubes adaptés à la prescription</strong> (jaune, violet, bleu...), garrot, gants non stériles, compresses stériles, alcool 70°, aiguille 21G + corps de pompe vacutainer, pansement adhésif, étiquettes, sachet laboratoire avec bon de demande.",
+    why:"Un matériel incomplet vous obligera à interrompre le soin pour aller chercher ce qui manque — risque d'erreur d'identification, d'oubli, et expérience désagréable pour le patient.",
+    rule:"Vérifiez les dates de péremption des tubes. Un tube périmé ne crée pas de vide et ne se remplit pas.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="38" width="90" height="38" rx="6" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="1.5"/><rect x="5" y="38" width="90" height="8" rx="4" fill="#cbd5e1"/><rect x="12" y="18" width="14" height="42" rx="7" fill="#fef08a" stroke="#ca8a04" stroke-width="1.2"/><rect x="12" y="18" width="14" height="12" rx="6" fill="#ca8a04"/><rect x="30" y="18" width="14" height="42" rx="7" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.2"/><rect x="30" y="18" width="14" height="12" rx="6" fill="#7c3aed"/><rect x="48" y="18" width="14" height="42" rx="7" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.2"/><rect x="48" y="18" width="14" height="12" rx="6" fill="#1d4ed8"/><ellipse cx="76" cy="50" rx="14" ry="8" fill="#bfdbfe" stroke="#93c5fd" stroke-width="1"/><path d="M68 50 Q74 46 80 50" fill="none" stroke="white" stroke-width="1.5"/><rect x="66" y="56" width="6" height="16" rx="3" fill="#6b7280"/></svg>`,
+    q:"Vous vérifiez votre plateau et réalisez que votre tube jaune est périmé. Que faites-vous ?",
+    choices:["L'utiliser quand même — 3 jours d'écart c'est acceptable","Le remplacer impérativement par un tube jaune valide","Le remplacer par un tube violet EDTA","Signaler au labo et utiliser le tube quand même"],
+    correct:1
+  },
+  {
+    num:4, cat:"Installation",
+    title:"Installer confortablement le patient",
+    icon:"🛋️",
+    what:"Installez le patient en position confortable : assis ou semi-allongé, bras en extension et supination (paume vers le haut) sur une surface stable. Le pli du coude doit être accessible et bien éclairé.",
+    why:"Une bonne installation évite les mouvements involontaires pendant la ponction, réduit l'anxiété, et facilite l'accès à la veine. Un patient mal installé peut provoquer un retrait de l'aiguille en bougeant.",
+    rule:"Bras tendu, paume vers le haut, coude légèrement surélevé si possible pour bien visualiser les veines.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="50" width="90" height="20" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/><ellipse cx="50" cy="42" rx="40" ry="16" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M18 42 Q35 36 50 38 Q65 40 80 42" fill="none" stroke="#3b6fde" stroke-width="3" stroke-linecap="round" opacity="0.5"/><circle cx="50" cy="28" r="14" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><text x="50" y="70" text-anchor="middle" font-size="8" fill="#475569" font-family="sans-serif">Bras tendu, paume vers le haut</text></svg>`,
+    q:"Quelle position du bras est correcte pour un prélèvement veineux au pli du coude ?",
+    choices:["Bras plié, poing fermé pour faire ressortir les veines","Bras tendu, paume vers le haut (supination)","Bras tendu, paume vers le bas (pronation)","Position libre selon la préférence du patient"],
+    correct:1
+  },
+  {
+    num:5, cat:"Protection AES",
+    title:"Mettre les gants non stériles",
+    icon:"🧤",
+    what:"Enfilez vos gants non stériles <strong>avant tout contact avec le bras du patient</strong>. Ce geste vous protège des Accidents d'Exposition au Sang (AES) et protège le patient de votre flore cutanée.",
+    why:"Les AES (piqûres, contacts avec du sang) exposent aux risques de transmission du VIH, VHC, VHB. Un seul geste sans gants suffit pour constituer un AES déclarable.",
+    rule:"Gants AVANT tout contact. Même palper la veine pour chercher = contact = gants obligatoires.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><path d="M15 75 L15 42 Q15 30 26 26 L38 20 L41 10 Q41.5 6 45 6 Q48.5 6 49 10 L51 20 L55 8 Q55.5 4 59 4 Q62.5 4 63 8 L64 18 L67 9 Q67.5 5 71 5 Q74.5 5 75 9 L75 26 L78 19 Q80 14 84 16 Q89 18 87 24 L80 40 Q76 52 68 56 L21 56 Q15 56 15 75Z" fill="#bfdbfe" stroke="#93c5fd" stroke-width="1.5"/><path d="M20 30 Q32 26 44 30" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/><rect x="64" y="6" width="30" height="22" rx="5" fill="white" stroke="#e2e8f0" stroke-width="1"/><text x="79" y="15" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif" font-weight="700">⚠ AES</text><text x="79" y="24" text-anchor="middle" font-size="6" fill="#475569" font-family="sans-serif">Protection</text></svg>`,
+    q:"Un collègue vous dit 'pour juste palper la veine, les gants ne sont pas vraiment utiles'. Votre réponse ?",
+    choices:["Il a raison — les gants sont surtout utiles au moment de la ponction","Il a tort — tout contact avec la peau du patient requiert des gants, sans exception","Il a raison si le patient n'est pas porteur d'une maladie infectieuse connue","C'est au soignant d'évaluer le risque au cas par cas"],
+    correct:1
+  },
+  {
+    num:6, cat:"Technique",
+    title:"Poser le garrot + repérer la veine",
+    icon:"🔴",
+    what:"Posez le garrot à <strong>10 cm au-dessus du pli du coude</strong>, assez serré pour faire saillir les veines mais pas pour couper le pouls radial. Demandez au patient de <strong>fermer le poing</strong>. Par inspection puis palpation, localisez la veine médiane cubitale. Mémorisez précisément son emplacement.",
+    why:"Le garrot crée une stase veineuse qui fait gonfler les veines. Le repérage par palpation est plus fiable que la simple inspection — on sent le rebond élastique de la veine sous le doigt.",
+    rule:"Garrot maximum 2 minutes consécutives. Jamais laisser posé pendant la désinfection.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="52" rx="44" ry="20" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="16" y="42" width="68" height="12" rx="6" fill="#dc2626" opacity="0.9"/><text x="50" y="51" text-anchor="middle" font-size="7.5" fill="white" font-family="sans-serif" font-weight="700">GARROT — 10 cm</text><path d="M76 38 Q58 44 44 48 Q32 52 22 54" fill="none" stroke="#1d4ed8" stroke-width="5" stroke-linecap="round" opacity="0.65"/><circle cx="44" cy="48" r="8" fill="rgba(29,78,216,0.15)" stroke="#1d4ed8" stroke-width="1.5" stroke-dasharray="3,2"/><circle cx="44" cy="48" r="3" fill="#dc2626"/><text x="44" y="28" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="600">Veine repérée</text></svg>`,
+    q:"Après avoir repéré la veine avec le garrot, combien de temps maximum le laissez-vous posé avant de désinfecter ?",
+    choices:["Pas de limite — il reste posé jusqu'à la ponction","Le retirer avant de désinfecter (max 2 min au total)","5 minutes maximum","Seulement si le patient se plaint de douleur"],
+    correct:1
+  },
+  {
+    num:7, cat:"Asepsie",
+    title:"Retirer le garrot + désinfecter",
+    icon:"🧴",
+    what:"Retirez le garrot. Gardez mentalement la position de la veine. Imbibez une compresse d'alcool à 70°. Désinfectez par <strong>mouvements circulaires du centre vers l'extérieur</strong> sur ~5 cm. <strong>Laissez sécher spontanément 30 secondes.</strong>",
+    why:"Le garrot est retiré pour désinfection sur une zone non comprimée. Le séchage spontané est obligatoire : piquer sur alcool humide réduit l'efficacité antiseptique et irrite le patient.",
+    rule:"Ne jamais souffler sur la zone pour accélérer le séchage. Ne jamais essuyer avec une compresse sèche.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/><circle cx="50" cy="52" r="22" fill="rgba(6,182,212,0.1)" stroke="#0891b2" stroke-width="1" stroke-dasharray="4,3"/><circle cx="50" cy="52" r="14" fill="rgba(6,182,212,0.18)"/><path d="M50 30 A22 22 0 1 1 28 52" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round"/><polygon points="24,48 28,56 34,50" fill="#0891b2"/><text x="50" y="74" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="600">30 sec séchage spontané</text></svg>`,
+    q:"Vous désinfectez, puis un collègue vous interpelle. Que faites-vous ?",
+    choices:["Piquer rapidement avant que l'alcool sèche complètement","Souffler sur la zone pour accélérer le séchage et ne pas attendre","Attendre le séchage spontané complet avant de piquer, quelle que soit la situation","Essuyer avec une compresse sèche puis piquer"],
+    correct:2
+  },
+  {
+    num:8, cat:"Matériel",
+    title:"Monter l'aiguille sur le corps de pompe",
+    icon:"🔧",
+    what:"Vissez l'aiguille 21G sur le corps de pompe vacutainer. Ne retirez pas le capuchon avant d'être prêt à piquer. <strong>Ne touchez jamais la partie stérile de l'aiguille.</strong> Vérifiez la solidité de l'assemblage.",
+    why:"Une aiguille mal vissée peut se dévisser en pleine ponction. Toucher la partie stérile contamine l'aiguille et expose le patient à un risque infectieux.",
+    rule:"Assembler aiguille + corps de pompe AVANT de reposer le garrot. L'ordre du protocole s'enchaîne.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="10" y="34" width="44" height="22" rx="8" fill="#374151" stroke="#4b5563" stroke-width="1.5"/><rect x="18" y="39" width="16" height="12" rx="3" fill="#1f2937"/><rect x="36" y="40" width="8" height="10" rx="2" fill="#111827"/><line x1="54" y1="45" x2="90" y2="45" stroke="#d1d5db" stroke-width="4" stroke-linecap="round"/><polygon points="84,40 92,45 84,50" fill="#9ca3af"/><rect x="76" y="36" width="18" height="18" rx="3" fill="#bfdbfe" stroke="#93c5fd" stroke-width="1" opacity="0.7"/><text x="85" y="47" text-anchor="middle" font-size="7" fill="#1d4ed8" font-family="sans-serif">CAP</text><path d="M50 28 Q40 20 32 28" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><polygon points="30,24 30,32 36,28" fill="#dc2626"/></svg>`,
+    q:"Vous assemblez l'aiguille et touchez accidentellement la partie métallique stérile. Que faites-vous ?",
+    choices:["Continuer — un contact rapide ne contamine pas vraiment","Désinfecter la pointe de l'aiguille avec une compresse alcoolisée","Changer l'aiguille pour une nouvelle stérile","Signaler l'incident mais continuer le soin"],
+    correct:2
+  },
+  {
+    num:9, cat:"Technique",
+    title:"Reposer le garrot + réaliser la ponction",
+    icon:"💉",
+    what:"Repositionnez le garrot. Retirez le capuchon. Tendez la peau avec votre pouce. Pénétrez la veine <strong>biseau vers le haut, angle 15-30°</strong>, d'un geste ferme et assuré. Un retour sanguin dans la chambre de l'aiguille confirme la bonne position.",
+    why:"Le biseau vers le haut permet une pénétration plus nette avec moins de traumatisme. Un angle trop élevé risque de traverser la veine. Un geste hésitant est plus douloureux.",
+    rule:"Si pas de retour sanguin : réajuster l'angle doucement avant de retirer. Ne jamais explorer latéralement — risque de déchirure veineuse.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="20" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/><rect x="16" y="46" width="68" height="10" rx="5" fill="#dc2626" opacity="0.8"/><path d="M62 38 Q52 44 44 48 Q36 52 24 56" fill="none" stroke="#1d4ed8" stroke-width="4.5" stroke-linecap="round" opacity="0.6"/><g transform="rotate(-20, 55, 46)"><rect x="38" y="38" width="26" height="14" rx="5" fill="#374151"/><line x1="64" y1="45" x2="80" y2="45" stroke="#d1d5db" stroke-width="3" stroke-linecap="round"/><polygon points="76,41 82,45 76,49" fill="#9ca3af"/></g><path d="M42 28 Q48 22 55 26" fill="none" stroke="#d97706" stroke-width="1.5"/><text x="50" y="20" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="600">15-30° biseau ↑</text></svg>`,
+    q:"Vous n'avez pas de retour sanguin après l'insertion. Votre première réaction ?",
+    choices:["Retirer immédiatement et piquer à côté","Réajuster légèrement l'angle sans retirer l'aiguille","Appuyer sur le corps de pompe pour aspirer","Enfoncer l'aiguille plus profondément"],
+    correct:1
+  },
+  {
+    num:10, cat:"Ordre des tubes",
+    title:"Prélever les tubes dans le bon ordre",
+    icon:"🧪",
+    what:"Introduisez les tubes dans l'ordre obligatoire : <strong>1er Bleu (citrate)</strong> si prescrit, puis <strong>Jaune (gel sec)</strong>, puis <strong>Violet (EDTA)</strong>. Chaque tube se remplit automatiquement par dépression. Attendez le remplissage complet. <strong>Retournez chaque tube doucement 8 fois</strong> après prélèvement.",
+    why:"L'ordre des tubes évite les contaminations croisées entre additifs. Le citrate doit passer avant le gel pour ne pas être contaminé. L'EDTA en dernier car il peut fausser les dosages biochimiques.",
+    rule:"Bleu → Jaune → Violet. Toujours. Retournements doux = 8 fois. Jamais agiter.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="8" y="12" width="14" height="52" rx="7" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/><rect x="8" y="12" width="14" height="16" rx="7" fill="#1d4ed8"/><circle cx="15" cy="8" r="7" fill="#1e3a8a"/><text x="15" y="11" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif" font-weight="800">1</text><text x="15" y="72" text-anchor="middle" font-size="7" fill="#1d4ed8" font-family="sans-serif" font-weight="700">Bleu</text><rect x="30" y="12" width="14" height="52" rx="7" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.5"/><rect x="30" y="12" width="14" height="16" rx="7" fill="#ca8a04"/><circle cx="37" cy="8" r="7" fill="#92400e"/><text x="37" y="11" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif" font-weight="800">2</text><text x="37" y="72" text-anchor="middle" font-size="7" fill="#ca8a04" font-family="sans-serif" font-weight="700">Jaune</text><rect x="52" y="12" width="14" height="52" rx="7" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/><rect x="52" y="12" width="14" height="16" rx="7" fill="#7c3aed"/><circle cx="59" cy="8" r="7" fill="#4c1d95"/><text x="59" y="11" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif" font-weight="800">3</text><text x="59" y="72" text-anchor="middle" font-size="7" fill="#7c3aed" font-family="sans-serif" font-weight="700">Violet</text><path d="M23 36 L29 36" stroke="#059669" stroke-width="2"/><polygon points="27,33 31,36 27,39" fill="#059669"/><path d="M45 36 L51 36" stroke="#059669" stroke-width="2"/><polygon points="49,33 53,36 49,39" fill="#059669"/><text x="84" y="32" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">×8</text><text x="84" y="42" text-anchor="middle" font-size="7" fill="#475569" font-family="sans-serif">doux</text><path d="M78 48 Q84 54 90 48" fill="none" stroke="#dc2626" stroke-width="1.5"/></svg>`,
+    q:"Vous avez un tube jaune et un tube violet à prélever. Quel est le premier geste après avoir rempli le tube violet ?",
+    choices:["L'étiqueter immédiatement","Le secouer pour mélanger l'EDTA au sang","Le retourner lentement 8 fois pour mélanger sans hémolyser","Le poser à plat pour laisser décanter"],
+    correct:2
+  },
+  {
+    num:11, cat:"Gestion du garrot",
+    title:"Retirer le garrot AVANT l'aiguille",
+    icon:"⚠️",
+    what:"<strong>Règle absolue :</strong> le garrot doit être retiré AVANT de retirer l'aiguille. Posez ensuite une compresse sèche sur le site. Retirez l'aiguille d'un geste sec et assuré. Comprimez immédiatement.",
+    why:"Avec le garrot posé, la pression veineuse est élevée. Retirer l'aiguille dans ces conditions provoque un jet de sang sous pression et un hématome douloureux et immédiat. Cette erreur est la plus fréquente chez les étudiants.",
+    rule:"Garrot → Compresse → Aiguille → Compression. Dans cet ordre. Sans dérogation.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="16" y="46" width="68" height="12" rx="6" fill="#dc2626" opacity="0.5" stroke="#dc2626" stroke-width="1" stroke-dasharray="4,3"/><text x="50" y="55" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">① RETIRER GARROT</text><path d="M26 28 L34 18 L42 28" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><text x="34" y="16" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="700">retirer</text><line x1="68" y1="46" x2="68" y2="60" stroke="#94a3b8" stroke-width="3" stroke-linecap="round"/><polygon points="63,58 68,66 73,58" fill="#94a3b8" opacity="0.6"/><text x="68" y="44" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">② aiguille</text></svg>`,
+    q:"Vous avez prélevé vos tubes. Dans quel ordre effectuez-vous les gestes suivants ?",
+    choices:["Aiguille → garrot → compression","Garrot → aiguille → compression","Compression → garrot → aiguille","Aiguille → compression → garrot"],
+    correct:1
+  },
+  {
+    num:12, cat:"Fin de soin",
+    title:"Compression + pansement",
+    icon:"🩹",
+    what:"Maintenez une <strong>compression ferme 3 à 5 minutes, bras tendu</strong>. Demandez au patient de ne pas plier le bras. Vérifiez l'arrêt du saignement avant de poser le pansement adhésif.",
+    why:"Plier le bras déplace la compresse hors du site de ponction et crée un hématome. La compression directe avec le bras tendu est mécaniquement plus efficace.",
+    rule:"3-5 minutes, bras tendu. Chez un patient sous anticoagulants : 5-10 minutes minimum.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="28" y="42" width="44" height="26" rx="6" fill="white" stroke="#d1d5db" stroke-width="1.5"/><rect x="34" y="38" width="32" height="34" rx="4" fill="#fef9c3" stroke="#fde68a" stroke-width="1"/><ellipse cx="50" cy="38" rx="22" ry="10" fill="#c8a080" stroke="#a07050" stroke-width="1"/><path d="M30 42 L50 36 L70 42" fill="none" stroke="#dc2626" stroke-width="2"/><path d="M50 36 L50 26" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><polygon points="46,26 50,20 54,26" fill="#dc2626"/><text x="50" y="18" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="600">Pression ↓</text><text x="50" y="74" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="600">3-5 min bras tendu</text></svg>`,
+    q:"Un patient vous dit 'je peux plier le bras maintenant ?' juste après le retrait de l'aiguille. Votre réponse ?",
+    choices:["Oui, plier le bras comprime mieux la veine","Non, gardez le bras tendu 3 à 5 minutes — plier le bras favorise les hématomes","Oui, si vous ne ressentez plus de douleur","Ça n'a pas d'importance, l'essentiel est la compresse"],
+    correct:1
+  },
+  {
+    num:13, cat:"Traçabilité",
+    title:"Étiqueter les tubes AU LIT du patient",
+    icon:"🏷️",
+    what:"Collez les étiquettes nominatives sur chaque tube <strong>immédiatement après le prélèvement, au lit du patient</strong>, en sa présence. Vérifiez que le nom sur l'étiquette correspond bien au patient devant vous.",
+    why:"Des tubes étiquetés en dehors de la chambre ou à l'avance créent un risque de confusion entre patients. Cette erreur peut mener à un accident transfusionnel grave.",
+    rule:"Étiquetage au lit du patient = règle de sécurité transfusionnelle. Tubes préparés à l'avance = refusés par le laboratoire.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="12" y="10" width="16" height="52" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.2"/><rect x="12" y="10" width="16" height="14" rx="7" fill="#ca8a04"/><rect x="8" y="44" width="24" height="14" rx="3" fill="white" stroke="#1d4ed8" stroke-width="1.5"/><rect x="10" y="46" width="16" height="4" rx="1" fill="#bfdbfe"/><rect x="10" y="52" width="12" height="3" rx="1" fill="#e2e8f0"/><rect x="42" y="10" width="16" height="52" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.2"/><rect x="42" y="10" width="16" height="14" rx="7" fill="#7c3aed"/><rect x="38" y="44" width="24" height="14" rx="3" fill="white" stroke="#7c3aed" stroke-width="1.5"/><rect x="40" y="46" width="16" height="4" rx="1" fill="#ede9fe"/><rect x="40" y="52" width="12" height="3" rx="1" fill="#e2e8f0"/><rect x="70" y="35" width="24" height="30" rx="6" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="82" y="52" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="700">Au lit</text><text x="82" y="62" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="700">✓</text></svg>`,
+    q:"Vous finissez le prélèvement et vous rappelez que vous avez oublié d'apporter les étiquettes. Que faites-vous ?",
+    choices:["Aller chercher les étiquettes au poste et étiqueter les tubes là-bas","Étiqueter les tubes dans le couloir juste devant la chambre","Retourner au poste chercher les étiquettes et revenir dans la chambre pour étiqueter au lit du patient","Laisser les tubes sans étiquette et étiqueter à la distribution"],
+    correct:2
+  },
+  {
+    num:14, cat:"Conditionnement",
+    title:"Conditionner dans le sachet laboratoire",
+    icon:"📋",
+    what:"Placez les tubes étiquetés dans la <strong>poche intérieure du sachet biologique</strong>. Le bon de demande d'analyses va dans la <strong>poche extérieure</strong>. Fermez hermétiquement. Acheminez au laboratoire dans les délais requis.",
+    why:"Le conditionnement séparé (tubes / bon de demande) évite la contamination du document papier par le sang et permet au laboratoire d'identifier les analyses sans ouvrir le sachet.",
+    rule:"Délais : tube citrate (bleu) = 30 min. Tubes standards = 2h à température ambiante.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="18" y="8" width="64" height="68" rx="8" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="2"/><rect x="18" y="8" width="64" height="24" rx="8" fill="#059669"/><rect x="18" y="24" width="64" height="8" fill="#059669"/><text x="50" y="20" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif" font-weight="700">LABORATOIRE</text><rect x="26" y="38" width="48" height="16" rx="4" fill="white" stroke="#6ee7b7" stroke-width="1" stroke-dasharray="3,2"/><text x="50" y="48" text-anchor="middle" font-size="8" fill="#047857" font-family="sans-serif" font-weight="600">Bon de demande</text><rect x="26" y="58" width="18" height="12" rx="6" fill="#fef9c3" stroke="#ca8a04" stroke-width="1"/><rect x="48" y="58" width="18" height="12" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/></svg>`,
+    q:"Quel est le délai maximum d'acheminement pour un tube BLEU (coagulation) ?",
+    choices:["4 heures à température ambiante","2 heures si bien refermé","30 minutes maximum","8 heures si conservé à 4°C"],
+    correct:2
+  },
+  {
+    num:15, cat:"Traçabilité",
+    title:"Tracer le soin dans le dossier patient",
+    icon:"📝",
+    what:"Documentez le soin dans le dossier infirmier : heure du prélèvement, tubes prélevés, observations particulières (difficulté d'accès veineux, hématome, refus...), votre nom et signature.",
+    why:"La traçabilité est une obligation légale. En cas de litige, d'accident ou de question du médecin, le dossier doit permettre de retracer exactement ce qui a été fait, quand, et par qui.",
+    rule:"Tout ce qui n'est pas tracé n'a juridiquement pas eu lieu. Traçabilité = protection du patient ET du soignant.",
+    svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="12" y="8" width="76" height="64" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="12" y="8" width="76" height="18" rx="8" fill="#1e3a8a"/><rect x="12" y="20" width="76" height="6" fill="#1e3a8a"/><text x="50" y="19" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">DOSSIER INFIRMIER</text><rect x="20" y="32" width="60" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="41" width="50" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="50" width="56" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="59" width="32" height="5" rx="2" fill="#bfdbfe"/><path d="M55 55 L62 48 L68 62 L72 44" fill="none" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    q:"Vous avez eu des difficultés à trouver la veine (2 tentatives). Que tracez-vous dans le dossier ?",
+    choices:["Rien — seul le résultat final compte","Heure, tubes prélevés, mais pas les difficultés pour ne pas inquiéter","Heure, tubes prélevés, 2 tentatives de ponction, site finalement utilisé, votre nom","Juste 'prélèvement réalisé' pour rester simple"],
+    correct:2
+  }
+];
+
+/* ═══════════════════════════════════════════════
+   MODE EXAMEN — Questions intermédiaires
+   Affichées APRÈS la question des tubes.
+   Chrono 30s. Aucune explication pendant.
+═══════════════════════════════════════════════ */
+const Q_EXAM = [
+  {cat:"Protocole",
+   context:{patient:"Même patient — soin en cours",ctx:"Vous avez identifié vos tubes. Vous allez réaliser le prélèvement.",icon:"🩸"},
+   q:"Dans quel ordre réalisez-vous les étapes avant de piquer ?",svg:null,
+   choices:["Gants → garrot → repérage → désinfection → monter aiguille → reposer garrot → piquer","Gants → garrot → repérage → retirer garrot → désinfection → monter aiguille → reposer garrot → piquer","Garrot → repérage → gants → désinfection → monter aiguille → piquer","Désinfection → gants → garrot → repérage → monter aiguille → piquer"],
+   correct:1,diff:"moyen",
+   exp_ok:"Ordre correct : gants → garrot → repérage → <strong>retirer le garrot</strong> → désinfection → monter aiguille → reposer garrot → ponction.",
+   exp_err:"Le garrot doit être retiré avant la désinfection pour une antisepsie efficace sur zone non comprimée.",
+   rule:"Gants → garrot → repérage → <strong>retrait garrot</strong> → désinfection → montage → repose garrot → ponction.",xp:15},
+
+  {cat:"Ordre des tubes",context:null,
+   q:"Vous prélevez tube jaune, violet ET bleu. Quel est l'ordre obligatoire ?",svg:null,
+   choices:["Jaune → Violet → Bleu","Violet → Bleu → Jaune","Bleu → Jaune → Violet","L'ordre est libre si on retourne les tubes"],
+   correct:2,diff:"moyen",
+   exp_ok:"Ordre correct : Bleu → Jaune → Violet. Le tube citrate (bleu) passe en premier pour éviter la contamination par le gel ou l'EDTA.",
+   exp_err:"Le tube bleu doit précéder le jaune. Des résidus de gel sur l'aiguille contamineraient le citrate et fausseraient la coagulation.",
+   rule:"<strong>Bleu → Jaune → Violet</strong> quand les 3 tubes sont présents.",xp:15},
+
+  {cat:"Gestion du garrot",context:null,
+   q:"Tous les tubes sont prélevés. Quelle est votre action OBLIGATOIRE immédiate avant de retirer l'aiguille ?",svg:null,
+   choices:["Poser la compresse sèche sur le site","Retirer le garrot","Annoncer au patient que c'est terminé","Étiqueter les tubes"],
+   correct:1,diff:"moyen",
+   exp_ok:"Le garrot doit être retiré AVANT l'aiguille. Aiguille retirée avec garrot posé = hématome sous pression garanti.",
+   exp_err:"Même si la compresse est importante, le garrot passe en priorité absolue.",
+   rule:"<strong>Garrot AVANT l'aiguille. Toujours.</strong>",xp:15},
+
+  {cat:"Complications",
+   context:{patient:"Veine difficile",ctx:"Pas de retour sanguin après insertion.",icon:"🔍"},
+   q:"Absence de retour sanguin après insertion. Votre procédure ?",svg:null,
+   choices:["Retirer immédiatement et piquer au même endroit","Réajuster doucement l'angle sans retirer l'aiguille","Appuyer sur le corps de pompe pour aspirer","Masser vigoureusement le pli du coude"],
+   correct:1,diff:"moyen",
+   exp_ok:"Réajustement léger d'abord. Si toujours rien, retrait propre et nouveau site.",
+   exp_err:"Appuyer aspire des tissus. Masser déplace les veines. Repiquer immédiatement au même site traumatise.",
+   rule:"<strong>Réajuster → si échec : retirer → nouveau site.</strong>",xp:15},
+
+  {cat:"Asepsie",context:null,
+   q:"Vous avez désinfecté mais un collègue vous parle. L'alcool n'est pas encore sec. Que faites-vous ?",svg:null,
+   choices:["Piquer quand même — l'alcool agit en quelques secondes","Souffler doucement pour sécher","Attendre le séchage spontané complet avant de piquer","Essuyer avec une compresse sèche et recommencer"],
+   correct:2,diff:"moyen",
+   exp_ok:"Séchage spontané complet obligatoire. Non négociable, quelle que soit la situation.",
+   exp_err:"Souffler contamine. Essuyer annule l'antisepsie. Piquer sur alcool humide est irritant et inefficace.",
+   rule:"<strong>Séchage spontané complet = obligatoire.</strong>",xp:12},
+
+  {cat:"Traçabilité",context:null,
+   q:"Prélèvement terminé. Dans quel ordre finalisez-vous le soin ?",svg:null,
+   choices:["Étiqueter les tubes → pansement → sachet labo → dossier","Pansement → étiqueter les tubes AU LIT → conditionner sachet → tracer dans le dossier","Sortir de la chambre → étiqueter au poste → pansement → sachet","Pansement → sortir → étiqueter dans le couloir → dossier"],
+   correct:1,diff:"moyen",
+   exp_ok:"Pansement d'abord (patient prioritaire), puis étiquetage au lit, puis conditionnement, puis dossier.",
+   exp_err:"L'étiquetage doit se faire au lit. Le pansement est priorité immédiate après le retrait de l'aiguille.",
+   rule:"<strong>Pansement → étiquetage au lit → sachet → dossier.</strong>",xp:15},
+
+  {cat:"Complications",
+   context:{patient:"Mme Simon, 68 ans",ctx:"Un hématome se forme pendant le prélèvement.",icon:"⚠️"},
+   q:"Procédure correcte face à un hématome en cours de formation ?",svg:null,
+   choices:["Terminer rapidement avant que ça empire","Retirer l'aiguille immédiatement puis appuyer","Retirer le garrot, puis l'aiguille, puis comprimer","Appuyer sur l'hématome tout en maintenant l'aiguille"],
+   correct:2,diff:"moyen",
+   exp_ok:"Garrot en premier pour réduire la pression, puis aiguille, puis compression immédiate.",
+   exp_err:"Continuer aggrave les lésions. Retirer l'aiguille avec garrot posé augmente le saignement.",
+   rule:"<strong>Hématome : garrot → aiguille → compression.</strong>",xp:15},
+
+  {cat:"Matériel",context:null,
+   q:"Votre tube jaune est périmé. Que faites-vous ?",svg:null,
+   choices:["L'utiliser quand même — 3 jours c'est acceptable","Le remplacer par un tube violet EDTA","Le remplacer par un tube jaune valide","Signaler au labo et utiliser le tube périmé"],
+   correct:2,diff:"moyen",
+   exp_ok:"Un tube périmé ne crée plus de vide et ne se remplit pas correctement. Remplacement obligatoire.",
+   exp_err:"Un tube périmé est inutilisable. Aucune alternative au remplacement.",
+   rule:"<strong>Tube périmé = ne jamais utiliser. Remplacer obligatoirement.</strong>",xp:12},
+
+  {cat:"Protection AES",context:null,
+   q:"Élimination correcte de l'aiguille après prélèvement ?",svg:null,
+   choices:["Recapuchonner pour sécuriser puis jeter dans DASRI","Jeter directement dans le container DASRI sans recapuchonner","Plier l'aiguille pour la neutraliser","Jeter dans la poubelle ordinaire bien emballée"],
+   correct:1,diff:"moyen",
+   exp_ok:"L'aiguille se jette directement, sans recapuchonner, dans le container DASRI.",
+   exp_err:"Recapuchonner = première cause d'AES par piqûre chez les soignants.",
+   rule:"<strong>Jamais recapuchonner. Container DASRI directement.</strong>",xp:12},
+
+  {cat:"Cas clinique",
+   context:{patient:"M. Leroy, 55 ans, sous aspirine 100mg",ctx:"Prélèvement terminé, aiguille retirée.",icon:"🩹"},
+   q:"Ce patient est sous aspirine. Quelle adaptation pour la compression ?",svg:null,
+   choices:["Aucune — l'aspirine n'affecte pas la coagulation","Compression 5 min minimum, surveiller hématome retardé","Garrot de compression 10 minutes","Appliquer une crème hémostatique"],
+   correct:1,diff:"moyen",
+   exp_ok:"L'aspirine inhibe les plaquettes. Compression allongée à 5 min minimum et surveillance d'un hématome retardé.",
+   exp_err:"L'aspirine affecte l'hémostase primaire. 3 minutes standard peuvent être insuffisantes.",
+   rule:"<strong>Antiagrégant : compression 5 min minimum + surveillance hématome.</strong>",xp:15},
+];
+
+/* ═══════════════════════════════════════════════
+   MODE SURVIE — Questions pièges
+   Réponses volontairement plausibles.
+   3 vies. Chrono 25s.
+═══════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+  {cat:"Piège — Ordre des tubes",context:null,
+   q:"Vous avez un tube jaune et un tube violet. Votre collègue dit : 'commence par le violet, le sang coagule moins vite avec l'EDTA'. Que faites-vous ?",svg:null,
+   choices:["Elle a raison — commencer par le violet préserve mieux l'échantillon","Elle a tort — le jaune passe toujours en premier pour éviter la contamination croisée par l'EDTA","Cela dépend de l'analyse prescrite","Les deux ordres sont équivalents si on retourne les tubes correctement"],
+   correct:1,diff:"difficile",
+   exp_ok:"Le tube jaune (sec) passe TOUJOURS en premier. L'EDTA du tube violet contaminerait le tube sec et fausserait les résultats de biochimie et de coagulation.",
+   exp_err:"L'ordre des tubes est une règle biologique stricte, pas une préférence. L'argument de votre collègue est faux.",
+   rule:"<strong>Jaune AVANT violet. Toujours. L'argument de l'EDTA est un piège.</strong>",xp:20},
+
+  {cat:"Piège — Garrot",context:null,
+   q:"Votre chef de service vous dit : 'pour les prélèvements rapides, tu peux retirer l'aiguille avec le garrot encore posé si tu comprimes fort aussitôt'. C'est ?",svg:null,
+   choices:["Exact — une compression forte immédiate compense le garrot posé","Acceptable pour les petites veines uniquement","Faux et dangereux — la pression veineuse avec garrot posé cause un hématome même avec compression","Correct si le patient est sous anticoagulants"],
+   correct:2,diff:"difficile",
+   exp_ok:"Faux. La pression veineuse avec garrot posé est trop élevée. Même une compression immédiate ne peut pas compenser. L'hématome est inévitable.",
+   exp_err:"L'autorité du chef de service ne change pas la physiologie. Cette pratique est incorrecte quel que soit l'expérimentateur.",
+   rule:"<strong>Garrot AVANT l'aiguille. Sans exception, même sur ordre d'un supérieur.</strong>",xp:25},
+
+  {cat:"Piège — Désinfection",context:null,
+   q:"Un interne vous dit qu'il a lu une étude montrant que souffler sur le site de ponction accélère le séchage sans risque si la bouche est propre. Votre réaction ?",svg:null,
+   choices:["Intéressant — si la bouche est propre, le risque est négligeable","Acceptable uniquement si le patient est immunocompétent","Faux — souffler introduit la flore buccale sur la zone désinfectée, quelle que soit la propreté de la bouche","Peut-être valable en situation d'urgence pour gagner du temps"],
+   correct:2,diff:"difficile",
+   exp_ok:"Souffler sur une zone désinfectée y introduit systématiquement la flore buccale (streptocoques, staphylocoques...), annulant l'antisepsie. Aucune exception.",
+   exp_err:"La propreté perçue de la bouche est subjective et ne change pas la réalité microbiologique. La flore buccale normale est incompatible avec une zone désinfectée.",
+   rule:"<strong>Ne jamais souffler sur une zone désinfectée. Jamais. Aucune exception.</strong>",xp:20},
+
+  {cat:"Piège — Tubes",context:null,
+   q:"Résultat K+ = 8,4 mmol/L sur tube violet. Le patient est asymptomatique et son ECG est normal. Quelle est votre première hypothèse ?",svg:null,
+   choices:["Hyperkaliémie vraie — appeler le médecin en urgence","Erreur de laboratoire — redemander le bilan","Hémolyse du tube probable — le résultat est un faux positif à vérifier","Erreur préanalytique — le K+ ne doit pas être dosé sur tube violet (EDTA)"],
+   correct:3,diff:"difficile",
+   exp_ok:"C'est une <strong>erreur préanalytique</strong> : le K+ ne doit jamais être dosé sur tube violet. L'EDTA utilisé comme anticoagulant est le dipotassium EDTA (K2-EDTA) ou tripotassium EDTA (K3-EDTA) — il contient du potassium, ce qui fausse directement la mesure. Le K+ doit être dosé sur tube jaune (gel séparateur) ou tube vert (héparine de lithium).",
+   exp_err:"Même si l'hémolyse peut aussi élever le K+, la cause principale ici est l'erreur de tube. Le tube violet contient de l'EDTA potassique qui contamine directement l'échantillon. Ce n'est pas une erreur du laboratoire — c'est une erreur de prélèvement.",
+   rule:"<strong>K+ = jamais sur tube violet (EDTA potassique). Tube jaune ou tube vert uniquement.</strong>",xp:25},
+
+  {cat:"Piège — Identité",context:null,
+   q:"Vous entrez dans la chambre et le patient dit spontanément 'c'est pour la prise de sang de M. Martin ?' avant que vous ayez parlé. Que faites-vous ?",svg:null,
+   choices:["Confirmer et procéder — il a lui-même décliné son identité","Répondre 'oui' et demander uniquement sa date de naissance","Demander au patient de décliner lui-même son nom ET sa date de naissance sans lui souffler la réponse","Vérifier uniquement sur le bracelet puisqu'il a cité son nom"],
+   correct:2,diff:"difficile",
+   exp_ok:"Le patient doit décliner activement son identité complète sans que vous lui souffliez la réponse. Le fait qu'il ait cité lui-même un nom ne remplace pas la procédure. Il pourrait confondre son nom avec celui de son voisin de chambre.",
+   exp_err:"Confirmer un nom que le patient a cité lui-même n'est pas une vérification valide. Il pourrait avoir entendu le nom d'un autre patient.",
+   rule:"<strong>Le patient déclare son identité sans aide. Toujours demander, jamais souffler.</strong>",xp:20},
+
+  {cat:"Piège — Compression",context:null,
+   q:"Le patient dit 'je peux plier le bras, ça comprime mieux, c'est ce que font toutes les infirmières'. Vous lui répondez ?",svg:null,
+   choices:["Il a raison — la flexion du coude augmente la compression sur la veine","D'accord si c'est son habitude — chaque patient est différent","Non — plier le bras déplace la compresse hors du site et favorise l'hématome — bras tendu obligatoire","Seulement s'il est sous anticoagulants"],
+   correct:2,diff:"difficile",
+   exp_ok:"Plier le bras déplace mécaniquement la compresse et crée un point de compression sur la saignée plutôt que sur le site de ponction, favorisant l'hématome. C'est un mythe très répandu, même parmi les soignants.",
+   exp_err:"La conviction du patient ou l'habitude ne change pas la mécanique. Bras tendu est la seule position efficace.",
+   rule:"<strong>Bras tendu = compression directe sur le site. Plier le bras = mythe dangereux.</strong>",xp:20},
+
+  {cat:"Piège — AES",context:null,
+   q:"Après le prélèvement, vous recapuchonnez l'aiguille 'avec une seule main' comme enseigné dans certaines formations. C'est ?",svg:null,
+   choices:["Acceptable — la technique à une main est validée et sûre","Acceptable uniquement si vous êtes expérimenté","Toujours à risque — la recommandation actuelle est de ne JAMAIS recapuchonner, quelle que soit la technique","Valable seulement pour les aiguilles fines (25G)"],
+   correct:2,diff:"difficile",
+   exp_ok:"La recommandation actuelle est de ne jamais recapuchonner, même à une main. Le container DASRI doit être accessible directement. La technique à une main était une ancienne recommandation de compromis, désormais dépassée.",
+   exp_err:"Même la technique à une main présente un risque résiduel. Les recommandations actuelles sont claires : container DASRI directement, sans recapuchonner.",
+   rule:"<strong>Ne jamais recapuchonner. Même à une main. Container DASRI directement.</strong>",xp:20},
+
+  {cat:"Piège — Garrot",context:null,
+   q:"Le garrot est posé depuis 1 minute 50. Vous n'avez toujours pas trouvé de veine. Que faites-vous ?",svg:null,
+   choices:["Attendre encore 2-3 minutes — certains patients nécessitent plus de temps","Piquer sans repérer clairement la veine pour ne pas dépasser 2 minutes","Retirer le garrot immédiatement, laisser reposer le bras 2 minutes, puis recommencer","Serrer le garrot plus fort pour faire ressortir la veine rapidement"],
+   correct:2,diff:"difficile",
+   exp_ok:"À 1 min 50, vous approchez de la limite de 2 minutes. Il faut retirer le garrot, laisser le bras reposer 2 minutes pour permettre la reperméabilisation veineuse, puis recommencer.",
+   exp_err:"Dépasser 2 minutes fausse les analyses (hémoconcentration). Piquer sans repérage est dangereux. Serrer davantage comprime les veines au lieu de les dilater.",
+   rule:"<strong>Garrot max 2 min → retirer → pause 2 min → recommencer.</strong>",xp:25},
+
+  {cat:"Piège — Tubes",context:null,
+   q:"Vous avez agité vigoureusement le tube violet par erreur. Le sang semble homogène. Que faites-vous ?",svg:null,
+   choices:["L'envoyer quand même — le sang est bien mélangé, c'est l'essentiel","L'envoyer en signalant au laboratoire que le tube a été agité","Réaliser un nouveau prélèvement — le tube est potentiellement hémolysé et les résultats seront faussés","Retourner doucement le tube 8 fois pour corriger"],
+   correct:2,diff:"difficile",
+   exp_ok:"Un tube agité vigoureusement est probablement hémolysé, même si le sang paraît homogène. L'hémolyse fausse le potassium, le LDH, les transaminases. Un nouveau prélèvement est nécessaire.",
+   exp_err:"L'aspect homogène ne garantit pas l'absence d'hémolyse — les globules rouges peuvent être lysés sans que cela soit visible à l'œil nu. Signaler ne suffit pas.",
+   rule:"<strong>Tube agité vigoureusement = nouveau prélèvement obligatoire.</strong>",xp:25},
+
+  {cat:"Piège — Protocole",context:null,
+   q:"Un patient refuse que vous vérifiez son identité en disant 'ça fait 10 jours que je suis là, tout le monde me connaît'. Que faites-vous ?",svg:null,
+   choices:["Accepter — il est hospitalisé depuis longtemps, le risque est négligeable","Vérifier uniquement avec le bracelet sans lui demander","Expliquer calmement que la vérification est obligatoire pour sa sécurité, et insister respectueusement","Procéder au soin sans vérification pour respecter ses souhaits"],
+   correct:2,diff:"difficile",
+   exp_ok:"La vérification d'identité est obligatoire avant chaque soin, indépendamment de la durée d'hospitalisation. Vous expliquez calmement que c'est une règle de sécurité pour lui, et vous insistez respectueusement.",
+   exp_err:"La durée d'hospitalisation ne dispense pas de la vérification. La conformité réglementaire prime sur la préférence du patient dans ce cas précis.",
+   rule:"<strong>Vérification d'identité obligatoire avant chaque soin. Sans exception.</strong>",xp:20},
+
+  {cat:"Piège — Asepsie",context:null,
+   q:"Vous désinfectez, attendez le séchage, puis cherchez à nouveau la veine avec votre doigt ganté. Faut-il redésinfecter ?",svg:null,
+   choices:["Non — les gants sont propres donc la désinfection reste valable","Non — si le toucher est rapide, la contamination est négligeable","Oui — tout contact après désinfection, même ganté, nécessite une nouvelle désinfection","Seulement si vous avez appuyé fort sur la veine"],
+   correct:2,diff:"difficile",
+   exp_ok:"Tout contact avec la zone désinfectée après l'antisepsie — même ganté — impose une nouvelle désinfection. Les gants ne sont pas stériles et recontaminent la zone.",
+   exp_err:"Les gants non stériles portent une flore cutanée et environnementale. Tout contact après désinfection annule cette dernière, même avec des gants.",
+   rule:"<strong>Toucher après désinfection = recommencer la désinfection.</strong>",xp:25},
+
+  {cat:"Piège — Complications",context:null,
+   q:"Le patient fait une réaction vagale (pâleur, sueurs, bradycardie à 44). Votre collègue dit 'finissons vite le prélèvement avant qu'il perde connaissance'. Vous ?",svg:null,
+   choices:["Elle a raison — finir rapidement évite une deuxième ponction","Peut-être — si vous êtes à 90% du prélèvement, finir est raisonnable","Non — retirer immédiatement l'aiguille, allonger le patient, jambes surélevées, surveiller","Continuer seulement si le patient est conscient et donne son accord"],
+   correct:2,diff:"difficile",
+   exp_ok:"Réaction vagale = retrait immédiat de l'aiguille en priorité absolue. Si le patient perd connaissance avec l'aiguille en place, il risque un traumatisme grave. Allonger, jambes surélevées, surveillance TA/FC.",
+   exp_err:"Finir le prélèvement n'est jamais prioritaire sur la sécurité du patient. Un nouveau prélèvement peut toujours être fait plus tard.",
+   rule:"<strong>Vagal : aiguille retirée → allonger → jambes surélevées → surveillance. Pas de compromis.</strong>",xp:25},
+
+  {cat:"Piège — Matériel",context:null,
+   q:"Votre aiguille ne possède pas de système sécurisé rétractable. Vous pouvez ?",svg:null,
+   choices:["L'utiliser normalement — tous les types d'aiguilles sont équivalents","L'utiliser mais recapuchonner à une main avant d'aller au container DASRI","Ne pas l'utiliser — les aiguilles sans dispositif sécurisé sont interdites en établissement de soins","L'utiliser mais demander à un collègue de tenir le capuchon pendant que vous rangez"],
+   correct:2,diff:"difficile",
+   exp_ok:"En établissement de soins, les aiguilles doivent être équipées d'un dispositif de sécurité (rétractable ou capuchon automatique) conformément à la directive européenne 2010/32/UE. Les aiguilles non sécurisées sont interdites.",
+   exp_err:"Recapuchonner, même à une main, reste un risque. La solution est de ne pas utiliser ce matériel non conforme et de le signaler.",
+   rule:"<strong>Aiguilles sans dispositif sécurisé = interdites en établissement de soins (directive 2010/32/UE).</strong>",xp:25},
+];
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let mode='learn', questions=[], qi=0;
+let xp=0, streak=0, bestStreak=0, correct=0, wrong=0, lives=3;
+let timerInterval=null, timeLeft=45, totalTime=0, answered=false;
+let catScores={}, errors=[], score=100;
+let selectedTubes=new Set(), tubeAnswered=false;
+let examTubeDone=false; // flag: tube question done in exam mode
+
+/* ═══════════════════════════════════════════════
+   WELCOME
+═══════════════════════════════════════════════ */
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); mode=m;
+}
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;selectedTubes=new Set();tubeAnswered=false;examTubeDone=false;
+
+  if(mode==='learn'){
+    questions=[...STEPS_LEARN]; // ordre fixe — étapes dans l'ordre du protocole
+    document.getElementById('mode-badge-tb').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+
+  } else if(mode==='exam'){
+    // 1 cas de tubes tiré au hasard + questions intermédiaires mélangées
+    const cas=CLINICAL_CASES[Math.floor(Math.random()*CLINICAL_CASES.length)];
+    cas._isTubeQuestion=true;
+    questions=[cas,...[...Q_EXAM].sort(()=>Math.random()-0.5)];
+    document.getElementById('mode-badge-tb').textContent='🏥 Cas cliniques';
+    document.getElementById('lives-pill').style.display='none';
+
+  } else {
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('mode-badge-tb').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  }
+  showScreen('s-quiz');
+  loadQ();
+}
+
+/* ═══════════════════════════════════════════════
+   QUIZ ENGINE
+═══════════════════════════════════════════════ */
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi]; answered=false; selectedTubes=new Set(); tubeAnswered=false;
+  document.getElementById('tb-pf').style.width=(qi/questions.length*100)+'%';
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('exp-box').classList.remove('show','ok','err','warn');
+  document.getElementById('next-btn').classList.remove('show');
+  document.getElementById('tube-submit').disabled=true;
+  document.getElementById('tube-submit').style.display='block';
+
+  if(mode==='learn'){
+    // Affiche l'étape dans l'ordre, avec explication + question de validation
+    loadStep(q);
+  } else if(mode==='exam' && q._isTubeQuestion){
+    document.getElementById('tb-ql').textContent=`Q1/${questions.length}`;
+    loadClinicalCase(q);
+  } else {
+    loadStandardQ(q);
+  }
+  startTimer();
+}
+
+function loadStep(step){
+  // Reset
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('rx-card').style.display='none';
+  document.getElementById('tube-selector').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('choices').style.display='flex';
+
+  // Show step header
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg
+    ?`<div class="q-illus">${step.svg}</div>`:'';
+
+  // Step explanation card shown in context box
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon||'📋';
+  document.getElementById('ctx-patient').textContent=`Étape ${step.num} — ${step.title}`;
+  document.getElementById('ctx-text').textContent='';
+  // Build rich explanation
+  const ctxText = document.getElementById('ctx-text');
+  ctxText.innerHTML=`<span style="display:block;margin-bottom:5px">${step.what}</span><span style="display:block;font-size:11px;color:rgba(255,255,255,0.55);margin-top:4px;font-style:normal">⚠️ ${step.why}</span>`;
+
+  // Validation question
+  document.getElementById('q-text').innerHTML=`<span style="font-size:13px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;display:block;margin-bottom:6px">✅ Question de validation</span>${step.q}`;
+
+  const ch=document.getElementById('choices'); ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step); ch.appendChild(b);
+  });
+
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};
+  catScores[step.cat].t++;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return; answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const earned=8*(streak>=3?2:1);xp+=earned;catScores[step.cat].c++;
+    floatXP(earned,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>Règle :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`La bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>Règle :</strong> ${step.rule}`);
+  }
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+  document.getElementById('next-btn').textContent = qi===questions.length-1 ? 'Voir mon rapport →' : `Étape suivante (${qi+2}/${questions.length}) →`;
+}
+
+function loadStandardQ(q){
+  // Hide prescription/tubes
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('rx-card').style.display='none';
+  document.getElementById('tube-selector').style.display='none';
+  document.getElementById('q-card').style.display='block';
+  document.getElementById('choices').style.display='flex';
+
+  // Context
+  if(q.context){
+    document.getElementById('ctx-box').style.display='flex';
+    document.getElementById('ctx-ico').textContent=q.context.icon||'🏥';
+    document.getElementById('ctx-patient').textContent=q.context.patient||'';
+    document.getElementById('ctx-text').textContent=q.context.ctx||'';
+  }
+
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML=q.svg?`<div class="q-illus">${q.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=q.q;
+
+  const ch=document.getElementById('choices'); ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q); ch.appendChild(b);
+  });
+
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};
+  catScores[q.cat].t++;
+}
+
+function loadClinicalCase(cas){
+  // Show prescription + tube selector
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=cas.ctx_icon||'🏥';
+  document.getElementById('ctx-patient').textContent=cas.patient||'';
+  document.getElementById('ctx-text').textContent=cas.context||'';
+
+  document.getElementById('rx-hospital').textContent=cas.hospital;
+  const d=new Date(); document.getElementById('rx-date').textContent=d.toLocaleDateString('fr-FR');
+  const nameParts=cas.patient.split(',')[0].split(' ');
+  document.getElementById('rx-patient-name').textContent=cas.patient.split(',')[0];
+  document.getElementById('rx-dob').textContent=cas.dob;
+  document.getElementById('rx-room').textContent=cas.room;
+  document.getElementById('rx-doctor').textContent=cas.doctor;
+  document.getElementById('rx-items').innerHTML=cas.items.map(i=>`<div class="rx-item">${i}</div>`).join('');
+  document.getElementById('rx-card').style.display='block';
+
+  // Build tube selector
+  const tg=document.getElementById('tubes-grid'); tg.innerHTML='';
+  Object.entries(TUBES_DEF).forEach(([id,tube])=>{
+    const btn=document.createElement('button'); btn.className='tube-btn'; btn.id='tb-'+id;
+    btn.innerHTML=`
+      <div class="tube-visual" style="border-color:${tube.color};background:${tube.bg}">
+        <div class="tube-fill" style="height:60%;background:${tube.fill}"></div>
+      </div>
+      <div class="tube-name">${tube.name.replace('Tube ','')}</div>
+      <div class="tube-content">${tube.content}</div>
+      <div class="tube-check">${cas.correct_tubes.includes(id)?'✅':'❌'}</div>`;
+    btn.onclick=()=>toggleTube(id,btn);
+    tg.appendChild(btn);
+  });
+  document.getElementById('tube-selector').style.display='block';
+  document.getElementById('q-card').style.display='none';
+  document.getElementById('choices').style.display='none';
+
+  if(!catScores['Prescription & Tubes'])catScores['Prescription & Tubes']={c:0,t:0};
+  catScores['Prescription & Tubes'].t++;
+}
+
+function toggleTube(id,btn){
+  if(tubeAnswered)return;
+  if(selectedTubes.has(id)){ selectedTubes.delete(id); btn.classList.remove('selected'); btn.style.borderColor=''; }
+  else { selectedTubes.add(id); btn.classList.add('selected'); btn.style.borderColor=TUBES_DEF[id].color; }
+  document.getElementById('tube-submit').disabled=selectedTubes.size===0;
+}
+
+function submitTubes(){
+  if(tubeAnswered)return; tubeAnswered=true; clearInterval(timerInterval);
+  const cas=questions[qi];
+  const correct_set=new Set(cas.correct_tubes);
+  const selected=selectedTubes;
+  const isCorrect=[...correct_set].every(t=>selected.has(t))&&[...selected].every(t=>correct_set.has(t));
+  const isPartial=[...correct_set].some(t=>selected.has(t))&&!isCorrect;
+
+  // Color tubes
+  Object.keys(TUBES_DEF).forEach(id=>{
+    const btn=document.getElementById('tb-'+id);
+    if(!btn)return;
+    btn.disabled=true;
+    if(correct_set.has(id)&&selected.has(id)){btn.classList.add('correct-sel');}
+    else if(selected.has(id)&&!correct_set.has(id)){btn.classList.add('wrong-sel');}
+    else if(correct_set.has(id)&&!selected.has(id)){btn.classList.add('missed-tube');}
+  });
+  document.getElementById('tube-submit').style.display='none';
+
+  if(isCorrect){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    xp+=cas.xp*(streak>=3?2:1); floatXP(cas.xp,streak>=3);
+    catScores['Prescription & Tubes'].c++;
+    updateUI();
+    showExp('ok','✅','Sélection correcte !',cas.explanation+(cas.piege?`<br><br><em>💡 Piège à éviter : ${cas.piege}</em>`:''));
+  } else {
+    wrong++;streak=0; score=Math.max(0,score-20);
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){setTimeout(showResult,1500);return;}}
+    errors.push({q:`Cas : ${cas.patient}`,correct:`Tubes corrects : ${cas.correct_tubes.join(', ')}`});
+    updateUI();
+    showExp('err','❌','Sélection incorrecte',
+      (isPartial?'Sélection <strong>partielle</strong>. ':'')+'Tubes requis : <strong>'+cas.correct_tubes.map(t=>TUBES_DEF[t].name).join(', ')+'</strong>.<br><br>'+cas.explanation+(cas.piege?`<br><br><em>💡 Piège : ${cas.piege}</em>`:''));
+  }
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return; answered=true; clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓ Correct</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗ Incorrect</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const earned=q.xp*(streak>=3?2:1);xp+=earned;catScores[q.cat].c++;
+    floatXP(earned,streak>=3);
+    if(mode==='learn')showExp('ok','✅','Bonne réponse !',q.exp_ok,q.rule);
+  } else {
+    wrong++;streak=0; score=Math.max(0,score-15);
+    errors.push({q:q.q.replace(/<[^>]+>/g,''),correct:q.choices[q.correct]});
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){setTimeout(showResult,1500);return;}}
+    if(mode==='learn')showExp('err','❌','Erreur',q.exp_err,q.rule);
+  }
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');
+  eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+/* ═══════════════════════════════════════════════
+   TIMER
+═══════════════════════════════════════════════ */
+function startTimer(){
+  clearInterval(timerInterval);
+  // learn=no timer, exam=45s for tube question then 30s for others, survival=30s
+  let dur=0;
+  if(mode==='exam') dur = (questions[qi]&&questions[qi]._isTubeQuestion) ? 60 : 30;
+  else if(mode==='survival') dur=25;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;
+  document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--blue)';num.className='t-num';
+  arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);  // dur captured in closure
+    num.textContent=timeLeft;
+    if(timeLeft<=10){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(questions[qi]&&questions[qi]._isTubeQuestion&&!tubeAnswered){
+        tubeAnswered=true;wrong++;score=Math.max(0,score-20);
+        errors.push({q:'Sélection de tubes — temps écoulé',correct:'Tubes requis : '+questions[qi].correct_tubes.join(', ')});
+        document.getElementById('tube-submit').disabled=true;
+        // Afficher les bons tubes
+        Object.keys(TUBES_DEF).forEach(id=>{const b=document.getElementById('tb-'+id);if(b){b.disabled=true;if(questions[qi].correct_tubes.includes(id))b.classList.add('missed-tube');}});
+        document.getElementById('next-btn').classList.add('show');
+        updateUI();
+      } else if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        document.getElementById('next-btn').classList.add('show');
+        updateUI();
+      }
+    }
+  },1000);
+}
+
+/* ═══════════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════════ */
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  const sp=document.getElementById('streak-pill');
+  sp.classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:60px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+/* ═══════════════════════════════════════════════
+   RESULT
+═══════════════════════════════════════════════ */
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const pct=Math.round(correct/total*100);
+  const modeLabels={learn:'📚 Mode Apprentissage — Protocole en ordre',exam:'🏥 Mode Cas Cliniques — Questions mixtes',survival:'💀 Mode Survie — Questions pièges'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#eff6ff',tc:'#1d4ed8',brd:'#bfdbfe'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;
+  document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs · ${pct}%`;
+  const rm=document.getElementById('rm');
+  rm.textContent=gd.m; rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+
+  // Breakdown
+  const bd=document.getElementById('bd-items'); bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+
+  // Erreurs
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,5).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q.substring(0,80)}${e.q.length>80?'...':''}</div><div>→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+
+  // Conseils
+  const cons=[];
+  if(note<10)cons.push("📋 Commencez par le mode Apprentissage pour revoir les bases avec les explications complètes.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'au 18/20 pour confirmer la maîtrise complète du protocole.");
+  if(mode==='learn'&&note>=16)cons.push("🏥 Excellent ! Passez au mode Cas Cliniques pour vous entraîner sur des prescriptions réelles.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Prêt(e) pour le mode Expert ? Testez vos limites avec des questions pièges et 3 vies seulement.");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise totale du bilan sanguin atteinte. Passez au prochain protocole.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(s.t&&s.c/s.t<0.6){
+      if(cat.includes('tube')||cat.includes('Tube')||cat.includes('Prescription'))cons.push("🧪 Retravailler l'identification des tubes et l'ordre de prélèvement.");
+      if(cat.includes('garrot')||cat.includes('Garrot'))cons.push("🔴 L'ordre Garrot → Aiguille est une règle absolue. Recommencer jusqu'à automatisme complet.");
+      if(cat.includes('dentité'))cons.push("🏷️ La double vérification d'identité est non négociable. Revoir le protocole.");
+      if(cat.includes('omplica'))cons.push("🔍 Revoir la gestion des complications : hématome, réaction vagale, absence de retour sanguin.");
+      if(cat.includes('écurité')||cat.includes('AES'))cons.push("🛡️ Revoir les procédures AES — connaissance obligatoire pour tout soignant.");
+    }
+  });
+  if(!cons.length)cons.push("🎯 Excellent travail sur tous les axes. Maintenez ce niveau en pratique.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

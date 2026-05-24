@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — ECG</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--card:#1c2128;--card2:#262c36;
+  --bl:#e63946;--bll:#4a0e14;--blm:#ff6b75;
+  --gr:#2ea043;--grl:#0d2818;--grm:#56d364;
+  --or:#d97706;--orl:#451a03;--orm:#fcd34d;
+  --pu:#7c3aed;--pul:#2e1065;--pum:#a78bfa;
+  --tl:#0891b2;--tll:#083344;--tlm:#38bdf8;
+  --pk:#db2777;--pkl:#500724;--pkm:#f9a8d4;
+  --text:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --bd:#30363d;--bd2:#21262d;
+  --sh:0 4px 24px rgba(0,0,0,.4);--shm:0 8px 40px rgba(0,0,0,.6);
+}
+html,body{min-height:100vh;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes correct-flash{0%{background:var(--grl)}50%{background:rgba(46,160,67,.3)}100%{background:var(--grl)}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+.hdr{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hl{display:flex;align-items:center;gap:10px}
+.hico{width:34px;height:34px;background:linear-gradient(135deg,var(--bl),var(--pk));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 2px 10px rgba(230,57,70,.4)}
+.hn{font-size:14px;font-weight:700;color:var(--text)}.hs{font-size:10px;color:var(--t2)}
+.hbadge{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:700}
+/* WELCOME */
+.wb{max-width:840px;margin:0 auto;padding:24px 18px 50px;animation:up .4s ease}
+.hero{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bd);border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:var(--sh);display:flex;gap:16px;align-items:center}
+.hero-ico{font-size:42px;flex-shrink:0}.ht{font-family:'DM Serif Display',serif;font-size:20px;color:var(--blm);margin-bottom:4px}
+.hd{font-size:12.5px;color:var(--t2);line-height:1.65}
+.elec-preview{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:18px}
+@media(max-width:540px){.elec-preview{grid-template-columns:repeat(3,1fr)}}
+.ep{background:var(--card2);border:1px solid var(--bd);border-radius:10px;padding:9px;text-align:center}
+.ep-dot{width:20px;height:20px;border-radius:50%;margin:0 auto 5px;border:2px solid}
+.ep-name{font-size:10.5px;font-weight:700;color:var(--text);margin-bottom:1px}
+.ep-pos{font-size:9px;color:var(--t2)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stc{background:var(--card2);border:1px solid var(--bd);border-radius:11px;padding:12px;text-align:center}
+.stv{font-size:19px;font-weight:800;margin-bottom:2px}.stl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:20px}
+@media(max-width:560px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--card);border:1.5px solid var(--bd);border-radius:14px;padding:17px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--mc,var(--bl));opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--bl));box-shadow:0 0 0 1px var(--mc,var(--bl)),var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc-ico{font-size:24px;margin-bottom:8px;display:block}.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'→';color:var(--mc,var(--bl));font-weight:700;flex-shrink:0}
+.launch{width:100%;padding:15px;background:linear-gradient(135deg,var(--bl),var(--pk));border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 4px 20px rgba(230,57,70,.4)}
+.launch:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(230,57,70,.6)}
+/* FICHE */
+.fb{max-width:860px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 20px;margin-bottom:15px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'DM Serif Display',serif;color:var(--blm)}
+.fsub{font-size:10.5px;color:var(--t2);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 11px;border:1px solid var(--bd);border-radius:20px;background:transparent;font-size:10px;font-weight:600;cursor:pointer;color:var(--t2);font-family:'Outfit',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--bl);color:var(--blm)}.ftab.on{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--bll)}
+/* electrode table */
+.etbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
+.etbl th{background:var(--bll);color:var(--blm);padding:8px 11px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid var(--bl)}
+.etbl td{padding:9px 11px;border-bottom:1px solid var(--bd);color:var(--t2)}
+.etbl tr:hover td{background:var(--card2)}
+.etbl .name{color:var(--text);font-weight:700}
+.etbl .val{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:700}
+.color-dot{width:16px;height:16px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;border:2px solid rgba(255,255,255,.2)}
+/* steps */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px;color:var(--blm)}
+.sc2{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:7px}
+.sc2.crit{border-color:var(--blm);border-left:3px solid var(--bl)}
+.sc2.att{border-color:var(--orm);border-left:3px solid var(--or)}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--card2)}
+.sn2{width:24px;height:24px;border-radius:6px;background:var(--bll);border:1px solid var(--bl);color:var(--blm);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.sc2.crit .sn2{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.sc2.att .sn2{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.si2{flex:1}.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--bll);border-color:var(--blm);color:var(--blm)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--orm)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pum)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc2.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc2.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--pum);line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--or);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--orm);line-height:1.6}
+.serr{background:var(--bll);border:1px solid var(--blm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--blm);line-height:1.55;margin-top:6px}
+.scons{background:var(--grl);border:1px solid var(--gr);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--grm);line-height:1.55;margin-top:6px}
+.memo{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.8;margin-bottom:10px}
+.mh{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.mn{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--blm)}
+/* QUIZ */
+#stb{background:var(--card);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-b{width:26px;height:26px;background:linear-gradient(135deg,var(--bl),var(--pk));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-t{font-size:12px;font-weight:700;color:var(--blm)}
+.tbm{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bl),var(--pk));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.pst{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.pst.hot{background:var(--orl);border-color:var(--or);color:var(--orm);animation:blink 1s infinite}
+.plv{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bd);stroke-width:3.5}
+.tia{fill:none;stroke:var(--bl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--blm)}
+#qb{flex:1;padding:16px;max-width:700px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--bll),#300a10);border:1px solid var(--bl);border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.06);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:2px;opacity:.7}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px;color:var(--text)}
+.ctx-body{font-size:12px;color:var(--t2);line-height:1.65;font-family:'DM Serif Display',serif;font-style:italic}
+.qcard{background:var(--card);border:1px solid var(--bd);border-radius:15px;padding:18px 20px;margin-bottom:11px;animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--bll);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--blm)}
+.qct{font-size:9.5px;font-weight:700;color:var(--blm);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.qtext{font-family:'DM Serif Display',serif;font-size:16px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--blm)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card2);border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'Outfit',sans-serif;line-height:1.5;transition:all .15s}
+.ch:hover:not(:disabled){border-color:var(--bl);background:var(--bll);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);font-family:'JetBrains Mono',monospace;transition:all .2s}
+.ch.ok2{background:var(--grl);border-color:var(--grm)}.ch.ok2 .cl{background:var(--gr);border-color:var(--gr);color:white}
+.ch.ko{background:var(--bll);border-color:var(--blm);animation:shake .4s ease}.ch.ko .cl{background:var(--bl);border-color:var(--bl);color:white}
+.ch.mis{background:var(--grl);border-color:var(--grm);opacity:.6}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--grl);color:var(--grm);border-color:var(--gr)}.ctag-ko{background:var(--bll);color:var(--blm);border-color:var(--bl)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--grl);border-color:var(--grm)}.expb.ko{background:var(--bll);border-color:var(--blm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--grm)}.exptt.ko{color:var(--blm)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--bg3);border-left:3px solid var(--bl);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--blm)}
+.nxt{width:100%;padding:12px;background:linear-gradient(135deg,var(--bl),var(--pk));border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 12px rgba(230,57,70,.35)}
+.nxt.on{display:block}.nxt:hover{box-shadow:0 4px 20px rgba(230,57,70,.5)}
+#qft{background:var(--card);border-top:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fs2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fs2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--orm);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'JetBrains Mono',monospace}
+/* RÉSULTAT */
+.rb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.rh{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:26px;text-align:center;margin-bottom:12px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.rh::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--pk),var(--gr))}
+.rg{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rs{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'DM Serif Display',serif}
+.rsb{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rmen{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--card);border:1px solid var(--bd);border-radius:11px;padding:13px;text-align:center}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bkd{background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:12px}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:12px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd3{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errb{background:var(--bll);border:1px solid var(--blm);border-radius:13px;padding:14px;margin-bottom:12px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blm);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsb{background:var(--grl);border:1px solid var(--gr);border-radius:13px;padding:14px;margin-bottom:12px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--grm);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rbtn{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.rbp{background:linear-gradient(135deg,var(--bl),var(--pk));color:white;box-shadow:0 2px 12px rgba(230,57,70,.35)}.rbp:hover{box-shadow:0 4px 20px rgba(230,57,70,.5)}
+.rbs{background:var(--card);border:1.5px solid var(--bd);color:var(--text)}.rbs:hover{border-color:var(--blm)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
+/* ══ SIMULATEUR DRAG & DROP ══ */
+#s-dnd{background:var(--bg);overflow-y:auto}
+.sim-hdr{background:var(--card);border-bottom:1px solid var(--bd);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.sim-title{font-size:13px;font-weight:700;color:var(--text)}
+.sim-tabs{display:flex;gap:5px}
+.sim-tab{padding:5px 11px;border:1px solid var(--bd);border-radius:20px;background:transparent;font-size:10.5px;font-weight:600;cursor:pointer;color:var(--t2);font-family:'Outfit',sans-serif;transition:all .18s}
+.sim-tab.on{border-color:var(--bl);color:var(--blm);background:var(--bll)}
+.sim-wrap{max-width:1140px;margin:0 auto;padding:14px 16px 50px;display:grid;grid-template-columns:1fr 240px;gap:14px;align-items:start}
+@media(max-width:740px){.sim-wrap{grid-template-columns:1fr}}
+/* Panneau corps */
+.body-panel{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh)}
+.body-panel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.body-panel-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700}
+.aide-btn{padding:5px 12px;border:1px solid var(--bl);border-radius:20px;background:transparent;color:var(--blm);font-size:10.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .18s}
+.aide-btn:hover{background:var(--bll)}
+.aide-btn.active{background:var(--bl);color:#fff}
+/* Zone corps — plus large, pas de max-width contraignante */
+.body-drop{position:relative;width:100%;cursor:crosshair;border-radius:12px;overflow:hidden;border:1.5px dashed var(--bd);transition:border-color .2s;background:var(--card2)}
+.body-drop.drag-over{border-color:var(--blm);background:rgba(230,57,70,.04)}
+.body-drop svg{width:100%;height:auto;display:block;pointer-events:none}
+/* Placements */
+.place-dot{position:absolute;width:34px;height:34px;border-radius:50%;border:3px solid;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:800;transform:translate(-50%,-50%);cursor:pointer;transition:all .2s;box-shadow:0 2px 10px rgba(0,0,0,.5);z-index:5}
+.place-dot:hover{transform:translate(-50%,-50%) scale(1.12)}
+.place-dot.ok{box-shadow:0 0 0 4px rgba(34,197,94,.5),0 2px 10px rgba(0,0,0,.5)}
+.place-dot.ko{box-shadow:0 0 0 4px rgba(239,68,68,.5),0 2px 10px rgba(0,0,0,.5)}
+/* Aide — fantômes */
+.guide-dot{position:absolute;width:34px;height:34px;border-radius:50%;border:2px dashed;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;transform:translate(-50%,-50%);opacity:.7;pointer-events:none;z-index:4}
+/* Panneau droit */
+.side-panel{display:flex;flex-direction:column;gap:12px}
+.palette-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh)}
+.palette-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.token-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.tok{width:50px;height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;border:2.5px solid;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:all .18s;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.tok:hover{transform:scale(1.1);box-shadow:0 5px 18px rgba(0,0,0,.45)}
+.tok.used{opacity:.18;cursor:not-allowed;pointer-events:none}
+.tok.dragging{opacity:.3;transform:scale(.88)}
+#sim-ghost{position:fixed;z-index:9999;border-radius:10px;display:none;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:800;border:2.5px solid;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 8px 28px rgba(0,0,0,.6);width:50px;height:50px}
+.prog-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh)}
+.prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.prog-lbl{font-size:11px;color:var(--t2)}.prog-val{font-size:12px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace}
+.prog-bg{height:7px;background:var(--bg3);border-radius:4px;overflow:hidden;margin-bottom:12px}
+.prog-fg{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--bl),var(--gr));transition:width .5s ease}
+.log-card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;box-shadow:var(--sh)}
+.log-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:8px}
+.log-body{max-height:160px;overflow-y:auto}
+.log-item{font-size:11px;padding:4px 0;border-bottom:1px solid var(--bd);color:var(--t2);display:flex;align-items:center;gap:5px}
+.log-item .ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.action-row{display:flex;gap:8px}
+.act-btn{flex:1;padding:10px;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.act-p{background:linear-gradient(135deg,var(--bl),var(--pk));color:#fff;box-shadow:0 2px 10px rgba(230,57,70,.3)}
+.act-p:hover{box-shadow:0 4px 18px rgba(230,57,70,.5)}
+.act-s{background:var(--card2);border:1px solid var(--bd);color:var(--t2)}.act-s:hover{border-color:var(--blm);color:var(--blm)}
+.res-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;z-index:200}
+.res-overlay.show{display:flex}
+.res-box{background:var(--card);border:1px solid var(--bl);border-radius:20px;padding:28px;text-align:center;max-width:400px;width:90%;box-shadow:var(--shm)}
+.res-grade{font-size:56px;margin-bottom:8px;animation:pop .4s ease both}
+.res-score{font-size:34px;font-weight:800;font-family:'DM Serif Display',serif;margin-bottom:4px;color:var(--text)}
+.res-msg{font-size:12.5px;color:var(--t2);margin-bottom:18px;line-height:1.6}
+.res-btns{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.res-btn-p{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:linear-gradient(135deg,var(--bl),var(--pk));color:#fff}
+.res-btn-s{padding:12px;border:1px solid var(--bd);border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;background:var(--card2);color:var(--text)}
+.score-pills{display:flex;gap:6px;flex-wrap:wrap}
+.score-pill{padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;border:1px solid}
+</style>
+</head>
+<body>
+</head><body>
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hl"><div class="hico">🫀</div><div><div class="hn">NurseSimPro</div><div class="hs">Formation infirmière premium</div></div></div>
+    <div class="hbadge">🫀 ECG 12 dérivations</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">🫀</div>
+      <div>
+        <div class="ht">Électrocardiogramme (ECG) — 12 dérivations</div>
+        <div class="hd">Maîtrisez la réalisation d'un ECG 12 dérivations : préparation du patient, code couleur CEI, repères anatomiques précis des 10 électrodes, positions standard (poignets/chevilles) et alternatives (épaules/crêtes iliaques), artefacts et erreurs, lecture du tracé. Et entraînez-vous avec le simulateur interactif de placement d'électrodes. Sources : Réussis ton IFSI 2023 · Infirmier.net · drexcomedical.fr · Sofia Medicalistes · Art. R.4311-5 CSP.</div>
+      </div>
+    </div>
+    <!-- Prévisualisation électrodes -->
+    <div class="elec-preview">
+      <div class="ep"><div class="ep-dot" style="background:#ef4444;border-color:#fca5a5;box-shadow:0 0 6px #ef4444"></div><div class="ep-name" style="color:#fca5a5">Rouge</div><div class="ep-pos">Bras droit</div></div>
+      <div class="ep"><div class="ep-dot" style="background:#eab308;border-color:#fde68a;box-shadow:0 0 6px #eab308"></div><div class="ep-name" style="color:#fde68a">Jaune</div><div class="ep-pos">Bras gauche</div></div>
+      <div class="ep"><div class="ep-dot" style="background:#1c1c1e;border-color:#e5e7eb;box-shadow:0 0 6px rgba(255,255,255,.3)"></div><div class="ep-name" style="color:#e5e7eb">Noir</div><div class="ep-pos">Jambe droite</div></div>
+      <div class="ep"><div class="ep-dot" style="background:#16a34a;border-color:#86efac;box-shadow:0 0 6px #16a34a"></div><div class="ep-name" style="color:#86efac">Vert</div><div class="ep-pos">Jambe gauche</div></div>
+      <div class="ep"><div class="ep-dot" style="background:#9333ea;border-color:#d8b4fe;box-shadow:0 0 6px #9333ea"></div><div class="ep-name" style="color:#d8b4fe">V1–V6</div><div class="ep-pos">Précordiales</div></div>
+    </div>
+    <div class="stats">
+      <div class="stc"><div class="stv" style="color:var(--blm)">14</div><div class="stl">Étapes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--pkm)">10</div><div class="stl">Électrodes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--orm)">12</div><div class="stl">Dérivations</div></div>
+      <div class="stc"><div class="stv" style="color:var(--grm)">5</div><div class="stl">Modes</div></div>
+    </div>
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#e63946" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Référence</span>
+        <div class="mc-badge" style="background:var(--bll);border-color:var(--bl);color:var(--blm)">📋 RÉFÉRENCE</div>
+        <div class="mc-desc">Code couleur CEI, repères anatomiques V1–V6, membres, positions alternatives, artefacts, tracé normal.</div>
+        <ul class="mc-ul" style="--mc:#e63946"><li>10 électrodes avec repères précis</li><li>2 positions de membres</li><li>Tracé normal P-QRS-T</li><li>Artefacts et erreurs</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#db2777" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:var(--pkl);border-color:var(--pk);color:var(--pkm)">⭐ DÉBUTANT</div>
+        <div class="mc-desc">14 étapes dans l'ordre, du matériel à la traçabilité. Question de validation à chaque étape. Pas de chrono.</div>
+        <ul class="mc-ul" style="--mc:#db2777"><li>Protocole complet dans l'ordre</li><li>Préparation + placement + vérification</li><li>Question de validation</li></ul>
+      </button>
+      <button class="mc" style="--mc:#d97706" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-badge" style="background:var(--orl);border-color:var(--or);color:var(--orm)">⭐⭐ INTERMÉDIAIRE</div>
+        <div class="mc-desc">15 questions : électrodes, repères, artefacts, code couleur, tracé normal, dérivations. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#d97706"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#7c3aed" onclick="setMode('survival',this)">
+        <span class="mc-ico">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-badge" style="background:var(--pul);border-color:var(--pu);color:var(--pum)">⭐⭐⭐ EXPERT</div>
+        <div class="mc-desc">10 pièges cliniques : inversion d'électrodes, artefacts, calibration, V1/V2 trop hauts... 3 vies, 25s.</div>
+        <ul class="mc-ul" style="--mc:#7c3aed"><li>10 pièges graves</li><li>3 vies · Chrono 25s</li></ul>
+      </button>
+      <button class="mc" style="--mc:#2ea043;grid-column:span 2" onclick="setMode('dnd',this)">
+        <span class="mc-ico">🎯</span><span class="mc-name">Simulateur — Placer les électrodes</span>
+        <div class="mc-badge" style="background:var(--grl);border-color:var(--gr);color:var(--grm)">🖱️ INTERACTIF</div>
+        <div class="mc-desc">Glissez-déposez chaque électrode sur le corps du patient. Mode poignet/cheville ET épaule/hanche. Correction immédiate. Réponse attendue par le programme.</div>
+        <ul class="mc-ul" style="--mc:#2ea043"><li>Drag &amp; Drop sur schéma corporel</li><li>Mode standard + mode alternatif</li><li>Correction et explication</li><li>Score et validation</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+<!-- FICHE -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📖</div><div><div class="hn">Fiche Référence — ECG</div><div class="hs">Réussis ton IFSI 2023 · Infirmier.net · Art. R.4311-5 CSP</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Électrocardiogramme (ECG) 12 dérivations</div><div class="fsub">Soin infirmier — Art. R.4311-5 CSP (rôle propre) · 10 électrodes · 12 dérivations</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('fe',this)">🔌 Électrodes</button>
+        <button class="ftab" onclick="showFTab('fp2',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('ft2',this)">📈 Tracé normal</button>
+        <button class="ftab" onclick="showFTab('fa2',this)">⚠️ Artefacts</button>
+        <button class="ftab" onclick="showFTab('fm2',this)">🧠 Mémo</button>
+      </div>
+    </div>
+    <!-- ÉLECTRODES -->
+    <div class="fsec on" id="fe">
+      <div class="fst">🔌 Électrodes des membres — Code couleur CEI (norme française)</div>
+      <div style="background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px;font-size:12px;color:var(--t2);line-height:1.7">
+        <strong style="color:var(--blm)">Mnémotechniques :</strong><br>
+        🌅 <strong>"Le soleil (jaune) se couche sur la prairie (vert)"</strong> → Jaune bras gauche (en haut, comme le soleil) · Vert jambe gauche (en bas, comme l'herbe)<br>
+        🩸 <strong>"Le sang (rouge) sur le bitume (noir)"</strong> → Rouge bras droit (en haut) · Noir jambe droite (en bas)<br>
+        <br>
+        <strong style="color:var(--blm)">Mémo anglais : RA · LA · RL · LL</strong> = Right Arm · Left Arm · Right Leg · Left Leg
+      </div>
+      <table class="etbl">
+        <tr><th>Électrode</th><th>Couleur CEI</th><th>Position standard<br>(poignet / cheville)</th><th>Position alternative<br>(épaule / hanche)</th><th>Rôle</th></tr>
+        <tr>
+          <td class="name">RA (bras droit)</td>
+          <td><span class="color-dot" style="background:#ef4444"></span><span class="val" style="color:#fca5a5">Rouge</span></td>
+          <td>Face interne du poignet droit</td>
+          <td>Épaule droite (creux sous-clav. droit)</td>
+          <td style="color:var(--t2)">Dérivations DI, aVR. Électrode de référence</td>
+        </tr>
+        <tr>
+          <td class="name">LA (bras gauche)</td>
+          <td><span class="color-dot" style="background:#eab308"></span><span class="val" style="color:#fde68a">Jaune</span></td>
+          <td>Face interne du poignet gauche</td>
+          <td>Épaule gauche (creux sous-clav. gauche)</td>
+          <td style="color:var(--t2)">Dérivations DI, DIII, aVL</td>
+        </tr>
+        <tr>
+          <td class="name">RL (jambe droite)</td>
+          <td><span class="color-dot" style="background:#1c1c1e"></span><span class="val" style="color:#e5e7eb">Noir</span></td>
+          <td>Face interne de la cheville droite</td>
+          <td>Crête iliaque droite (hanche droite)</td>
+          <td style="color:var(--t2)">Électrode de masse / neutre. Minimise les artefacts</td>
+        </tr>
+        <tr>
+          <td class="name">LL (jambe gauche)</td>
+          <td><span class="color-dot" style="background:#16a34a"></span><span class="val" style="color:#86efac">Vert</span></td>
+          <td>Face interne de la cheville gauche</td>
+          <td>Crête iliaque gauche (hanche gauche)</td>
+          <td style="color:var(--t2)">Dérivations DII, DIII, aVF</td>
+        </tr>
+      </table>
+      <div style="background:var(--bll);border:1.5px solid var(--blm);border-radius:11px;padding:13px 15px;margin-bottom:16px;font-size:12px;color:var(--t2);line-height:1.7">
+        ⚠️ <strong style="color:var(--blm)">Positions alternatives (épaules/crêtes iliaques) :</strong> Ces positions sont valides et acceptées à l'IFSI. Elles sont utilisées quand les poignets/chevilles sont inaccessibles (plâtre, amputation, perfusion...) ou pour réduire les artefacts de mouvement. <strong>Elles doivent être notées sur le tracé</strong> (ex : "électrodes membres sur épaules et crêtes iliaques") car elles modifient légèrement les axes électriques — important pour l'interprétation médicale.
+      </div>
+      <div class="fst">🔌 Électrodes précordiales — Repères anatomiques V1 à V6</div>
+      <div style="background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px;font-size:12px;color:var(--t2);line-height:1.7">
+        <strong style="color:var(--blm)">Repère de départ : Angle de Louis</strong><br>
+        Palper le sternum de haut en bas → sentir la jonction manubrium/corps sternal = <strong>angle de Louis</strong> → la côte qui s'articule en face est la 2e côte → l'espace en dessous = 2e EIC → compter jusqu'au 4e EIC pour V1/V2 → 5e EIC pour V4.
+      </div>
+      <table class="etbl">
+        <tr><th>Électrode</th><th>Position exacte</th><th>Repère</th></tr>
+        <tr><td class="name val" style="color:#dc2626">V1</td><td><strong>4e espace intercostal droit</strong>, bord droit du sternum</td><td>Angle de Louis → 4e EIC → bord droit sternum</td></tr>
+        <tr><td class="name val" style="color:#eab308">V2</td><td><strong>4e espace intercostal gauche</strong>, bord gauche du sternum</td><td>Symétrique de V1 par rapport au sternum</td></tr>
+        <tr><td class="name val" style="color:#16a34a">V3</td><td>À <strong>mi-distance entre V2 et V4</strong></td><td>Tracer une ligne droite entre V2 et V4, placer V3 au milieu</td></tr>
+        <tr><td class="name val" style="color:#8b5cf6">V4</td><td><strong>5e espace intercostal gauche</strong>, <strong>ligne médio-claviculaire gauche</strong></td><td>Repérer la clavicule gauche → ligne verticale par son milieu → 5e EIC</td></tr>
+        <tr><td class="name val" style="color:#f97316">V5</td><td><strong>Même horizontal que V4</strong>, <strong>ligne axillaire antérieure gauche</strong></td><td>Horizontale de V4 vers la ligne axillaire antérieure (bord antérieur du creux axillaire)</td></tr>
+        <tr><td class="name val" style="color:#ec4899">V6</td><td><strong>Même horizontal que V4 et V5</strong>, <strong>ligne axillaire moyenne gauche</strong></td><td>Horizontale de V4 vers la ligne axillaire moyenne (milieu du creux axillaire)</td></tr>
+      </table>
+      <div style="background:var(--card2);border:1px solid var(--bd);border-radius:11px;padding:13px 15px;font-size:11.5px;color:var(--t2);line-height:1.7">
+        <strong style="color:var(--blm)">⚠️ Point critique :</strong> V4-V5-V6 doivent être sur le <strong>même plan horizontal strict</strong>. Décaler verticalement ces électrodes modifie les amplitudes et peut simuler une ischémie. Une étude montre qu'un déplacement de 2 cm de V1/V2 entraîne une erreur d'interprétation dans 17-24% des cas.<br><br>
+        <strong style="color:var(--blm)">Sein volumineux :</strong> Soulever le sein gauche, poser V4-V6 au contact du thorax (pas sur le tissu mammaire), relâcher doucement sans déplacer les électrodes.
+      </div>
+    </div>
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="fp2">
+      <div class="fst">📋 Protocole — 14 étapes</div>
+      <div id="proto-ecg"></div>
+    </div>
+    <!-- TRACÉ NORMAL -->
+    <div class="fsec" id="ft2">
+      <div class="fst">📈 Lecture du tracé normal</div>
+      <div style="background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--blm);margin-bottom:12px">Paramètres standard de l'électrocardiographe</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--card);border-radius:8px;padding:9px 11px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:3px">Vitesse du papier</div><div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--grm)">25 mm/s</div><div style="font-size:10.5px;color:var(--t2);margin-top:2px">1 grand carré = 0,2 s · 5 grands carreaux = 1 s</div></div>
+          <div style="background:var(--card);border-radius:8px;padding:9px 11px"><div style="font-size:9px;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:3px">Amplitude (calibration)</div><div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;color:var(--grm)">10 mm = 1 mV</div><div style="font-size:10.5px;color:var(--t2);margin-top:2px">1 petit carré = 0,04 s · hauteur 10 mm = 1 mV</div></div>
+        </div>
+      </div>
+      <!-- Ondes P QRS T -->
+      <table class="etbl">
+        <tr><th>Onde / Segment</th><th>Signification</th><th>Valeur normale</th><th>Anomalie si...</th></tr>
+        <tr><td class="name val" style="color:#38bdf8">Onde P</td><td>Dépolarisation auriculaire (activation des oreillettes)</td><td>Durée &lt; 0,12 s · Axe positif en DII · Arrondie, petite</td><td>Absente = FA ou bloc sinusal · Large et bifide = hypertrophie OG</td></tr>
+        <tr><td class="name val" style="color:#a78bfa">Espace PR</td><td>Conduction atrio-ventriculaire (NAV)</td><td>0,12 – 0,20 s (3-5 petits carreaux)</td><td>&gt;0,20 s = BAV 1er degré · &lt;0,12 s = syndrome de pré-excitation (WPW)</td></tr>
+        <tr><td class="name val" style="color:#f87171">Complexe QRS</td><td>Dépolarisation ventriculaire</td><td>Durée &lt; 0,12 s (3 petits carreaux)</td><td>&gt;0,12 s = BBD/BBG · Amplitude accrue = HVG/HVD</td></tr>
+        <tr><td class="name val" style="color:#fbbf24">Segment ST</td><td>Plateau de repolarisation (phase 2)</td><td>Isoélectrique (plat)</td><td>Sus-décalage &gt;1 mm = IDM/péricardite · Sous-décalage = ischémie</td></tr>
+        <tr><td class="name val" style="color:#34d399">Onde T</td><td>Repolarisation ventriculaire</td><td>Positive dans DI, DII, V4-V6 · Même axe que QRS</td><td>Négative = ischémie · Ample pointue = hyperkaliémie</td></tr>
+        <tr><td class="name val" style="color:#94a3b8">Espace QT</td><td>Systole électrique ventriculaire</td><td>0,35 – 0,45 s (corrigé selon FC)</td><td>QT long = risque torsades de pointes</td></tr>
+      </table>
+    </div>
+    <!-- ARTEFACTS -->
+    <div class="fsec" id="fa2">
+      <div class="fst">⚠️ Artefacts et erreurs — Identification et prévention</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px">
+        <div style="background:var(--bll);border:1.5px solid var(--blm);border-radius:12px;padding:13px;font-size:11.5px;color:var(--t2);line-height:1.65">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--blm);margin-bottom:6px">📳 Artefact de myogramme</div>
+          Tracé haché, irrégulier, bruit haute fréquence sur toutes les dérivations.<br>
+          <strong>Cause :</strong> patient qui tremble (froid, Parkinson, anxiété), muscles contractés.<br>
+          <strong>Solution :</strong> demander au patient de se détendre, réchauffer, placer les bras le long du corps, couvrir.
+        </div>
+        <div style="background:var(--bll);border:1.5px solid var(--blm);border-radius:12px;padding:13px;font-size:11.5px;color:var(--t2);line-height:1.65">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--blm);margin-bottom:6px">🔌 Parasite secteur 50 Hz</div>
+          Oscillations régulières à 50 oscillations/sec superposées au tracé.<br>
+          <strong>Cause :</strong> lit électrique branché, équipements électriques proches, mauvais contact électrode-peau.<br>
+          <strong>Solution :</strong> débrancher le lit électrique, éloigner appareils, dégraisser la peau.
+        </div>
+        <div style="background:var(--bll);border:1.5px solid var(--blm);border-radius:12px;padding:13px;font-size:11.5px;color:var(--t2);line-height:1.65">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--blm);margin-bottom:6px">🌊 Dérive de la ligne de base</div>
+          Oscillations lentes de la ligne isoélectrique (mouvement de basse fréquence).<br>
+          <strong>Cause :</strong> respiration du patient, mouvement du thorax, électrode mal fixée.<br>
+          <strong>Solution :</strong> demander une apnée lors de l'enregistrement si besoin, vérifier l'adhérence des électrodes.
+        </div>
+        <div style="background:var(--bll);border:1.5px solid var(--blm);border-radius:12px;padding:13px;font-size:11.5px;color:var(--t2);line-height:1.65">
+          <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--blm);margin-bottom:6px">🔄 Inversion d'électrodes (membres)</div>
+          DI négatif + aVR anormalement positif + onde P négative en DI.<br>
+          <strong>Cause :</strong> inversion Rouge/Jaune (bras droit-gauche) ou Rouge/Noir.<br>
+          <strong>Solution :</strong> vérifier le branchement avant tout. Inversion RA/LA = ECG miroir = erreur diagnostique grave.
+        </div>
+      </div>
+      <div style="background:var(--grl);border:1px solid var(--gr);border-radius:11px;padding:13px 15px;font-size:12px;color:var(--t2);line-height:1.7">
+        <strong style="color:var(--grm)">✅ Préparation de la peau pour réduire les artefacts :</strong><br>
+        1. Tonte des poils si nécessaire (tondeuse, jamais rasoir sec = irritation)<br>
+        2. Dépoussiérer/dégraisser avec une compresse alcoolique (laisser sécher)<br>
+        3. Légère abrasion si mauvais contact (frottement doux avec la compresse)<br>
+        4. Appliquer du gel conducteur si utilisation de ventouses (anciens ECG)<br>
+        5. Vérifier la péremption des électrodes autocollantes (elles sèchent avec le temps)
+      </div>
+    </div>
+    <!-- MÉMO -->
+    <div class="fsec" id="fm2">
+      <div class="fst">🧠 Mémo rapide</div>
+      <div class="memo" style="background:var(--card2);border:1px solid var(--bd);color:var(--t2)">
+        <div class="mh" style="color:var(--blm)">🔌 Code couleur CEI (norme France)</div>
+        <span class="mn" style="color:#fca5a5">Rouge</span> = bras droit ·
+        <span class="mn" style="color:#fde68a">Jaune</span> = bras gauche ·
+        <span class="mn" style="color:#93c5fd">Noir</span> = jambe droite ·
+        <span class="mn" style="color:#86efac">Vert</span> = jambe gauche<br><br>
+        🌅 <strong>"Le soleil se couche sur la prairie"</strong> = Jaune (haut) + Vert (bas) côté gauche<br>
+        🩸 <strong>"Le sang sur le bitume"</strong> = Rouge (haut) + Noir (bas) côté droit
+      </div>
+      <div class="memo" style="background:var(--grl);border:1px solid var(--gr);color:var(--t2)">
+        <div class="mh" style="color:var(--grm)">📍 Repères précordiales</div>
+        <span class="mn" style="color:#dc2626">V1</span> : 4e EIC droit, bord droit sternum ·
+        <span class="mn" style="color:#eab308">V2</span> : 4e EIC gauche, bord gauche sternum<br>
+        <span class="mn" style="color:#16a34a">V3</span> : mi-distance V2–V4 ·
+        <span class="mn" style="color:#8b5cf6">V4</span> : 5e EIC, ligne médio-clav. G<br>
+        <span class="mn" style="color:#f97316">V5</span> : même horiz. V4, ligne axil. ant. G ·
+        <span class="mn" style="color:#ec4899">V6</span> : même horiz., ligne axil. moy. G<br><br>
+        Repère : <strong>Angle de Louis → 2e côte → 2e EIC → 4e EIC (V1/V2) → 5e EIC (V4)</strong>
+      </div>
+      <div class="memo" style="background:var(--bll);border:1px solid var(--blm);color:var(--t2)">
+        <div class="mh" style="color:var(--blm)">↕️ Positions alternatives membres</div>
+        Standard : poignet droit/gauche + cheville droite/gauche (face interne)<br>
+        Alternative : épaule droite/gauche + crête iliaque droite/gauche<br>
+        <strong>Les deux sont valides — noter sur le tracé si alternative utilisée</strong>
+      </div>
+      <div class="memo" style="background:var(--orl);border:1px solid var(--orm);color:var(--orm)">
+        <div class="mh" style="color:var(--orm)">⚠️ Erreurs critiques</div>
+        • Inverser R/J = ECG miroir = fausse interprétation d'infarctus<br>
+        • Lit électrique branché = parasites 50 Hz<br>
+        • Patient qui tremble = artefacts myogramme<br>
+        • V1/V2 trop hauts (3e EIC) = QRS négatifs en V1-V2 = pseudo-BBD<br>
+        • V4-V5-V6 non alignés horizontalement = erreur d'amplitude<br>
+        • Ne pas noter "épaules/hanches" sur le tracé = interprétation erronée
+      </div>
+    </div>
+  </div>
+</div>
+<!-- QUIZ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-b">🫀</div><span class="tbl-t">ECG</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw"><div class="tbql" id="tbql">1/14</div><div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div></div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">🫀</div>
+      <div style="flex:1"><div class="ctx-sub" id="ctxsb">Étape</div><div class="ctx-title" id="ctxtl"></div><div class="ctx-body" id="ctxbd"></div></div>
+    </div>
+    <div class="qcard">
+      <div class="qtop"><div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div><span class="qnum" id="qnum">1</span></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fs2">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="fs2">❌ <strong id="sw2">0</strong> erreurs</div>
+    <div class="fs2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+<!-- SIMULATEUR DRAG & DROP -->
+<div class="scr" id="s-dnd">
+  <div class="sim-hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="tbl-b">🎯</div>
+      <div class="sim-title">Simulateur — Placement des électrodes</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <div class="sim-tabs">
+        <button class="sim-tab on" onclick="simSetMode('standard',this)">Poignets / Chevilles</button>
+        <button class="sim-tab" onclick="simSetMode('alt',this)">Épaules / Hanches</button>
+      </div>
+      <button onclick="showScr('sw')" style="padding:5px 11px;border:1.5px solid #e2e8f0;border-radius:20px;background:#fff;cursor:pointer;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;color:#64748b">← Menu</button>
+    </div>
+  </div>
+  <div class="sim-wrap">
+    <!-- Corps -->
+    <div class="body-panel">
+      <div class="body-panel-top">
+        <div class="body-panel-title" id="sim-mode-lbl">Mode standard — Poignets &amp; Chevilles</div>
+        <div class="score-pills" id="sim-score-pills" style="display:none"></div>
+      </div>
+      <div class="body-drop" id="body-drop">
+        <!-- SVG anatomique détaillé -->
+        <svg viewBox="0 0 380 640" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto">
+          <rect width="380" height="640" fill="transparent"/>
+
+          <!-- === TÊTE === -->
+          <ellipse cx="190" cy="44" rx="36" ry="40" fill="#253245" stroke="#475569" stroke-width="1.5"/>
+          <!-- Oreilles -->
+          <ellipse cx="155" cy="48" rx="7" ry="11" fill="#253245" stroke="#475569" stroke-width="1"/>
+          <ellipse cx="225" cy="48" rx="7" ry="11" fill="#253245" stroke="#475569" stroke-width="1"/>
+
+          <!-- === COU === -->
+          <path d="M175 82 Q190 88 205 82 L208 108 Q190 114 172 108 Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+
+          <!-- === TORSE LARGE === -->
+          <!-- Corps principal -->
+          <path d="M120 108 C98 116 94 145 93 185 L93 320 C93 334 130 342 190 342 C250 342 287 334 287 320 L287 185 C286 145 282 116 260 108 Q230 104 190 104 Q150 104 120 108Z" fill="#253245" stroke="#475569" stroke-width="1.8"/>
+
+          <!-- Sternum — repère central -->
+          <line x1="190" y1="108" x2="190" y2="328" stroke="#64748b" stroke-width="1.2" stroke-dasharray="5 4" opacity=".6"/>
+          <text x="192" y="128" font-size="8" fill="#64748b" font-family="sans-serif" opacity=".8">Sternum</text>
+
+          <!-- Clavicule droite -->
+          <path d="M120 112 Q150 104 172 108" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <text x="122" y="108" font-size="7.5" fill="#64748b" font-family="sans-serif">Clav. D</text>
+
+          <!-- Clavicule gauche -->
+          <path d="M260 112 Q230 104 208 108" stroke="#94a3b8" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <text x="230" y="108" font-size="7.5" fill="#64748b" font-family="sans-serif">Clav. G</text>
+
+          <!-- Angle de Louis — repère clé -->
+          <ellipse cx="190" cy="140" rx="6" ry="4" fill="none" stroke="#f97316" stroke-width="1.5"/>
+          <line x1="197" y1="140" x2="218" y2="136" stroke="#f97316" stroke-width=".8" opacity=".7"/>
+          <text x="220" y="139" font-size="8" fill="#f97316" font-family="sans-serif" font-weight="700">Angle de Louis</text>
+
+          <!-- Côtes - repères des EIC -->
+          <!-- 1ère côte -->
+          <path d="M172 120 Q145 118 130 124" stroke="#374151" stroke-width="1.2" fill="none" stroke-dasharray="3 2" opacity=".5"/>
+          <path d="M208 120 Q235 118 250 124" stroke="#374151" stroke-width="1.2" fill="none" stroke-dasharray="3 2" opacity=".5"/>
+          <!-- 2ème côte (à l'angle de Louis) -->
+          <path d="M172 134 Q148 130 130 138" stroke="#475569" stroke-width="1.4" fill="none" stroke-dasharray="4 3" opacity=".6"/>
+          <path d="M208 134 Q232 130 250 138" stroke="#475569" stroke-width="1.4" fill="none" stroke-dasharray="4 3" opacity=".6"/>
+          <!-- 3ème côte -->
+          <path d="M172 150 Q143 147 125 158" stroke="#374151" stroke-width="1.2" fill="none" stroke-dasharray="3 2" opacity=".45"/>
+          <path d="M208 150 Q237 147 255 158" stroke="#374151" stroke-width="1.2" fill="none" stroke-dasharray="3 2" opacity=".45"/>
+          <!-- 4ème côte (V1/V2) -->
+          <path d="M172 165 Q140 162 120 174" stroke="#e63946" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity=".55"/>
+          <path d="M208 165 Q240 162 260 174" stroke="#e63946" stroke-width="1.5" fill="none" stroke-dasharray="4 3" opacity=".55"/>
+          <text x="100" y="174" font-size="7.5" fill="#e63946" font-family="sans-serif" opacity=".8" text-anchor="end">4e EIC</text>
+          <!-- 5ème côte (V4) -->
+          <path d="M165 182 Q136 180 112 196" stroke="#8b5cf6" stroke-width="1.4" fill="none" stroke-dasharray="4 3" opacity=".5"/>
+          <path d="M215 182 Q244 180 268 196" stroke="#8b5cf6" stroke-width="1.4" fill="none" stroke-dasharray="4 3" opacity=".5"/>
+          <text x="100" y="196" font-size="7.5" fill="#8b5cf6" font-family="sans-serif" opacity=".8" text-anchor="end">5e EIC</text>
+          <!-- Rebord costal bas -->
+          <path d="M120 275 Q150 290 190 293 Q230 290 260 275" stroke="#475569" stroke-width="1.4" fill="none" stroke-dasharray="4 3" opacity=".5"/>
+
+          <!-- Ligne axillaire antérieure gauche -->
+          <line x1="252" y1="145" x2="265" y2="280" stroke="#f97316" stroke-width=".8" stroke-dasharray="3 3" opacity=".4"/>
+          <!-- Ligne axillaire moyenne gauche -->
+          <line x1="275" y1="150" x2="282" y2="280" stroke="#ec4899" stroke-width=".8" stroke-dasharray="3 3" opacity=".4"/>
+          <!-- Ligne médio-claviculaire gauche -->
+          <line x1="244" y1="108" x2="248" y2="290" stroke="#8b5cf6" stroke-width=".8" stroke-dasharray="3 3" opacity=".35"/>
+
+          <!-- Labels lignes à droite -->
+          <text x="287" y="185" font-size="6.5" fill="#f97316" font-family="sans-serif" opacity=".7">Axil.ant.</text>
+          <text x="287" y="220" font-size="6.5" fill="#ec4899" font-family="sans-serif" opacity=".7">Axil.moy.</text>
+          <text x="252" y="105" font-size="6.5" fill="#8b5cf6" font-family="sans-serif" opacity=".6" text-anchor="middle">Méd-clav.</text>
+
+          <!-- === BRAS DROIT === -->
+          <path d="M122 110 C100 120 92 152 90 180 L88 226 C87 236 95 238 103 238 L112 238 C120 238 124 232 124 224 L126 180 C128 152 132 120 122 110Z" fill="#253245" stroke="#475569" stroke-width="1.3"/>
+          <!-- Avant-bras D -->
+          <path d="M88 226 C85 244 84 268 83 286 L83 308 C83 317 90 319 97 318 L105 318 C112 317 115 311 115 305 L115 286 C116 268 117 244 112 238Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Poignet D -->
+          <ellipse cx="96" cy="328" rx="16" ry="12" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <text x="65" y="332" font-size="8" fill="#94a3b8" font-family="sans-serif" text-anchor="end">Poignet D</text>
+
+          <!-- === BRAS GAUCHE === -->
+          <path d="M258 110 C280 120 288 152 290 180 L292 226 C293 236 285 238 277 238 L268 238 C260 238 256 232 256 224 L254 180 C252 152 248 120 258 110Z" fill="#253245" stroke="#475569" stroke-width="1.3"/>
+          <!-- Avant-bras G -->
+          <path d="M292 226 C295 244 296 268 297 286 L297 308 C297 317 290 319 283 318 L275 318 C268 317 265 311 265 305 L265 286 C264 268 263 244 268 238Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Poignet G -->
+          <ellipse cx="284" cy="328" rx="16" ry="12" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <text x="315" y="332" font-size="8" fill="#94a3b8" font-family="sans-serif">Poignet G</text>
+
+          <!-- === BASSIN === -->
+          <path d="M93 318 C82 334 84 358 96 370 L124 376 L190 378 L256 376 L284 370 C296 358 298 334 287 318Z" fill="#253245" stroke="#475569" stroke-width="1.6"/>
+          <!-- Crêtes iliaques -->
+          <path d="M93 335 Q120 330 148 333" stroke="#94a3b8" stroke-width="1.5" fill="none" opacity=".7"/>
+          <path d="M287 335 Q260 330 232 333" stroke="#94a3b8" stroke-width="1.5" fill="none" opacity=".7"/>
+          <text x="68" y="340" font-size="7.5" fill="#94a3b8" font-family="sans-serif" text-anchor="end" opacity=".8">Crête il. D</text>
+          <text x="312" y="340" font-size="7.5" fill="#94a3b8" font-family="sans-serif" opacity=".8">Crête il. G</text>
+          <!-- Épaules labels pour mode alt -->
+          <text x="100" y="124" font-size="7.5" fill="#94a3b8" font-family="sans-serif" text-anchor="end" opacity=".7">Épaule D</text>
+          <text x="280" y="124" font-size="7.5" fill="#94a3b8" font-family="sans-serif" opacity=".7">Épaule G</text>
+
+          <!-- === JAMBES === -->
+          <!-- Cuisse D -->
+          <path d="M106 368 C98 382 97 415 97 445 L97 482 C97 490 105 492 113 492 L122 492 C130 491 133 486 133 480 L133 445 C133 415 131 382 123 368Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Bas jambe D -->
+          <path d="M97 482 C96 504 96 534 97 554 L97 570 C97 580 104 581 112 581 L121 581 C129 580 132 575 132 569 L132 554 C133 534 133 504 133 482Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Cheville D -->
+          <ellipse cx="112" cy="590" rx="20" ry="10" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <text x="68" y="594" font-size="8" fill="#94a3b8" font-family="sans-serif" text-anchor="end">Cheville D</text>
+
+          <!-- Cuisse G -->
+          <path d="M274 368 C282 382 283 415 283 445 L283 482 C283 490 275 492 267 492 L258 492 C250 491 247 486 247 480 L247 445 C247 415 249 382 257 368Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Bas jambe G -->
+          <path d="M283 482 C284 504 284 534 283 554 L283 570 C283 580 276 581 268 581 L259 581 C251 580 248 575 248 569 L248 554 C247 534 247 504 247 482Z" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <!-- Cheville G -->
+          <ellipse cx="268" cy="590" rx="20" ry="10" fill="#253245" stroke="#475569" stroke-width="1.2"/>
+          <text x="312" y="594" font-size="8" fill="#94a3b8" font-family="sans-serif">Cheville G</text>
+        </svg>
+        <!-- Placements utilisateur + guides aide -->
+        <div id="sim-placements"></div>
+        <div id="sim-guides" style="display:none"></div>
+      </div>
+      <div style="font-size:10.5px;color:#94a3b8;margin-top:8px;text-align:center">
+        Glissez les électrodes depuis la palette et déposez-les sur le corps 👆
+      </div>
+    </div>
+    <!-- Panneau droit -->
+    <div class="side-panel">
+      <div class="palette-card">
+        <div class="palette-title">Électrodes à placer</div>
+        <div class="token-wrap" id="sim-tokens"></div>
+      </div>
+      <div class="prog-card">
+        <div class="prog-row">
+          <span class="prog-lbl">Progression</span>
+          <span class="prog-val"><span id="sim-n">0</span>/10</span>
+        </div>
+        <div class="prog-bg"><div class="prog-fg" id="sim-fg" style="width:0%"></div></div>
+        <div class="action-row">
+          <button class="act-btn act-s" onclick="simReset()">↺</button>
+          <button class="act-btn act-s aide-btn" id="aide-btn" onclick="simToggleAide()">💡 Aide</button>
+          <button class="act-btn act-p" onclick="simCorrect()">Corriger ✓</button>
+        </div>
+      </div>
+      <div class="log-card">
+        <div class="log-title">Journal</div>
+        <div class="log-body" id="sim-log"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Ghost -->
+  <div id="sim-ghost"></div>
+  <!-- Overlay -->
+  <div class="res-overlay" id="sim-overlay">
+    <div class="res-box">
+      <div class="res-grade" id="sim-grade">🎓</div>
+      <div class="res-score" id="sim-sc">0/10</div>
+      <div class="res-msg" id="sim-msg">—</div>
+      <div style="margin-bottom:14px;font-size:11.5px;color:#64748b;line-height:1.6" id="sim-errors"></div>
+      <div class="res-btns">
+        <button class="res-btn-s" onclick="simReset()">↺ Recommencer</button>
+        <button class="res-btn-p" onclick="showScr('sw')">← Menu</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- RÉSULTAT -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hl"><div class="hico">🫀</div><div><div class="hn">Rapport — ECG</div></div></div></div>
+  <div class="rb">
+    <div class="rh">
+      <span class="rg" id="rg">🎓</span>
+      <div class="rs" id="rs">--/20</div>
+      <div class="rsb" id="rsb">--</div>
+      <div class="rmen" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--orm)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--orm)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--blm)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--grm)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errb" id="errb" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsb"><div class="cnst">💡 Conseils</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rbtn rbs" onclick="showScr('sw')">← Menu</button>
+      <button class="rbtn rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Sources : Réussis ton IFSI 2023 · Infirmier.net · drexcomedical.fr
+   Sofia Medicalistes · Art. R.4311-5 CSP · SCST 2024 */
+const ST=[
+{n:1,cat:"Cadre légal & Indications",ico:"📋",crit:false,att:false,
+ title:"Cadre légal et indications de l'ECG",
+ what:"La réalisation d'un ECG relève du <strong>rôle propre infirmier</strong> (Art. R.4311-5 CSP — 2004). Indications : douleur thoracique, palpitations, malaise/syncope, bradycardie ou tachycardie, bilan préopératoire, suivi de traitement cardiotrope ou antiarythmique, état de choc, déficit neurologique inexpliqué, suspicion d'hyperkaliémie. L'ECG est non invasif, indolore et prend 5-10 minutes.",
+ why:"Bien que de rôle propre, l'ECG est réalisé pour répondre à une situation clinique. L'infirmier doit connaître les indications pour proposer ou réaliser l'examen de manière pertinente.",
+ rule:"ECG = rôle propre infirmier (Art. R.4311-5). Non invasif et indolore. Identifier les indications.",
+ q:"Un patient présente des palpitations et une sensation de malaise. L'ECG relève de ?",
+ ch:["Rôle prescrit — prescription médicale obligatoire","Rôle propre infirmier (Art. R.4311-5) — pas de prescription requise","Délégation médicale uniquement","Acte médical exclusif"],
+ ok:1},
+{n:2,cat:"Préparation du patient",ico:"👤",crit:false,att:true,
+ title:"Préparer et installer le patient",
+ what:"Informez le patient du soin (non douloureux, indolore, durée 5-10 min). Installez en <strong>décubitus dorsal strict</strong>, torse nu. <strong>Retirer :</strong> bijoux et montres métalliques. <strong>Débrancher le lit électrique</strong> (parasite 50 Hz). Éloigner appareils électriques. Fermer les fenêtres (froid → tremblements → artefacts). Le patient ne doit pas parler, ni bouger, ni être en apnée forcée durant l'enregistrement. Respiration calme et régulière.",
+ why:"Un patient semi-assis modifie l'axe électrique cardiaque. Les bijoux métalliques créent des artefacts. Le lit électrique produit des parasites 50 Hz. Le moindre mouvement génère des artefacts myogramme qui rendent le tracé illisible.",
+ rule:"Décubitus dorsal strict. Torse nu. Bijoux retirés. Lit électrique débranché. Patient immobile et détendu. Respiration calme.",
+ q:"Le lit du patient est électrique et branché. Vous allez réaliser un ECG. Vous ?",
+ ch:["Réalisez l'ECG normalement — le lit électrique n'a pas d'influence","Débranchez le lit électrique avant l'ECG — il génère des parasites 50 Hz qui perturbent le tracé","Débranchez uniquement les appareils de perfusion","Allumez le filtre anti-parasite de l'électrocardiographe"],
+ ok:1},
+{n:3,cat:"SHA & Matériel",ico:"🧰",crit:false,att:false,
+ title:"Préparer le matériel",
+ what:"Matériel nécessaire : électrocardiographe avec papier millimétré, 10 électrodes autocollantes à usage unique (ou ventouses avec gel conducteur), câbles de connexion (4 pour les membres, 6 pour les précordiales), compresses alcooliques pour dégraisser la peau, éventuellement tondeuse pour les poils. Vérifier la calibration de l'appareil (10 mm/mV) et la vitesse (25 mm/s). SHA avant la pose des électrodes.",
+ why:"Des électrodes périmées ou sèches collent mal et créent des artefacts. La calibration incorrecte fausse l'amplitude des ondes. Un mauvais contact peau-électrode est la 1ère cause d'artefacts.",
+ rule:"10 électrodes. Calibration 10 mm/mV et 25 mm/s. Vérifier péremption et état des électrodes. SHA.",
+ q:"Comment vérifiez-vous que la calibration de l'électrocardiographe est correcte ?",
+ ch:["En demandant à un collègue de vérifier la machine","En vérifiant que le signal de calibration = 10 mm de hauteur (1 mV) et que la vitesse = 25 mm/s sur le tracé","En comparant avec le dernier ECG du patient","Ce n'est pas le rôle de l'infirmier"],
+ ok:1},
+{n:4,cat:"Préparation de la peau",ico:"🧴",crit:true,att:false,
+ title:"Préparer la peau — Dégraisser et tondre si nécessaire",
+ what:"La préparation de la peau est indispensable pour un signal de qualité :<br>① Si poils denses : tondre avec une tondeuse (jamais raser à sec = irritation cutanée qui augmente la résistance). <br>② Dépoussiérer et <strong>dégraisser avec une compresse alcoolique</strong> sur chaque site d'électrode (sébum et cellules mortes augmentent la résistance électrique).<br>③ Laisser sécher complètement avant de poser l'électrode.<br>④ Légère abrasion si signal toujours mauvais.",
+ why:"Le sébum et les cellules mortes de la peau créent une résistance électrique élevée qui réduit le signal et génère des artefacts. Une peau bien préparée réduit de 60-80% les artefacts. Raser à sec irrite la peau et augmente la résistance.",
+ rule:"Tondre (pas raser à sec). Dégraisser avec alcool. Laisser sécher. Abrasion si besoin. La préparation de la peau = 1ère action contre les artefacts.",
+ q:"Pourquoi faut-il dégraisser la peau avant de poser les électrodes ECG ?",
+ ch:["Pour une meilleure adhérence du sparadrap de l'électrode","Le sébum et les cellules mortes créent une résistance électrique qui réduit la qualité du signal et génère des artefacts","Pour éliminer les germes — soin stérile","Pour respecter le protocole administratif"],
+ ok:1},
+{n:5,cat:"Électrodes membres — Standard",ico:"🔌",crit:true,att:false,
+ title:"Placer les électrodes des membres (standard)",
+ what:"Position standard :<br>• <span style='color:#fca5a5;font-weight:700'>Rouge (RA)</span> : <strong>face interne du poignet droit</strong><br>• <span style='color:#fde68a;font-weight:700'>Jaune (LA)</span> : <strong>face interne du poignet gauche</strong><br>• <span style='color:#d1d5db;font-weight:700'>Noir (RL)</span> : <strong>face interne de la cheville droite</strong><br>• <span style='color:#86efac;font-weight:700'>Vert (LL)</span> : <strong>face interne de la cheville gauche</strong><br><br>Mnémotechnique : <strong>le soleil (jaune) se couche sur la prairie (vert)</strong> = jaune en haut gauche, vert en bas gauche. <strong>Le sang (rouge) sur le bitume (noir)</strong> = rouge en haut droit, noir en bas droit.",
+ why:"Les électrodes sur la face interne évitent les reliefs osseux et permettent un meilleur contact. L'inversion rouge/jaune produit un ECG miroir qui peut être interprété à tort comme un infarctus.",
+ rule:"Rouge = poignet D · Jaune = poignet G · Noir = cheville D · Vert = cheville G. Face interne. Mnémotechnique : soleil/prairie et sang/bitume.",
+ q:"Sur quelle face du poignet place-t-on les électrodes de membres ?",
+ ch:["Face postérieure (dorsale)","Face interne (palmaire / antérieure) — meilleur contact, relief plat","N'importe quelle face tant que le contact est bon","Face externe (dorsale du coude)"],
+ ok:1},
+{n:6,cat:"Électrodes membres — Alternative",ico:"🔌",crit:false,att:true,
+ title:"Position alternative — Épaules et crêtes iliaques",
+ what:"Quand les poignets/chevilles sont inaccessibles (plâtre, amputation, perfusion, œdème) ou pour réduire les artefacts de mouvement :<br>• <span style='color:#fca5a5;font-weight:700'>Rouge</span> : <strong>épaule droite</strong> (creux sous-claviculaire droit, espace sous la clavicule)<br>• <span style='color:#fde68a;font-weight:700'>Jaune</span> : <strong>épaule gauche</strong> (creux sous-claviculaire gauche)<br>• <span style='color:#93c5fd;font-weight:700'>Noir</span> : <strong>crête iliaque droite</strong> (hanche droite)<br>• <span style='color:#86efac;font-weight:700'>Vert</span> : <strong>crête iliaque gauche</strong> (hanche gauche)<br><br><strong>Obligatoire : noter sur le tracé</strong> 'électrodes membres sur épaules et crêtes iliaques' car cette position modifie légèrement les axes électriques.",
+ why:"Les électrodes de membres sur le torse réduisent les artefacts de mouvement. Mais elles modifient les axes frontaux (DI, DII, DIII, aVR, aVL, aVF) par rapport à la position standard. C'est la configuration 'Mason-Likar' utilisée en monitoring de surveillance continue.",
+ rule:"Alternative valide : épaules + crêtes iliaques. Obligatoire de le noter sur le tracé. Cette configuration = Mason-Likar.",
+ q:"Votre patient a un plâtre au poignet droit et une perfusion au poignet gauche. Vous placez l'électrode rouge à ?",
+ ch:["Sur le plâtre, par-dessus","Sur le poignet opposé (gauche)","Épaule droite (creux sous-claviculaire droit) — position alternative valide quand le poignet est inaccessible","Directement sur le thorax, n'importe où"],
+ ok:2},
+{n:7,cat:"Électrodes précordiales V1-V2",ico:"🔌",crit:true,att:false,
+ title:"Placer V1 et V2 — Repère : Angle de Louis",
+ what:"<strong>Comment repérer :</strong><br>① Palper le sternum de haut en bas → sentir la jonction manubrium/corps = <strong>Angle de Louis</strong><br>② La côte articulée en face = 2e côte → espace en dessous = 2e EIC<br>③ Descendre : 3e EIC → 4e EIC<br><br>• <span style='color:#dc2626;font-weight:700'>V1</span> : <strong>4e EIC droit, bord droit du sternum</strong><br>• <span style='color:#eab308;font-weight:700'>V2</span> : <strong>4e EIC gauche, bord gauche du sternum</strong> (symétrique de V1)",
+ why:"V1 et V2 au 3e EIC (trop haut) génère des QRS négatifs en V1-V2 simulant un pseudo-BBD. C'est l'erreur de placement la plus fréquente (retrouvée dans 30-70% des ECG en pratique). La déviation de 2 cm entraîne une erreur d'interprétation dans 17-24% des cas.",
+ rule:"V1 : 4e EIC droit, bord droit sternum. V2 : 4e EIC gauche, bord gauche sternum. Repère : Angle de Louis → 2e côte → 4e EIC.",
+ q:"Pour trouver le 4e espace intercostal (site de V1/V2), quel repère palpez-vous ?",
+ ch:["La manubrium (haut du sternum) et compter 4 côtes","L'Angle de Louis (jonction manubrium/corps sternal) → 2e côte → descendre jusqu'au 4e EIC","La clavicule et compter 4 espaces vers le bas","Le xiphoïde et remonter de 4 espaces"],
+ ok:1},
+{n:8,cat:"Électrodes précordiales V3-V4",ico:"🔌",crit:true,att:false,
+ title:"Placer V3 et V4",
+ what:"• <span style='color:#16a34a;font-weight:700'>V3</span> : exactement à <strong>mi-distance entre V2 et V4</strong>. Placer V4 d'abord, puis tracer mentalement la ligne entre V2 et V4 et placer V3 au milieu.<br><br>• <span style='color:#8b5cf6;font-weight:700'>V4</span> : <strong>5e espace intercostal gauche, ligne médio-claviculaire gauche</strong>. Repère : palper la clavicule gauche → tracer la verticale par son milieu → descendre jusqu'au 5e EIC.<br><br><strong>Ordre conseillé :</strong> placer V4 en premier (repère pour V3), puis V3 à mi-distance.",
+ why:"V4 est le pivot des dérivations précordiales : il sert de repère pour V3, V5 et V6. Une V4 mal placée entraîne une erreur en cascade sur toutes les électrodes suivantes.",
+ rule:"V3 : mi-distance V2-V4. V4 : 5e EIC gauche, ligne médio-claviculaire gauche. Placer V4 AVANT V3.",
+ q:"Pourquoi est-il conseillé de placer V4 avant V3 ?",
+ ch:["Pour respecter l'ordre numérique croissant","V4 sert de repère pour placer V3 (mi-distance V2–V4) — placer V3 d'abord obligerait à l'estimer approximativement","Pour des raisons d'hygiène","L'ordre n'a pas d'importance"],
+ ok:1},
+{n:9,cat:"Électrodes précordiales V5-V6",ico:"🔌",crit:true,att:false,
+ title:"Placer V5 et V6 — Alignement horizontal strict",
+ what:"• <span style='color:#f97316;font-weight:700'>V5</span> : <strong>même horizontal que V4</strong>, <strong>ligne axillaire antérieure gauche</strong> (bord antérieur du creux axillaire — la pli de jonction bras/thorax face antérieure).<br><br>• <span style='color:#ec4899;font-weight:700'>V6</span> : <strong>même horizontal que V4 et V5</strong>, <strong>ligne axillaire moyenne gauche</strong> (milieu du creux axillaire).<br><br><strong>Règle impérative :</strong> V4-V5-V6 doivent être exactement sur le même plan horizontal. Ne pas les remonter selon la courbe du thorax.",
+ why:"V5 et V6 décalés vers le haut par rapport à V4 (en suivant naïvement la courbe du thorax) modifient les amplitudes des ondes R et peuvent simuler une pathologie (hypertrophie, ischémie). L'alignement horizontal strict est une règle fondamentale.",
+ rule:"V5 : même horizontal V4, ligne axillaire antérieure G. V6 : même horizontal, ligne axillaire moyenne G. V4-V5-V6 = strictement sur le même plan horizontal.",
+ q:"L'alignement horizontal de V4-V5-V6 signifie ?",
+ ch:["Qu'elles suivent la courbe naturelle du thorax vers le haut","Qu'elles sont placées sur le même niveau vertical (même hauteur), indépendamment de la courbe du thorax","Qu'elles sont espacées de façon égale entre elles","Qu'elles sont toutes dans le même espace intercostal"],
+ ok:1},
+{n:10,cat:"Connexion des câbles",ico:"🔗",crit:true,att:false,
+ title:"Connecter les câbles à l'électrocardiographe",
+ what:"Connectez les câbles de couleur sur les électrodes correspondantes. Vérifiez le code couleur : <strong>rouge sur rouge, jaune sur jaune, noir sur noir, vert sur vert</strong>. Les câbles précordiales sont généralement numérotés V1 à V6 (couleurs variables selon les fabricants : V1 rouge/brun, V2 jaune, V3 vert, V4 brun/marron, V5 noir, V6 mauve — vérifier les étiquettes).<br><br>Évitez que les câbles se croisent ou tirent sur les électrodes. Un câble tiré peut décoller l'électrode en cours d'enregistrement.",
+ why:"Inverser les câbles de membres (même si les électrodes sont au bon endroit) produit exactement les mêmes erreurs que l'inversion des électrodes. La vérification du câblage est la dernière barrière avant l'enregistrement.",
+ rule:"Vérifier câble/électrode : même couleur. Câbles non croisés. Rouge sur rouge, jaune sur jaune, noir sur noir, vert sur vert.",
+ q:"Vous avez placé correctement les 10 électrodes. Mais vous connectez le câble rouge sur l'électrode jaune (poignet gauche). Conséquence ?",
+ ch:["Aucune — les couleurs des câbles ne sont que cosmétiques","L'électrocardiographe détecte l'erreur et ne s'allume pas","ECG miroir en DI, onde P négative en DI — même erreur qu'une inversion physique d'électrodes","Légère modification sans impact clinique"],
+ ok:2},
+{n:11,cat:"Enregistrement",ico:"▶️",crit:false,att:true,
+ title:"Lancer l'enregistrement",
+ what:"Vérifiez :<br>• Signal de calibration visible (signal carré 10 mm / 1 mV)<br>• Ligne de base stable (pas de dérive)<br>• Vitesse affichée : 25 mm/s<br>• Amplitude : 10 mm/mV<br>Demandez au patient de rester immobile et de respirer calmement. Lancez l'enregistrement. Minimum <strong>3 complexes par dérivation</strong> + une dérivation longue DII pour l'analyse du rythme. <strong>Saisir les données patient</strong> (nom, prénom, date de naissance, date et heure de l'ECG).",
+ why:"Le DII long permet une analyse précise du rythme (intervalle PP, durée du QRS, axe de P). Les données patient sur l'ECG sont indispensables pour l'identification et la comparaison avec les ECG antérieurs.",
+ rule:"Calibration 10 mm/mV. Vitesse 25 mm/s. DII long pour le rythme. Données patient obligatoires. Patient immobile.",
+ q:"Combien de complexes au minimum par dérivation doit-on enregistrer pour un ECG de qualité ?",
+ ch:["1 complexe suffit si le tracé est propre","2 complexes minimum","3 complexes par dérivation + DII long pour l'analyse du rythme","5 complexes pour chaque dérivation"],
+ ok:2},
+{n:12,cat:"Vérification de la qualité du tracé",ico:"🔍",crit:true,att:false,
+ title:"Vérifier la qualité du tracé avant de retirer les électrodes",
+ what:"Avant de déconnecter quoi que ce soit, vérifier visuellement :<br>• Ligne de base stable (pas d'ondulation lente = pas de dérive respiratoire)<br>• Absence de parasites haute fréquence (pas de trémulation = pas d'artefact myogramme)<br>• Absence de parasites 50 Hz (sinusoïde régulière superposée)<br>• Signal de calibration présent<br>• Données patient identifiées sur le tracé<br><br>Si tracé de mauvaise qualité : <strong>identifier et corriger la cause AVANT de retirer les électrodes</strong>.",
+ why:"Retirer les électrodes avec un tracé de mauvaise qualité oblige à recommencer entièrement la pose des 10 électrodes. Il est bien plus simple et rapide de corriger la cause (peau grasse, mouvement, câble mal connecté) avec les électrodes encore en place.",
+ rule:"Vérifier le tracé AVANT de retirer les électrodes. Si mauvaise qualité : identifier la cause et corriger avec les électrodes en place.",
+ q:"Le tracé ECG présente des tremblements et des parasites. Le patient est allongé et détendu. Quelle est la cause probable ?",
+ ch:["La vitesse du papier est incorrecte","Parasite myogramme — patient qui tremble malgré lui (froid, Parkinson, anxiété). Couvrir le patient, réchauffer la pièce","Mauvaise calibration","Câbles inversés"],
+ ok:1},
+{n:13,cat:"Fin du soin",ico:"✅",crit:false,att:false,
+ title:"Retirer les électrodes et réinstaller le patient",
+ what:"Retirez les électrodes délicatement (décoller en maintenant la peau, jamais tirer brutalement). Nettoyez les traces de gel si utilisation de ventouses. Rhabiller le patient, repositionner confortablement. Rebrancher le lit électrique. Éliminer les électrodes usagées dans le sac DAOM (non contaminantes).",
+ why:"Retirer les électrodes brutalement irrite la peau (notamment chez les patients fragiles, personnes âgées, peau fine). Le lit électrique doit être rebranché pour le confort du patient.",
+ rule:"Retirer délicatement. Nettoyer les traces de gel. Réinstaller confortablement. Rebrancher le lit. Éliminer électrodes en DAOM.",
+ q:"Comment doit-on retirer les électrodes autocollantes à la fin d'un ECG ?",
+ ch:["Tirer rapidement d'un coup sec — moins douloureux","Décoller délicatement en maintenant la peau d'une main, en décollant l'électrode de l'autre","Laisser le patient les retirer lui-même","Les laisser en place pour un prochain ECG"],
+ ok:1},
+{n:14,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Traçabilité et transmission du tracé",
+ what:"Le tracé ECG doit comporter : <strong>nom, prénom, date de naissance, date et heure de l'ECG</strong>. Transmettre au médecin pour interprétation immédiatement si urgence (douleur thoracique, malaise, troubles du rythme). <strong>Archiver dans le dossier patient</strong>. Si position alternative (épaules/crêtes iliaques) : noter explicitement sur le tracé. Tracer dans le dossier infirmier : heure du soin, motif, état du patient, transmission au médecin.",
+ why:"Un ECG non identifié peut être confondu avec celui d'un autre patient. Le médecin interprète le tracé en fonction du contexte clinique — les informations patient sont indispensables. La note de position alternative évite une erreur d'axe électrique.",
+ rule:"Tracé identifié (nom, prénom, DDN, date, heure). Transmission immédiate si urgence. Archiver dans le dossier. Note si position alternative.",
+ q:"Vous avez réalisé l'ECG en position alternative (épaules/crêtes iliaques). Que notez-vous sur le tracé ?",
+ ch:["Rien — c'est une position standard aussi","Uniquement l'heure de réalisation","La position utilisée ('électrodes membres sur épaules et crêtes iliaques') — modifie les axes frontaux et doit être connu du médecin pour l'interprétation","Le nom du médecin qui va l'interpréter"],
+ ok:2},
+];
+const QE=[
+{cat:"Cadre légal",q:"La réalisation d'un ECG relève de ?",ch:["Rôle prescrit — prescription médicale obligatoire","Rôle propre infirmier (Art. R.4311-5)","Délégation médicale","Rôle exclusivement médical"],ok:1,ek:"L'ECG relève du rôle propre infirmier selon l'Art. R.4311-5 CSP.",ee:"Pas besoin de prescription médicale pour réaliser un ECG.",r:"<strong>ECG = rôle propre infirmier. Art. R.4311-5 CSP.</strong>",xp:8},
+{cat:"Code couleur",q:"Quelle couleur correspond à l'électrode du bras droit (RA) en norme CEI française ?",ch:["Jaune","Vert","Rouge","Noir"],ok:2,ek:"Norme CEI (Europe) : Rouge = bras droit (RA). Mnémo : sang (rouge) sur le bitume (noir) = rouge en haut droit, noir en bas droit.",ee:"La norme AHA américaine est différente (blanc pour RA) — en France c'est la norme CEI.",r:"<strong>Rouge = bras droit (RA). Mnémo : Le sang sur le bitume.</strong>",xp:10},
+{cat:"Code couleur",q:"Le jaune et le vert sont placés côté gauche du patient. Mnémotechnique ?",ch:["Le sang sur le bitume","Le feu sur la glace","Le soleil (jaune) se couche sur la prairie (vert)","L'or sur l'émeraude"],ok:2,ek:"Mnémotechnique : soleil (jaune) = bras gauche en haut · prairie (vert) = jambe gauche en bas.",ee:"'Sang sur bitume' correspond au côté droit (rouge et noir).",r:"<strong>Soleil/prairie = côté gauche. Sang/bitume = côté droit.</strong>",xp:10},
+{cat:"Repère anatomique",q:"Quel repère anatomique permet de localiser le 4e espace intercostal pour V1 et V2 ?",ch:["La clavicule gauche","L'appendice xiphoïde","L'Angle de Louis (jonction manubrium/corps sternal)","La pointe du sternum"],ok:2,ek:"Angle de Louis → articulé avec la 2e côte → 2e EIC → descendre → 4e EIC = site de V1 et V2.",ee:"L'appendice xiphoïde est trop bas (au niveau de V5-V6).",r:"<strong>Angle de Louis → 2e côte → 4e EIC = V1/V2.</strong>",xp:12},
+{cat:"Placement V1-V2",q:"V1 se place au 4e espace intercostal droit. De quel côté du sternum ?",ch:["Bord gauche du sternum","Centre du sternum","Bord droit du sternum","5 cm à droite du sternum"],ok:2,ek:"V1 : 4e EIC droit, bord droit du sternum. V2 : 4e EIC gauche, bord gauche du sternum (symétrique).",ee:"V2 est à gauche. V1 est à droite.",r:"<strong>V1 : 4e EIC droit, bord DROIT du sternum.</strong>",xp:12},
+{cat:"Placement V4",q:"V4 se place sur quelle ligne anatomique et quel espace intercostal ?",ch:["4e EIC gauche, ligne médio-claviculaire gauche","5e EIC gauche, ligne axillaire antérieure gauche","5e EIC gauche, ligne médio-claviculaire gauche","6e EIC gauche, ligne médio-claviculaire gauche"],ok:2,ek:"V4 : 5e espace intercostal gauche, sur la ligne médio-claviculaire gauche (verticale passant par le milieu de la clavicule gauche).",ee:"La ligne axillaire antérieure est le site de V5.",r:"<strong>V4 : 5e EIC gauche, ligne médio-claviculaire gauche.</strong>",xp:12},
+{cat:"Placement V5-V6",q:"Comment se positionnent V5 et V6 par rapport à V4 ?",ch:["Un espace intercostal en dessous de V4 pour V5, deux en dessous pour V6","Même plan horizontal que V4 — V5 à la ligne axillaire antérieure, V6 à la ligne axillaire moyenne","Un centimètre au-dessus de V4 pour les deux","Ils suivent la courbe naturelle du thorax vers le haut"],ok:1,ek:"V5 et V6 doivent être sur le MÊME plan horizontal que V4 (pas en suivant la courbe du thorax). V5 = ligne axillaire antérieure, V6 = ligne axillaire moyenne.",ee:"Suivre la courbe du thorax vers le haut est l'erreur classique.",r:"<strong>V4-V5-V6 : même plan horizontal strict. V5 axil. ant. G, V6 axil. moy. G.</strong>",xp:12},
+{cat:"V3 placement",q:"Comment placez-vous V3 ?",ch:["4e EIC gauche, ligne parasternale","6e EIC gauche, mi-distance V4–V5","À mi-distance entre V2 et V4","Même position que V2 mais du côté gauche du thorax"],ok:2,ek:"V3 = exactement à mi-distance entre V2 et V4. Conseillé : poser V4 en premier, puis placer V3 à mi-chemin entre V2 et V4.",ee:"La mi-distance V4-V5 n'est pas le site de V3.",r:"<strong>V3 = mi-distance V2–V4. Poser V4 d'abord.</strong>",xp:10},
+{cat:"Position alternative",q:"Quand peut-on utiliser la position alternative (épaules/crêtes iliaques) pour les électrodes de membres ?",ch:["Jamais — non valide à l'IFSI","Uniquement en réanimation","Quand poignets/chevilles sont inaccessibles (plâtre, amputation, perfusion). Les deux positions sont valides","Uniquement sur prescription médicale"],ok:2,ek:"Les deux positions sont valides et acceptées à l'IFSI. Épaules/crêtes iliaques quand les extrémités sont inaccessibles ou pour réduire les artefacts. Obligatoire de le noter sur le tracé.",ee:"Position alternative = Mason-Likar, valide à l'IFSI.",r:"<strong>Alternative valide. Poignets/chevilles OU épaules/crêtes iliaques. Noter sur le tracé.</strong>",xp:12},
+{cat:"Position alternative",q:"Où place-t-on l'électrode noire (RL) en position alternative ?",ch:["Épaule droite","Crête iliaque gauche (hanche gauche)","Crête iliaque droite (hanche droite)","Centre du thorax droit"],ok:2,ek:"Position alternative : rouge = épaule D · jaune = épaule G · noir = crête iliaque D · vert = crête iliaque G. Même logique que standard : droite pour rouge/noir, gauche pour jaune/vert.",ee:"Crête iliaque DROITE pour le noir (RL = Right Leg).",r:"<strong>Noir (RL) alternatif = crête iliaque DROITE.</strong>",xp:12},
+{cat:"Artefacts",q:"Un ECG présente des oscillations régulières à 50 Hz superposées à tout le tracé. Cause ?",ch:["Patient qui tremble — artefact myogramme","Lit électrique branché ou équipement électrique proche — parasite secteur 50 Hz","Électrodes inversées","Dérive respiratoire"],ok:1,ek:"Parasites 50 Hz = sinusoïde régulière superposée = lit électrique branché ou mauvais contact peau-électrode. Solution : débrancher le lit, dégraisser la peau.",ee:"Le myogramme est irrégulier (tremblements). 50 Hz = régulier = secteur.",r:"<strong>50 Hz régulier = lit électrique branché. Débrancher le lit.</strong>",xp:12},
+{cat:"Artefacts",q:"Une inversion des câbles rouge (RA) et jaune (LA) produit quel effet sur l'ECG ?",ch:["Aucun effet visible","Le tracé est identique mais en couleurs inversées","ECG miroir : DI négatif, onde P négative en DI, aVR anormalement positif","L'électrocardiographe refuse de fonctionner"],ok:2,ek:"Inverser RA/LA = tout le plan frontal (DI, aVR, aVL) est inversé = ECG miroir. Peut simuler un infarctus latéral ou masquer une ischémie vraie.",ee:"L'inversion est invisible sur l'appareil mais change complètement le tracé.",r:"<strong>Inversion RA/LA = ECG miroir = erreur diagnostique grave.</strong>",xp:15},
+{cat:"Tracé normal",q:"La durée normale du complexe QRS est ?",ch:["< 0,08 s (2 petits carreaux)","< 0,12 s (3 petits carreaux)","< 0,20 s (5 petits carreaux)","< 0,04 s (1 petit carré)"],ok:1,ek:"QRS normal < 0,12 s (3 petits carreaux). QRS ≥ 0,12 s = bloc de branche (BBD ou BBG). PR normal : 0,12-0,20 s.",ee:"0,12 s = 3 petits carreaux (1 petit carré = 0,04 s).",r:"<strong>QRS normal < 0,12 s. ≥ 0,12 s = bloc de branche.</strong>",xp:10},
+{cat:"Tracé normal",q:"Le segment ST isoélectrique correspond à ?",ch:["Dépolarisation auriculaire","Conduction auriculo-ventriculaire","Phase de plateau de la repolarisation ventriculaire — doit être plat","Repolarisation auriculaire"],ok:2,ek:"ST isoélectrique = plateau de repolarisation (phase 2 du PA ventriculaire). Sus-décalage >1 mm = IDM/péricardite. Sous-décalage = ischémie.",ee:"ST doit être plat (isoélectrique). Tout décalage est pathologique.",r:"<strong>ST isoélectrique = normal. Sus-décalage = IDM. Sous-décalage = ischémie.</strong>",xp:12},
+{cat:"Paramètres",q:"Quelle est la calibration standard d'un électrocardiographe ?",ch:["5 mm/mV · 50 mm/s","10 mm/mV · 25 mm/s","10 mm/mV · 50 mm/s","20 mm/mV · 25 mm/s"],ok:1,ek:"Standard universel : 10 mm = 1 mV et 25 mm/s. 1 grand carré = 0,2 s. 5 grands carreaux = 1 s. Tout ECG doit afficher ces valeurs.",ee:"50 mm/s est utilisé pour l'ECG d'effort uniquement.",r:"<strong>Calibration standard : 10 mm/mV · 25 mm/s.</strong>",xp:10},
+];
+
+const QS=[
+{cat:"Piège — V1-V2 trop hauts",q:"Un étudiant place V1 et V2 au 3e EIC (un espace trop haut). Conséquence probable ?",ch:["Aucune — différence négligeable d'1 EIC","QRS négatifs en V1-V2 simulant un pseudo-BBD ou un infarctus antérieur","Le signal ne passe pas","Inversion des ondes T uniquement"],ok:1,ek:"V1/V2 trop hauts (3e EIC) = QRS négatifs en V1-V2 = pseudo-BBD ou aspect d'infarctus antérieur. C'est l'erreur de placement la plus fréquente (présente dans 30-70% des ECG en pratique). 1 cm de décalage suffit à fausser l'interprétation.",ee:"1 EIC de trop = erreur clinique significative retrouvée dans des études.",r:"<strong>V1/V2 au 3e EIC = pseudo-BBD / faux infarctus antérieur.</strong>",xp:25},
+{cat:"Piège — V4-V6 en oblique",q:"Pour V5 et V6, l'étudiant les place en suivant la courbe naturelle du thorax (en montant). C'est ?",ch:["Correct — on suit toujours la courbe anatomique","Correct si le patient est obèse","Incorrect — V4-V5-V6 doivent être sur le même plan HORIZONTAL strict. Monter avec la courbe thoracique fausse les amplitudes et peut simuler une ischémie","Correct si V3 est en place"],ok:2,ek:"Suivre la courbe thoracique vers le haut pour V5-V6 est l'erreur la plus fréquente après V1/V2 trop hauts. La règle : V4-V5-V6 sur le même plan horizontal, comme une ligne droite horizontale.",ee:"La courbe naturelle du thorax monte → suivre cette courbe place V5-V6 trop haut.",r:"<strong>V4-V5-V6 = même plan horizontal strict. Ne pas suivre la courbe thoracique.</strong>",xp:20},
+{cat:"Piège — Inversion RA/LA",q:"L'ECG montre une onde P négative en DI et aVR anormalement positif. Cause probable ?",ch:["Dextrocardie (cœur à droite)","Inversion des électrodes RA (rouge) et LA (jaune) — ECG miroir","Bradycardie sinusale","Bloc auriculo-ventriculaire"],ok:1,ek:"Onde P négative en DI + aVR anormalement positif = ECG miroir = inversion RA/LA (rouge-jaune). Cette erreur est la plus grave car elle peut simuler un infarctus ou masquer une ischémie vraie.",ee:"Dextrocardie est possible mais rarissime. L'inversion d'électrodes est bien plus fréquente.",r:"<strong>DI négatif + aVR positif anormal = inversion RA/LA. Vérifier le câblage.</strong>",xp:25},
+{cat:"Piège — Parasite 50 Hz",q:"Le patient est scopé et son lit électrique est branché. Votre collègue allume le filtre anti-parasite de l'ECG pour obtenir un tracé propre. C'est ?",ch:["Correct — le filtre est fait pour ça","Correct si le tracé est illisible autrement","Incorrect — les filtres peuvent modifier les ondes ECG (notamment le segment ST) et fausser le diagnostic. Il faut débrancher le lit et supprimer la source de parasite","Correct uniquement pour l'onde P"],ok:2,ek:"Les filtres anti-parasites modifient les ondes ECG (notamment le segment ST et l'onde T). Un faux sous-décalage de ST peut masquer une ischémie. La solution correcte = supprimer la source (débrancher le lit, éloigner les appareils).",ee:"Le filtre ne règle pas le problème, il le masque en modifiant le tracé.",r:"<strong>Filtre anti-parasite = fausse solution. Supprimer la source = bonne solution.</strong>",xp:20},
+{cat:"Piège — Position alternative non notée",q:"Vous avez réalisé l'ECG avec les électrodes de membres sur les épaules et les crêtes iliaques sans le noter. Le médecin interprète le tracé. Conséquence possible ?",ch:["Aucune — les deux positions donnent exactement le même tracé","Le médecin ne peut pas interpréter sans cette information","Erreur d'interprétation des axes frontaux (DI, DII, DIII, aVR, aVL, aVF) — la position alternative modifie les axes électriques. Sans cette information, le médecin peut croire à une déviation axiale pathologique","Uniquement un problème administratif"],ok:2,ek:"La position Mason-Likar (épaules/hanches) modifie les dérivations frontales par rapport à la position standard. Sans mention sur le tracé, le médecin peut attribuer à tort une déviation axiale anormale, un aspect d'hypertrophie ou une ischémie frontale.",ee:"La différence entre les deux positions est réelle et cliniquement significative.",r:"<strong>Position alternative non notée = risque d'erreur diagnostique frontale.</strong>",xp:20},
+{cat:"Piège — Sein volumineux",q:"Chez une patiente avec une poitrine volumineuse, votre collègue place V4-V6 sur le tissu mammaire (sur le sein). C'est ?",ch:["Acceptable — le signal passe à travers le tissu","Correct si la patiente accepte","Incorrect — il faut soulever le sein gauche, placer les électrodes au contact du thorax, puis relâcher. Placer sur le tissu mammaire modifie les amplitudes des ondes R et peut simuler une pathologie","Correct uniquement pour V6"],ok:2,ek:"Le tissu mammaire amortit le signal électrique et modifie les amplitudes de V4-V6 (réduction de R). La technique correcte : soulever le sein, placer les électrodes contre le thorax, relâcher délicatement.",ee:"Tissu mammaire entre électrode et thorax = signal atténué = amplitude modifiée.",r:"<strong>Sein volumineux : soulever + poser au thorax + relâcher. Jamais sur le tissu mammaire.</strong>",xp:20},
+{cat:"Piège — Patient agité",q:"Votre patient est anxieux et contracte ses muscles pendant l'enregistrement ECG. Le tracé est haché et illisible. Vous ?",ch:["Augmentez la sensibilité de l'appareil","Utilisez le filtre anti-myogramme","Parlez calmement au patient pour le détendre, réchauffez-le si froid, attendez qu'il se relaxe avant de relancer l'enregistrement","Recommencez rapidement en espérant un tracé propre"],ok:2,ek:"Artefacts myogramme = muscles contractés. La solution est de traiter la cause : rassurer, réchauffer, placer les bras le long du corps, attendre la relaxation. Le filtre anti-myogramme déforme les ondes — mauvaise solution.",ee:"Filtre anti-myogramme = modifie le tracé. Traiter la cause = bonne solution.",r:"<strong>Artefact myogramme = traiter la cause (rassurer, réchauffer). Jamais le filtre.</strong>",xp:20},
+{cat:"Piège — Câble V3 sur V4",q:"Par inadvertance, vous branchez le câble V3 sur l'électrode placée au site de V4 (et inversement). Conséquence ?",ch:["Aucune — V3 et V4 sont proches","L'électrocardiographe refuse d'enregistrer","Inversion des dérivations V3 et V4 sur le tracé — peut masquer la progression normale de l'onde R entre V3 et V4, simulant un infarctus antérieur ou une HVG","Uniquement un changement d'amplitude"],ok:2,ek:"L'inversion V3/V4 modifie la progression de l'onde R dans les dérivations précordiales. La progression normale (augmentation de R de V1 à V6) peut être perturbée et simuler une pathologie.",ee:"Toute inversion de câbles précordiaux modifie la progression de l'onde R.",r:"<strong>Câbles précordiaux inversés = progression R anormale = risque d'erreur diagnostique.</strong>",xp:20},
+{cat:"Piège — Calibration",q:"Sur un ECG, l'amplitude affichée est 5 mm/mV (au lieu de 10 mm/mV). Le cardiologue voit des QRS d'amplitude normale. En réalité ?",ch:["L'amplitude est normale","L'amplitude est deux fois plus grande que ce qu'on voit — des QRS qui semblent normaux pourraient être en réalité de grande amplitude (HVG)","L'amplitude est deux fois plus petite","La calibration n'influence pas les amplitudes"],ok:1,ek:"À 5 mm/mV, 1 mV n'est représenté que par 5 mm au lieu de 10 mm. Les ondes semblent deux fois plus petites → une vraie hypertrophie ventriculaire peut passer inaperçue. Toujours vérifier et mentionner la calibration sur le tracé.",ee:"Demi-calibration = tout est deux fois plus petit visuellement = risque de sous-estimer.",r:"<strong>5 mm/mV = tracé compressé = masque les grandes amplitudes. Toujours 10 mm/mV.</strong>",xp:20},
+{cat:"Piège — Retirer avant vérification",q:"Vous venez d'enregistrer un ECG. Le tracé semble correct. Vous retirez immédiatement les 10 électrodes. En inspectant le tracé, vous constatez un artefact majeur sur V2. Vous ?",ch:["Devez recommencer l'ECG complet avec repose de toutes les électrodes","Pouvez reposer uniquement V2 et enregistrer à nouveau","Pouvez enregistrer un nouvel ECG de surveillance sans V2","Ce n'est pas grave — V2 n'est pas utile"],ok:0,ek:"La règle : toujours vérifier la qualité du tracé AVANT de retirer les électrodes. Si artefact détecté avec les électrodes encore en place = corriger la cause et relancer l'enregistrement. Une fois retirées = recommencer les 10 électrodes.",ee:"Vérifier AVANT de retirer = réflexe indispensable.",r:"<strong>Vérifier le tracé AVANT de retirer les électrodes. Sinon = tout recommencer.</strong>",xp:25},
+];
+
+/* ══════════════════════════════════════════════
+   SIMULATEUR ECG — Placement libre + Correction
+   Sources : Réussis ton IFSI 2023 · drexcomedical.fr
+══════════════════════════════════════════════ */
+
+const SIM_ELEC = {
+  RA:{id:'RA',label:'Rouge\nRA',color:'#ff2d2d',bg:'rgba(255,45,45,.22)',border:'#ff2d2d',txt:'#fff'},
+  LA:{id:'LA',label:'Jaune\nLA',color:'#f5c800',bg:'rgba(245,200,0,.22)',border:'#f5c800',txt:'#1a1200'},
+  RL:{id:'RL',label:'Noir\nRL',color:'#e5e7eb',bg:'rgba(15,15,15,.85)',border:'#6b7280',txt:'#e5e7eb'},
+  LL:{id:'LL',label:'Vert\nLL',color:'#00d46a',bg:'rgba(0,212,106,.22)',border:'#00d46a',txt:'#fff'},
+  V1:{id:'V1',label:'V1',color:'#ff4444',bg:'rgba(255,68,68,.22)',border:'#ff4444',txt:'#fff'},
+  V2:{id:'V2',label:'V2',color:'#f5c800',bg:'rgba(245,200,0,.22)',border:'#f5c800',txt:'#1a1200'},
+  V3:{id:'V3',label:'V3',color:'#00e676',bg:'rgba(0,230,118,.22)',border:'#00e676',txt:'#002a12'},
+  V4:{id:'V4',label:'V4',color:'#b44aff',bg:'rgba(180,74,255,.22)',border:'#b44aff',txt:'#fff'},
+  V5:{id:'V5',label:'V5',color:'#ff7a00',bg:'rgba(255,122,0,.22)',border:'#ff7a00',txt:'#fff'},
+  V6:{id:'V6',label:'V6',color:'#ff4fad',bg:'rgba(255,79,173,.22)',border:'#ff4fad',txt:'#fff'},
+};
+const SIM_IDS = ['RA','LA','RL','LL','V1','V2','V3','V4','V5','V6'];
+
+// Positions correctes en pourcentage du container (sur viewBox 300x520)
+// x% = position horizontale, y% = position verticale
+const SIM_CORRECT = {
+  standard: {
+    RA:{x:25,y:51,hint:'Face interne du poignet droit'},
+    LA:{x:75,y:51,hint:'Face interne du poignet gauche'},
+    RL:{x:30,y:92,hint:'Face interne de la cheville droite'},
+    LL:{x:71,y:92,hint:'Face interne de la cheville gauche'},
+    V1:{x:48,y:26,hint:'4e EIC droit, bord droit du sternum'},
+    V2:{x:52,y:26,hint:'4e EIC gauche, bord gauche du sternum'},
+    V3:{x:57,y:27,hint:'Mi-distance entre V2 et V4'},
+    V4:{x:61,y:28,hint:'5e EIC gauche, ligne médio-claviculaire G'},
+    V5:{x:66,y:28,hint:'Même horizontal que V4, ligne axillaire ant. G'},
+    V6:{x:72,y:28,hint:'Même horizontal que V4, ligne axillaire moy. G'},
+  },
+  alt: {
+    RA:{x:32,y:17,hint:'Épaule droite (creux sous-claviculaire droit)'},
+    LA:{x:68,y:17,hint:'Épaule gauche (creux sous-claviculaire gauche)'},
+    RL:{x:33,y:57,hint:'Crête iliaque droite (hanche droite)'},
+    LL:{x:67,y:57,hint:'Crête iliaque gauche (hanche gauche)'},
+    V1:{x:48,y:26,hint:'4e EIC droit, bord droit du sternum'},
+    V2:{x:52,y:26,hint:'4e EIC gauche, bord gauche du sternum'},
+    V3:{x:57,y:27,hint:'Mi-distance entre V2 et V4'},
+    V4:{x:61,y:28,hint:'5e EIC gauche, ligne médio-claviculaire G'},
+    V5:{x:66,y:28,hint:'Même horizontal que V4, ligne axillaire ant. G'},
+    V6:{x:72,y:28,hint:'Même horizontal que V4, ligne axillaire moy. G'},
+  }
+};
+const SIM_TOLERANCE = 8; // % de distance max pour être considéré correct
+
+let simMode = 'standard';
+let simPlacements = {}; // id → {x%, y%}
+let simDragging = null;
+let simCorrected = false;
+let simAide = false;
+
+/* ── Init ── */
+function simInit() {
+  simPlacements = {};
+  simDragging = null;
+  simCorrected = false;
+  simAide = false;
+  document.getElementById('sim-overlay').classList.remove('show');
+  document.getElementById('sim-guides').style.display = 'none';
+  document.getElementById('aide-btn').classList.remove('active');
+  document.getElementById('aide-btn').textContent = '💡 Aide';
+  document.getElementById('sim-log').innerHTML = '';
+  document.getElementById('sim-score-pills').style.display = 'none';
+  simRenderTokens();
+  simRenderPlacements();
+  simUpdateProgress();
+  simSetupBodyDrop();
+}
+
+function simSetMode(m, btn) {
+  simMode = m;
+  document.querySelectorAll('.sim-tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const lbl = m === 'standard'
+    ? 'Mode standard — Poignets &amp; Chevilles'
+    : 'Mode alternatif — Épaules &amp; Crêtes iliaques';
+  document.getElementById('sim-mode-lbl').innerHTML = lbl;
+  simInit();
+}
+
+/* ── Tokens palette ── */
+function simRenderTokens() {
+  const wrap = document.getElementById('sim-tokens');
+  wrap.innerHTML = '';
+  SIM_IDS.forEach(id => {
+    const e = SIM_ELEC[id];
+    const used = !!simPlacements[id];
+    const d = document.createElement('div');
+    d.className = 'tok' + (used ? ' used' : '');
+    d.id = 'tok-' + id;
+    d.dataset.id = id;
+    d.style.cssText = `background:${e.bg};border-color:${e.border};color:${e.txt||e.color}`;
+    d.textContent = id;
+    if (!used) {
+      d.addEventListener('pointerdown', simTokenDown, {passive: false});
+    }
+    wrap.appendChild(d);
+  });
+}
+
+/* ── Body drop setup ── */
+function simSetupBodyDrop() {
+  const bd = document.getElementById('body-drop');
+  // Remove old listeners by cloning
+  const newBd = bd.cloneNode(true);
+  bd.parentNode.replaceChild(newBd, bd);
+  // Re-get references after clone
+  const freshBd = document.getElementById('body-drop');
+  freshBd.addEventListener('pointerover', e => {
+    if (simDragging) freshBd.classList.add('drag-over');
+  });
+  freshBd.addEventListener('pointerout', e => {
+    if (!freshBd.contains(e.relatedTarget)) freshBd.classList.remove('drag-over');
+  });
+}
+
+/* ── Drag start ── */
+function simTokenDown(ev) {
+  const id = ev.currentTarget.dataset.id;
+  if (simPlacements[id]) return;
+  ev.preventDefault();
+
+  const e = SIM_ELEC[id];
+  const ghost = document.getElementById('sim-ghost');
+  const cx = ev.clientX, cy = ev.clientY;
+  ghost.style.cssText = `display:flex;background:${e.bg};border-color:${e.border};color:${e.txt||e.color};left:${cx}px;top:${cy}px`;
+  ghost.textContent = id;
+  ev.currentTarget.classList.add('dragging');
+  simDragging = id;
+
+  const move = e2 => {
+    const x = e2.clientX, y = e2.clientY;
+    ghost.style.left = x + 'px';
+    ghost.style.top = y + 'px';
+    const bd = document.getElementById('body-drop');
+    if (bd) {
+      const r = bd.getBoundingClientRect();
+      bd.classList.toggle('drag-over', x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
+    }
+  };
+  const up = e2 => {
+    ghost.style.display = 'none';
+    document.getElementById('body-drop').classList.remove('drag-over');
+    const tok = document.getElementById('tok-' + id);
+    if (tok) tok.classList.remove('dragging');
+
+    if (simDragging) {
+      const x = e2.clientX, y = e2.clientY;
+      const bd = document.getElementById('body-drop');
+      const r = bd.getBoundingClientRect();
+      if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) {
+        const px = (x - r.left) / r.width * 100;
+        const py = (y - r.top) / r.height * 100;
+        simPlaceElec(id, px, py);
+      }
+    }
+    simDragging = null;
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', up);
+  };
+  document.addEventListener('pointermove', move, {passive: true});
+  document.addEventListener('pointerup', up);
+}
+
+/* ── Place une électrode ── */
+function simPlaceElec(id, px, py) {
+  simPlacements[id] = {x: px, y: py};
+  simCorrected = false;
+  simRenderTokens();
+  simRenderPlacements();
+  simUpdateProgress();
+  simLog(`📍 ${id} placé`, '#64748b');
+  if (Object.keys(simPlacements).length === 10) {
+    setTimeout(() => simLog('✅ Toutes les électrodes placées — cliquez Corriger', '#16a34a'), 100);
+  }
+}
+
+/* ── Rendu des placements ── */
+function simRenderPlacements() {
+  const layer = document.getElementById('sim-placements');
+  layer.style.cssText = 'position:absolute;inset:0;pointer-events:none';
+  layer.innerHTML = '';
+  Object.entries(simPlacements).forEach(([id, pos]) => {
+    const e = SIM_ELEC[id];
+    const dot = document.createElement('div');
+    dot.className = 'place-dot';
+    dot.style.cssText = `left:${pos.x}%;top:${pos.y}%;background:${e.bg};border-color:${e.border};color:${e.color}`;
+    dot.textContent = id;
+    if (simCorrected) {
+      const correct = SIM_CORRECT[simMode][id];
+      const dist = Math.hypot(pos.x - correct.x, pos.y - correct.y);
+      dot.classList.add(dist <= SIM_TOLERANCE ? 'ok' : 'ko');
+      dot.style.borderColor = dist <= SIM_TOLERANCE ? '#22c55e' : '#ef4444';
+      dot.style.background = dist <= SIM_TOLERANCE ? 'rgba(34,197,94,.2)' : 'rgba(239,68,68,.2)';
+    }
+    layer.appendChild(dot);
+  });
+}
+
+/* ── Guide Aide ── */
+function simToggleAide() {
+  simAide = !simAide;
+  const btn = document.getElementById('aide-btn');
+  const guides = document.getElementById('sim-guides');
+  btn.classList.toggle('active', simAide);
+  btn.textContent = simAide ? '✕ Fermer aide' : '💡 Aide';
+  guides.style.display = simAide ? 'block' : 'none';
+  if (simAide) simRenderGuides();
+}
+
+function simRenderGuides() {
+  const guides = document.getElementById('sim-guides');
+  guides.style.cssText = 'position:absolute;inset:0;pointer-events:none';
+  guides.innerHTML = '';
+  const correct = SIM_CORRECT[simMode];
+  SIM_IDS.forEach(id => {
+    const e = SIM_ELEC[id];
+    const pos = correct[id];
+    const g = document.createElement('div');
+    g.className = 'guide-dot';
+    g.style.cssText = `left:${pos.x}%;top:${pos.y}%;border-color:${e.border};color:${e.color};background:${e.bg}`;
+    g.innerHTML = `<span style="font-size:8px;font-weight:700">${id}</span>`;
+    guides.appendChild(g);
+  });
+  // Log des positions
+  simLog('💡 Aide activée — positions correctes affichées', '#e63946');
+}
+
+/* ── Correction ── */
+function simCorrect() {
+  const n = Object.keys(simPlacements).length;
+  if (n === 0) { simLog('⚠️ Placez au moins une électrode d\'abord', '#ca8a04'); return; }
+  simCorrected = true;
+  simRenderPlacements();
+
+  let ok = 0, ko = [];
+  SIM_IDS.forEach(id => {
+    if (!simPlacements[id]) { ko.push({id, reason:'Non placée'}); return; }
+    const pos = simPlacements[id];
+    const correct = SIM_CORRECT[simMode][id];
+    const dist = Math.hypot(pos.x - correct.x, pos.y - correct.y);
+    if (dist <= SIM_TOLERANCE) {
+      ok++;
+      simLog(`✓ ${id} correct`, '#16a34a');
+    } else {
+      ko.push({id, reason: correct.hint});
+      simLog(`✗ ${id} — site correct : ${correct.hint}`, '#dc2626');
+    }
+  });
+
+  // Afficher score inline
+  const pills = document.getElementById('sim-score-pills');
+  pills.style.display = 'flex';
+  pills.innerHTML = `
+    <span class="score-pill" style="background:rgba(34,197,94,.12);border-color:#22c55e;color:#15803d">✓ ${ok}/10</span>
+    ${ko.length > 0 ? `<span class="score-pill" style="background:rgba(239,68,68,.12);border-color:#ef4444;color:#dc2626">✗ ${ko.length}</span>` : ''}
+  `;
+
+  // Overlay si 5+ placées
+  if (n >= 5) {
+    const pct = ok / 10;
+    const grade = pct >= 1 ? '🏆' : pct >= .8 ? '✅' : pct >= .5 ? '⚠️' : '❌';
+    document.getElementById('sim-grade').textContent = grade;
+    document.getElementById('sim-sc').textContent = ok + '/10 correctes';
+    document.getElementById('sim-msg').textContent =
+      pct >= 1 ? 'Parfait ! Toutes les électrodes bien placées.' :
+      pct >= .8 ? `${ok}/10 correctes — quelques zones à revoir.` :
+      `${ok}/10 correctes — consultez la fiche référence.`;
+    const errHtml = ko.length
+      ? ko.map(e => `<div style="margin:3px 0;padding:4px 8px;background:#fef2f2;border-radius:6px;text-align:left">
+          <strong style="color:#dc2626">${e.id}</strong> → <span style="color:#64748b;font-size:11px">${e.reason}</span>
+        </div>`).join('')
+      : '';
+    document.getElementById('sim-errors').innerHTML = errHtml;
+    document.getElementById('sim-overlay').classList.add('show');
+  }
+}
+
+/* ── Utilitaires ── */
+function simUpdateProgress() {
+  const n = Object.keys(simPlacements).length;
+  document.getElementById('sim-n').textContent = n;
+  document.getElementById('sim-fg').style.width = (n / 10 * 100) + '%';
+}
+
+function simLog(msg, color) {
+  const log = document.getElementById('sim-log');
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  item.innerHTML = `<div class="ld" style="background:${color}"></div><span style="color:${color};font-weight:600">${msg}</span>`;
+  log.appendChild(item);
+  log.scrollTop = log.scrollHeight;
+}
+
+function simReset() {
+  document.getElementById('sim-overlay').classList.remove('show');
+  simInit();
+}
+
+// ── Appelé quand l'écran DnD devient visible ──
+function onSimShow() {
+  setTimeout(() => simInit(), 60);
+}
+
+const PHASES=[
+  {l:'📋 Phase 1 — Préparation (1-3)',steps:[1,2,3],c:'#e63946'},
+  {l:'🧴 Phase 2 — Peau et membres (4-6)',steps:[4,5,6],c:'#d97706'},
+  {l:'🔌 Phase 3 — Précordiales V1–V6 (7-9)',steps:[7,8,9],c:'#8b5cf6'},
+  {l:'▶️ Phase 4 — Connexion et enregistrement (10-12)',steps:[10,11,12],c:'#059669'},
+  {l:'📝 Phase 5 — Fin et traçabilité (13-14)',steps:[13,14],c:'#0891b2'},
+];
+const SERR={
+  4:"Raser à sec la peau — irrite et augmente la résistance électrique. Utiliser une tondeuse.",
+  5:"Inverser rouge (RA) et jaune (LA) — ECG miroir, peut simuler un infarctus ou masquer une ischémie.",
+  7:"Placer V1/V2 au 3e EIC (trop haut) — QRS négatifs en V1-V2 = pseudo-BBD.",
+  9:"Suivre la courbe thoracique pour V5-V6 (les placer trop hauts) — fausse les amplitudes.",
+  12:"Retirer les électrodes sans vérifier la qualité du tracé — oblige à recommencer complètement.",
+};
+const SCONS={
+  5:"Mnémo : le soleil (jaune) se couche sur la prairie (vert) = côté gauche. Le sang (rouge) sur le bitume (noir) = côté droit.",
+  6:"Note sur le tracé obligatoire si position alternative. Cette config = Mason-Likar. Modifie les axes frontaux.",
+  7:"L'Angle de Louis est le repère universel. Toujours le palper d'abord, puis compter les EIC.",
+  9:"V4–V5–V6 = même plan horizontal, comme une ligne droite. Jamais monter avec le thorax.",
+};
+function buildFicheProto(){
+  const c=document.getElementById('proto-ecg');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,var(--bll),#300a10);border:1px solid var(--bl);border-radius:11px;padding:13px 15px;margin-bottom:15px;font-size:12px;line-height:1.75;color:var(--t2)';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:5px">🫀 Avant l\'ECG</div><strong style="color:var(--text)">Décubitus dorsal · Torse nu · Bijoux retirés · Lit électrique débranché.</strong><br>Rappels absolus : Angle de Louis pour V1/V2 · même horizontal pour V4-V5-V6 · jamais inverser R/J · vérifier tracé avant de retirer les électrodes · noter si position alternative.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');pd.className='ph';pd.style.borderColor=ph.c;pd.style.color=ph.c;pd.textContent=ph.l;c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':'';
+      let tags='';if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      const d=document.createElement('div');d.className=`sc2 ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sn2">${n}</div><div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div>
+        <div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c"><div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div><div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div></div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-ecg .sc2').forEach(x=>x.classList.add('open'));
+}
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='fp2')buildFicheProto();
+}
+/* ══════════════════════════════════════════
+   QUIZ ENGINE
+══════════════════════════════════════════ */
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+
+function setMode(m,btn){document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');mode=m;}
+
+function launch(){
+  if(mode==='fiche'){
+    buildFicheProto();showScr('sf');showFTab('fe',document.querySelector('.ftab'));return;
+  }
+  if(mode==='dnd'){
+    showScr('s-dnd');
+    return;
+  }
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else if(mode==='exam'){qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  else{qs=[...QS].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='💀 Survie';document.getElementById('livp').style.display='flex';document.getElementById('livn').textContent=3;}
+  showScr('sq');loadQ();
+}
+
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  document.getElementById('tbpf').style.width=(qi/qs.length*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q);else loadStd(q);
+  startTimer();
+}
+
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.35);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'Outfit',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStep(i,b,s);c.appendChild(b);});
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStd(i,b,q);c.appendChild(b);});
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});if(mode==='survival'){lives--;document.getElementById('livn').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(tiv);let dur=mode==='exam'?30:mode==='survival'?25:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--bl)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;arc.style.strokeDashoffset=((dur-tleft)/dur*220);num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--pkm)';}
+    if(tleft<=0){clearInterval(tiv);if(!ans){ans=true;wrng++;score=Math.max(0,score-15);
+      document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+      updateUI();document.getElementById('nxt').classList.add('on');}}
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;document.getElementById('xpn').textContent=xp;
+  document.getElementById('sc').textContent=corr;document.getElementById('sw2').textContent=wrng;
+  document.getElementById('scn').textContent=score;document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(tiv);const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:'📚 Apprentissage — 14 étapes ECG',exam:'📝 Examen — Questions ECG',survival:'💀 Survie — Pièges ECG'};
+  const gd=[{m:18,g:'🏆',t:'Excellent',bc:'#4a0e14',tc:'#ff6b75',bd:'#e63946'},{m:14,g:'✅',t:'Bien',bc:'#4a0e14',tc:'#ff6b75',bd:'#e63946'},{m:10,g:'⚠️',t:'Passable — À consolider',bc:'#451a03',tc:'#fcd34d',bd:'#d97706'},{m:0,g:'❌',t:'Insuffisant',bc:'#450a0a',tc:'#f87171',bd:'#dc2626'}].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];
+  document.getElementById('rxp').textContent=xp;document.getElementById('rstr').textContent=bstr;
+  document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?'#2ea043':p>=50?'#d97706':'#e63946';bd.innerHTML+=`<div class="bki"><div class="bd3" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;});
+  const eb=document.getElementById('errb');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole bien assimilé. Passez à l'Examen puis au mode Survie pour les pièges. Entraînez-vous aussi avec le Simulateur drag & drop.");
+  if(mode==='exam'&&note>=16)cs.push("💀 Excellent ! Le mode Survie vous attend — V1/V2 trop hauts, ECG miroir, filtre parasite, sein volumineux...");
+  if(mode==='survival'&&note>=18)cs.push("🏆 Maîtrise experte. Essayez le Simulateur drag & drop pour consolider le placement physique des électrodes.");
+  if(note<10)cs.push("📖 Repassez par la Fiche Référence (onglet Électrodes) puis l'Apprentissage.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : Angle de Louis pour V1/V2 · même horizontal V4-V5-V6 · rouge/jaune mnémotechnique · position alternative noter sur tracé.");
+  Object.entries(cats).forEach(([cat,s])=>{if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Repère')||cat.includes('V1')||cat.includes('V4'))cs.push("📍 Repères anatomiques : Angle de Louis → 4e EIC → V1/V2. V4 : 5e EIC ligne médio-claviculaire. V5-V6 : même horizontal V4.");
+    if(cat.includes('couleur')||cat.includes('Code'))cs.push("🎨 Code couleur : Rouge=bras D · Jaune=bras G · Noir=jambe D · Vert=jambe G. Mnémo : Soleil/Prairie (gauche) · Sang/Bitume (droite).");
+    if(cat.includes('alternative'))cs.push("↕️ Position alternative : épaules + crêtes iliaques. Valide à l'IFSI. Toujours noter sur le tracé.");
+    if(cat.includes('Artefact'))cs.push("⚠️ Artefacts : 50 Hz = lit électrique. Myogramme = tremblements. Ne jamais utiliser les filtres — supprimer la source.");
+    if(cat.includes('Tracé'))cs.push("📈 Tracé : PR 0,12-0,20 s · QRS <0,12 s · ST isoélectrique · onde T positive en DI,DII,V4-V6.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. ECG maîtrisé. N'oubliez pas le Simulateur pour pratiquer le placement physique.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+
+function restart(){launch();}
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(id==='s-dnd')onSimShow();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>

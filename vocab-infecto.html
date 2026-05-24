@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Infectiologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --em:#047857;--em-d:#064e3b;--em-l:#ecfdf5;--em-m:#6ee7b7;--em-b:#d1fae5;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--em-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--em-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--em-l);color:var(--em);border:1px solid var(--em-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--em-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--em-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--em-b);border:1px solid var(--em-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#064e3b;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--em));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--em));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--em-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--em-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(6,78,59,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--em);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--em-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--em-d)}
+.tb-mode{background:var(--em-l);color:var(--em);border:1px solid var(--em-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--em-d),var(--em));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--em);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--em-d),#065f46);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(6,78,59,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--em-l);border:1px solid var(--em-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--em)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--em);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--em-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--em);background:var(--em-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--em);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--em-d)}
+.next-btn{width:100%;padding:12px;background:var(--em-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(6,78,59,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--em)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+.frappe-input:focus{border-color:var(--em)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.frappe-hint span{color:var(--em);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--em-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--em)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--em);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--em-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--em);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--em);background:var(--em-l);color:var(--em-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--em-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--em)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--em-d),var(--em))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--em-d);color:white;box-shadow:0 2px 10px rgba(6,78,59,.3)}.rb.p:hover{background:var(--em)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--em-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🦠</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🦠 Infectiologie</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🦠</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Infectiologie</div>
+        <div class="w-hero-desc">72 termes couvrant toute l'infectiologie clinique : microbiologie de base, sepsis, antibiothérapie, résistances bactériennes, infections courantes, précautions d'hygiène, VIH, tuberculose, paludisme et infections hospitalières. Le vocabulaire indispensable pour tous vos stages.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">72</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">11</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Contenu validé — Recommandations SPILF/HAS/OMS/SFAR 2024.</strong> Ce module est basé sur les référentiels officiels en vigueur (Sepsis-3, SPILF 2024, OMS 2022). Il ne remplace pas les protocoles institutionnels de votre établissement. En cas de doute, référez-vous à votre encadrant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#047857;--mb:#ecfdf5" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#047857">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former le terme infectiologique. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">72 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🦠</div><span class="tb-logo-text">Infecto</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/72</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🦠</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Infectiologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--em)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Contenu basé sur recommandations SPILF/HAS/OMS/SFAR 2024 — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── MICROBIOLOGIE DE BASE (8) ──
+{id:`bacterie`,t:`Bactérie`,cat:`Microbiologie`,
+ def:`Micro-organisme unicellulaire procaryote (sans noyau différencié). Classée selon sa morphologie (cocci, bacilles), sa coloration de Gram (Gram positif ou négatif) et son métabolisme (aérobie, anaérobie, aéro-anaérobie facultatif).`,
+ ex:`Gram + : Staphylocoque, Streptocoque, Pneumocoque, Entérocoque. Gram − : Escherichia coli, Pseudomonas, Klebsiella, Neisseria. La coloration de Gram est le 1er examen guidant l'antibiothérapie probabiliste.`,
+ mnemo:`baktêrion = petit bâton en grec = micro-organisme procaryote`},
+{id:`virus`,t:`Virus`,cat:`Microbiologie`,
+ def:`Agent infectieux non cellulaire, parasite intracellulaire obligatoire composé d'un acide nucléique (ADN ou ARN) entouré d'une capside protéique, parfois d'une enveloppe lipidique. Insensible aux antibiotiques.`,
+ ex:`Virus à ARN : VIH, VHC, grippe, SARS-CoV-2, VRS. Virus à ADN : VHB, herpès, CMV, EBV. Les antiviraux ciblent des étapes spécifiques du cycle viral.`,
+ mnemo:`virus = poison en latin = parasite intracellulaire = pas d'antibiotique`},
+{id:`champignon`,t:`Champignon (fungi)`,cat:`Microbiologie`,
+ def:`Eucaryote uni ou pluricellulaire. Infections fongiques (mycoses) superficielles ou profondes. Principales espèces pathogènes : Candida (levure), Aspergillus (filamenteux), Cryptococcus. Risque majeur chez l'immunodéprimé.`,
+ ex:`Candidose oropharyngée chez patient immunodéprimé ou sous antibiotiques larges. Aspergillose invasive chez neutropénique. Traitement : antifongiques (fluconazole, voriconazole, caspofongine).`,
+ mnemo:`fungi = champignons = eucaryotes = antifongiques (≠ antibiotiques pour bactéries)`},
+{id:`parasite`,t:`Parasite`,cat:`Microbiologie`,
+ def:`Organisme vivant aux dépens d'un hôte. Comprend les protozoaires (Plasmodium, Toxoplasma), les helminthes (ascaris, ténia) et les ectoparasites (poux, gale). Traitement par antiparasitaires spécifiques.`,
+ ex:`Paludisme : Plasmodium falciparum, transmis par moustique Anophèles femelle. Toxoplasmose : réactivation dangereuse chez immunodéprimé ou femme enceinte. Gale : prurit nocturne, traitement ivermectine.`,
+ mnemo:`para- (à côté) + sitos (nourriture) = organisme qui vit aux dépens de son hôte`},
+{id:`gram`,t:`Coloration de Gram`,cat:`Microbiologie`,
+ def:`Technique de coloration différentielle des bactéries utilisant le cristal violet, le lugol, l'alcool et la safranine. Gram positif (violet) : paroi épaisse en peptidoglycane. Gram négatif (rouge) : double membrane avec lipopolysaccharide.`,
+ ex:`Résultat en 30 min sur prélèvement direct : oriente l'antibiothérapie probabiliste avant l'antibiogramme. Cocci Gram + en grappes = staphylocoque. Bacilles Gram − = entérobactéries ou Pseudomonas.`,
+ mnemo:`Hans Christian Gram 1884 : violet = Gram + / rouge = Gram −`},
+{id:`antibiogramme`,t:`Antibiogramme`,cat:`Microbiologie`,
+ def:`Test de sensibilité d'une bactérie aux antibiotiques. Mesure la CMI (Concentration Minimale Inhibitrice) ou les diamètres d'inhibition (méthode des disques). Résultat : Sensible (S), Intermédiaire (I), Résistant (R). Délai : 24–48h.`,
+ ex:`Antibiogramme guide l'antibiothérapie documentée (adaptation après obtention des résultats). Principe de la désescalade : passer d'une antibiothérapie large à la molécule la plus étroite efficace.`,
+ mnemo:`Antibiogramme = carte d'identité des sensibilités de la bactérie aux antibiotiques`},
+{id:`culture`,t:`Culture bactérienne`,cat:`Microbiologie`,
+ def:`Mise en culture d'un prélèvement (sang, urine, LCS, pus, expectorations) sur milieux nutritifs pour identifier les bactéries et leurs résistances. Conditions : stérilité du prélèvement, milieux adaptés, incubation 24–72h (7 jours pour tuberculose).`,
+ ex:`Hémocultures : 2 à 3 paires (flacons aérobie + anaérobie) prélevées avant antibiothérapie idéalement. Prélèvement en urgence même si positivité attendue à 24–48h. Ne jamais retarder l'ATB en cas de sepsis grave.`,
+ mnemo:`Culture = faire pousser les bactéries pour les identifier et tester leur sensibilité`},
+{id:`zoonose`,t:`Zoonose`,cat:`Microbiologie`,
+ def:`Maladie infectieuse naturellement transmissible entre l'animal vertébré et l'homme. Transmission directe (contact, morsure) ou indirecte (vecteur, aliments). Exemples : rage, leptospirose, brucellose, toxoplasmose, psittacose.`,
+ ex:`Leptospirose : contact avec eau contaminée par urines de rongeurs (agriculteurs, égoutiers, kayakistes). Maladie professionnelle. Déclaration obligatoire. Traitement : amoxicilline ou doxycycline.`,
+ mnemo:`zoo- (animal) + nosos (maladie) = maladie qui passe de l'animal à l'homme`},
+// ── SEPSIS ET URGENCES INFECTIEUSES (8) ──
+{id:`infection`,t:`Infection`,cat:`Sepsis`,
+ def:`Invasion et multiplication d'un agent pathogène dans les tissus de l'hôte, déclenchant une réponse immunitaire. Peut être localisée (cellulite, pneumonie) ou systémique (bactériémie, sepsis). Distinguer infection, colonisation (présence sans signes cliniques) et contamination.`,
+ ex:`Colonisation urinaire asymptomatique ≠ infection urinaire. Traitement antibiotique indiqué seulement si signes cliniques, sauf exceptions (grossesse, avant chirurgie urologique).`,
+ mnemo:`Infection = pathogène qui envahit et se multiplie + réponse de l'hôte`},
+{id:`sepsis`,t:`Sepsis`,cat:`Sepsis`,
+ def:`Dysfonction d'organe menaçant le pronostic vital, causée par une réponse de l'hôte dérégulée à une infection (définition Sepsis-3, JAMA 2016). Score SOFA augmenté ≥ 2 points par rapport à la valeur de base. Mortalité 20–30%.`,
+ ex:`Signes de dysfonction d'organe : confusion, oligurie, hypoxémie, coagulopathie, hyperbilirubinémie, hypotension. Bundle "1h" : hémocultures + lactates + ATB + remplissage si hypotension ou lactates > 2 mmol/L.`,
+ mnemo:`Sepsis-3 = infection + SOFA ≥ 2 = organes qui défaillent = urgence absolue`},
+{id:`choc_septique`,t:`Choc septique`,cat:`Sepsis`,
+ def:`Forme la plus grave du sepsis : vasoplégie nécessitant des vasopresseurs pour maintenir une PAM ≥ 65 mmHg et lactates > 2 mmol/L malgré un remplissage vasculaire adéquat (définition Sepsis-3, 2016). Mortalité > 40%.`,
+ ex:`Bundle "1h" du choc septique : 1) Mesure lactates 2) Hémocultures × 2–3 avant ATB 3) ATB large spectre IV 4) Remplissage 30 mL/kg de cristalloïdes 5) Noradrénaline si PAM < 65 malgré remplissage.`,
+ mnemo:`Choc septique = sepsis + vasopresseurs nécessaires + lactates > 2 mmol/L`},
+{id:`bacteriemie`,t:`Bactériémie`,cat:`Sepsis`,
+ def:`Présence de bactéries viables dans le sang, confirmée par hémoculture positive. Peut être transitoire (soins dentaires) ou persistante (endocardite, infection sur cathéter). Facteur de gravité majeur dans le sepsis.`,
+ ex:`Hémocultures positives : informer le médecin immédiatement, même la nuit. Adapter l'antibiothérapie selon l'antibiogramme. Rechercher la porte d'entrée et le foyer secondaire.`,
+ mnemo:`bactéri- + -émie (sang) = bactéries dans le sang = hémoculture positive`},
+{id:`sirs`,t:`SIRS (Syndrome de Réponse Inflammatoire Systémique)`,cat:`Sepsis`,
+ def:`Concept historique (toujours enseigné en IFSI) : réponse systémique non spécifique à une agression (infectieuse ou non). Critères : T° > 38°C ou < 36°C + FC > 90/min + FR > 20/min ou PaCO2 < 32 + GB > 12 000 ou < 4 000/mm³. Remplacé par la définition Sepsis-3 en 2016.`,
+ ex:`Le SIRS peut être présent sans infection (pancréatite, polytraumatisme, brûlures). Attention : un sepsis peut exister sans tous les critères SIRS. Les critères Sepsis-3 (SOFA) sont plus spécifiques.`,
+ mnemo:`SIRS = alarme non spécifique du corps : fièvre, tachycardie, tachypnée, anomalie GB`},
+{id:`porte_entree`,t:`Porte d'entrée`,cat:`Sepsis`,
+ def:`Site anatomique par lequel le pathogène pénètre dans l'organisme et initie l'infection. Son identification est indispensable pour traiter efficacement et prévenir les récidives. Principales portes d'entrée : cutanée, pulmonaire, urinaire, digestive, cathéter.`,
+ ex:`Sepsis sans porte d'entrée évidente : bilan systématique (ECBU, radio pulmonaire, hémocultures, bilan ORL, recherche endocardite, scanner abdominal). La porte d'entrée guide le choix de l'antibiothérapie.`,
+ mnemo:`Porte d'entrée = où le microbe est entré = clé pour choisir l'antibiotique`},
+{id:`meningite`,t:`Méningite bactérienne`,cat:`Sepsis`,
+ def:`Infection bactérienne des méninges, urgence médicale absolue. Triade classique : fièvre + céphalée intense + syndrome méningé (raideur de nuque, Kernig, Brudzinski). Principales bactéries : méningocoque, pneumocoque, Listeria. Déclaration obligatoire.`,
+ ex:`Conduite : scanner cérébral si signes focaux, HTIC ou Glasgow < 11 AVANT la ponction lombaire. Dexaméthasone IV juste avant ou avec la 1ère dose d'ATB (réduit les séquelles). Ne jamais retarder l'ATB si sepsis grave.`,
+ mnemo:`Méningite = méninges enflammées = fièvre + céphalée + raideur de nuque = urgence`},
+{id:`endocardite`,t:`Endocardite infectieuse`,cat:`Sepsis`,
+ def:`Infection de l'endocarde valvulaire ou pariétal, souvent bactérienne (Staphylocoque aureus, Streptocoque). Critères de Duke pour le diagnostic. Complications : embolies septiques, décompensation cardiaque, abcès annulaire.`,
+ ex:`Diagnostic : 3 paires d'hémocultures espacées + échocardiographie (ETT + ETO). Traitement : ATB IV prolongée 4–6 semaines. Prophylaxie pour gestes dentaires chez patients à haut risque (valves prothétiques, ATCD endocardite).`,
+ mnemo:`Endocardite = intérieur du cœur infecté = fièvre + souffle cardiaque + embolies`},
+// ── ANTIBIOTHÉRAPIE (9) ──
+{id:`beta_lactamine`,t:`Bêta-lactamine`,cat:`Antibiothérapie`,
+ def:`Famille d'antibiotiques la plus large et la plus utilisée. Mécanisme : inhibition de la synthèse de la paroi bactérienne (liaison aux PLP = Protéines Liant la Pénicilline). Comprend : pénicillines (amoxicilline), céphalosporines (C1G à C5G), carbapénèmes (imipénème), aztréonam.`,
+ ex:`Amoxicilline-acide clavulanique (Augmentin) : association bêta-lactamine + inhibiteur de bêta-lactamase. Allergie croisée pénicillines/céphalosporines : 1–2% de réactivité croisée. Vérifier l'allergie déclarée (souvent fausse).`,
+ mnemo:`Bêta-lactamine = anneau bêta-lactame qui détruit la paroi bactérienne`},
+{id:`aminoside`,t:`Aminoside`,cat:`Antibiothérapie`,
+ def:`Antibiotiques bactéricides concentration-dépendants inhibant la synthèse protéique au niveau du ribosome 30S. Gentamicine, amikacine, tobramycine. Efficacité maximale : pic sérique élevé (1 injection/j). Surveillance : fonction rénale, dosages sériques (pic et résiduel), ototoxicité.`,
+ ex:`Aminosides en dose unique journalière (DUJ) : index Cmax/CMI élevé = meilleure efficacité + moins de néphrotoxicité et ototoxicité. Contre-indiqués en grossesse (ototoxicité fœtale). Durée maximale 5–7 jours.`,
+ mnemo:`Aminoside = concentré fort 1x/j + surveiller rein et oreille`},
+{id:`fluoroquinolone`,t:`Fluoroquinolone`,cat:`Antibiothérapie`,
+ def:`Antibiotiques bactéricides inhibant l'ADN gyrase et la topoisomérase IV bactériennes. Ciprofloxacine, lévofloxacine, ofloxacine. Bonne diffusion tissulaire et intracellulaire (légionelle, mycobactéries). Effets secondaires : tendinopathies (risque rupture tendineuse), allongement QT, photosensibilisation.`,
+ ex:`Fluoroquinolones : antibiotiques à préserver (résistances croissantes). Risque de tendinite/rupture du tendon d'Achille notamment chez le sujet âgé sous corticoïdes. Ne pas associer aux AINS et antiacides contenant du magnésium (chélation).`,
+ mnemo:`Fluoroquinolones = ciprofloxacine = bonne diffusion mais attention tendons et QT`},
+{id:`glycopeptide`,t:`Glycopeptide`,cat:`Antibiothérapie`,
+ def:`Antibiotiques actifs uniquement sur les bactéries Gram positif, en inhibant la synthèse de la paroi. Vancomycine (IV), teicoplanine. Indiqués dans les infections à SARM et entérocoques résistants. Surveillance obligatoire : dosage résiduel (vallée), créatinine, audiogramme si traitement prolongé.`,
+ ex:`Vancomycine : cible thérapeutique AUC/CMI ≥ 400 mg·h/L (recommandations IDSA 2020). Surveillance rénale 2x/semaine. Syndrome de l'homme rouge si perfusion trop rapide (histaminolibération) → ralentir le débit, pas une allergie vraie.`,
+ mnemo:`Glycopeptide = vancomycine = Gram + résistants (SARM) + surveiller reins et oreilles`},
+{id:`macrolide`,t:`Macrolide`,cat:`Antibiothérapie`,
+ def:`Antibiotiques bactériostatiques inhibant la synthèse protéique au niveau du ribosome 50S. Azithromycine, clarithromycine, érythromycine. Bonne diffusion intracellulaire (Chlamydia, Mycoplasma, Legionella). Effets secondaires : troubles digestifs, allongement QT.`,
+ ex:`Azithromycine : demi-vie très longue (68h), 1 comprimé/j en 3 jours suffit. Nombreuses interactions médicamenteuses (allongement QT avec amiodarone, certains antipsychotiques). Résistances croissantes aux pneumocoques.`,
+ mnemo:`Macrolide = azithromycine = intracellulaires + courte durée + attention QT`},
+{id:`desescalade`,t:`Désescalade antibiotique`,cat:`Antibiothérapie`,
+ def:`Stratégie d'optimisation de l'antibiothérapie consistant à adapter (réduire ou cibler) le traitement probabiliste large spectre dès obtention des résultats microbiologiques (antibiogramme, hémocultures). Objectif : réduire la pression de sélection et les résistances.`,
+ ex:`Antibiothérapie probabiliste large spectre → hémocultures + antibiogramme à 24–48h → désescalade vers l'antibiotique le plus étroit efficace. Pilier de la politique de bon usage des antibiotiques (antibiogouvernance).`,
+ mnemo:`Désescalade = élargir d'abord en urgence → cibler dès les résultats disponibles`},
+{id:`antibiogouvernance`,t:`Antibiogouvernance (stewardship)`,cat:`Antibiothérapie`,
+ def:`Programme institutionnel visant à optimiser l'usage des antibiotiques pour améliorer les résultats cliniques, réduire les effets indésirables et limiter l'émergence des résistances. Actions : révision à 48–72h, durées courtes, désescalade, formation, audit.`,
+ ex:`En France : programme interministériel "Antibiotiques : les utiliser mieux pour les préserver". En IFSI : apprendre que les antibiotiques ne traitent pas les virus, et que chaque prescription non nécessaire favorise les résistances.`,
+ mnemo:`Antibiogouvernance = utiliser les antibiotiques mieux, pas plus`},
+{id:`duree_atb`,t:`Durée d'antibiothérapie`,cat:`Antibiothérapie`,
+ def:`Durée optimale du traitement antibiotique validée par des essais cliniques. Tendance aux durées courtes (SPILF 2024) : cystite simple 1 jour (fosfomycine), pneumonie communautaire 5 jours, PNA simple 7 jours, otite 5 jours. Durées longues : endocardite (4–6 semaines), tuberculose (6 mois).`,
+ ex:`Les durées courtes ont démontré une efficacité équivalente avec moins d'effets secondaires et moins de résistances. Les "cures" de 7 ou 10 jours systématiques sont souvent dépassées pour les infections courantes.`,
+ mnemo:`Durées courtes = aussi efficace + moins de résistances + moins d'effets secondaires`},
+{id:`probiotique`,t:`Probiotique / flore commensale`,cat:`Antibiothérapie`,
+ def:`La flore commensale (microbiote) est l'ensemble des micro-organismes présents normalement dans l'organisme (intestin, peau, muqueuses), jouant un rôle protecteur. Les antibiotiques à large spectre perturbent le microbiote → risque de Clostridioides difficile, candidose, diarrhée.`,
+ ex:`Diarrhée associée aux antibiotiques : 5–30% des patients. Clostridioides difficile : cause principale de diarrhée nosocomiale. Prévention : antibiotiques à spectre adapté, durées courtes, précautions contact strict.`,
+ mnemo:`Microbiote = flore protectrice détruite par les ATB larges → Clostridium, candidose`},
+// ── RÉSISTANCES BACTÉRIENNES (6) ──
+{id:`sarm`,t:`SARM (Staphylocoque Aureus Résistant à la Méticilline)`,cat:`Résistances`,
+ def:`Souche de Staphylococcus aureus résistante à toutes les bêta-lactamines (via le gène mecA codant une PLP modifiée PLP2a). Bactérie multirésistante (BMR). Traitement : vancomycine, daptomycine, linézolide selon localisation.`,
+ ex:`Précautions contact obligatoires : chambre seule (ou cohorting), surblouse et gants à l'entrée, matériel dédié, SHA avant et après. Dépistage systématique à l'admission des patients à risque (ATCD SARM, hospitalisation récente).`,
+ mnemo:`SARM = Staph doré résistant = BMR = chambre seule + gants + surblouse`},
+{id:`eblse`,t:`EBLSE (Entérobactérie productrice de BLSE)`,cat:`Résistances`,
+ def:`Entérobactéries (E. coli, Klebsiella, Enterobacter) produisant une bêta-lactamase à spectre étendu capable d'hydrolyser la plupart des pénicillines et céphalosporines. Traitement : carbapénèmes (réservés), pivotant, fosfomycine selon antibiogramme.`,
+ ex:`ECBU positif à E. coli EBLSE : précautions contact. Traitement guidé strictement par l'antibiogramme. Prévalence en augmentation en France. Favorisé par l'exposition aux antibiotiques et les voyages en pays à forte prévalence.`,
+ mnemo:`EBLSE = E. coli résistant aux pénicillines et céphalo = carbapénèmes en dernier recours`},
+{id:`epc`,t:`EPC (Entérobactéries Productrices de Carbapénémases)`,cat:`Résistances`,
+ def:`Entérobactéries produisant des enzymes (carbapénémases : KPC, NDM, OXA-48) capables de détruire les carbapénèmes, les antibiotiques de dernier recours. Résistance quasiment panrésistante. Mesures de contrôle : précautions contact renforcées + signalement.`,
+ ex:`EPC : signalement immédiat à l'équipe de prévention des infections et au CPIAS régional. Dépistage des patients contacts. Pas de déplacement du patient en dehors de sa chambre sans masque et protection. Situation d'alerte nationale.`,
+ mnemo:`EPC = résistance aux carbapénèmes = dernier recours détruit = alerte nationale`},
+{id:`clostridium`,t:`Clostridioides difficile`,cat:`Résistances`,
+ def:`Bacille sporulé anaérobie, producteur de toxines A et B détruisant la muqueuse colique. Principale cause de diarrhée nosocomiale, favorisée par les antibiotiques (destruction du microbiote). Formes graves : colite pseudomembraneuse, mégacôlon toxique.`,
+ ex:`Diarrhée liquide, fétide, abondante sous ou après ATB → suspicion C. difficile. Précautions contact RENFORCÉES : gants + surblouse + SHA (attention : les spores résistent à l'alcool, utiliser eau + savon + gants + SHA). Traitement : vancomycine orale ou fidaxomicine.`,
+ mnemo:`C. diff = spores résistantes à l'alcool = lavage des mains au savon obligatoire + gants`},
+{id:`bmr`,t:`BMR (Bactérie Multi-Résistante)`,cat:`Résistances`,
+ def:`Bactérie résistante à au moins trois familles d'antibiotiques. Principales BMR en France : SARM, EBLSE, EPC, ERV (entérocoque résistant à la vancomycine). Nécessitent des précautions contact pour limiter leur diffusion.`,
+ ex:`Précautions contact BMR : chambre individuelle ou cohorting, gants et surblouse à l'entrée, SHA à l'entrée et à la sortie, matériel dédié, signalement dans le dossier. Dépistage à l'admission (prélèvement rectal).`,
+ mnemo:`BMR = résistante à 3+ familles d'ATB = précautions contact = chambre seule`},
+{id:`pseudomonas`,t:`Pseudomonas aeruginosa`,cat:`Résistances`,
+ def:`Bacille à Gram négatif non fermentant, naturellement résistant à de nombreux antibiotiques et capable d'acquérir des résistances. Pathogène opportuniste majeur chez l'immunodéprimé, le brûlé et le mucoviscidosique. Souvent impliqué dans les infections nosocomiales.`,
+ ex:`Traitement anti-Pseudomonas : pipéracilline-tazobactam, ceftazidime, céfépime, imipénème, ciprofloxacine, amikacine. Toujours bithérapie dans les infections graves (synergie et prévention des résistances).`,
+ mnemo:`Pseudomonas = roi des résistances + hôpital + immunodéprimé = bithérapie nécessaire`},
+// ── PRÉCAUTIONS D'HYGIÈNE (7) ──
+{id:`precautions_std`,t:`Précautions standard`,cat:`Précautions d'hygiène`,
+ def:`Ensemble de mesures à appliquer avec TOUS les patients, en PERMANENCE, quel que soit leur statut infectieux connu ou supposé. Comprennent : friction SHA, port de gants si contact sang/liquides, masque si risque projection, surblouse, lunettes, gestion des déchets et piquants.`,
+ ex:`Précautions standard = filet de sécurité universel. Ne pas attendre un résultat positif pour les appliquer. Protègent le soignant ET le patient des transmissions croisées.`,
+ mnemo:`Précautions standard = TOUS les patients + TOUT le temps = filet de sécurité universel`},
+{id:`sha`,t:`SHA (Solution Hydro-Alcoolique)`,cat:`Précautions d'hygiène`,
+ def:`Produit antiseptique à base d'alcool utilisé pour la friction des mains. Efficacité sur la plupart des bactéries, virus enveloppés et champignons. Inefficace sur les spores bactériennes (Clostridioides difficile, Bacillus) et les virus nus (norovirus, rotavirus).`,
+ ex:`5 moments de l'OMS : avant contact patient, avant geste aseptique, après risque exposition liquides biologiques, après contact patient, après contact environnement patient. La SHA est plus efficace ET moins agressive que le lavage au savon en l'absence de souillure visible ou de C. difficile.`,
+ mnemo:`SHA = alcool sur mains = 5 moments OMS, SAUF spores (C. diff → savon obligatoire)`},
+{id:`precautions_air`,t:`Précautions air`,cat:`Précautions d'hygiène`,
+ def:`Mesures pour les infections transmises par voie aérienne (particules < 5 µm restant en suspension dans l'air). Indications : tuberculose pulmonaire active, rougeole, varicelle/zona disséminé. Mesures : chambre individuelle à pression négative + porte fermée + masque FFP2 pour le soignant.`,
+ ex:`Tuberculose : isolement air jusqu'à obtention de 3 frottis d'expectoration négatifs. Le patient doit porter un masque chirurgical lors des déplacements. Les visiteurs portent un FFP2. Patient en chambre seule porte fermée.`,
+ mnemo:`Précautions air = FFP2 + chambre pression négative = tuberculose, rougeole, varicelle`},
+{id:`precautions_gouttes`,t:`Précautions gouttelettes`,cat:`Précautions d'hygiène`,
+ def:`Mesures pour les infections transmises par des gouttelettes (particules > 5 µm) émises lors de la toux, éternuement ou parole. Indications : grippe, COVID-19, coqueluche, méningocoque, oreillons. Mesures : masque chirurgical soignant + chambre individuelle ou distance 1 mètre.`,
+ ex:`Grippe : masque chirurgical dès l'entrée dans la chambre. FFP2 si geste générant des aérosols (aspiration, intubation, aérosolthérapie). Durée des précautions : 5 jours après le début des symptômes (7 jours si immunodéprimé).`,
+ mnemo:`Gouttelettes > 5 µm = courte distance = masque chirurgical = grippe, COVID, méningocoque`},
+{id:`precautions_contact`,t:`Précautions contact`,cat:`Précautions d'hygiène`,
+ def:`Mesures pour les infections transmises par contact direct (peau à peau) ou indirect (surfaces, matériel). Indications : BMR (SARM, EBLSE, EPC), Clostridioides difficile, gale, impétigo, conjonctivite bactérienne. Mesures : gants + surblouse à l'entrée + chambre individuelle ou cohorting.`,
+ ex:`Précautions contact BMR : gants et surblouse dès l'entrée dans la chambre, avant tout contact patient ou environnement. SHA à l'entrée et à la sortie. Matériel dédié (stéthoscope, tensiomètre). Signalement dans le dossier.`,
+ mnemo:`Contact = gants + surblouse = SARM, EBLSE, C. diff, gale = chambre seule`},
+{id:`mdo`,t:`Maladie à Déclaration Obligatoire (MDO)`,cat:`Précautions d'hygiène`,
+ def:`Maladie infectieuse dont la déclaration à l'autorité sanitaire (ARS/Santé Publique France) est imposée par la loi (article L. 3113-1 CSP). 35 maladies en France. Permet la surveillance épidémiologique et la mise en place de mesures de contrôle.`,
+ ex:`MDO principales en infectiologie : tuberculose, VIH (nouveaux diagnostics), méningite bactérienne, légionellose, toxi-infections alimentaires collectives (TIAC), paludisme autochtone, choléra, variole, botulisme.`,
+ mnemo:`MDO = 35 maladies à déclarer à l'ARS = tuberculose, méningite, VIH, légionellose...`},
+{id:`nosocomial`,t:`Infection nosocomiale (IAS)`,cat:`Précautions d'hygiène`,
+ def:`Infection Associée aux Soins (IAS) : infection contractée lors d'une prise en charge médicale ou paramédicale (hôpital, clinique, EHPAD, domicile). Survient au moins 48h après l'admission (ou 30 jours après une chirurgie). Principales : infections urinaires, pneumonies sur ventilation, infections sur cathéter, infections du site opératoire.`,
+ ex:`Prévention infections urinaires : ablation précoce de la sonde urinaire, sondage en circuit fermé, SHA, hygiène périnéale. Prévention pneumonies : position semi-assise (30°), soins de bouche chlorhexidine, sevrage ventilatoire précoce.`,
+ mnemo:`IAS = infection attrapée pendant les soins, pas avant l'hospitalisation`},
+// ── VIH ET IST (5) ──
+{id:`vih`,t:`VIH (Virus de l'Immunodéficience Humaine)`,cat:`VIH & IST`,
+ def:`Rétrovirus (ARN) ciblant les lymphocytes T CD4 (récepteur CD4 + corécepteur CCR5 ou CXCR4). Détruit progressivement l'immunité cellulaire. Transmission : sexuelle, sanguine (partage de seringues, transfusion), verticale (mère-enfant). Non transmis par les contacts de la vie courante.`,
+ ex:`Dépistage : TROD (résultat en 30 min) ou sérologie classique. Bilan de suivi : CD4, charge virale, NFS, bilan hépatique, sérologies (VHB, VHC, toxoplasmose). Traitement antirétroviral (ARV) indiqué dès le diagnostic.`,
+ mnemo:`VIH = rétrovirus qui tue les CD4 = SIDA si CD4 < 200/mm³`},
+{id:`sida`,t:`SIDA (Syndrome d'ImmunoDeficience Acquise)`,cat:`VIH & IST`,
+ def:`Stade avancé de l'infection VIH défini par un taux de CD4 < 200/mm³ et/ou la survenue d'une infection opportuniste ou cancer classant SIDA (pneumocystose, toxoplasmose cérébrale, CMV rétinien, sarcome de Kaposi, lymphome...).`,
+ ex:`Pneumocystose (PcP) : prophylaxie cotrimoxazole si CD4 < 200/mm³. Toxoplasmose cérébrale : prophylaxie cotrimoxazole si CD4 < 100/mm³ + sérologie positive. Charge virale indétectable sous ARV = non-transmission (U=U, 2016).`,
+ mnemo:`SIDA = CD4 < 200/mm³ ou infection opportuniste = stade avancé du VIH`},
+{id:`arv`,t:`Antirétroviraux (ARV)`,cat:`VIH & IST`,
+ def:`Médicaments bloquant le cycle de réplication du VIH. Classes : INTI (inhibiteurs nucléosidiques transcriptase inverse), INNTI, IP (inhibiteurs de protéase), INSTI (inhibiteurs d'intégrase, préférés en 1ère ligne). Traitement de fond : bi ou trithérapie, une prise par jour pour la plupart.`,
+ ex:`Observance absolue obligatoire : une dose oubliée peut sélectionner des résistances. Points IDE : heure fixe, interactions alimentaires selon le médicament, effets secondaires (nausées, lipodystrophie, neuropathie). Charge virale indétectable = objectif et condition du U=U.`,
+ mnemo:`ARV = INTI + INNTI + IP + INSTI = 1 prise/jour = observance totale = indétectable`},
+{id:`prep`,t:`PrEP (Prophylaxie Pré-Exposition)`,cat:`VIH & IST`,
+ def:`Traitement préventif du VIH par ténofovir + emtricitabine (Truvada ou générique) pris par des personnes séronégatives à haut risque d'exposition. Efficacité > 90% si bonne observance. Indications : HSH avec partenaires multiples, personnes trans, usagers de drogues IV.`,
+ ex:`PrEP continue (1 cp/j) ou à la demande (schéma 2-1-1 : 2 cp 2–24h avant le rapport + 1 cp J1 + 1 cp J2). Suivi trimestriel : sérologie VIH, IST, fonction rénale.`,
+ mnemo:`PrEP = se protéger du VIH AVANT l'exposition = > 90% d'efficacité si bonne prise`},
+{id:`ist`,t:`IST (Infections Sexuellement Transmissibles)`,cat:`VIH & IST`,
+ def:`Infections transmises principalement par voie sexuelle. Principales IST bactériennes : syphilis (Treponema pallidum), gonorrhée (Neisseria gonorrhoeae), chlamydiose (Chlamydia trachomatis). IST virales : VIH, VHB, herpès génital, papillomavirus (HPV).`,
+ ex:`Dépistage IST : sérologie syphilis, TAAN gonorrhée+chlamydia, sérologie VIH + VHB + VHC. Gonorrhée : résistances croissantes aux fluoroquinolones → ceftriaxone IM en 1ère ligne. HPV : vaccination recommandée garçons et filles jusqu'à 14 ans (schéma 2 doses).`,
+ mnemo:`IST = infections par voie sexuelle = dépistage régulier si partenaires multiples`},
+// ── TUBERCULOSE (4) ──
+{id:`tuberculose`,t:`Tuberculose`,cat:`Tuberculose`,
+ def:`Infection par Mycobacterium tuberculosis (bacille de Koch, BK). Transmission aérienne interhumaine par gouttelettes. Forme pulmonaire (90%) : toux chronique productive > 3 semaines, hémoptysie, sueurs nocturnes, amaigrissement, fièvre vespérale. Maladie à déclaration obligatoire.`,
+ ex:`Isolement respiratoire (précautions air) jusqu'à 3 frottis d'expectoration négatifs. Patient porte masque chirurgical hors chambre. Soignants portent FFP2. Enquête autour du cas. Traitement DOT (Directly Observed Therapy) si doute d'observance.`,
+ mnemo:`Tuberculose = BK + toux + sueurs + maigrit + FFP2 + déclaration obligatoire`},
+{id:`traitement_tb`,t:`Traitement de la tuberculose`,cat:`Tuberculose`,
+ def:`Traitement standard de la tuberculose pulmonaire (OMS/HAS) : 2 mois de quadrithérapie RHZE (Rifampicine + Isoniazide + Pyrazinamide + Éthambutol) suivis de 4 mois de bithérapie RH. Durée totale : 6 mois. La Rifampicine est un inducteur enzymatique puissant.`,
+ ex:`Points IDE : prise à jeun ou avec un léger repas. Rifampicine : colore urines, larmes, sueur en orange-rouge (prévenir le patient !). Isoniazide : supplémentation en vitamine B6 (pyridoxine) pour prévenir la neuropathie périphérique. Contrôle bilans hépatiques.`,
+ mnemo:`RHZE 2 mois + RH 4 mois = 6 mois au total = Rifampicine colore en orange`},
+{id:`primo_infection`,t:`Primo-infection tuberculeuse`,cat:`Tuberculose`,
+ def:`Premier contact infectant avec M. tuberculosis. Souvent asymptomatique ou syndrome pseudo-grippal. IDR à la tuberculine positive ou IGRA (Interferon-Gamma Release Assay) positif. Peut aboutir à la tuberculose latente (90%) ou active (10%).`,
+ ex:`Tuberculose latente : infection sans maladie active = pas de contagiosité. Traitement préventif (chimioprophylaxie) indiqué chez les contacts proches, immunodéprimés, enfants. Isoniazide 6 mois ou Rifampicine-Isoniazide 3 mois.`,
+ mnemo:`Primo-infection = premier contact avec BK = souvent muette = IDR ou IGRA positif`},
+{id:`igra`,t:`IGRA (Interferon-Gamma Release Assay)`,cat:`Tuberculose`,
+ def:`Test sanguin de détection de l'infection tuberculeuse latente mesurant la production d'interféron gamma en réponse aux antigènes de M. tuberculosis (ESAT-6, CFP-10). Tests QuantiFERON-TB Gold, T-SPOT.TB. Supérieur à l'IDR chez les vaccinés BCG.`,
+ ex:`IGRA positif ne distingue pas tuberculose latente de maladie active. Compléter par radio pulmonaire et clinique. Non influencé par le vaccin BCG (contrairement à l'IDR). Utile pour le dépistage des contacts et avant biothérapie immunosuppressive.`,
+ mnemo:`IGRA = prise de sang pour détecter la tuberculose latente = non influencé par BCG`},
+// ── PALUDISME ET INFECTIONS TROPICALES (4) ──
+{id:`paludisme`,t:`Paludisme`,cat:`Infections tropicales`,
+ def:`Parasitose à protozoaire Plasmodium (falciparum, vivax, ovale, malariae, knowlesi) transmise par moustique Anophèles femelle. Urgence diagnostique et thérapeutique si P. falciparum. Délai diagnostic recommandé < 4h après consultation. Fièvre au retour de zone tropicale = paludisme jusqu'à preuve du contraire.`,
+ ex:`Diagnostic : frottis sanguin + goutte épaisse (examen de référence) + TDR (test de diagnostic rapide antigénique, résultat en 15–20 min). Traitement paludisme simple à P. falciparum : artémisinine combinée (ACT, recommandation OMS 2022). Grave : artésunate IV.`,
+ mnemo:`Paludisme = fièvre au retour + Anophèles = urgence < 4h = frottis + TDR`},
+{id:`dengue`,t:`Dengue`,cat:`Infections tropicales`,
+ def:`Arbovirose (infection transmise par arthropode) due au virus Dengue (4 sérotypes), transmise par moustique Aedes aegypti et Aedes albopictus (tigre). Fièvre brutale, céphalées rétro-orbitaires, myalgies, éruption cutanée, thrombopénie. Formes graves : dengue sévère avec hémorragies.`,
+ ex:`Pas de traitement antiviral spécifique. Traitement symptomatique : paracétamol (AINS et aspirine contre-indiqués : risque hémorragique). Surveillance plaquettes. Pas de vaccin systématique en France. Déclaration obligatoire si cas groupés.`,
+ mnemo:`Dengue = fièvre + moustique Aedes + thrombopénie + paracétamol seulement (pas AINS)`},
+{id:`leptospirose`,t:`Leptospirose`,cat:`Infections tropicales`,
+ def:`Zoonose bactérienne (Leptospira interrogans) transmise par contact avec eau ou sol contaminé par urines de rongeurs. Professionnels exposés : agriculteurs, égoutiers, vétérinaires, pratiquants de sports aquatiques. Formes graves : syndrome de Weil (ictère + insuffisance rénale + hémorragies).`,
+ ex:`Signes : fièvre biphasique, myalgies intenses, conjonctivite. Diagnostic : sérologie (MAT), PCR urine/sang. Traitement : amoxicilline ou doxycycline. Prophylaxie : doxycycline hebdomadaire en zone d'exposition. Maladie professionnelle et MDO.`,
+ mnemo:`Leptospirose = eau contaminée + rongeurs + professionnels = MDO + amoxicilline`},
+{id:`fievre_retour`,t:`Fièvre au retour de voyage`,cat:`Infections tropicales`,
+ def:`Tout syndrome fébrile survenant dans les 3 mois après un retour de pays tropical ou subtropical doit faire évoquer un paludisme jusqu'à preuve du contraire. Diagnostic urgentissime. Autres causes : dengue, typhoïde, amibiase, rickettsiose, hépatite virale, arboviroses.`,
+ ex:`Interrogatoire systématique IDE : pays visités, zones (urbain/rural/forêt), chimioprophylaxie antipaludéenne (nom, durée, observance), contacts animaux, eau/aliments, rapports sexuels. Orienter immédiatement vers les urgences ou le médecin.`,
+ mnemo:`Fièvre + retour de voyage = paludisme jusqu'à preuve du contraire = < 4h pour le bilan`},
+// ── INFECTIONS COURANTES (7) ──
+{id:`iu`,t:`Infection urinaire`,cat:`Infections courantes`,
+ def:`Infection bactérienne des voies urinaires (cystite = basse, pyélonéphrite = haute). ECBU positif selon critères SPILF 2024 : ≥ 10³ UFC/mL pour E. coli chez la femme symptomatique. Principal germe : E. coli (80%). Facteurs de risque : sonde urinaire, diabète, grossesse, malformation urologique.`,
+ ex:`Cystite simple de la femme : traitement court (fosfomycine-trométamol monodose ou pivmécillinam 5j). PNA simple : ciprofloxacine 7j ou C3G parentérale. ECBU après traitement seulement si PNA ou grossesse.`,
+ mnemo:`IU = E. coli + brûlure mictionnelle + ECBU ≥ 10³ UFC/mL = fosfomycine si simple`},
+{id:`pac`,t:`Pneumonie Aiguë Communautaire (PAC)`,cat:`Infections courantes`,
+ def:`Infection du parenchyme pulmonaire acquise en dehors de l'hôpital. Germes fréquents : Streptococcus pneumoniae (le plus fréquent), Mycoplasma pneumoniae (sujet jeune, atypique), Legionella (formes sévères, antigène urinaire). Score de gravité : CRB-65.`,
+ ex:`CRB-65 : Confusion + FR ≥ 30/min + PAS < 90 mmHg ou PAD ≤ 60 mmHg + âge ≥ 65 ans. Score 0 = ambulatoire. Score ≥ 2 = hospitalisation. Score 3–4 = USI. Traitement : amoxicilline en 1ère ligne (pneumocoque), macrolide si atypique.`,
+ mnemo:`PAC = pneumocoque (1er) + CRB-65 pour la gravité + amoxicilline`},
+{id:`cellulite`,t:`Cellulite bactérienne`,cat:`Infections courantes`,
+ def:`Infection cutanée et sous-cutanée diffuse non nécrotique (érysipèle si superficielle dermique, cellulite si profonde). Germe principal : Streptocoque bêta-hémolytique du groupe A. Signes : placard rouge, chaud, douloureux, mal limité, avec porte d'entrée.`,
+ ex:`Distinguer cellulite bénigne (traitement ambulatoire amoxicilline) de fasciite nécrosante (urgence chirurgicale absolue = nécrose des fascias, crépitations, signes de sepsis grave, STOP et bloc opératoire).`,
+ mnemo:`Cellulite = peau rouge + chaude + douloureuse = streptocoque = amoxicilline`},
+{id:`grippe`,t:`Grippe (Influenza)`,cat:`Infections courantes`,
+ def:`Infection virale respiratoire aiguë par virus Influenza A ou B. Début brutal : fièvre élevée, myalgies, céphalées, toux sèche. Complications : pneumonie grippale, surinfection bactérienne (pneumocoque, staphylocoque), chez les sujets à risque.`,
+ ex:`Vaccination annuelle recommandée : soignants (obligation déontologique et légale), ≥ 65 ans, femmes enceintes, immunodéprimés. Traitement antiviral (oseltamivir) si < 48h d'évolution et sujet à risque ou forme grave. Précautions gouttelettes.`,
+ mnemo:`Grippe = début brutal + myalgies + FFP2 si aérosols + vaccin annuel soignants`},
+{id:`covid`,t:`COVID-19 (SARS-CoV-2)`,cat:`Infections courantes`,
+ def:`Maladie infectieuse due au coronavirus SARS-CoV-2 (ARN, enveloppé). Transmission aérienne et par gouttelettes. Spectre clinique : asymptomatique à SDRA grave avec syndrome inflammatoire. Complications : embolie pulmonaire, CIVD, syndrome de persistance (COVID long).`,
+ ex:`Précautions gouttelettes (masque chirurgical) + contact. FFP2 lors des gestes aérosolisants (intubation, aérosolthérapie, aspiration). Traitement des formes sévères hospitalisées : dexaméthasone 6 mg/j (si O2 nécessaire), anticoagulation préventive ou curative.`,
+ mnemo:`COVID-19 = SARS-CoV-2 + transmission aérienne + gouttelettes + FFP2 si aérosols`},
+{id:`herpes`,t:`Herpès (HSV)`,cat:`Infections courantes`,
+ def:`Infection par Herpes Simplex Virus (HSV-1 oro-facial, HSV-2 génital). Virus neurotrope à latence ganglionnaire, avec récurrences possibles. Primo-infection souvent sévère (gingivostomatite herpétique chez l'enfant). Formes graves chez l'immunodéprimé : encéphalite, herpès disséminé.`,
+ ex:`Encéphalite herpétique : urgence absolue → aciclovir IV 10 mg/kg/8h pendant 14–21 jours. Ne pas attendre les résultats PCR LCS. Herpès néonatal : transmission accouchement voie basse si lésion active → césarienne discutée.`,
+ mnemo:`HSV = virus latent dans les ganglions nerveux = récurrences = aciclovir`},
+{id:`cmv`,t:`CMV (Cytomégalovirus)`,cat:`Infections courantes`,
+ def:`Herpesvirus ubiquitaire, infection souvent asymptomatique chez l'immunocompétent (syndrome mononucléosique). Dangereux chez l'immunodéprimé (greffé, VIH CD4 < 50/mm³) : rétinite, pneumopathie, colite, encéphalite. Transmission : salive, urine, voie sexuelle, transfusion, greffe.`,
+ ex:`CMV congénital : principale cause infectieuse de surdité et handicap neurologique néonataux. Prévention chez la femme enceinte séronégative : hygiène des mains +++, éviter embrasser enfants en bas âge sur la bouche. Traitement CMV actif : ganciclovir, valganciclovir.`,
+ mnemo:`CMV = bénin si immunocompétent / grave si immunodéprimé = ganciclovir`},
+// ── RACINES INFECTIOLOGIQUES (5) ──
+{id:`anti_rac`,t:`Anti-`,cat:`Racines`,
+ def:`Préfixe latin et grec signifiant contre. Omniprésent en infectiologie pour désigner les médicaments agissant contre les agents pathogènes.`,
+ ex:`Antibiotique (contre les bactéries), antiviral (contre les virus), antifongique (contre les champignons), antiparasitaire, antitoxique, antiseptique.`,
+ mnemo:`anti- = contre = préfixe universel pour tous les traitements anti-infectieux`},
+{id:`septico_rac`,t:`Septico- / Septique`,cat:`Racines`,
+ def:`Préfixe ou adjectif d'origine grecque (sêptikos = qui pourrit) désignant tout ce qui est en rapport avec l'infection, la décomposition ou la contamination bactérienne. Antonyme : aseptique.`,
+ ex:`Sepsis, septique, choc septique, antiseptique, asepsie, septicémie (terme ancien remplacé par bactériémie/sepsis).`,
+ mnemo:`septikos = putréfaction en grec = septique = infecté / aseptique = sans infection`},
+{id:`patho_rac`,t:`Patho- / -pathogène`,cat:`Racines`,
+ def:`Préfixe ou suffixe d'origine grecque (pathos = maladie + -gène = qui produit) désignant la capacité à provoquer une maladie. Un micro-organisme pathogène est capable de causer une infection chez un hôte susceptible.`,
+ ex:`Pathogène, pathologie, physiopathologie, agent pathogène, opportuniste (pathogène uniquement chez l'immunodéprimé), atypique (germe à comportement inhabituel).`,
+ mnemo:`pathos (maladie) + genos (engendrer) = ce qui produit la maladie`},
+{id:`immuno_rac`,t:`Immuno- / -immune`,cat:`Racines`,
+ def:`Préfixe ou suffixe d'origine latine (immunis = exempt de charge, exempté) désignant le système de défense de l'organisme contre les agents pathogènes.`,
+ ex:`Immunodéprimé, immunosuppresseur, immunoglobuline, immunocompétent, vaccination (stimulation de l'immunité), séroconversion.`,
+ mnemo:`immunis = exempté en latin → immunité = protection contre la maladie`},
+{id:`microbe_rac`,t:`Micro- / -biose`,cat:`Racines`,
+ def:`Micro- (petit) + bio- (vie) : désigne le monde des micro-organismes invisibles à l'œil nu. La microbiologie est la science qui les étudie. Le microbiote désigne l'ensemble des micro-organismes normalement présents dans l'organisme.`,
+ ex:`Microbe, microbiologie, microbiote, antimicrobien, microscope, micrococcus. Antibiose = relation entre deux organismes dont l'un est néfaste pour l'autre (d'où antibiotique = contre la vie bactérienne).`,
+ mnemo:`mikros (petit) + bios (vie) = microbes = organismes invisibles à l'œil nu`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Antibiotique`,def:`Substance qui tue ou inhibe la croissance des bactéries.`,
+ pieces:[`anti-`,`micro-`,`-biotique`,`-septique`,`-viral`],correct:[`anti-`,`-biotique`],
+ meaning:`anti- (contre) + -biotique (la vie) = contre la vie bactérienne`},
+{term:`Antiseptique`,def:`Produit détruisant ou inhibant les micro-organismes sur les tissus vivants.`,
+ pieces:[`anti-`,`micro-`,`-septique`,`-biotique`,`-fongique`],correct:[`anti-`,`-septique`],
+ meaning:`anti- (contre) + -septique (infection) = contre l'infection sur tissus vivants`},
+{term:`Antimicrobien`,def:`Terme générique désignant toute substance active contre les micro-organismes.`,
+ pieces:[`anti-`,`patho-`,`-microbien`,`-septique`,`-biotique`],correct:[`anti-`,`-microbien`],
+ meaning:`anti- (contre) + -microbien (micro-organisme) = contre les microbes`},
+{term:`Antifongique`,def:`Médicament actif contre les champignons pathogènes (Candida, Aspergillus).`,
+ pieces:[`anti-`,`micro-`,`-fongique`,`-viral`,`-biotique`],correct:[`anti-`,`-fongique`],
+ meaning:`anti- (contre) + -fongique (champignon) = contre les champignons`},
+{term:`Antiviral`,def:`Médicament inhibant la réplication des virus.`,
+ pieces:[`anti-`,`micro-`,`-viral`,`-biotique`,`-septique`],correct:[`anti-`,`-viral`],
+ meaning:`anti- (contre) + -viral (virus) = contre les virus`},
+{term:`Bactériémie`,def:`Présence de bactéries viables dans le sang, confirmée par hémoculture positive.`,
+ pieces:[`bactério-`,`septio-`,`-émie`,`-lyse`,`-ite`],correct:[`bactério-`,`-émie`],
+ meaning:`bactério- (bactérie) + -émie (sang) = bactéries dans le sang`},
+{term:`Septicémie`,def:`Terme ancien (remplacé par sepsis/bactériémie) désignant une infection généralisée du sang.`,
+ pieces:[`septico-`,`bactério-`,`-émie`,`-ite`,`-lyse`],correct:[`septico-`,`-émie`],
+ meaning:`septico- (infection) + -émie (sang) = infection généralisée dans le sang`},
+{term:`Méningite`,def:`Inflammation des méninges, urgence médicale bactérienne ou virale.`,
+ pieces:[`méning-`,`encéphalo-`,`-ite`,`-émie`,`-pathie`],correct:[`méning-`,`-ite`],
+ meaning:`méning- (méninges) + -ite (inflammation) = inflammation des méninges`},
+{term:`Pneumonie`,def:`Infection du parenchyme pulmonaire, souvent par Streptococcus pneumoniae.`,
+ pieces:[`pneumo-`,`broncho-`,`-nie`,`-ite`,`-émie`],correct:[`pneumo-`,`-nie`],
+ meaning:`pneumo- (poumon) + -nie = état infectieux du poumon`},
+{term:`Immunodéprimé`,def:`Patient dont les défenses immunitaires sont altérées, à risque d'infections opportunistes.`,
+ pieces:[`immuno-`,`micro-`,`-déprimé`,`-supprimé`,`-compétent`],correct:[`immuno-`,`-déprimé`],
+ meaning:`immuno- (système immunitaire) + -déprimé (diminué) = immunité diminuée`},
+{term:`Antiparasitaire`,def:`Médicament actif contre les parasites (paludisme, gale, ténia...).`,
+ pieces:[`anti-`,`micro-`,`-parasitaire`,`-biotique`,`-fongique`],correct:[`anti-`,`-parasitaire`],
+ meaning:`anti- (contre) + -parasitaire (parasite) = contre les parasites`},
+{term:`Pathogène`,def:`Micro-organisme capable de provoquer une maladie chez un hôte susceptible.`,
+ pieces:[`patho-`,`micro-`,`-gène`,`-logie`,`-ite`],correct:[`patho-`,`-gène`],
+ meaning:`patho- (maladie) + -gène (qui produit) = qui produit la maladie`},
+];
+
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[];
+
+function selectMode(m,btn){document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));btn.classList.add(`sel`);mode=m;}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  if(mode===`qcm`)questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`)questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`)questions=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const p3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){if(i===ci)choices.push(flip?t.t:t.def.substring(0,90)+`…`);else{const d=p3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}}
+    return{term:t.t,cat:t.cat,def:t.def,q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,questionText:flip?t.def.substring(0,140):null,choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`)loadQCM();
+  else if(mode===`frappe`)loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">🦠 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Terme médical</div><div class="tc-term">${q.term}</div><div class="tc-cat">🦠 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{const b=document.createElement(`button`);b.className=`choice`;b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);});
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}});
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition — Quel est ce terme ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">🦠 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez le terme médical correspondant :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t.split(`(`)[0].trim());const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">🦠 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme infectiologique :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--em)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`Le terme était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Étymologie :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Vocabulaire maîtrisé`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#ecfdf5`,tc:`#047857`,brd:`#6ee7b7`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent ! Essayez le Mode Frappe pour mémoriser sans choix multiples.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Parfait. Le Mode Examen avec 15 secondes est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 anti-/micro-/-biotique/-septique = vous maîtrisez la logique des termes infectiologiques.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en infectiologie. Passez au module suivant.`);
+  if(note<10)cons.push(`📚 Commencez par Microbiologie et Précautions d'hygiène avant le sepsis et les résistances.`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 puis passez au mode suivant.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`Sepsis`)cons.push(`🚨 Sepsis-3 (2016) : infection + SOFA ≥ 2. Choc septique : vasopresseurs + lactates > 2 mmol/L. Bundle 1h : hémocultures + lactates + ATB + remplissage.`);
+    if(cat===`Antibiothérapie`)cons.push(`💊 Désescalade = élargir d'abord en urgence → cibler dès 48h sur antibiogramme. Durées courtes = moins de résistances. Aminosides 1 prise/j.`);
+    if(cat===`Résistances`)cons.push(`🦠 BMR = précautions contact. SARM/EBLSE = gants + surblouse + chambre seule. C. difficile = spores résistantes à l'alcool → lavage mains au savon.`);
+    if(cat===`Précautions d'hygiène`)cons.push(`🧤 Air (FFP2 + pression négative) = tuberculose, rougeole, varicelle. Gouttelettes (masque chir) = grippe, COVID. Contact (gants + surblouse) = BMR, C. diff.`);
+    if(cat===`VIH & IST`)cons.push(`💊 VIH : CD4 < 200 = SIDA. ARV indiqués dès le diagnostic. U=U = charge virale indétectable = non-transmissible sexuellement (2016).`);
+    if(cat===`Tuberculose`)cons.push(`🫁 Tuberculose : RHZE 2 mois + RH 4 mois = 6 mois. FFP2 + isolement air. Rifampicine = urine orange. Déclaration obligatoire.`);
+    if(cat===`Infections tropicales`)cons.push(`🌍 Fièvre au retour = paludisme jusqu'à preuve du contraire = < 4h pour le bilan (frottis + TDR). Dengue : paracétamol seulement, pas d'AINS.`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise complète sur toutes les catégories. Excellent travail.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

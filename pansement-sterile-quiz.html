@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Pansement Stérile</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f7f5;--w:#fff;
+  --g:#4d7c0f;--gd:#365314;--gl:#f7fee7;--gm:#a3e635;--gs:#84cc16;
+  --bl:#1d4ed8;--bll:#eff6ff;--blm:#93c5fd;
+  --rd:#dc2626;--rdl:#fef2f2;--rdm:#fca5a5;
+  --or:#92400e;--orl:#fffbeb;--orm:#fde68a;--orc:#b45309;
+  --pu:#6d28d9;--pul:#f5f3ff;--pum:#c4b5fd;
+  --te:#0e7490;--tel:#ecfeff;--tem:#67e8f9;
+  --text:#111827;--t2:#4b5563;--t3:#9ca3af;
+  --bd:#e5e7eb;--bd2:#d1d5db;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.04);
+  --shm:0 4px 20px rgba(0,0,0,.1);
+}
+html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+/* HDR */
+.hdr{background:var(--w);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hl{display:flex;align-items:center;gap:9px}
+.hico{width:34px;height:34px;background:var(--gd);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.hn{font-size:14px;font-weight:700;color:var(--gd)}.hs{font-size:10px;color:var(--t3)}
+.hbadge{background:var(--gl);color:var(--g);border:1px solid var(--gm);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:700}
+/* WELCOME */
+.wb{max-width:800px;margin:0 auto;padding:24px 18px 50px;animation:up .4s ease}
+.hero{background:var(--w);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:var(--sh);display:flex;gap:15px;align-items:center}
+.hero-ico{font-size:38px;flex-shrink:0}
+.ht{font-family:'DM Serif Display',serif;font-size:20px;color:var(--gd);margin-bottom:4px}
+.hd{font-size:12.5px;color:var(--t2);line-height:1.65}
+/* Alert */
+.alert{background:linear-gradient(135deg,#fff5f5,#fef9f0);border:2px solid var(--rdm);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.ar{display:flex;gap:10px;align-items:flex-start}
+.ai{font-size:20px;flex-shrink:0;margin-top:1px}
+.at{font-size:12px;font-weight:700;color:var(--rd);margin-bottom:5px}
+.al{list-style:none}
+.al li{font-size:11.5px;color:#7f1d1d;display:flex;gap:6px;align-items:flex-start;line-height:1.55;margin-bottom:3px}
+.al li::before{content:'⚠️';font-size:10px;flex-shrink:0;margin-top:1px}
+/* Nuance SF2H */
+.nuance{background:var(--pul);border:1.5px solid var(--pum);border-radius:12px;padding:13px 15px;margin-bottom:18px}
+.nu-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--pu);margin-bottom:8px}
+.nu-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:560px){.nu-grid{grid-template-columns:1fr}}
+.nu-item{background:var(--w);border:1px solid var(--pum);border-radius:9px;padding:10px 11px;font-size:11px;color:#4c1d95;line-height:1.55}
+.nu-item strong{display:block;margin-bottom:3px;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px}
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stc{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:12px;text-align:center}
+.stv{font-size:19px;font-weight:800;color:var(--gd);margin-bottom:1px}.stl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+/* Modes */
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:540px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--w);border:2px solid var(--bd);border-radius:14px;padding:17px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--g));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--g));box-shadow:var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc-ico{font-size:24px;margin-bottom:8px;display:block}.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'✓';color:var(--mc,var(--g));font-weight:700;flex-shrink:0}
+.launch{width:100%;padding:15px;background:var(--gd);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(54,83,20,.35)}
+.launch:hover{background:var(--g);transform:translateY(-2px)}
+/* FICHE */
+.fb{max-width:820px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--w);border:1px solid var(--bd);border-radius:14px;padding:15px 20px;margin-bottom:15px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'DM Serif Display',serif;color:var(--gd)}
+.fsub{font-size:10.5px;color:var(--t3);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border:1.5px solid var(--bd);border-radius:20px;background:var(--w);font-size:10.5px;font-weight:700;cursor:pointer;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--g);color:var(--g)}.ftab.on{background:var(--gd);border-color:var(--gd);color:white}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--g);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--gm)}
+/* Matériel */
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+@media(max-width:480px){.mg2{grid-template-columns:1fr}}
+.mi{background:var(--w);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--t2);line-height:1.5;box-shadow:var(--sh)}
+.mi-ico{font-size:15px;flex-shrink:0}
+.mi.crit{background:var(--rdl);border-color:var(--rdm)}.mi.crit .mt{color:#7f1d1d}
+.mi.warn{background:var(--orl);border-color:var(--orm)}.mi.warn .mt{color:var(--or)}
+.mi.ok{background:var(--gl);border-color:var(--gm)}.mi.ok .mt{color:var(--gd)}
+/* Phases / Steps */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px}
+.sc2{background:var(--w);border:1px solid var(--bd);border-radius:12px;overflow:hidden;box-shadow:var(--sh);margin-bottom:7px}
+.sc2.crit{border-color:var(--rdm);border-width:2px}
+.sc2.att{border-color:var(--orm);border-width:1.5px}
+.sc2.nuan{border-color:var(--pum);border-width:1.5px}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--bg)}
+.sn2{width:24px;height:24px;border-radius:50%;background:var(--gd);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc2.crit .sn2{background:var(--rd)}.sc2.att .sn2{background:var(--orc)}.sc2.nuan .sn2{background:var(--pu)}
+.si2{flex:1}.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--orc)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pu)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc2.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc2.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:#4c1d95;line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--orc);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--or);line-height:1.6}
+.serr{background:var(--rdl);border:1.5px solid var(--rdm);border-radius:7px;padding:7px 11px;font-size:11px;color:#7f1d1d;line-height:1.55;margin-top:6px}
+.snuan{background:var(--pul);border:1px solid var(--pum);border-radius:7px;padding:7px 11px;font-size:11px;color:#4c1d95;line-height:1.55;margin-top:6px}
+.scons{background:var(--bll);border:1px solid var(--blm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--bl);line-height:1.55;margin-top:6px}
+/* Complications */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:480px){.cg{grid-template-columns:1fr}}
+.cc{padding:12px 13px;border-radius:11px;font-size:11.5px;line-height:1.65}
+.cc-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.cc-r{background:var(--rdl);border:1px solid var(--rdm);color:#7f1d1d}.cc-r .cc-h{color:var(--rd)}
+.cc-o{background:var(--orl);border:1px solid var(--orm);color:var(--or)}.cc-o .cc-h{color:var(--orc)}
+.cc-t{background:var(--tel);border:1px solid var(--tem);color:var(--te)}.cc-t .cc-h{color:var(--te)}
+.cc-p{background:var(--pul);border:1px solid var(--pum);color:#4c1d95}.cc-p .cc-h{color:var(--pu)}
+/* Délais */
+.delai-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-bottom:14px}
+.delai-table th{background:var(--gd);color:white;padding:8px 11px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px}
+.delai-table td{padding:8px 11px;border-bottom:1px solid var(--bd);color:var(--t2)}
+.delai-table tr:hover td{background:var(--gl)}
+.delai-table .bold{color:var(--text);font-weight:700}
+/* Mémo */
+.memo{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.8;margin-bottom:10px}
+.mh{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+/* QUIZ */
+#stb{background:var(--w);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-b{width:26px;height:26px;background:var(--gd);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-t{font-size:12px;font-weight:700;color:var(--gd)}
+.tbm{background:var(--gl);color:var(--g);border:1px solid var(--gm);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--bd)}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--te));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--orm);color:var(--orc)}
+.pst{background:var(--bll);border-color:var(--blm);color:var(--bl)}
+.pst.hot{background:var(--orl);border-color:var(--orm);color:var(--orc);animation:blink 1s infinite}
+.plv{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bd);stroke-width:3.5}
+.tia{fill:none;stroke:var(--g);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--rd)}
+#qb{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease;color:white;box-shadow:0 4px 18px rgba(54,83,20,.26)}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.12);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:2px}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px}
+.ctx-body{font-size:12px;color:rgba(255,255,255,.82);line-height:1.65;font-family:'DM Serif Display',serif;font-style:italic}
+.qcard{background:var(--w);border:1px solid var(--bd);border-radius:15px;padding:18px 20px;margin-bottom:11px;box-shadow:var(--sh);animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--gm);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--g)}
+.qct{font-size:9.5px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3)}
+.qtext{font-family:'DM Serif Display',serif;font-size:16.5px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--gd)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--w);border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--sh)}
+.ch:hover:not(:disabled){border-color:var(--g);background:var(--gl);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);transition:all .2s}
+.ch.ok2{background:var(--gl);border-color:var(--gm)}.ch.ok2 .cl{background:var(--g);border-color:var(--g);color:white}
+.ch.ko{background:var(--rdl);border-color:var(--rdm);animation:shake .4s ease}.ch.ko .cl{background:var(--rd);border-color:var(--rd);color:white}
+.ch.mis{background:var(--gl);border-color:var(--gm);opacity:.6}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--gl);color:var(--g);border-color:var(--gm)}.ctag-ko{background:var(--rdl);color:var(--rd);border-color:var(--rdm)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--gl);border-color:var(--gm)}.expb.ko{background:var(--rdl);border-color:var(--rdm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--g)}.exptt.ko{color:var(--rd)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--w);border-left:3px solid var(--g);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--gd)}
+.nxt{width:100%;padding:12px;background:var(--gd);border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(54,83,20,.25)}
+.nxt.on{display:block}.nxt:hover{background:var(--g)}
+#qft{background:var(--w);border-top:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fs2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fs2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--orc);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'DM Sans',sans-serif}
+/* RÉSULTAT */
+.rb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.rh{background:var(--w);border:1px solid var(--bd);border-radius:18px;padding:26px;text-align:center;margin-bottom:12px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.rh::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--g),var(--te))}
+.rg{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rs{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'DM Serif Display',serif}
+.rsb{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rmen{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:13px;text-align:center;box-shadow:var(--sh)}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bkd{background:var(--w);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:12px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd3{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errb{background:var(--rdl);border:1px solid var(--rdm);border-radius:13px;padding:14px;margin-bottom:12px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rd);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsb{background:var(--bll);border:1px solid var(--blm);border-radius:13px;padding:14px;margin-bottom:12px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--bl);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rbtn{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.rbp{background:var(--gd);color:white;box-shadow:0 2px 9px rgba(54,83,20,.28)}.rbp:hover{background:var(--g)}
+.rbs{background:var(--w);border:1.5px solid var(--bd);color:var(--text)}.rbs:hover{border-color:var(--gm)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+</style>
+</head>
+<body>
+<!-- WELCOME -->
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hl"><div class="hico">🩹</div><div><div class="hn">NurseSimPro</div><div class="hs">Formation infirmière premium</div></div></div>
+    <div class="hbadge">🩹 Pansement stérile</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">🩹</div>
+      <div>
+        <div class="ht">Pansement stérile</div>
+        <div class="hd">Protocole 4 temps, technique main propre/main sale, sens de nettoyage selon le type de plaie, antiseptiques, ablation de fils et d'agrafes, traçabilité. Sources vérifiées : Réussis ton IFSI 2023 · Infirmier.net · SF2H 2016 · Entraide ESI IDE · CHUV · Art. R.4311-5 et R.4311-7 CSP.</div>
+      </div>
+    </div>
+    <div class="alert">
+      <div class="ar"><div class="ai">🚨</div>
+        <div><div class="at">7 règles absolues — erreur = faute grave ou risque infectieux</div>
+          <ul class="al">
+            <li><strong>Sérum physiologique préféré à l'antiseptique</strong> pour la cicatrisation sur plaie saine — l'antiseptique RETARDE la cicatrisation. L'antiseptique n'est utilisé que sur prescription médicale en cas de surinfection locale.</li>
+            <li><strong>Jamais mélanger les gammes d'antiseptiques</strong> — PVPI (Bétadine®) ou Chlorhexidine, jamais les deux ensemble.</li>
+            <li><strong>Ablation fils/agrafes = prescription médicale obligatoire</strong> (Art. R.4311-7 — rôle prescrit).</li>
+            <li><strong>Ablation : 1 fil ou agrafe sur 2 — jamais les extrémités</strong>. Toujours couper le fil sous le nœud, au ras de la peau.</li>
+            <li><strong>Désunion lors de l'ablation → STOPPER immédiatement + avis médical</strong>. Poser des strips en attendant.</li>
+            <li><strong>Si plusieurs pansements : commencer par le plus propre, finir par le plus sale.</strong></li>
+            <li><strong>Le Dakin® inhibe la microcirculation et retarde la production de collagène</strong> — utilisation uniquement sur prescription, jamais en routine.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="nuance">
+      <div class="nu-t">🔬 3 nuances cliniques clés — SF2H 2016 + IFSI France</div>
+      <div class="nu-grid">
+        <div class="nu-item"><strong>🧹 Détersion 4 temps — quand ?</strong>SF2H 2016 : détersion uniquement si souillure visible sur peau saine. En IFSI France : encore souvent enseignée systématiquement. Attendu à l'évaluation IFSI : protocole 4 temps complet.</div>
+        <div class="nu-item"><strong>↕️ Sens de nettoyage</strong>Plaie propre/cicatrice suturée : du <strong>centre vers les berges</strong>. Plaie avec écoulements : des <strong>berges vers le centre</strong>. Cicatrice : de <strong>l'extérieur vers l'intérieur</strong> (côté gauche, côté droit, puis la ligne de suture).</div>
+        <div class="nu-item"><strong>💊 Antiseptique ou sérum ?</strong>Sérum physiologique = référence pour cicatrisation. Antiseptique sur prescription uniquement si surinfection locale. Dakin® et éosine = retardent la cicatrisation. Respecter les gammes : ne pas mélanger PVPI et Chlorhexidine.</div>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stc"><div class="stv">16</div><div class="stl">Étapes</div></div>
+      <div class="stc"><div class="stv">4</div><div class="stl">Modes</div></div>
+      <div class="stc"><div class="stv">J5-J21</div><div class="stl">Délais ablation</div></div>
+      <div class="stc"><div class="stv">4</div><div class="stl">Temps antisepsie</div></div>
+    </div>
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#365314" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Protocole</span>
+        <div class="mc-badge" style="background:var(--gl);border-color:var(--gm);color:var(--g)">📋 Référence</div>
+        <div class="mc-desc">Matériel, 4 temps, sens de nettoyage, types de pansements, ablation fils/agrafes, délais, complications, mémo.</div>
+        <ul class="mc-ul" style="--mc:#365314"><li>Protocole 4 temps commenté</li><li>Ablation fils et agrafes</li><li>Délais selon localisation</li><li>Sens de nettoyage</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#4d7c0f" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:var(--gl);border-color:var(--gm);color:var(--g)">⭐ Débutant</div>
+        <div class="mc-desc">16 étapes dans l'ordre. Question de validation à chaque étape. Technique complète avec ablation.</div>
+        <ul class="mc-ul" style="--mc:#4d7c0f"><li>Protocole complet dans l'ordre</li><li>Ablation fils et agrafes</li><li>Question de validation</li><li>Pas de chrono</li></ul>
+      </button>
+      <button class="mc" style="--mc:#92400e" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-badge" style="background:var(--orl);border-color:var(--orm);color:var(--orc)">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">15 questions sur le protocole complet. 4 temps, antiseptiques, sens de nettoyage, ablation, traçabilité. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#92400e"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#6d28d9" onclick="setMode('survival',this)">
+        <span class="mc-ico">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-badge" style="background:var(--pul);border-color:var(--pum);color:var(--pu)">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">10 pièges cliniques : Dakin en routine, mauvais sens de nettoyage, mélange d'antiseptiques, ablation avant J5... 3 vies, 25s.</div>
+        <ul class="mc-ul" style="--mc:#6d28d9"><li>10 pièges cliniques graves</li><li>3 vies · Chrono 25s</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+<!-- FICHE -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📖</div><div><div class="hn">Fiche Protocole — Pansement Stérile</div><div class="hs">Réussis ton IFSI 2023 · Infirmier.net · SF2H 2016 · Entraide ESI IDE · CHUV</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1.5px solid var(--bd);border-radius:20px;background:white;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'DM Sans',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Pansement stérile</div><div class="fsub">Rôle propre (Art. R.4311-5) · Rôle prescrit ablation fils/agrafes (Art. R.4311-7)</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('fm',this)">🧰 Matériel</button>
+        <button class="ftab" onclick="showFTab('f4t',this)">🧪 4 Temps</button>
+        <button class="ftab" onclick="showFTab('fpr',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('fab',this)">✂️ Ablation</button>
+        <button class="ftab" onclick="showFTab('fco',this)">⚠️ Complications</button>
+        <button class="ftab" onclick="showFTab('fme',this)">🧠 Mémo</button>
+      </div>
+    </div>
+    <!-- MATÉRIEL -->
+    <div class="fsec on" id="fm">
+      <div class="fst">🧰 Matériel</div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#365314;margin-bottom:6px;padding:3px 9px;background:#d9f99d;border-radius:5px;display:inline-block">EPI infirmier(e)</div>
+      <div class="mg2" style="margin-bottom:14px">
+        <div class="mi"><div class="mi-ico">🧤</div><div class="mt"><strong>Gants non stériles (retrait de l'ancien pansement)</strong> puis gants stériles pour la réfection. Certains services utilisent des pinces stériles à la place des gants stériles.</div></div>
+        <div class="mi"><div class="mi-ico">😷</div><div class="mt"><strong>Masque chirurgical + surblouse</strong> si risque de projection (pansement abondamment exsudatif, patient porteur de BMR).</div></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#1d4ed8;margin-bottom:6px;padding:3px 9px;background:#dbeafe;border-radius:5px;display:inline-block">Set à pansement stérile</div>
+      <div class="mg2" style="margin-bottom:14px">
+        <div class="mi"><div class="mi-ico">📦</div><div class="mt"><strong>Set à pansement à usage unique</strong> (plateau, pinces, compresses) — préférable pour l'asepsie. Sinon : plateau inox désinfecté, pinces stériles.</div></div>
+        <div class="mi"><div class="mi-ico">🏳️</div><div class="mt"><strong>Compresses stériles</strong> (10×10 cm) en nombre suffisant. Une compresse par passage, jamais repasser avec la même compresse sur un endroit déjà nettoyé.</div></div>
+        <div class="mi ok"><div class="mi-ico">💧</div><div class="mt"><strong>Sérum physiologique (NaCl 0,9%)</strong> — produit de référence pour les pansements de cicatrisation. Préférer au sérum glucosé ou à l'eau stérile (risque de lyse cellulaire sur greffes et lambeaux).</div></div>
+        <div class="mi warn"><div class="mi-ico">🧴</div><div class="mt"><strong>Antiseptique (si prescrit)</strong> — PVPI (Bétadine® scrub rouge + Bétadine® dermique jaune) OU Chlorhexidine (pas les deux). Respecter la gamme.</div></div>
+        <div class="mi crit"><div class="mi-ico">📋</div><div class="mt"><strong>Pansement de recouvrement adapté</strong> à la plaie (compresse + sparadrap, pansement adhésif stérile, pansement américain, pansement gras...). Choisir selon la plaie.</div></div>
+        <div class="mi crit"><div class="mi-ico">🗑️</div><div class="mt"><strong>Sac DASRI + sac déchets non contaminés</strong>. Fermer le sac avant de sortir de la chambre. Jamais ouvrir un sac DASRI plein dans la chambre.</div></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#6d28d9;margin-bottom:6px;padding:3px 9px;background:#ede9fe;border-radius:5px;display:inline-block">Pour ablation fils/agrafes</div>
+      <div class="mg2">
+        <div class="mi"><div class="mi-ico">✂️</div><div class="mt"><strong>Coupe-fil stérile</strong> (demi-lune) ou bistouri stérile à usage unique → OPCT après usage.</div></div>
+        <div class="mi"><div class="mi-ico">🔧</div><div class="mt"><strong>Pince ôte-agrafes à usage unique</strong> (ou pince de Michel) → OPCT après usage.</div></div>
+        <div class="mi"><div class="mi-ico">🩹</div><div class="mt"><strong>Stéri-strips® (sutures adhésives)</strong> — à préparer avant le soin en cas de désunion.</div></div>
+        <div class="mi"><div class="mi-ico">📦</div><div class="mt"><strong>Container OPCT</strong> (Objets Piquants Coupants Tranchants) à portée de main avant le soin.</div></div>
+      </div>
+    </div>
+    <!-- 4 TEMPS -->
+    <div class="fsec" id="f4t">
+      <div class="fst">🧪 Protocole antisepsie 4 temps</div>
+      <div style="background:var(--pul);border:1.5px solid var(--pum);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:12px;color:#4c1d95;line-height:1.7">
+        <strong style="color:var(--pu)">⚠️ Nuance SF2H 2016 importante :</strong><br>
+        La détersion préalable n'est recommandée que si la peau est <strong>visiblement souillée</strong>. Sur peau saine et propre : l'antiseptique peut être appliqué directement.<br>
+        En IFSI France : le protocole 4 temps reste la base pédagogique enseignée. Il est attendu à l'évaluation clinique IFSI.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px">
+        <div style="background:var(--w);border:2px solid var(--gm);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--sh)">
+          <div style="font-size:22px;margin-bottom:6px">🧼</div>
+          <div style="font-size:11px;font-weight:800;color:var(--gd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Temps 1 — Détersion</div>
+          <div style="font-size:11px;color:var(--t2);line-height:1.55">Savon antiseptique (Bétadine® Scrub rouge ou savon Chlorhexidine). Mouvement du centre vers les berges. 1 compresse par passage.</div>
+        </div>
+        <div style="background:var(--w);border:2px solid var(--blm);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--sh)">
+          <div style="font-size:22px;margin-bottom:6px">💧</div>
+          <div style="font-size:11px;font-weight:800;color:var(--bl);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Temps 2 — Rinçage</div>
+          <div style="font-size:11px;color:var(--t2);line-height:1.55">Sérum physiologique ou eau stérile. Éliminer les résidus de savon. Même sens de nettoyage que la détersion.</div>
+        </div>
+        <div style="background:var(--w);border:2px solid var(--orm);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--sh)">
+          <div style="font-size:22px;margin-bottom:6px">🌬️</div>
+          <div style="font-size:11px;font-weight:800;color:var(--orc);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Temps 3 — Séchage</div>
+          <div style="font-size:11px;color:var(--t2);line-height:1.55">Compresses stériles sèches. Sécher en tamponnant doucement. L'antiseptique sera inefficace sur une peau humide.</div>
+        </div>
+        <div style="background:var(--w);border:2px solid var(--rdm);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--sh)">
+          <div style="font-size:22px;margin-bottom:6px">🧴</div>
+          <div style="font-size:11px;font-weight:800;color:var(--rd);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Temps 4 — Antiseptique</div>
+          <div style="font-size:11px;color:var(--t2);line-height:1.55">Antiseptique dermique (Bétadine® jaune ou Chlorhexidine alcoolique). Respecter le temps de contact. Laisser sécher spontanément.</div>
+        </div>
+      </div>
+      <div style="background:var(--gl);border:1.5px solid var(--gm);border-radius:12px;padding:13px 15px;font-size:12px;color:var(--gd);line-height:1.7;margin-bottom:14px">
+        <strong>📌 Règle mnémotechnique : "pensez à votre douche"</strong><br>
+        Lavage (détersion) → Rinçage → Séchage → Application du produit (antiseptique).<br><br>
+        <strong>🧭 Sens de nettoyage selon le type de plaie :</strong><br>
+        • <strong>Plaie propre / cicatrice suturée</strong> : du <strong>centre vers les berges</strong> (éloigner les germes de la plaie vers l'extérieur).<br>
+        • <strong>Plaie avec écoulements</strong> : des <strong>berges vers le centre</strong> (éviter de ramener les souillures vers le cœur de la plaie).<br>
+        • <strong>Cicatrice opératoire</strong> : de <strong>l'extérieur vers l'intérieur</strong> — côté gauche de la cicatrice, côté droit, puis la ligne elle-même.<br>
+        • Une compresse = un passage. Jamais repasser sur un endroit déjà nettoyé avec la même compresse.
+      </div>
+    </div>
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="fpr">
+      <div class="fst">📋 Protocole — 16 étapes</div>
+      <div id="proto-pans"></div>
+    </div>
+    <!-- ABLATION -->
+    <div class="fsec" id="fab">
+      <div class="fst">✂️ Ablation de fils et d'agrafes</div>
+      <div style="background:var(--rdl);border:1.5px solid var(--rdm);border-radius:12px;padding:13px 15px;margin-bottom:14px;font-size:12px;color:#7f1d1d;line-height:1.7">
+        ⚠️ <strong>Soin de rôle prescrit obligatoirement (Art. R.4311-7) — prescription médicale écrite datée et signée requise.</strong><br>
+        La prescription doit mentionner : type de soin (ablation totale ou 1/2), localisation, éventuellement le jour prévu.
+      </div>
+      <div class="mg2" style="margin-bottom:16px">
+        <div style="background:var(--w);border:1.5px solid var(--gm);border-radius:12px;padding:14px;box-shadow:var(--sh)">
+          <div style="font-size:12px;font-weight:700;color:var(--gd);margin-bottom:10px">✂️ Ablation de fils</div>
+          <div style="font-size:11.5px;color:var(--t2);line-height:1.7">
+            ① Réaliser le pansement complet (4 temps) avant l'ablation.<br>
+            ② Saisir le nœud du fil avec une pince stérile (main propre/sale).<br>
+            ③ Glisser le <strong>coupe-fil sous la boucle du nœud</strong>, au ras de la peau.<br>
+            ④ Couper le fil <strong>sous le nœud côté peau</strong> — évite de faire passer la partie extérieure potentiellement septique sous la peau.<br>
+            ⑤ Tirer doucement <strong>vers le centre de la plaie</strong> (jamais vers l'extérieur — risque de désunion).<br>
+            ⑥ Déposer le fil sur une compresse sèche. Vérifier l'intégrité (fil entier sorti).<br>
+            ⑦ <strong>1 fil sur 2 — jamais les fils des extrémités</strong>.<br>
+            ⑧ Vérifier l'absence de désunion après chaque fil retiré.
+          </div>
+        </div>
+        <div style="background:var(--w);border:1.5px solid var(--blm);border-radius:12px;padding:14px;box-shadow:var(--sh)">
+          <div style="font-size:12px;font-weight:700;color:var(--bl);margin-bottom:10px">🔧 Ablation d'agrafes</div>
+          <div style="font-size:11.5px;color:var(--t2);line-height:1.7">
+            ① Réaliser le pansement complet avant l'ablation.<br>
+            ② Prendre la pince ôte-agrafe (ou pince de Michel).<br>
+            ③ Introduire le <strong>bec de la pince entre la peau et le centre de l'agrafe</strong> (pas sous l'extrémité).<br>
+            ④ Serrer la pince → ouverture mécanique de l'agrafe.<br>
+            ⑤ Retirer l'agrafe délicatement, la déposer dans le container OPCT.<br>
+            ⑥ <strong>1 agrafe sur 2 — jamais les agrafes des extrémités</strong>.<br>
+            ⑦ Vérifier l'état de la cicatrice entre chaque ablation.<br>
+            ⑧ Si désunion : stopper, strips si possible, avis médical.
+          </div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gd);margin-bottom:10px">📅 Délais d'ablation selon la localisation anatomique</div>
+      <table class="delai-table">
+        <tr><th>Localisation</th><th>Délai indicatif</th><th>Facteurs de risque de retard</th></tr>
+        <tr><td class="bold">Scalp / cuir chevelu</td><td>J5 à J7</td><td>Vascularisation riche → cicatrisation rapide</td></tr>
+        <tr><td class="bold">Visage</td><td>J5 à J7</td><td>Zone très vascularisée</td></tr>
+        <tr><td class="bold">Cou</td><td>J5 à J7</td><td>Zone mobile</td></tr>
+        <tr><td class="bold">Membre supérieur</td><td>J7 à J10</td><td>Diabète, corticoïdes, immunodépression</td></tr>
+        <tr><td class="bold">Thorax / abdomen</td><td>J10 à J14</td><td>Obésité, infection locale, tension sur la plaie</td></tr>
+        <tr><td class="bold">Dos</td><td>J10 à J14</td><td>Zone sous tension</td></tr>
+        <tr><td class="bold">Membre inférieur</td><td>J14 à J21</td><td>Vascularisation plus faible, risque infectieux plus élevé</td></tr>
+        <tr><td class="bold">Pied / cheville</td><td>J14 à J21</td><td>Arteriopathie, diabète, mauvaise vascularisation</td></tr>
+      </table>
+      <div style="background:var(--rdl);border:1px solid var(--rdm);border-radius:10px;padding:12px 14px;font-size:11.5px;color:#7f1d1d;line-height:1.7">
+        🚨 <strong>Conduite en cas de désunion :</strong><br>
+        ① Stopper immédiatement l'ablation.<br>
+        ② Appliquer des strips (Stéri-strips®) pour rapprocher les berges si possible.<br>
+        ③ Poser un pansement protecteur.<br>
+        ④ Signaler au médecin (avis médical obligatoire).<br>
+        ⑤ Tracer dans le dossier : nombre de fils/agrafes retirés, aspect de la désunion, conduite adoptée.
+      </div>
+    </div>
+    <!-- COMPLICATIONS -->
+    <div class="fsec" id="fco">
+      <div class="fst">⚠️ Complications et surveillance</div>
+      <div class="cg">
+        <div class="cc cc-r"><div class="cc-h">🚨 Infection du site</div>Signes : rougeur (érythème), chaleur, douleur progressive, œdème, écoulement purulent, fièvre. <strong>Conduite :</strong> ne pas poursuivre le pansement seul si infection évidente. Prélèvement bactériologique (sur prescription), signalement médecin, désinfection adaptée sur prescription. Ne jamais appliquer d'antiseptique plus fort en auto-décision.</div>
+        <div class="cc cc-o"><div class="cc-h">⚠️ Désunion de la plaie</div>Ouverture partielle ou totale des berges. <strong>Causes :</strong> ablation trop précoce, tension excessive, facteurs de risque (diabète, corticoïdes, obésité). <strong>Conduite :</strong> stopper l'ablation, strips, pansement protecteur, avis médical immédiat. Ne jamais tenter de recoudre soi-même.</div>
+        <div class="cc cc-r"><div class="cc-h">⚠️ Inclusion du fil dans la peau</div>Fil non retiré à temps = encaissement dans l'épiderme. Peut nécessiter une incision pour l'extraction. <strong>Prévention :</strong> respecter les délais d'ablation. Alerter le médecin si le fil semble encaissé.</div>
+        <div class="cc cc-o"><div class="cc-h">⚠️ Réaction allergique</div>Allergie au sparadrap ou à l'antiseptique. Signes : érythème, prurit, vésicules en bordure du pansement. <strong>Conduite :</strong> changer de produit (sparadrap hypoallergénique type Hypafix®, changer de gamme antiseptique), signaler au dossier et au médecin.</div>
+        <div class="cc cc-t"><div class="cc-h">ℹ️ Hématome post-opératoire</div>Saignement localisé sous la peau. Ne pas drainer soi-même. <strong>Conduite :</strong> signaler au médecin, compression douce si possible, surveillance. Hématome volumineux = avis chirurgical urgent.</div>
+        <div class="cc cc-p"><div class="cc-h">ℹ️ Retard de cicatrisation</div>Facteurs systémiques : diabète, corticoïdes, immunodépression, dénutrition, artériopathie. <strong>Conduite :</strong> évaluation nutritionnelle, signalement médecin, pansements adaptés (pansements à l'argent, hydrocolloïdes...) sur prescription.</div>
+      </div>
+    </div>
+    <!-- MÉMO -->
+    <div class="fsec" id="fme">
+      <div class="fst">🧠 Mémo rapide</div>
+      <div class="memo" style="background:var(--rdl);border:2px solid var(--rdm);color:#7f1d1d">
+        <div class="mh" style="color:var(--rd)">🚨 7 règles absolues</div>
+        • <strong>Sérum physiologique = référence cicatrisation</strong> (antiseptique retarde la cicatrisation)<br>
+        • <strong>Antiseptique uniquement sur prescription si surinfection</strong><br>
+        • <strong>Jamais mélanger PVPI et Chlorhexidine</strong><br>
+        • <strong>Ablation = prescription médicale obligatoire (Art. R.4311-7)</strong><br>
+        • <strong>1 fil/agrafe sur 2 — jamais les extrémités</strong><br>
+        • <strong>Désunion = stopper + avis médical + strips</strong><br>
+        • <strong>Plus propre d'abord → plus sale ensuite</strong> (si plusieurs pansements)
+      </div>
+      <div class="memo" style="background:var(--gl);border:1px solid var(--gm);color:var(--gd)">
+        <div class="mh" style="color:var(--g)">🧭 Sens de nettoyage</div>
+        • Plaie propre / cicatrice suturée : <strong>centre → berges</strong><br>
+        • Plaie avec écoulements : <strong>berges → centre</strong><br>
+        • Cicatrice opératoire : <strong>extérieur → intérieur</strong> (gauche / droite / ligne de suture)<br>
+        • 1 compresse = 1 passage. Jamais repasser sur un endroit nettoyé.
+      </div>
+      <div class="memo" style="background:var(--pul);border:1px solid var(--pum);color:#4c1d95">
+        <div class="mh" style="color:var(--pu)">🔬 Nuances SF2H 2016</div>
+        • Détersion 4 temps : recommandée uniquement si <strong>souillure visible</strong> (sur peau saine propre, antiseptique direct possible)<br>
+        • En IFSI France : 4 temps encore attendu à l'évaluation<br>
+        • Dakin® = retarde cicatrisation + inhibe microcirculation → jamais en routine<br>
+        • Éosine = assèche la peau → ne plus utiliser en routine
+      </div>
+      <div class="memo" style="background:var(--orl);border:1px solid var(--orm);color:var(--or)">
+        <div class="mh" style="color:var(--orc)">📅 Délais d'ablation</div>
+        • Scalp / face / cou : <strong>J5-J7</strong><br>
+        • Membres supérieurs / thorax / dos : <strong>J7-J14</strong><br>
+        • Membres inférieurs / pied : <strong>J14-J21</strong><br>
+        • Facteurs retardant : diabète, corticoïdes, immunodépression, obésité<br>
+        • Toujours vérifier la cicatrisation avant d'enlever (berges jointives, absence de signes infectieux)
+      </div>
+    </div>
+  </div>
+</div>
+<!-- QUIZ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-b">🩹</div><span class="tbl-t">Pansement</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw"><div class="tbql" id="tbql">1/16</div><div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div></div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">🩹</div>
+      <div style="flex:1"><div class="ctx-sub" id="ctxsb">Étape</div><div class="ctx-title" id="ctxtl"></div><div class="ctx-body" id="ctxbd"></div></div>
+    </div>
+    <div class="qcard">
+      <div class="qtop"><div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div><span class="qnum" id="qnum">1</span></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fs2">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="fs2">❌ <strong id="sw2">0</strong> erreurs</div>
+    <div class="fs2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+<!-- RÉSULTAT -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hl"><div class="hico">🩹</div><div><div class="hn">Rapport — Pansement Stérile</div></div></div></div>
+  <div class="rb">
+    <div class="rh">
+      <span class="rg" id="rg">🎓</span>
+      <div class="rs" id="rs">--/20</div>
+      <div class="rsb" id="rsb">--</div>
+      <div class="rmen" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--orc)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--orc)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--g)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--gd)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errb" id="errb" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsb"><div class="cnst">💡 Conseils personnalisés</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rbtn rbs" onclick="showScr('sw')">← Changer de mode</button>
+      <button class="rbtn rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ══════════════════════════════════════════════════
+   16 ÉTAPES — Sources vérifiées :
+   Réussis ton IFSI 2023 · Infirmier.net · SF2H 2016
+   Entraide ESI IDE · CHUV · Art. R.4311-5/7 CSP
+══════════════════════════════════════════════════ */
+const ST=[
+{n:1,cat:"Cadre légal",ico:"📋",crit:false,att:true,
+ title:"Identifier le cadre légal du soin",
+ what:"Le pansement stérile relève de deux cadres légaux :<br>• <strong>Rôle propre (Art. R.4311-5)</strong> : réfection d'un pansement mouillé, décollé ou souillé (taches de sang, sérosités) — pas besoin de prescription médicale.<br>• <strong>Rôle prescrit (Art. R.4311-7)</strong> : pansements médicamenteux (antiseptiques), ablation de fils/agrafes, drains, pansements spécifiques — prescription écrite, datée, signée obligatoire.",
+ why:"Confondre les deux cadres expose à une erreur de pratique : ne pas changer un pansement souillé (alors que c'est du rôle propre) ou réaliser une ablation de fils sans prescription (faute grave).",
+ rule:"Pansement mouillé/décollé/souillé = rôle propre. Pansement médicamenteux / ablation fils-agrafes = prescription obligatoire.",
+ q:"Un pansement est décollé et mouillé mais la prescription ne mentionne pas de réfection. Vous ?",
+ ch:["Attendez la prescription médicale avant tout geste","Refaites le pansement — pansement décollé/mouillé = rôle propre infirmier (Art. R.4311-5)","Appelez le médecin pour une prescription urgente","Recollez simplement le pansement décollé"],
+ ok:1},
+{n:2,cat:"Ordre des pansements",ico:"📋",crit:false,att:true,
+ title:"Établir l'ordre des pansements si plusieurs patients",
+ what:"Si plusieurs pansements à réaliser dans la journée : <strong>commencer par le plus propre, finir par le plus sale</strong>. Dans un même service : patients en précautions standard d'abord, patients en précautions complémentaires ensuite. Pour une même plaie avec plusieurs sites (ex : cœlioscopie avec 3 orifices) : commencer par le site le plus propre.",
+ why:"L'ordre de pansement prévient la transmission croisée des germes entre patients ou entre sites d'un même patient. Ne pas respecter cet ordre peut contaminer une plaie propre avec des bactéries d'une plaie infectée.",
+ rule:"Ordre = plaie propre → plaie contaminée. Précautions standard avant précautions complémentaires.",
+ q:"Vous avez deux pansements à faire : une cicatrice d'appendicectomie propre (J3) et un ulcère de jambe infecté. Vous commencez par ?",
+ ch:["L'ulcère de jambe — le plus grave d'abord","La cicatrice d'appendicectomie propre — toujours commencer par le plus propre","L'ordre n'a pas d'importance si vous changez de gants","Celui que le patient préfère"],
+ ok:1},
+{n:3,cat:"Matériel & SHA",ico:"🧰",crit:false,att:false,
+ title:"Préparer le matériel et désinfecter le plan de travail",
+ what:"Désinfectez le plan de travail (chariot, adaptable) avec un détergent-désinfectant ou des lingettes désinfectantes. SHA. Préparez le matériel stérile sans le contaminer : set à pansement stérile, compresses stériles, sérum physiologique, antiseptique (si prescrit), pansement de recouvrement adapté. Vérifiez les dates de péremption et l'intégrité des emballages. Disposez le matériel sur le champ stérile du set sans le toucher avec des mains nues.",
+ why:"Un plan de travail non désinfecté ou des emballages périmés contaminent le matériel stérile et annulent toute l'asepsie du soin.",
+ rule:"Plan de travail désinfecté. SHA avant de manipuler le matériel stérile. Vérifier péremption et intégrité des emballages.",
+ q:"En ouvrant le set à pansement, vous constatez que l'emballage présente un petit trou. Vous ?",
+ ch:["Utilisez-le — un petit trou ne suffit pas à contaminer","Rebouchez le trou avec du sparadrap et continuez","Jetez le set et prenez-en un nouveau intact — emballage perforé = matériel non stérile","Utilisez-le uniquement si le soin est urgent"],
+ ok:2},
+{n:4,cat:"Installation du patient",ico:"🛋️",crit:false,att:false,
+ title:"Installer et informer le patient",
+ what:"Informez le patient du soin à venir. Installez-le confortablement en exposant la zone à panser (décubitus, position assise ou debout selon la localisation). Si besoin : posez une protection absorbante sous la plaie. Fermez les fenêtres (courant d'air = source de contamination aéroportée pendant le soin stérile). L'éclairage doit être suffisant pour bien voir la plaie.",
+ why:"Un patient mal installé bouge et risque de contaminer le matériel stérile ou de déséquilibrer le soignant. Les courants d'air dispersent des particules dans le champ stérile.",
+ rule:"Fenêtres fermées pendant le soin. Patient confortablement installé. Protection absorbante si besoin.",
+ q:"La fenêtre est ouverte dans la chambre. Vous allez faire un pansement stérile. Vous ?",
+ ch:["Faites le pansement rapidement avant que le champ stérile soit contaminé","Fermez la fenêtre avant de commencer le soin — courant d'air = risque de contamination aéroportée","Laissez-la ouverte si le patient préfère","Mettez uniquement des gants stériles pour compenser"],
+ ok:1},
+{n:5,cat:"Retrait de l'ancien pansement",ico:"🗑️",crit:false,att:false,
+ title:"Retirer l'ancien pansement (gants non stériles)",
+ what:"SHA. Enfilez des <strong>gants non stériles</strong>. Retirez délicatement le pansement en décollant le sparadrap de l'extérieur vers l'intérieur (doucement, en maintenant la peau). Si le pansement adhère à la plaie : humidifier avec du sérum physiologique avant de tirer. Jetez immédiatement le pansement souillé dans le sac DASRI. Retirez les gants non stériles, SHA.",
+ why:"Les gants non stériles suffisent pour le retrait — le matériel retiré est considéré comme contaminé. Retirer le pansement brutalement peut arracher les berges de la plaie ou faire saigner une cicatrice fragile.",
+ rule:"Gants non stériles pour le retrait. SHA après retrait et retrait des gants. Ne jamais tirer brutalement sur un pansement adhérent.",
+ q:"Le pansement adhère fortement à la plaie. Vous ?",
+ ch:["Tirez fermement d'un coup sec pour minimiser la douleur","Humidifiez le pansement avec du sérum physiologique puis décollez progressivement","Découpez le pansement avec des ciseaux","Laissez le pansement en place et recouvrez-le d'un nouveau"],
+ ok:1},
+{n:6,cat:"Observation de la plaie",ico:"👁️",crit:true,att:false,
+ title:"Observer et évaluer la plaie AVANT de la toucher",
+ what:"Avant toute manipulation : <strong>observez visuellement la plaie</strong> sans toucher. Évaluez : couleur (rougeur, pâleur, noircissement), aspect des berges (jointives, désunies), présence d'écoulements (séreux, sanguinolent, purulent, fibrineux), odeur, état de la peau péri-lésionnelle (érythème, macération, induration), douleur à l'inspection. Prenez note pour la traçabilité.",
+ why:"L'observation initiale sans gants stériles permet d'ajuster le protocole (type d'antiseptique, signalement médecin si signes infectieux) avant de contaminer les gants stériles. Un signe infectieux détecté trop tard retarde la prise en charge.",
+ rule:"Observer AVANT de toucher. Signes infectieux (rougeur + chaleur + pus + fièvre) = signaler au médecin avant de continuer.",
+ q:"En retirant le pansement, vous constatez un écoulement purulent et une rougeur étendue autour de la plaie. Vous ?",
+ ch:["Faites le pansement normalement avec un antiseptique plus fort","Signalez immédiatement au médecin avant de poursuivre — signes d'infection locale nécessitent une réévaluation médicale et potentiellement un prélèvement bactériologique","Appliquez du Dakin® — efficace contre les infections","Posez un pansement plus épais et revenez demain"],
+ ok:1},
+{n:7,cat:"SHA & Gants stériles",ico:"🤲",crit:false,att:false,
+ title:"SHA + Gants stériles (ou technique pince propre/pince sale)",
+ what:"Effectuez une <strong>friction SHA</strong> méticuleuse. Enfilez les <strong>gants stériles</strong> selon la technique stérile (sans contaminer la surface extérieure). Autre technique : pince propre / pince sale — une pince reste dans le matériel stérile, une pince va vers le patient. Ces deux techniques se valent si maîtrisées. <strong>La règle : une main ou une pince 'propre' (côté matériel stérile) et une 'sale' (côté patient). Elles ne se touchent jamais.</strong>",
+ why:"Ce soin est un soin stérile. Les gants stériles ou les pinces stériles sont la barrière entre le soignant et la plaie. Toute contamination des gants annule l'asepsie et expose le patient à une infection.",
+ rule:"SHA avant les gants stériles. Technique main propre/sale ou pince propre/sale. Les deux mains (ou pinces) ne se touchent jamais.",
+ q:"Pendant le pansement avec gants stériles, vous touchez accidentellement le bord du chariot avec votre main droite. Vous ?",
+ ch:["Continuez — un contact bref ne contamine pas","Changez les gants stériles — la main droite est contaminée, le gant n'est plus stérile","Rincez votre gant droit avec du sérum physiologique puis continuez","Utilisez uniquement votre main gauche pour la suite"],
+ ok:1},
+{n:8,cat:"Détersion — Temps 1",ico:"🧼",crit:false,att:true,
+ title:"Temps 1 — Détersion (si souillure visible)",
+ what:"<strong>Indication SF2H 2016 :</strong> la détersion est recommandée si la peau est <strong>visiblement souillée</strong>. Sur peau saine propre, l'antiseptique peut être appliqué directement. En IFSI France, la détersion reste souvent enseignée systématiquement (attendu à l'évaluation).<br><br>Si détersion : appliquez le <strong>savon antiseptique</strong> (Bétadine® Scrub rouge ou savon à la Chlorhexidine). Nettoyez avec une compresse imbibée. <strong>Sens : du centre vers les berges pour une plaie propre. Des berges vers le centre si écoulements.</strong>",
+ why:"La détersion élimine les souillures organiques (sang séché, sérosités, fibrine) qui protègent les bactéries des antiseptiques. Sans détersion préalable, l'antiseptique est moins efficace.",
+ rule:"Détersion si souillure visible (SF2H 2016). 1 compresse = 1 passage. Sens selon le type de plaie. Gamme PVPI ou Chlorhexidine — pas les deux.",
+ q:"Vous réalisez un pansement de cicatrice d'appendicectomie propre (J2), sans souillure visible. Selon les recommandations SF2H 2016, vous ?",
+ ch:["Faites systématiquement la détersion — c'est la sécurité","Pouvez appliquer l'antiseptique directement — pas de souillure visible, détersion non obligatoire selon SF2H 2016","Utilisez uniquement du sérum physiologique sans antiseptique","Faites un rinçage au sérum avant l'antiseptique"],
+ ok:1},
+{n:9,cat:"Rinçage — Temps 2",ico:"💧",crit:false,att:false,
+ title:"Temps 2 — Rinçage au sérum physiologique",
+ what:"Rincez abondamment avec du <strong>sérum physiologique (NaCl 0,9%)</strong> pour éliminer les résidus de savon antiseptique. Même sens que la détersion. Une compresse par passage. <strong>Ne pas utiliser d'eau stérile sur les greffes et lambeaux</strong> (risque de lyse cellulaire par hypo-osmolarité).",
+ why:"Les résidus de savon antiseptique peuvent inactiver l'antiseptique dermique appliqué au temps 4. De plus, certains savons antiseptiques sont irritants s'ils ne sont pas rincés.",
+ rule:"Sérum physiologique pour le rinçage. Pas d'eau stérile sur greffes/lambeaux. Même sens de nettoyage que la détersion.",
+ q:"Pour un patient porteur d'une greffe cutanée, vous pouvez utiliser pour le rinçage ?",
+ ch:["Eau stérile — c'est la base de rinçage habituelle","Eau du robinet désinfectée","Sérum physiologique NaCl 0,9% uniquement — l'eau stérile peut lyser les cellules de greffe (hypo-osmolarité)","Chlorhexidine diluée"],
+ ok:2},
+{n:10,cat:"Séchage — Temps 3",ico:"🌬️",crit:false,att:true,
+ title:"Temps 3 — Séchage avec compresses stériles sèches",
+ what:"Séchez délicatement la plaie en <strong>tamponnant</strong> (jamais en frottant) avec des compresses stériles sèches. Séchez bien les contours et la peau péri-lésionnelle. <strong>La peau doit être sèche avant l'application de l'antiseptique</strong> — l'antiseptique est moins efficace sur peau humide (dilution de la concentration active).",
+ why:"Un antiseptique appliqué sur peau humide est dilué et perd une partie de son efficacité. De plus, l'humidité résiduelle peut favoriser la macération sous le pansement de recouvrement.",
+ rule:"Tamponner doucement, jamais frotter (risque de traumatisme des berges). Peau sèche avant le temps 4. 1 compresse = 1 passage.",
+ q:"Pourquoi est-il indispensable de sécher la plaie avant d'appliquer l'antiseptique ?",
+ ch:["Pour éviter que l'antiseptique ne coule sur le drap","L'antiseptique appliqué sur peau humide est dilué et moins efficace — la peau doit être sèche","Pour respecter le protocole administratif du service","Pour faciliter la pose du pansement de recouvrement"],
+ ok:1},
+{n:11,cat:"Antisepsie — Temps 4",ico:"🧴",crit:true,att:false,
+ title:"Temps 4 — Antiseptique dermique (si prescrit)",
+ what:"Appliquez l'<strong>antiseptique dermique</strong> (Bétadine® jaune dermique ou Chlorhexidine alcoolique) selon la prescription médicale. Même sens de nettoyage. Respectez le <strong>temps de contact</strong> (30 à 60 secondes selon le produit — laisser sécher spontanément). <strong>NE PAS mélanger PVPI et Chlorhexidine</strong>. Sans prescription : utiliser uniquement du sérum physiologique.",
+ why:"Mélanger PVPI et Chlorhexidine provoque une inactivation mutuelle des deux antiseptiques (réaction chimique) et une coloration brune indéterminée. L'antiseptique systématique retarde la cicatrisation — sérum physiologique = référence pour plaie saine.",
+ rule:"Antiseptique uniquement sur prescription. Respecter la gamme (PVPI ou Chlorhexidine). Jamais les deux. Temps de contact respecté.",
+ q:"Vous avez utilisé de la Bétadine® Scrub pour la détersion. Pour l'antiseptique dermique, vous utilisez ?",
+ ch:["La Chlorhexidine — plus efficace","La Bétadine® dermique (PVPI) — même gamme que la détersion. Jamais mélanger PVPI et Chlorhexidine","N'importe quel antiseptique — l'important c'est d'en appliquer","De la Biseptine® — c'est un antiseptique universel"],
+ ok:1},
+{n:12,cat:"Ablation de fils",ico:"✂️",crit:true,att:false,
+ title:"Ablation de fils — Technique et précautions",
+ what:"Sur prescription médicale. Vérifiez la cicatrisation (berges jointives, absence de signes infectieux). Saisissez le nœud du fil avec une pince. Glissez le <strong>coupe-fil sous la boucle du nœud, AU RAS DE LA PEAU</strong>. Coupez côté peau — évite de faire passer la partie externe (septique) sous la peau. Tirez <strong>doucement vers le centre de la plaie</strong> (jamais vers l'extérieur — désunion). Déposez le fil sur une compresse sèche. <strong>1 fil sur 2 — jamais les extrémités.</strong>",
+ why:"Couper au mauvais endroit (hors nœud) ou tirer vers l'extérieur = risque de désunion des berges. Retirer tous les fils d'un coup = trop de risque. Les fils des extrémités maintiennent les berges à leurs points de tension maximale.",
+ rule:"Coupe-fil sous le nœud au ras de la peau. Tirer vers le centre. 1 fil sur 2. Jamais les extrémités. Vérifier intégrité du fil retiré.",
+ q:"Lors de l'ablation d'un fil, dans quel sens tirez-vous après la coupe ?",
+ ch:["Vers l'extérieur de la plaie — éloigner le fil de la cicatrice","Vers le centre de la plaie — évite de faire passer la partie externe septique sous la peau","Dans n'importe quel sens si on tire doucement","Verticalement, à la perpendiculaire de la peau"],
+ ok:1},
+{n:13,cat:"Ablation d'agrafes",ico:"🔧",crit:true,att:false,
+ title:"Ablation d'agrafes — Technique pince ôte-agrafes",
+ what:"Sur prescription médicale. Saisissez la pince ôte-agrafes. Introduisez le <strong>bec de la pince entre la peau et le centre de l'agrafe</strong> (pas sous une extrémité). Serrez la pince — mécaniquement l'agrafe s'ouvre. Retirez délicatement. Jetez dans le container OPCT. <strong>1 agrafe sur 2 — jamais les agrafes des extrémités.</strong> Si l'ablation totale est prescrite : revenir quelques jours plus tard pour les agrafes restantes.",
+ why:"Introduire la pince sous une extrémité de l'agrafe au lieu du centre peut plier l'agrafe et traumatiser la peau. Retirer toutes les agrafes en une seule fois sur une plaie sous tension = désunion.",
+ rule:"Bec de la pince au centre de l'agrafe. 1 agrafe sur 2. Jamais les extrémités. Container OPCT immédiatement.",
+ q:"Où placez-vous le bec de la pince ôte-agrafes lors de l'ablation ?",
+ ch:["Sous une extrémité de l'agrafe pour avoir un meilleur levier","Sous le centre de l'agrafe — l'ouverture mécanique s'obtient en serrant la pince sur le centre","Au-dessus de l'agrafe, pince verticale","N'importe où tant que la prise est ferme"],
+ ok:1},
+{n:14,cat:"Désunion & Conduites",ico:"🚨",crit:true,att:false,
+ title:"Détecter et gérer une désunion pendant l'ablation",
+ what:"Après chaque fil ou agrafe retiré, vérifiez les berges. <strong>Désunion (déhiscence) = ouverture des berges</strong>. Conduite en cas de désunion :<br>① Stopper immédiatement l'ablation.<br>② Appliquer des <strong>strips (Stéri-strips®)</strong> pour rapprocher les berges si possible.<br>③ Poser un pansement protecteur.<br>④ Contacter le médecin immédiatement.<br>⑤ Tracer dans le dossier.<br>Ne jamais continuer à retirer des fils/agrafes sur une plaie en train de s'ouvrir.",
+ why:"Une désunion peut évoluer vers une éviscération (chirurgie abdominale) ou une infection grave. Stopper et rapprocher les berges avec des strips limite l'extension et le risque infectieux dans l'attente de l'avis médical.",
+ rule:"Désunion = STOP immédiat + strips si possible + pansement + médecin. Ne jamais continuer l'ablation.",
+ q:"Après avoir retiré 3 fils, vous constatez une légère ouverture des berges. Vous ?",
+ ch:["Continuez — 1 fil sur 2 est la règle, il en reste encore à retirer","Arrêtez immédiatement l'ablation, posez des strips pour rapprocher les berges, mettez un pansement protecteur et contactez le médecin","Retirez les fils restants rapidement pour terminer le soin","Rapprochez les berges à la main et posez le pansement"],
+ ok:1},
+{n:15,cat:"Pose du pansement de recouvrement",ico:"🩹",crit:false,att:false,
+ title:"Pose du pansement de recouvrement adapté",
+ what:"Choisissez le <strong>pansement adapté à la plaie</strong> :<br>• Cicatrice opératoire propre : compresse stérile + sparadrap hypoallergénique (Hypafix®) ou pansement adhésif stérile.<br>• Plaie avec exsudat modéré : pansement absorbant.<br>• Plaie laissée à l'air : possible sur avis médical si cicatrisation avancée.<br>Collez le sparadrap non circulairement (jamais de pansement circulaire constricteur sur un membre). Vérifiez le confort du patient.",
+ why:"Un pansement inadapté (trop serré, allergisant, non absorbant pour une plaie exsudative) retarde la cicatrisation ou crée une macération. La compression circulaire peut compromettre la vascularisation du membre.",
+ rule:"Pansement adapté à la plaie. Jamais circulaire et constricteur sur un membre. Sparadrap hypoallergénique si risque d'allergie connu.",
+ q:"Votre patient est allergique aux sparadraps classiques. Vous utilisez ?",
+ ch:["Un sparadrap classique si c'est le seul disponible","Du ruban adhésif de bureau en attendant","Un sparadrap hypoallergénique (Hypafix®, Méfix®, Urgoderm®) — noté au dossier et dans la prescription","Du scotch transparent"],
+ ok:2},
+{n:16,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Tracer dans le dossier patient",
+ what:"Documentez obligatoirement : <strong>date et heure du soin, aspect de la plaie (couleur, berges, exsudat, odeur, signes infectieux), type de soin réalisé, produits utilisés, pansement de recouvrement posé, nombre de fils/agrafes retirés (si ablation), réaction du patient, votre nom et signature.</strong> Si anomalie : noter la conduite adoptée et l'information transmise au médecin.",
+ why:"La traçabilité assure la continuité des soins (l'équipe de nuit sait exactement l'état de la plaie), protège le soignant juridiquement et permet de surveiller l'évolution de la cicatrisation dans le temps.",
+ rule:"Tracer : date/heure + aspect de plaie + soin réalisé + produits + pansement + nombre fils/agrafes si ablation + réaction + signature.",
+ q:"Après un pansement avec ablation de 6 fils sur 12, que notez-vous dans le dossier ?",
+ ch:["Uniquement 'pansement réalisé'","La date, l'aspect de la plaie, le nombre de fils retirés (6/12), les produits utilisés, le type de pansement posé et votre signature","Uniquement le nombre de fils retirés","Rien si le soin s'est bien passé"],
+ ok:1},
+];
+const QE=[
+{cat:"Cadre légal",q:"La réfection d'un pansement décollé relève de ?",ch:["Rôle prescrit — prescription médicale obligatoire","Rôle propre infirmier (Art. R.4311-5) — pas de prescription requise","Rôle propre uniquement le week-end","Délégation médicale uniquement"],ok:1,ek:"Pansement mouillé, décollé ou souillé = rôle propre (Art. R.4311-5). Pas besoin de prescription. L'ablation de fils/agrafes ou pansement médicamenteux = rôle prescrit.",ee:"La réfection simple d'un pansement abîmé est bien du rôle propre.",r:"<strong>Pansement décollé/mouillé/souillé = rôle propre. Ablation fils/agrafes = rôle prescrit.</strong>",xp:10},
+{cat:"Ordre des pansements",q:"Si plusieurs pansements à réaliser dans la journée, vous commencez par ?",ch:["Le pansement le plus sale — pour libérer le patient le plus lourd","Le pansement le plus propre — éviter la transmission croisée vers les plaies propres","L'ordre n'a pas d'importance","Le patient qui attend depuis le plus longtemps"],ok:1,ek:"Toujours commencer par le plus propre et finir par le plus sale. Prévient la transmission croisée de germes d'une plaie infectée vers une plaie propre.",ee:"Logique inversée = risque de contamination.",r:"<strong>Ordre : plaie propre d'abord → plaie sale ensuite.</strong>",xp:10},
+{cat:"Antiseptiques — Gammes",q:"Vous avez utilisé de la Bétadine® Scrub pour la détersion. Pour l'antisepsie dermique (temps 4), vous utilisez ?",ch:["Chlorhexidine alcoolique — plus efficace","Biseptine® — universel","Bétadine® dermique (PVPI) — même gamme que la détersion. Ne jamais mélanger PVPI et Chlorhexidine","N'importe quel antiseptique — l'important c'est d'en appliquer"],ok:2,ek:"Toujours respecter la même gamme d'antiseptiques (PVPI ou Chlorhexidine). Mélanger les deux provoque une inactivation mutuelle et une réaction chimique.",ee:"Mélanger PVPI et Chlorhexidine = les deux s'inactivent.",r:"<strong>Même gamme obligatoire : PVPI avec PVPI, Chlorhexidine avec Chlorhexidine.</strong>",xp:12},
+{cat:"SF2H 2016 — Détersion",q:"Selon la SF2H 2016, la détersion préalable à l'antisepsie est recommandée ?",ch:["Systématiquement avant tout antiseptique","Uniquement si la peau est visiblement souillée — sur peau saine propre, antiseptique direct possible","Jamais — obsolète","Uniquement en chirurgie"],ok:1,ek:"SF2H 2016 : détersion uniquement si souillure visible. Sur peau saine propre : antiseptique direct. En IFSI France, la détersion systématique reste souvent attendue à l'évaluation.",ee:"SF2H 2016 a révisé cette recommandation : la détersion n'est plus systématique.",r:"<strong>SF2H 2016 : détersion si souillure visible uniquement. Peau propre = antiseptique direct possible.</strong>",xp:12},
+{cat:"Sens de nettoyage",q:"Pour une plaie avec écoulements purulents, dans quel sens nettoyez-vous ?",ch:["Du centre vers les berges — éloigner les germes","Des berges vers le centre — éviter de ramener les souillures vers le cœur de la plaie","Dans n'importe quel sens en spirale","Horizontalement de gauche à droite"],ok:1,ek:"Plaie avec écoulements = berges vers le centre (éviter de contaminer le centre propre avec les souillures des berges). Plaie propre = centre vers berges.",ee:"Le sens s'inverse selon la présence d'écoulements.",r:"<strong>Plaie propre : centre → berges. Plaie avec écoulements : berges → centre.</strong>",xp:12},
+{cat:"Antiseptique et cicatrisation",q:"Pourquoi le sérum physiologique est-il préféré à l'antiseptique pour les pansements de cicatrisation ?",ch:["C'est moins cher","L'antiseptique retarde la cicatrisation — utilisation uniquement sur prescription si surinfection locale","Le sérum est plus concentré en antiseptiques naturels","Pour respecter le protocole administratif"],ok:1,ek:"L'antiseptique retarde la cicatrisation tissulaire. Le Dakin® inhibe la microcirculation et retarde la production de collagène. Sérum physiologique = référence pour plaie en cicatrisation.",ee:"Antiseptique = retard de cicatrisation. Sérum = référence.",r:"<strong>Sérum physiologique = référence cicatrisation. Antiseptique uniquement si surinfection et sur prescription.</strong>",xp:12},
+{cat:"Ablation fils — Technique",q:"Lors de l'ablation d'un fil, dans quel sens tirez-vous le fil après la coupe ?",ch:["Vers l'extérieur de la plaie","Vers le centre de la plaie — évite de faire passer la partie externe septique sous la peau","Vers le haut, perpendiculairement","Dans n'importe quel sens doucement"],ok:1,ek:"Tirer vers le centre : la partie externe du fil (potentiellement septique car exposée à l'air) ne passe pas sous la peau. Tirer vers l'extérieur risque de provoquer une désunion.",ee:"Tirer vers l'extérieur = risque de désunion + passage de la partie septique sous la peau.",r:"<strong>Tirer vers le centre. Couper sous le nœud au ras de la peau.</strong>",xp:12},
+{cat:"Ablation fils — Règle",q:"Lors d'une ablation de fils (ablation 1/2), vous retirez ?",ch:["Tous les fils sauf le premier","1 fil sur 2, en commençant par les extrémités","1 fil sur 2, sans retirer les fils des extrémités de la plaie","Les fils les plus éloignés du centre uniquement"],ok:2,ek:"1 fil sur 2, jamais les extrémités. Les fils d'extrémité maintiennent la plaie aux points de tension maximale. Les retirer en premier = risque élevé de désunion.",ee:"Les extrémités ne se retirent jamais lors d'une ablation 1/2.",r:"<strong>1 fil sur 2. Jamais les fils des extrémités.</strong>",xp:12},
+{cat:"Ablation agrafes",q:"Où placez-vous le bec de la pince ôte-agrafes ?",ch:["Sous une extrémité de l'agrafe pour un meilleur levier","Sous le centre de l'agrafe — l'ouverture mécanique s'obtient en serrant","Au-dessus de l'agrafe","N'importe où tant que la prise est ferme"],ok:1,ek:"Bec au centre de l'agrafe. En serrant la pince, l'agrafe s'ouvre mécaniquement par le centre. Sous une extrémité = risque de traumatisme cutané.",ee:"Centre = ouverture mécanique correcte.",r:"<strong>Bec de la pince au centre de l'agrafe. Serrer = ouverture.</strong>",xp:10},
+{cat:"Désunion",q:"En retirant un fil, vous constatez une ouverture des berges. Vous ?",ch:["Continuez — respectez la prescription (1 fil sur 2)","Arrêtez l'ablation immédiatement, posez des strips, mettez un pansement protecteur et contactez le médecin","Retirez rapidement les fils restants pour finir","Rapprochez les berges avec du sparadrap ordinaire"],ok:1,ek:"Désunion = STOP immédiat. Strips + pansement + médecin. Continuer l'ablation sur une plaie qui s'ouvre aggrave la situation.",ee:"La règle 1/2 ne s'applique plus dès qu'une désunion apparaît.",r:"<strong>Désunion = STOP + strips + médecin. Ne jamais continuer.</strong>",xp:15},
+{cat:"Matériel — Rinçage",q:"Pour le rinçage (temps 2) d'une plaie avec greffe cutanée, vous utilisez ?",ch:["Eau stérile — c'est la base standard","Sérum physiologique NaCl 0,9% uniquement — l'eau stérile risque de lyser les cellules de greffe","Sérum glucosé 5%","Eau du robinet stérile filtrée"],ok:1,ek:"Sur greffe ou lambeau : sérum physiologique uniquement. L'eau stérile est hypo-osmolaire par rapport aux cellules — risque de lyse cellulaire.",ee:"Eau stérile = hypo-osmolaire = lyse cellulaire sur greffe.",r:"<strong>Greffe/lambeau = sérum physiologique uniquement. Pas d'eau stérile.</strong>",xp:12},
+{cat:"Pansement décollé",q:"Le pansement adhère fortement à la plaie. Vous ?",ch:["Tirez fermement d'un coup sec","Humidifiez au sérum physiologique puis décollez progressivement","Découpez le pansement avec des ciseaux","Laissez le pansement et recouvrez d'un nouveau"],ok:1,ek:"Pansement adhérent : humidifier au sérum puis décoller lentement. Tirer brutalement = traumatise la plaie, fait saigner, peut déchirer les berges cicatrisées.",ee:"Un coup sec brutal peut arracher les nouvelles cellules épidermiques.",r:"<strong>Pansement adhérent : humidifier au sérum puis décoller progressivement.</strong>",xp:10},
+{cat:"Rôle propre vs prescrit",q:"L'ablation de fils de suture relève de ?",ch:["Rôle propre — soin de confort","Rôle prescrit (Art. R.4311-7) — prescription médicale écrite, datée, signée obligatoire","Rôle propre si le patient accepte","Délégation aide-soignante si simple"],ok:1,ek:"L'ablation de fils est listée à l'Art. R.4311-7, alinéa 10° : 'ablation du matériel de réparation cutanée'. C'est un acte de rôle prescrit — prescription médicale obligatoire.",ee:"C'est explicitement cité dans le rôle prescrit de l'infirmier.",r:"<strong>Ablation fils/agrafes = Art. R.4311-7 = rôle prescrit = prescription médicale obligatoire.</strong>",xp:12},
+{cat:"Délais ablation",q:"Délai habituel d'ablation de fils après une plaie abdominale (laparotomie) ?",ch:["J3-J5","J5-J7","J10-J14 — zone à tension, cicatrisation plus lente","J21-J28"],ok:2,ek:"Abdomen/thorax/dos : J10-J14. Zone sous tension, cicatrisation plus lente que le visage (J5-J7). Facteurs retardant : diabète, obésité, corticoïdes, infection.",ee:"J5-J7 correspond au visage/cou qui cicatrisent plus vite.",r:"<strong>Abdomen : J10-J14. Visage/cou : J5-J7. Membres inf. : J14-J21.</strong>",xp:10},
+{cat:"Traçabilité",q:"Après une ablation de 4 fils sur 8, que notez-vous obligatoirement dans le dossier ?",ch:["Uniquement 'ablation de fils réalisée'","La date, l'heure, l'aspect de la plaie, le nombre de fils retirés (4/8), les produits utilisés, le pansement posé, votre signature","Uniquement le nombre de fils restants","Rien si le soin s'est bien passé"],ok:1,ek:"Traçabilité complète obligatoire : date/heure, aspect plaie, nombre fils retirés, produits, pansement, signes éventuels, signature.",ee:"'Ablation réalisée' sans détails n'est pas une traçabilité suffisante.",r:"<strong>Tracer : date + heure + aspect plaie + nombre fils retirés + produits + pansement + signature.</strong>",xp:8},
+];
+const QS=[
+{cat:"Piège — Dakin en routine",q:"Votre collègue applique du Dakin® sur toutes les plaies post-opératoires propres 'par sécurité'. C'est ?",ch:["Correct — le Dakin® est un désinfectant puissant","Correct si le patient est porteur d'un germe multi-résistant","Incorrect — le Dakin® inhibe la microcirculation et retarde la production de collagène. Il ne s'utilise que sur prescription médicale si surinfection locale","Correct si la prescription date de moins de 24h"],ok:2,ek:"Dakin® = inhibe la microcirculation + retarde la production de collagène + ralentit la cicatrisation. Jamais en routine. Uniquement sur prescription si surinfection.",ee:"'Par sécurité' est un raisonnement inversé — le Dakin® nuit à la cicatrisation.",r:"<strong>Dakin® = retarde la cicatrisation. Uniquement sur prescription si surinfection confirmée.</strong>",xp:25},
+{cat:"Piège — Mélange antiseptiques",q:"Un étudiant utilise de la Bétadine® Scrub (PVPI) puis applique immédiatement de la Chlorhexidine alcoolique. C'est ?",ch:["Correct — la Chlorhexidine renforce l'action de la Bétadine®","Correct si le temps de contact est respecté","Incorrect — PVPI et Chlorhexidine s'inactivent mutuellement. Coloration brune, efficacité nulle. Jamais mélanger les deux gammes","Acceptable si la Bétadine® a été bien rincée"],ok:2,ek:"PVPI et Chlorhexidine s'inactivent mutuellement par réaction chimique. Même si le rinçage est fait, des résidus subsistent. Toujours respecter la même gamme.",ee:"Le rinçage intermédiaire ne garantit pas l'absence de résidus.",r:"<strong>Jamais mélanger PVPI et Chlorhexidine. Même gamme sur l'ensemble du protocole.</strong>",xp:20},
+{cat:"Piège — Sens de nettoyage",q:"Pour une cicatrice opératoire suturée propre, votre collègue nettoie des berges vers le centre 'pour être sûr de tout nettoyer'. C'est ?",ch:["Correct — le sens n'a pas d'importance tant qu'on n'oublie rien","Correct si on utilise une compresse par passage","Incorrect — pour une plaie propre, le sens correct est du centre vers les berges pour éloigner les germes de la plaie vers l'extérieur. Des berges vers le centre = ramène potentiellement des germes vers la plaie","Correct uniquement pour l'antiseptique (temps 4)"],ok:2,ek:"Plaie propre : centre → berges (éloigne les germes de la plaie). Berges → centre serait correct pour une plaie avec écoulements.",ee:"Le sens de nettoyage dépend du type de plaie, pas du soignant.",r:"<strong>Plaie propre = centre → berges. Plaie souillée = berges → centre.</strong>",xp:20},
+{cat:"Piège — Ablation extrémités",q:"Un étudiant retire les fils des extrémités en premier car 'ils sont plus faciles d'accès'. C'est ?",ch:["Acceptable si on fait attention","Correct si la prescription dit ablation totale","Incorrect — les fils des extrémités maintiennent la plaie aux points de tension maximale. Les retirer en premier expose à une désunion immédiate des berges","Correct pour les cicatrices sur le visage"],ok:2,ek:"Les extrémités de la plaie sont les points sous la plus forte tension mécanique. Retirer ces fils en premier = désunion quasi certaine.",ee:"Les extrémités sont précisément les derniers fils à retirer (ou à ne jamais retirer pour une ablation 1/2).",r:"<strong>Extrémités = derniers fils à retirer. Jamais en premier, jamais lors d'une ablation 1/2.</strong>",xp:25},
+{cat:"Piège — Eau stérile greffe",q:"Vous rincez (temps 2) une greffe cutanée avec de l'eau stérile car 'c'est plus pur que le sérum'. C'est ?",ch:["Correct — eau stérile = parfaitement propre","Correct si la greffe est récente","Incorrect — l'eau stérile est hypo-osmolaire par rapport aux cellules cutanées. Sur une greffe ou un lambeau, elle risque de lyser les cellules. Sérum physiologique uniquement","Correct pour le rinçage, pas pour l'antiseptique"],ok:2,ek:"L'eau stérile est distillée = hypo-osmolaire. Les cellules de greffe explosent par osmose si rincées à l'eau stérile. Sérum physiologique = iso-osmolaire = sûr.",ee:"'Plus pur' ne signifie pas 'plus sûr' sur une greffe.",r:"<strong>Greffe/lambeau = sérum physiologique exclusivement. Jamais eau stérile.</strong>",xp:20},
+{cat:"Piège — Désunion et continuation",q:"Après avoir retiré 2 fils sur une cicatrice abdominale, vous observez un léger écartement des berges. Votre collègue dit 'continue, c'est normal que ça tire un peu'. Vous ?",ch:["Continuez — c'est effectivement normal lors d'une ablation","Continuez mais plus lentement","Stoppez immédiatement — même un léger écartement des berges = désunion débutante. Stops + strips + pansement + médecin","Continuez si l'écartement reste inférieur à 2 mm"],ok:2,ek:"Tout écartement des berges = désunion débutante = STOP. Il n'y a pas de 'tolérance' sur l'écartement. Continuer aggrave irrémédiablement la situation.",ee:"'Normal que ça tire un peu' est une justification erronée. Les berges doivent rester jointives.",r:"<strong>Tout écartement des berges = désunion = STOP immédiat.</strong>",xp:25},
+{cat:"Piège — Antiseptique sans prescription",q:"Une plaie vous semble légèrement inflammatoire. Vous appliquez de la Bétadine® dermique 'à titre préventif' sans prescription. C'est ?",ch:["Acceptable en rôle propre si vous jugez nécessaire","Correct — prévenir vaut mieux que guérir","Incorrect — l'antiseptique est un médicament sur prescription. De plus, il retarde la cicatrisation. Votre rôle : observer, noter, signaler le médecin. Le médecin prescrit si besoin","Acceptable si c'est la pratique habituelle du service"],ok:2,ek:"L'antiseptique = médicament = prescription obligatoire. Auto-décision d'appliquer un antiseptique = dépassement du rôle infirmier. Et surtout : l'antiseptique retarde la cicatrisation.",ee:"L'infirmier observe et signale. Le médecin prescrit.",r:"<strong>Antiseptique = prescription médicale. Votre rôle = observer + signaler le médecin.</strong>",xp:20},
+{cat:"Piège — Pansement circulaire",q:"Pour protéger une plaie sur l'avant-bras, un étudiant enroule le sparadrap en tour complet autour du bras (pansement circulaire). C'est ?",ch:["Correct — tient mieux","Correct si ce n'est pas trop serré","Incorrect — un pansement circulaire sur un membre peut compromettre la vascularisation (effet garrot). Utiliser du sparadrap longitudinal ou un pansement tubulaire adapté","Correct si la plaie saigne"],ok:2,ek:"Pansement circulaire sur un membre = risque de garrot si œdème (post-op, allergie, infection). Conséquences : ischémie, nécrose. Toujours sparadrap longitudinal ou filet tubulaire.",ee:"'Pas trop serré' ne garantit rien si le membre gonfle par la suite.",r:"<strong>Jamais de pansement circulaire constricteur sur un membre.</strong>",xp:20},
+{cat:"Piège — Emballage perforé",q:"En urgence, vous n'avez qu'un set à pansement avec un petit trou dans l'emballage. Vous ?",ch:["Utilisez-le — un petit trou ne suffit pas à contaminer le tout","Recouvrez le trou avec du sparadrap puis utilisez-le","Jetez ce set et trouvez-en un intact — emballage perforé = stérilité non garantie. En urgence absolue, documenter l'impossibilité et informer le cadre","Utilisez uniquement les compresses du set, pas les pinces"],ok:2,ek:"L'intégrité de l'emballage garantit la stérilité. Un trou = contamination possible par l'air, les mains, l'environnement. Emballage perforé = matériel non stérile.",ee:"La taille du trou n'est pas pertinente. Tout défaut d'intégrité = stérilité non garantie.",r:"<strong>Emballage perforé = matériel non stérile = à jeter.</strong>",xp:15},
+{cat:"Piège — Ordre pansements",q:"Vous avez deux pansements à faire : cicatrice propre J5 et plaie infectée. Vous commencez par la plaie infectée 'pour libérer le patient le plus douloureux d'abord'. C'est ?",ch:["Correct — le confort du patient prime","Correct si vous changez de gants entre les deux","Incorrect — commencer par le plus propre est une règle de prévention de la contamination croisée. Aucune exception. La douleur est gérée séparément (antalgiques, organisation du planning)","Correct si la cicatrice propre est dans une autre chambre"],ok:2,ek:"La règle plus propre → plus sale est absolue. La douleur se gère autrement (antalgique, adapter le timing). Commencer par la plaie infectée expose la cicatrice propre à une contamination croisée.",ee:"'Le confort du patient' ne justifie pas de violer les règles de prévention de l'infection.",r:"<strong>Ordre plus propre → plus sale est absolu. Sans exception.</strong>",xp:20},
+];
+const PHASES=[
+  {l:'📋 Phase 1 — Préparation (1-4)',steps:[1,2,3,4],c:'#365314'},
+  {l:'👁️ Phase 2 — Retrait et observation (5-6)',steps:[5,6],c:'#b45309'},
+  {l:'🧤 Phase 3 — Asepsie et protocole 4 temps (7-11)',steps:[7,8,9,10,11],c:'#0e7490'},
+  {l:'✂️ Phase 4 — Ablation fils/agrafes (12-14)',steps:[12,13,14],c:'#dc2626'},
+  {l:'🩹 Phase 5 — Recouvrement et traçabilité (15-16)',steps:[15,16],c:'#6d28d9'},
+];
+const SERR={
+  8:"Utiliser un antiseptique sans prescription sur une plaie non infectée = retarde la cicatrisation.",
+  11:"Mélanger PVPI et Chlorhexidine = inactivation mutuelle des deux antiseptiques.",
+  12:"Tirer le fil vers l'extérieur ou couper hors du nœud = risque de désunion et de passage de la partie septique sous la peau.",
+  13:"Placer le bec sous l'extrémité de l'agrafe = traumatisme cutané. Retirer toutes les agrafes d'un coup = désunion.",
+  14:"Continuer l'ablation malgré une désunion = aggravation irrémédiable de l'ouverture des berges.",
+};
+const SCONS={
+  2:"Mnémotechnique : 'J'organise ma journée proprement' = le plus propre d'abord, toujours.",
+  6:"Astuce clinique : noter l'aspect exact de la plaie AVANT le soin dans le dossier, cela protège en cas de litige.",
+  8:"En IFSI : même si la SF2H 2016 autorise l'antiseptique direct sur peau propre, les évaluateurs IFSI attendent encore souvent le protocole 4 temps complet.",
+  11:"Moyen mnémotechnique pour les gammes : 'B pour B, C pour C' — Bétadine avec Bétadine, Chlorhexidine avec Chlorhexidine.",
+  12:"Pour vérifier que vous coupez au bon endroit : visualiser mentalement 'sous le nœud, au ras de la peau, côté peau'. La partie qui restera dans le tissu ne doit jamais avoir été exposée à l'air extérieur.",
+  15:"Pour les patients allergiques aux sparadraps : noter impérativement l'allergie dans le dossier et les transmissions. Hypafix® ou Méfix® en substitut.",
+};
+function buildFicheProto(){
+  const c=document.getElementById('proto-pans');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,#365314,#4d7c0f);border-radius:11px;padding:13px 15px;margin-bottom:15px;color:white;font-size:12px;line-height:1.75';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:5px">🩹 Avant tout pansement stérile</div><strong>Vérifier le cadre légal. Préparer l\'ordre (plus propre d\'abord). Matériel stérile intègre. Fenêtres fermées.</strong><br><strong>Rappels absolus :</strong> sérum physiologique = référence · antiseptique sur prescription uniquement · même gamme · 1 fil/agrafe sur 2 sans les extrémités · désunion = STOP + médecin.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');pd.className='ph';pd.style.cssText=`color:${ph.c};border-color:${ph.c}`;pd.textContent=ph.l;c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':'';
+      let tags='';if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      const d=document.createElement('div');d.className=`sc2 ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sn2">${n}</div><div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div>
+        <div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c"><div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div><div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div></div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-pans .sc2').forEach(x=>x.classList.add('open'));
+}
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='fpr')buildFicheProto();
+}
+/* ── STATE ── */
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+function setMode(m,btn){document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');mode=m;}
+function launch(){
+  if(mode==='fiche'){buildFicheProto();showScr('sf');showFTab('fm',document.querySelector('.ftab'));return;}
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else if(mode==='exam'){qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  else{qs=[...QS].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='💀 Survie';document.getElementById('livp').style.display='flex';document.getElementById('livn').textContent=3;}
+  showScr('sq');loadQ();
+}
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  document.getElementById('tbpf').style.width=(qi/qs.length*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q);else loadStd(q);startTimer();
+}
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.4);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'DM Sans',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStep(i,b,s);c.appendChild(b);});
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStd(i,b,q);c.appendChild(b);});
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});if(mode==='survival'){lives--;document.getElementById('livn').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+function nextQ(){qi++;loadQ();}
+function startTimer(){
+  clearInterval(tiv);let dur=mode==='exam'?30:mode==='survival'?25:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--g)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;arc.style.strokeDashoffset=((dur-tleft)/dur*220);num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--rd)';}
+    if(tleft<=0){clearInterval(tiv);if(!ans){ans=true;wrng++;score=Math.max(0,score-15);
+      document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+      updateUI();document.getElementById('nxt').classList.add('on');}}
+  },1000);
+}
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;document.getElementById('xpn').textContent=xp;
+  document.getElementById('sc').textContent=corr;document.getElementById('sw2').textContent=wrng;
+  document.getElementById('scn').textContent=score;document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+function showResult(){
+  clearInterval(tiv);const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:'📚 Apprentissage — 16 étapes',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges'};
+  const gd=[{m:18,g:'🏆',t:'Excellent',bc:'#f7fee7',tc:'#4d7c0f',bd:'#a3e635'},{m:14,g:'✅',t:'Bien',bc:'#f7fee7',tc:'#4d7c0f',bd:'#a3e635'},{m:10,g:'⚠️',t:'Passable — À consolider',bc:'#fffbeb',tc:'#b45309',bd:'#fde68a'},{m:0,g:'❌',t:'Insuffisant',bc:'#fef2f2',tc:'#dc2626',bd:'#fca5a5'}].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];document.getElementById('rxp').textContent=xp;document.getElementById('rstr').textContent=bstr;document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?'#16a34a':p>=50?'#b45309':'#dc2626';bd.innerHTML+=`<div class="bki"><div class="bd3" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;});
+  const eb=document.getElementById('errb');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole bien assimilé. Passez au mode Examen pour tester sans aide, puis au mode Survie pour les pièges.");
+  if(mode==='exam'&&note>=16)cs.push("💀 Excellent ! Le mode Survie vous attend — Dakin en routine, mélange antiseptiques, sens de nettoyage inversé, ablation extrémités...");
+  if(mode==='survival'&&note>=18)cs.push("🏆 Maîtrise experte du pansement stérile. Protocole et pièges maîtrisés.");
+  if(note<10)cs.push("📖 Commencez par la Fiche Protocole puis repassez en Apprentissage.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : sérum physiologique = référence · même gamme antiseptique · 1 fil/agrafe sur 2 sans extrémités · désunion = STOP + médecin.");
+  Object.entries(cats).forEach(([cat,s])=>{if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Antisep'))cs.push("🧴 Antiseptiques : même gamme (PVPI ou Chlorhexidine). Jamais mélanger. Sérum physiologique = référence cicatrisation. Antiseptique sur prescription uniquement.");
+    if(cat.includes('SF2H'))cs.push("🔬 SF2H 2016 : détersion uniquement si souillure visible. Sur peau propre, antiseptique direct possible. En IFSI, 4 temps encore souvent attendu.");
+    if(cat.includes('Sens'))cs.push("🧭 Plaie propre : centre → berges. Plaie avec écoulements : berges → centre. Cicatrice : extérieur → intérieur.");
+    if(cat.includes('Ablation')||cat.includes('fils')||cat.includes('agrafes'))cs.push("✂️ Ablation : 1/2 sans extrémités · couper sous le nœud au ras de la peau · tirer vers le centre · désunion = STOP + médecin.");
+    if(cat.includes('Désunion'))cs.push("🚨 Désunion = STOP immédiat + strips + médecin. Aucun degré d'écartement n'est tolérable.");
+    if(cat.includes('Ordre'))cs.push("📋 Ordre : plus propre d'abord, plus sale ensuite. Règle absolue.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. Pansement stérile maîtrisé.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+function restart(){launch();}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>

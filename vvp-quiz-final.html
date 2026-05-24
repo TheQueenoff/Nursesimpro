@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Pose VVP</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --teal:#0891b2;--teal-d:#164e63;--teal-l:#f0fdfa;--teal-m:#99f6e4;
+  --blue:#1d4ed8;--blue-d:#1e3a8a;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes timerWarn{0%,100%{color:var(--red)}50%{color:var(--text)}}
+@keyframes checkIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ══ HEADER COMMUN ══ */
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:var(--teal-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--teal-d)}
+.logo-sub{font-size:11px;color:var(--text3)}
+.top-badge{background:var(--teal-l);color:var(--teal);border:1px solid var(--teal-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+
+/* ══ WELCOME ══ */
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:22px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:42px;flex-shrink:0}
+.w-hero-title{font-size:22px;font-weight:800;color:var(--teal-d);margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:22px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:22px;font-weight:800;color:var(--teal-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--teal));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mc,var(--teal));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{border-color:var(--mc,var(--teal));background:var(--mb,var(--teal-l))}
+.mc-icon{font-size:26px;margin-bottom:10px;display:block}
+.mc-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mc-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mc-list{list-style:none;margin-top:8px}
+.mc-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mc-list li::before{content:'✓';color:var(--mc,var(--teal));font-weight:700;flex-shrink:0}
+.launch-btn{width:100%;padding:16px;background:var(--teal-d);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(22,78,99,0.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--teal);transform:translateY(-2px)}
+
+/* ══ TOPBAR QUIZ ══ */
+#s-quiz{background:var(--bg)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;background:var(--teal-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--teal-d)}
+.tb-mode{background:var(--teal-l);color:var(--teal);border:1px solid var(--teal-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width 0.55s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--teal);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220;transition:stroke 0.3s}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+
+/* ══ QUIZ BODY ══ */
+#quiz-body{flex:1;padding:18px;max-width:700px;width:100%;margin:0 auto}
+
+/* Carte contexte bleue */
+.ctx-card{background:linear-gradient(135deg,var(--teal-d),var(--teal));border-radius:16px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;animation:fadeUp 0.3s ease;color:white;box-shadow:0 4px 20px rgba(8,145,178,0.28)}
+.ctx-ico-box{font-size:26px;flex-shrink:0;background:rgba(255,255,255,0.12);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:3px}
+.ctx-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.ctx-body{font-size:12.5px;color:rgba(255,255,255,0.82);line-height:1.6;font-family:'Lora',serif;font-style:italic}
+
+/* Question card */
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--teal-l);border:1px solid var(--teal-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.q-cat-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.q-cat-txt{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}
+.q-text strong{color:var(--teal-d);font-style:italic}
+.q-tag{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;border:1px solid;margin-top:8px;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* Choix */
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all 0.16s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--teal);background:var(--teal-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+
+/* Explication */
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}
+.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:10px;background:var(--white);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--teal-d)}
+.next-btn{width:100%;padding:13px;background:var(--teal-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(22,78,99,0.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--teal)}
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ══ RESULT ══ */
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+.res-grade{font-size:52px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:52px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:14px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:10px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:24px;font-weight:800;margin-bottom:3px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:14px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:10px}
+.error-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:10px}
+.conseil-item{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:7px;padding-left:4px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--teal-d);color:white;box-shadow:0 2px 10px rgba(22,78,99,0.3)}.rb.p:hover{background:var(--teal)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--teal-m)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">💧</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div>
+    </div>
+    <div class="top-badge">💧 Pose VVP avec perfusion</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">💧</div>
+      <div>
+        <div class="w-hero-title">Pose de VVP avec perfusion</div>
+        <div class="w-hero-desc">Apprenez les 15 étapes du protocole dans l'ordre, testez vos connaissances en mode examen, puis affrontez les questions pièges en mode survie. Un outil conçu pour une vraie maîtrise clinique.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">15</div><div class="ws-lbl">Étapes</div></div>
+      <div class="ws-item"><div class="ws-val">3</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">8</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#0891b2;--mb:#f0fdfa" onclick="selectMode('learn',this)">
+        <span class="mc-icon">📚</span>
+        <span class="mc-name">Apprentissage</span>
+        <div class="mc-diff" style="background:#f0fdfa;border-color:#99f6e4;color:#0891b2">⭐ Débutant</div>
+        <div class="mc-desc">Les 15 étapes du protocole dans l'ordre exact. Chaque étape expliquée avec le geste précis et le pourquoi clinique.</div>
+        <ul class="mc-list" style="--mc:#0891b2">
+          <li>Protocole dans l'ordre</li>
+          <li>Explication clinique complète</li>
+          <li>Question de validation par étape</li>
+          <li>Pas de chronomètre</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mc-icon">📝</span>
+        <span class="mc-name">Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">Questions directes sur le protocole appris. Ordre des étapes, techniques, règles. Comme un vrai examen.</div>
+        <ul class="mc-list" style="--mc:#d97706">
+          <li>Questions sur le protocole</li>
+          <li>Chrono 30 secondes</li>
+          <li>Aucune explication pendant</li>
+          <li>Rapport détaillé à la fin</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#dc2626;--mb:#fef2f2" onclick="selectMode('survival',this)">
+        <span class="mc-icon">💀</span>
+        <span class="mc-name">Survie</span>
+        <div class="mc-diff" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Questions pièges avec 4 réponses qui semblent toutes logiques. 3 erreurs et c'est terminé. Pour les experts seulement.</div>
+        <ul class="mc-list" style="--mc:#dc2626">
+          <li>Réponses volontairement piégeuses</li>
+          <li>3 vies seulement</li>
+          <li>Chrono 25 secondes</li>
+          <li>Rapport détaillé à la fin</li>
+        </ul>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()"><span>Commencer →</span></button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">💧</div><span class="tb-logo-text">VVP</span></div>
+    <div class="tb-mode" id="tb-mode">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">Étape 1/15</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="quiz-body">
+    <div class="ctx-card" id="ctx-box" style="display:none">
+      <div class="ctx-ico-box" id="ctx-ico">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctx-sub">Étape</div>
+        <div class="ctx-title" id="ctx-title"></div>
+        <div class="ctx-body" id="ctx-body"></div>
+      </div>
+    </div>
+    <div class="q-card" id="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="q-cat-dot"></div><span class="q-cat-txt" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">💧</div>
+      <div><div class="logo-name">Rapport — Pose VVP avec perfusion</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--teal)">0s</div><div class="rs-lbl">Tps / Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-score" style="color:var(--teal-d)">0</div><div class="rs-lbl">Score</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Points à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils personnalisés</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   APPRENTISSAGE — 15 étapes dans l'ordre du protocole
+══════════════════════════════════════════════════ */
+const STEPS = [
+{num:1,cat:"Identité & Sécurité",icon:"🏷️",title:"Vérifier l'identité du patient",
+ what:"Avant tout geste, demandez au patient de décliner son <strong>nom, prénom et date de naissance</strong>. Vérifiez sur les étiquettes du dossier et le bracelet d'identification.",
+ why:"Un soin sur le mauvais patient est une faute grave. La vérification d'identité est obligatoire avant chaque soin, sans exception.",
+ rule:"Le patient déclare activement son identité — vous ne lui soufflez jamais la réponse.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="8" width="90" height="64" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/><rect x="5" y="8" width="90" height="22" rx="8" fill="#164e63"/><rect x="5" y="22" width="90" height="8" fill="#164e63"/><text x="50" y="21" text-anchor="middle" font-size="9" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">IDENTITÉ PATIENT</text><rect x="14" y="36" width="48" height="5" rx="2" fill="#cbd5e1"/><rect x="14" y="45" width="66" height="5" rx="2" fill="#cbd5e1"/><rect x="14" y="54" width="38" height="5" rx="2" fill="#cbd5e1"/><circle cx="78" cy="50" r="12" fill="#059669"/><path d="M72 50 L77 55 L85 42" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ q:"Le patient est déjà dans sa chambre depuis 3 jours et tout le monde le connaît. Devez-vous quand même vérifier son identité ?",
+ choices:["Non — le personnel le connaît, c'est suffisant","Non — seulement pour les nouveaux patients","Oui — la vérification est obligatoire avant chaque soin, quelle que soit la durée d'hospitalisation","Oui — seulement si c'est un acte à risque"],
+ correct:2},
+
+{num:2,cat:"Prescription",icon:"📋",title:"Vérifier la prescription médicale",
+ what:"Lisez attentivement la prescription : <strong>produit, dose, débit, durée, voie, compatibilités, date et signature du médecin.</strong> Vérifiez les allergies du patient dans le dossier.",
+ why:"Une erreur médicamenteuse par voie IV peut être grave voire fatale. La prescription est votre référence légale. Un doute = appel au médecin prescripteur avant tout.",
+ rule:"Les 5 B : Bon médicament · Bonne dose · Bonne voie · Bon moment · Bon patient.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="10" y="5" width="80" height="70" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="10" y="5" width="80" height="18" rx="8" fill="#164e63"/><rect x="10" y="17" width="80" height="6" fill="#164e63"/><text x="50" y="16" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">PRESCRIPTION</text><rect x="18" y="28" width="64" height="5" rx="2" fill="#e2e8f0"/><rect x="18" y="37" width="50" height="5" rx="2" fill="#99f6e4"/><rect x="18" y="46" width="58" height="5" rx="2" fill="#e2e8f0"/><rect x="18" y="55" width="42" height="5" rx="2" fill="#e2e8f0"/><rect x="18" y="64" width="30" height="5" rx="2" fill="#99f6e4"/></svg>`,
+ q:"La prescription indique NaCl 0,9% 500 mL en 4h mais vous ne trouvez que du sérum glucosé 5%. Que faites-vous ?",
+ choices:["Perfuser le G5% — c'est isotonique, équivalent au NaCl","Contacter le médecin prescripteur avant tout changement","Perfuser le G5% en notant la substitution dans le dossier","Appeler la pharmacie pour validation sans prévenir le médecin"],
+ correct:1},
+
+{num:3,cat:"Matériel",icon:"🧰",title:"Préparer le matériel complet",
+ what:"Rassemblez sur un plateau propre : <strong>cathéter court adapté (bon calibre)</strong>, garrot, gants non stériles, compresses stériles, alcool 70°, pansement transparent semi-perméable, robinet 3 voies, fixation, poche de perfusion + tubulure, potence.",
+ why:"Un matériel incomplet vous oblige à laisser le cathéter ou l'aiguille en place pour aller chercher ce qui manque — risque de déplacement, d'erreur et d'infection.",
+ rule:"Toujours vérifier les dates de péremption : poche trouble ou précipitée = ne jamais utiliser.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="42" width="90" height="34" rx="6" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="1.5"/><rect x="5" y="42" width="90" height="8" rx="4" fill="#cbd5e1"/><rect x="10" y="12" width="18" height="36" rx="9" fill="#e0f2fe" stroke="#0891b2" stroke-width="1.5"/><ellipse cx="19" cy="12" rx="9" ry="5" fill="#0891b2"/><rect x="12" y="16" width="6" height="20" rx="3" fill="rgba(255,255,255,0.4)"/><rect x="35" y="22" width="26" height="34" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/><path d="M42 22 Q48 15 54 22" fill="none" stroke="#1d4ed8" stroke-width="2"/><line x1="48" y1="16" x2="48" y2="22" stroke="#1d4ed8" stroke-width="1.5"/><rect x="66" y="28" width="24" height="28" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="1"/></svg>`,
+ q:"Vous vérifiez la poche de perfusion et constatez qu'elle est légèrement trouble. Que faites-vous ?",
+ choices:["L'agiter pour homogénéiser","L'utiliser — c'est une variation d'aspect normale","La remplacer impérativement — une poche trouble est inutilisable","L'utiliser si elle n'est pas périmée"],
+ correct:2},
+
+{num:4,cat:"Préparation perfusion",icon:"🔄",title:"Préparer et purger la tubulure",
+ what:"Connectez la tubulure à la poche en conditions aseptiques. <strong>Purgez la tubulure entièrement</strong> pour éliminer tout air. La ligne doit être totalement remplie de liquide, aucune bulle visible. Fermez le régulateur après purge complète.",
+ why:"Une tubulure non purgée injecte de l'air dans la veine — risque d'embolie gazeuse. Même de petites bulles sont dangereuses chez les patients cardiaques ou chirurgicaux.",
+ rule:"Zéro bulle visible dans la tubulure avant connexion — règle absolue.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="32" y="5" width="36" height="48" rx="8" fill="#e0f2fe" stroke="#0891b2" stroke-width="1.5"/><path d="M42 5 Q50 1 58 5" fill="none" stroke="#0891b2" stroke-width="2"/><ellipse cx="50" cy="5" rx="8" ry="3" fill="#0891b2"/><line x1="50" y1="53" x2="50" y2="68" stroke="#0891b2" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="72" r="4" fill="#0891b2"/><rect x="12" y="20" width="14" height="14" rx="3" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/><text x="19" y="31" text-anchor="middle" font-size="10" fill="#dc2626">💨</text><text x="19" y="42" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif">Air !</text><circle cx="82" cy="66" r="11" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="82" y="70" text-anchor="middle" font-size="10" fill="#059669">✓</text></svg>`,
+ q:"Après la purge, vous constatez une bulle d'air de 2 cm dans la tubulure. Que faites-vous ?",
+ choices:["Connecter quand même — 2 cm d'air est cliniquement sans danger","Tapoter la tubulure pour faire remonter la bulle puis poursuivre la purge","Remplacer toute la tubulure — une bulle signifie défaut de fabrication","Injecter très lentement — la bulle se résorbera seule dans la veine"],
+ correct:1},
+
+{num:5,cat:"Installation",icon:"🛋️",title:"Choisir le site et installer le patient",
+ what:"Installez le patient confortablement. Choisissez le site de pose selon la prescription : <strong>dos de la main, avant-bras, pli du coude.</strong> Sites à éviter absolument : membre portant une FAV, côté d'une mastectomie, membre parétique, zone infectée ou hématome.",
+ why:"Un mauvais site de pose augmente le risque de phlébite, d'obstruction et de complications. Certains sites contre-indiqués exposent à des complications graves.",
+ rule:"Commencer toujours par le plus distal (main) et remonter si nécessaire. Jamais sur une FAV.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="54" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><circle cx="28" cy="48" r="7" fill="rgba(8,145,178,0.2)" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="3,2"/><text x="28" y="51" text-anchor="middle" font-size="9" fill="#0891b2">✓</text><circle cx="50" cy="46" r="7" fill="rgba(8,145,178,0.2)" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="3,2"/><text x="50" y="49" text-anchor="middle" font-size="9" fill="#0891b2">✓</text><circle cx="72" cy="49" r="7" fill="rgba(8,145,178,0.2)" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="3,2"/><text x="72" y="52" text-anchor="middle" font-size="9" fill="#0891b2">✓</text><text x="50" y="74" text-anchor="middle" font-size="8" fill="#475569" font-family="sans-serif">Main → Avant-bras → Coude</text></svg>`,
+ q:"Votre patient a une FAV (fistule artério-veineuse) au bras gauche pour dialyse. Où posez-vous la VVP ?",
+ choices:["Bras gauche — la FAV fonctionne bien donc la circulation est bonne","Bras gauche uniquement si les veines sont bonnes","Bras droit obligatoirement — le membre avec FAV est contre-indiqué","L'un ou l'autre — la FAV n'influe pas sur la VVP"],
+ correct:2},
+
+{num:6,cat:"Protection AES",icon:"🧤",title:"Mettre les gants non stériles",
+ what:"Enfilez vos gants <strong>avant tout contact avec le bras du patient.</strong> Lors d'une pose de VVP, le risque d'exposition au sang est élevé : retour sanguin dans la chambre de flashback, manipulation du mandrin, retrait du garrot.",
+ why:"Lors du retrait du mandrin, un jet de sang est fréquent. Les gants sont indispensables pour se protéger des AES.",
+ rule:"Gants AVANT tout contact. Prévoir d'en avoir d'autres à portée si contamination pendant la pose.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><path d="M15 75 L15 42 Q15 30 26 26 L38 20 L41 10 Q41.5 6 45 6 Q48.5 6 49 10 L51 20 L55 8 Q55.5 4 59 4 Q62.5 4 63 8 L64 18 L67 9 Q67.5 5 71 5 Q74.5 5 75 9 L75 26 L78 19 Q80 14 84 16 Q89 18 87 24 L80 40 Q76 52 68 56 L21 56 Q15 56 15 75Z" fill="#99f6e4" stroke="#0d9488" stroke-width="1.5"/><path d="M22 30 Q34 26 46 30" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/></svg>`,
+ q:"Un collègue dit : 'pour juste regarder la veine sans toucher, les gants ne sont pas utiles'. Votre réaction ?",
+ choices:["Il a raison — les gants sont utiles seulement lors de la ponction","Il a tort — tout contact avec la peau du patient nécessite des gants","Il a raison si le patient n'est pas porteur d'une maladie connue","C'est au soignant d'évaluer le risque au cas par cas"],
+ correct:1},
+
+{num:7,cat:"Repérage",icon:"🔴",title:"Poser le garrot + repérer la veine",
+ what:"Posez le garrot à <strong>10-15 cm au-dessus du site choisi.</strong> La veine doit être rectiligne sur plusieurs centimètres, suffisamment large pour le calibre prévu, bien palpable. Le garrot ne doit pas couper le pouls radial.",
+ why:"Une VVP nécessite une veine plus droite et plus stable qu'un simple prélèvement. Une veine trop petite ou tortueuse provoque une phlébite précoce.",
+ rule:"Garrot maximum 2 minutes. Veine idéale : rectiligne, large, bien palpable, non mobile.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="54" rx="44" ry="20" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="16" y="42" width="68" height="14" rx="7" fill="#dc2626" opacity="0.9"/><text x="50" y="52" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="700">GARROT 10-15 cm</text><path d="M78 37 Q60 43 46 47 Q34 51 22 54" fill="none" stroke="#0891b2" stroke-width="5" stroke-linecap="round" opacity="0.65"/><circle cx="46" cy="47" r="9" fill="rgba(8,145,178,0.2)" stroke="#0891b2" stroke-width="1.5" stroke-dasharray="3,2"/><circle cx="46" cy="47" r="3" fill="#dc2626"/></svg>`,
+ q:"La veine repérée est belle mais roule beaucoup sous le doigt. Comment gérez-vous la ponction ?",
+ choices:["Tendez fermement la peau avec votre pouce pour stabiliser la veine pendant la ponction","Choisissez une autre veine — les veines mobiles sont inaccessibles","Palpez très fort pour bloquer la veine pendant la ponction","Ponctionne rapidement avant qu'elle ait le temps de bouger"],
+ correct:0},
+
+{num:8,cat:"Asepsie",icon:"🧴",title:"Retirer le garrot + désinfecter le site",
+ what:"Retirez le garrot. Mémorisez la position de la veine. Désinfectez par mouvements circulaires (centre vers l'extérieur) avec alcool 70° sur 5 cm. <strong>Attendez le séchage spontané complet (~30 secondes).</strong> Ne re-palpez plus la veine après désinfection.",
+ why:"La VVP est maintenue plusieurs jours — c'est une porte d'entrée prolongée pour les bactéries. Une bonne asepsie à la pose réduit drastiquement le risque de bactériémie et de sepsis.",
+ rule:"Ne jamais re-palper après désinfection sans re-désinfecter. Séchage spontané = obligatoire.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/><circle cx="50" cy="52" r="22" fill="rgba(8,145,178,0.1)" stroke="#0891b2" stroke-width="1" stroke-dasharray="4,3"/><circle cx="50" cy="52" r="14" fill="rgba(8,145,178,0.18)"/><path d="M50 30 A22 22 0 1 1 28 52" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round"/><polygon points="24,48 28,56 34,50" fill="#0891b2"/><text x="50" y="74" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="600">~30 sec séchage spontané</text></svg>`,
+ q:"Après désinfection, vous réalisez que vous avez mal positionné le garrot et devez le repositionner en touchant la zone désinfectée. Que faites-vous ensuite ?",
+ choices:["Rien — le garrot ne contamine pas significativement","Redésinfecter uniquement le point exact de ponction","Redésinfecter toute la zone et attendre à nouveau le séchage complet","Continuer si les gants sont propres"],
+ correct:2},
+
+{num:9,cat:"Ponction",icon:"💉",title:"Poser le garrot + réaliser la ponction",
+ what:"Repositionnez le garrot. Retirez le capuchon. Tendez la peau. Pénétrez la veine <strong>biseau vers le haut, angle 15-30°.</strong> Dès le retour sanguin (flashback) dans la chambre du cathéter, <strong>abaissez l'angle à 5-10°</strong> et avancez doucement l'ensemble de 2-3 mm.",
+ why:"L'abaissement de l'angle est crucial pour ne pas traverser la paroi postérieure de la veine. Avancer 2-3 mm garantit que le cathéter est bien dans la veine avant de le faire glisser.",
+ rule:"Flashback → abaisser l'angle → avancer 2-3 mm → faire glisser le cathéter.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="58" rx="44" ry="17" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/><rect x="16" y="48" width="68" height="12" rx="5" fill="#dc2626" opacity="0.75"/><path d="M65 40 Q55 46 46 50 Q38 54 24 57" fill="none" stroke="#0891b2" stroke-width="4.5" stroke-linecap="round" opacity="0.6"/><g transform="rotate(-18, 54, 50)"><rect x="38" y="42" width="22" height="12" rx="5" fill="#374151"/><rect x="46" y="45" width="8" height="6" rx="2" fill="#dc2626" opacity="0.7"/><line x1="60" y1="48" x2="76" y2="48" stroke="#d1d5db" stroke-width="3" stroke-linecap="round"/><polygon points="72,44 78,48 72,52" fill="#9ca3af"/></g><text x="50" y="20" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="600">15-30° → flashback → abaisser</text></svg>`,
+ q:"Vous avez le flashback. Quelle est votre séquence de gestes exacte ?",
+ choices:["Retirer le mandrin directement puis faire glisser le cathéter","Abaisser l'angle à 5-10°, avancer 2-3 mm, faire glisser le cathéter, comprimer en amont, retirer le mandrin","Faire glisser le cathéter immédiatement sans avancer d'abord","Retirer le garrot, puis faire glisser le cathéter"],
+ correct:1},
+
+{num:10,cat:"Retrait mandrin",icon:"🔩",title:"Retirer le mandrin + connecter",
+ what:"Comprimez la veine <strong>en amont du cathéter</strong> avec votre doigt pour éviter le reflux de sang. Retirez le mandrin d'un geste sec. Jetez-le <strong>immédiatement dans le container DASRI</strong> sans le reposer. Connectez rapidement le bouchon ou la tubulure.",
+ why:"La compression en amont empêche le jet de sang lors du retrait du mandrin. L'élimination immédiate du mandrin évite les AES par réutilisation accidentelle.",
+ rule:"Mandrin retiré = DASRI immédiatement. Ne jamais reposer, ne jamais réintroduire.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="36" y="46" width="26" height="20" rx="6" fill="#0891b2" opacity="0.85"/><circle cx="28" cy="50" r="7" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><text x="28" y="53" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif">Comp.</text><text x="50" y="58" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="700">Cathéter</text><rect x="72" y="36" width="22" height="28" rx="5" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/><text x="83" y="50" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="700">DASRI</text><text x="83" y="60" text-anchor="middle" font-size="13" fill="#d97706">⚠</text></svg>`,
+ q:"Le cathéter ne glisse pas bien. Un collègue vous propose de réintroduire le mandrin pour le repositionner. Que faites-vous ?",
+ choices:["Vous le faites prudemment — ça peut aider à repositionner","Vous le faites si le cathéter est encore bien dans la veine","Vous refusez — réintroduire le mandrin est interdit : risque de perforation veineuse","Vous le faites mais retirez aussitôt pour ne pas endommager"],
+ correct:2},
+
+{num:11,cat:"Fixation",icon:"🩻",title:"Fixer le cathéter avec pansement transparent",
+ what:"Posez un <strong>pansement transparent semi-perméable</strong> sur le site d'insertion. Inscrivez sur le pansement ou une étiquette : <strong>date de pose, calibre, vos initiales.</strong> Fixez la tubulure pour éviter toute traction sur le cathéter.",
+ why:"Un cathéter mal fixé se déplace, se thrombose ou cause une phlébite mécanique. Le pansement transparent permet la surveillance visuelle quotidienne du site sans retrait.",
+ rule:"Date + calibre + initiales = traçabilité obligatoire sur chaque cathéter posé.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="26" y="42" width="48" height="32" rx="6" fill="rgba(224,242,254,0.7)" stroke="#0891b2" stroke-width="1.5"/><rect x="36" y="46" width="24" height="18" rx="4" fill="#0891b2" opacity="0.85"/><text x="48" y="57" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="700">Cathéter</text><text x="50" y="70" text-anchor="middle" font-size="7" fill="#0891b2" font-family="sans-serif">Date · Calibre · Initiales</text></svg>`,
+ q:"Quelles informations sont obligatoires sur le pansement ou l'étiquette du cathéter posé ?",
+ choices:["Uniquement la date de pose","Date de pose + calibre + vos initiales","Date de pose + nom du patient + médecin prescripteur","Calibre + produit perfusé + heure de pose"],
+ correct:1},
+
+{num:12,cat:"Débit",icon:"⚙️",title:"Régler le débit de perfusion",
+ what:"Connectez la tubulure purgée. Ouvrez le régulateur. Réglez le débit selon la prescription. <strong>Formule : gouttes/min = (volume en mL × facteur tubulure) ÷ durée en minutes.</strong> Vérifiez l'écoulement et que la poche descend.",
+ why:"Un débit trop rapide provoque une surcharge volémique, hypertension, insuffisance cardiaque aiguë. Un débit trop lent retarde l'efficacité du traitement.",
+ rule:"Vérifiez toujours l'écoulement après connexion. Si blocage : vérifier la position, la coudure, la thrombose.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="32" y="5" width="36" height="44" rx="8" fill="#e0f2fe" stroke="#0891b2" stroke-width="1.5"/><path d="M42 5 Q50 1 58 5" fill="none" stroke="#0891b2" stroke-width="2"/><ellipse cx="50" cy="5" rx="8" ry="3" fill="#0891b2"/><line x1="50" y1="49" x2="50" y2="62" stroke="#0891b2" stroke-width="2.5"/><circle cx="50" cy="66" r="4" fill="#0891b2"/><rect x="12" y="36" width="16" height="20" rx="4" fill="#fffbeb" stroke="#fde68a" stroke-width="1"/><text x="20" y="48" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="700">Régl.</text><text x="50" y="78" text-anchor="middle" font-size="8" fill="#475569" font-family="sans-serif">(mL × facteur) ÷ min</text></svg>`,
+ q:"Prescription : 500 mL en 4 heures. Tubulure facteur 20 gttes/mL. Quel débit en gouttes/minute ?",
+ choices:["20 gttes/min","42 gttes/min","50 gttes/min","83 gttes/min"],
+ correct:1},
+
+{num:13,cat:"Surveillance",icon:"👁️",title:"Surveiller le site de perfusion",
+ what:"Après pose, surveillez le site <strong>toutes les heures :</strong> écoulement correct, absence de gonflement (extravasation), rougeur, douleur, chaleur locale (phlébite débutante). Éduquez le patient à signaler toute brûlure ou douleur le long de la veine.",
+ why:"L'extravasation d'un produit irritant peut nécroser les tissus. La phlébite non détectée évolue vers une infection systémique. La détection précoce évite les complications graves.",
+ rule:"Durée maximale d'un cathéter périphérique : 72-96h. Changer de site si signes locaux même minimes.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><ellipse cx="50" cy="55" rx="44" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="32" y="46" width="28" height="20" rx="6" fill="rgba(224,242,254,0.8)" stroke="#0891b2" stroke-width="1.5"/><circle cx="46" cy="56" r="14" fill="none" stroke="#d97706" stroke-width="2" opacity="0.6"/><text x="46" y="60" text-anchor="middle" font-size="11" fill="#d97706">👁</text><rect x="68" y="38" width="24" height="16" rx="5" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/><text x="80" y="48" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif" font-weight="700">Gonflt = Stop</text></svg>`,
+ q:"En passant dans la chambre, le tissu autour du cathéter est gonflé et froid mais la perfusion coule encore. Que faites-vous ?",
+ choices:["Ralentir le débit et surveiller 30 minutes","Continuer — le gonflement est normal les premières heures","Stopper la perfusion et retirer le cathéter — c'est une extravasation","Appuyer sur le gonflement pour vérifier la consistance"],
+ correct:2},
+
+{num:14,cat:"Complications",icon:"⚠️",title:"Reconnaître et gérer les complications",
+ what:"<strong>Phlébite :</strong> rougeur + douleur + cordon veineux induré → retirer le cathéter. <strong>Extravasation :</strong> gonflement froid autour du site → stopper et retirer. <strong>Obstruction :</strong> perfusion bloquée → ne jamais forcer, retirer et reposer. <strong>Infection :</strong> rougeur + pus + fièvre → retirer, prélèvement, médecin.",
+ why:"Chaque complication non gérée rapidement peut évoluer : nécrose tissulaire, bactériémie, sepsis.",
+ rule:"En cas de doute → retirer le cathéter. Un cathéter ne se force jamais s'il est bouché.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="50" cy="40" r="32" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/><text x="50" y="34" text-anchor="middle" font-size="22" fill="#dc2626">⚠️</text><text x="50" y="48" text-anchor="middle" font-size="7.5" fill="#dc2626" font-family="sans-serif" font-weight="700">Phlébite · Extravasation</text><text x="50" y="58" text-anchor="middle" font-size="7.5" fill="#dc2626" font-family="sans-serif" font-weight="700">Obstruction · Infection</text></svg>`,
+ q:"La perfusion ne coule plus. Vous injectez du sérum en seringue pour 'déboucher'. C'est ?",
+ choices:["Correct — c'est la technique standard de vérification de perméabilité","Correct si vous injectez très doucement et sans forcer","Interdit — forcer sur un cathéter bouché risque de disloger un thrombus ou de perforer la veine","Acceptable une seule fois avant de changer de cathéter"],
+ correct:2},
+
+{num:15,cat:"Traçabilité",icon:"📝",title:"Tracer dans le dossier patient",
+ what:"Documentez dans le dossier : <strong>date et heure de pose, calibre, site exact (ex : 'veine céphalique avant-bras gauche'), état local initial, produit perfusé, débit réglé, votre nom et signature.</strong>",
+ why:"La traçabilité est une obligation légale. Elle permet le suivi du capital veineux, la durée de maintien, et constitue une protection juridique. Un cathéter sans date de pose = retirer et reposer immédiatement.",
+ rule:"Ce qui n'est pas tracé n'a juridiquement pas eu lieu. Toujours tracer après tout soin.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="12" y="8" width="76" height="64" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="12" y="8" width="76" height="18" rx="8" fill="#164e63"/><rect x="12" y="20" width="76" height="6" fill="#164e63"/><text x="50" y="19" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">DOSSIER INFIRMIER</text><rect x="20" y="32" width="60" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="41" width="50" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="50" width="56" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="59" width="32" height="5" rx="2" fill="#99f6e4"/></svg>`,
+ q:"Vous trouvez un cathéter en place sans aucune étiquette ni mention dans le dossier. La date de pose est inconnue. Que faites-vous ?",
+ choices:["Le laisser — s'il perfuse bien c'est qu'il est récent","Demander au patient depuis combien de temps il est là","Le retirer et reposer un nouveau cathéter correctement tracé","L'étiqueter avec la date du jour pour régulariser"],
+ correct:2}
+];
+
+/* ══════════════════════════════════════════════════
+   EXAMEN — Questions directes sur le protocole
+   Testent ce qui a été appris en mode Apprentissage
+══════════════════════════════════════════════════ */
+const Q_EXAM = [
+{cat:"Identité",q:"Quelle est la première action OBLIGATOIRE avant de poser une VVP ?",
+ choices:["Préparer le plateau de soin","Vérifier l'identité du patient","Mettre les gants","Vérifier la prescription"],
+ correct:1,exp_ok:"L'identité est la première étape non négociable avant tout soin.",exp_err:"L'identité prime sur toutes les autres actions, y compris la préparation du matériel.",rule:"<strong>Identité AVANT tout geste.</strong>",xp:10},
+
+{cat:"Prescription",q:"Vous avez un doute sur la dose prescrite. Que faites-vous ?",
+ choices:["Administrer la dose habituelle pour ce type de patient","Contacter le médecin prescripteur avant d'administrer","Administrer en notant le doute dans le dossier","Demander à un collègue plus expérimenté"],
+ correct:1,exp_ok:"Tout doute sur une prescription nécessite de contacter le médecin prescripteur avant d'agir.",exp_err:"Administrer en cas de doute expose à une erreur médicamenteuse grave.",rule:"<strong>Doute sur prescription = appel médecin avant administration.</strong>",xp:10},
+
+{cat:"Matériel",q:"Vous vérifiez la poche de perfusion. Que contrôlez-vous ?",
+ choices:["Uniquement la date de péremption","Intégrité de la poche, date, aspect (limpide, sans trouble ni précipité), concordance avec la prescription","Uniquement la concordance avec la prescription","La couleur et la transparence seulement"],
+ correct:1,exp_ok:"Toujours vérifier : intégrité, date, aspect et concordance avec la prescription. Une poche trouble ne s'utilise jamais.",exp_err:"Un seul contrôle est insuffisant. La vérification complète évite les erreurs graves.",rule:"<strong>Poche : intégrité + date + aspect + concordance.</strong>",xp:10},
+
+{cat:"Purge",q:"Pourquoi la purge de la tubulure est-elle obligatoire avant connexion ?",
+ choices:["Pour vérifier que la tubulure n'est pas défectueuse","Pour éliminer l'air et éviter le risque d'embolie gazeuse","Pour réchauffer le liquide avant perfusion","Pour vérifier la perméabilité de la tubulure"],
+ correct:1,exp_ok:"La purge élimine l'air. Une embolie gazeuse peut être fatale, notamment chez les patients cardiaques.",exp_err:"L'embolie gazeuse est le risque principal d'une tubulure non purgée.",rule:"<strong>Purge = zéro bulle = protection contre l'embolie gazeuse.</strong>",xp:10},
+
+{cat:"Sites",q:"Quel est le site de pose le plus distal recommandé en premier lieu ?",
+ choices:["Le pli du coude — veine plus grosse","L'avant-bras — plus confortable","Le dos de la main — toujours commencer par le plus distal","L'avant-bras interne — veines plus accessibles"],
+ correct:2,exp_ok:"On commence toujours par le plus distal (dos de la main) pour préserver les veines proximales si une nouvelle pose est nécessaire.",exp_err:"Commencer par le pli du coude épuise les sites distaux pour les prochaines poses.",rule:"<strong>Commencer par le plus distal : dos de la main.</strong>",xp:10},
+
+{cat:"Asepsie",q:"Après désinfection, vous re-palpez la veine avec votre doigt ganté. Que faites-vous ?",
+ choices:["Rien — les gants garantissent la propreté","Redésinfecter uniquement le point de ponction","Redésinfecter toute la zone et attendre le séchage complet","Continuer — le contact est minime"],
+ correct:2,exp_ok:"Tout contact après désinfection, même ganté, impose une nouvelle désinfection complète avec séchage.",exp_err:"Les gants non stériles portent une flore. Tout contact après antisepsie annule l'asepsie.",rule:"<strong>Contact post-désinfection = recommencer la désinfection.</strong>",xp:12},
+
+{cat:"Ponction",q:"Après le flashback (retour sanguin), quelle est votre séquence exacte ?",
+ choices:["Retirer le mandrin puis glisser le cathéter","Abaisser l'angle, avancer 2-3 mm, glisser le cathéter, comprimer en amont, retirer le mandrin","Glisser le cathéter directement sans abaisser l'angle","Retirer le garrot puis glisser le cathéter"],
+ correct:1,exp_ok:"Après le flashback : abaisser l'angle à 5-10°, avancer 2-3 mm, glisser le cathéter, comprimer en amont, retirer le mandrin.",exp_err:"Retirer le mandrin sans avoir fait glisser le cathéter fait perdre l'accès veineux.",rule:"<strong>Flashback → abaisser → avancer 2-3mm → glisser cathéter → comprimer → mandrin DASRI.</strong>",xp:15},
+
+{cat:"Retrait mandrin",q:"Où éliminez-vous le mandrin après retrait ?",
+ choices:["Sur le plateau de soin pour ne pas contaminer l'environnement","Dans la poubelle ordinaire bien emballé","Directement dans le container DASRI, sans jamais le reposer","Recapuchonné puis dans le DASRI"],
+ correct:2,exp_ok:"Le mandrin va directement dans le container DASRI, sans jamais être reposé ni recapuchonné.",exp_err:"Reposer le mandrin expose à un AES par réutilisation accidentelle.",rule:"<strong>Mandrin → DASRI directement. Jamais reposé.</strong>",xp:12},
+
+{cat:"Fixation",q:"Qu'inscrivez-vous obligatoirement sur le pansement du cathéter ?",
+ choices:["Le nom du patient et la date","Date de pose + calibre + vos initiales","Calibre + produit perfusé + heure","Date + nom du médecin prescripteur"],
+ correct:1,exp_ok:"Date + calibre + initiales sont les 3 informations obligatoires pour la traçabilité du cathéter.",exp_err:"Ces informations permettent de connaître l'ancienneté du cathéter et de planifier son changement.",rule:"<strong>Pansement : date + calibre + initiales.</strong>",xp:10},
+
+{cat:"Débit",q:"Prescription : 1000 mL en 8h. Tubulure facteur 20 gttes/mL. Débit en gouttes/min ?",
+ choices:["20 gttes/min","42 gttes/min","50 gttes/min","80 gttes/min"],
+ correct:1,exp_ok:"(1000 × 20) ÷ (8 × 60) = 20 000 ÷ 480 = 41,6 ≈ 42 gttes/min.",exp_err:"Formule : (volume mL × facteur) ÷ durée en minutes.",rule:"<strong>(mL × facteur tubulure) ÷ durée en minutes = gttes/min.</strong>",xp:12},
+
+{cat:"Surveillance",q:"Quand changez-vous obligatoirement un cathéter périphérique même en l'absence de signes locaux ?",
+ choices:["Tous les jours","Après 72-96h selon protocole institutionnel","Uniquement si le patient se plaint","Seulement si la perfusion ne coule plus"],
+ correct:1,exp_ok:"Un cathéter périphérique se change tous les 72 à 96h pour prévenir le risque infectieux, même sans signes locaux.",exp_err:"L'absence de signes locaux n'exclut pas le risque infectieux systémique. La règle 72-96h est basée sur l'épidémiologie.",rule:"<strong>Cathéter périphérique : changement à 72-96h maximum.</strong>",xp:12},
+
+{cat:"Complications",q:"Le patient se plaint que la perfusion 'tire dans le bras' depuis 2h. Visuellement, le site est normal. Que faites-vous ?",
+ choices:["Rassurer — c'est normal en début de perfusion","Ralentir le débit et réévaluer dans 4h","Palper le trajet veineux pour détecter une phlébite débutante et surveiller de près","Arrêter la perfusion et retirer le cathéter immédiatement"],
+ correct:2,exp_ok:"La douleur le long du trajet veineux peut précéder les signes visuels. Palper le cordon veineux pour détecter une phlébite débutante.",exp_err:"Rassurer est insuffisant — la douleur est le premier signe d'alerte. La phlébite peut être invisible visuellement à son début.",rule:"<strong>Douleur le long de la veine = palper le trajet + surveiller de près.</strong>",xp:12},
+
+{cat:"Complications",q:"La perfusion ne coule plus. Vous baissez la poche sous le niveau du patient et observez un retour sanguin. Que concluez-vous ?",
+ choices:["Le cathéter est bouché — le retirer","Le cathéter est en bonne position — chercher une obstruction mécanique (pliure, régulateur)","La veine est thrombosée — changer de site","Le débit est trop lent — régler le régulateur"],
+ correct:1,exp_ok:"Un retour sanguin visible confirme que le cathéter est bien dans la veine. Le problème est mécanique : pliure tubulure, régulateur fermé, position du bras.",exp_err:"Si le cathéter était bouché ou sorti de la veine, il n'y aurait pas de retour sanguin.",rule:"<strong>Retour sanguin présent = cathéter perméable → chercher obstruction mécanique.</strong>",xp:12},
+
+{cat:"Traçabilité",q:"Après la pose, dans quel ordre finalisez-vous le soin ?",
+ choices:["Tracer dans le dossier → étiqueter le cathéter → éduquer le patient","Étiqueter le cathéter (date+calibre+initiales) → éduquer le patient → tracer dans le dossier","Éduquer le patient → tracer dans le dossier → étiqueter le cathéter","L'ordre des étapes de fin n'a pas d'importance"],
+ correct:1,exp_ok:"Étiqueter le cathéter d'abord (traçabilité immédiate), éduquer le patient à la surveillance, puis tracer dans le dossier.",exp_err:"L'ordre a de l'importance : l'étiquetage immédiat est prioritaire pour ne pas oublier la date de pose.",rule:"<strong>Fin de soin : étiqueter → éduquer → tracer dans le dossier.</strong>",xp:10},
+
+{cat:"Règles générales",q:"Un cathéter périphérique qui ne perfuse plus peut-il être forcé avec une seringue de sérum ?",
+ choices:["Oui — c'est la technique de désobstruction recommandée","Oui si on pousse doucement et progressivement","Non — forcer peut disloger un thrombus ou perforer la veine. Retirer et reposer","Oui une seule fois, puis changer si ça ne marche pas"],
+ correct:2,exp_ok:"Forcer un cathéter bouché est interdit. Risque de disloger un micro-thrombus (embolie) ou de perforer la veine. La seule solution est de retirer et de reposer.",exp_err:"Même une pression douce peut être dangereuse. La règle est absolue : jamais forcer.",rule:"<strong>Cathéter bouché = retirer et reposer. Jamais forcer.</strong>",xp:12}
+];
+
+/* ══════════════════════════════════════════════════
+   SURVIE — Questions pièges, réponses plausibles
+══════════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+{cat:"Piège — Purge",
+ q:"Vous purgez la tubulure et il reste 3 petites microbulles de moins de 1 mm. Votre collègue dit : 'ces microbulles se résorbent toujours une fois dans la veine, on peut brancher'. Que faites-vous ?",
+ choices:["Vous branchez — les microbulles de moins de 1 mm sont effectivement sans danger clinique prouvé","Vous tapotez la tubulure pour faire remonter les bulles et terminez la purge avant de brancher","Vous changez toute la tubulure — des bulles signifient un défaut","Vous branchez mais notez l'incident dans le dossier"],
+ correct:1,
+ exp_ok:"Même de très petites bulles doivent être éliminées avant connexion. On tapote pour les faire remonter et on purge à nouveau. Ce n'est pas une raison de changer la tubulure.",
+ exp_err:"La phrase 'elles se résorbent seules' est un mythe dangereux. Chez un patient avec cardiopathie ou shunt, même de petites bulles peuvent causer un accident.",
+ rule:"<strong>Zéro bulle visible = règle absolue. Tapoter + repurger.</strong>",xp:20},
+
+{cat:"Piège — Asepsie",
+ q:"Après désinfection et séchage, vous soufflez légèrement sur le site car l'alcool semble encore humide et vous êtes pressé. C'est ?",
+ choices:["Acceptable — votre souffle ne contient pas de germes pathogènes en conditions normales","Acceptable si vous avez mis un masque","Incorrect — souffler introduit la flore buccale sur la zone désinfectée et annule l'antisepsie","Acceptable seulement pour accélérer le séchage, pas pour remplacer le séchage complet"],
+ correct:2,
+ exp_ok:"Souffler sur une zone désinfectée y introduit systématiquement la flore buccale (streptocoques, staphylocoques...), même avec un masque. L'antisepsie est annulée.",
+ exp_err:"La flore buccale normale est incompatible avec une zone désinfectée. Le masque ne filtre pas suffisamment à cette distance.",
+ rule:"<strong>Ne jamais souffler sur une zone désinfectée. Attendre le séchage spontané.</strong>",xp:20},
+
+{cat:"Piège — Mandrin",
+ q:"Le cathéter ne s'engage pas bien. Un collègue expérimenté vous dit : 'remets le mandrin 2-3 mm pour le rigidifier, ça marche toujours'. Vous ?",
+ choices:["Vous le faites — 2-3 mm c'est minime et votre collègue est expérimenté","Vous le faites prudemment en contrôlant le retour sanguin","Vous refusez — réintroduire même partiellement le mandrin risque de perforer la veine avec l'extrémité rigide","Vous le faites mais retirez aussitôt pour évaluer"],
+ correct:2,
+ exp_ok:"Réintroduire le mandrin dans un cathéter partiellement engagé est formellement interdit, même partiellement. L'extrémité rigide du mandrin peut perforer la paroi de la veine à travers le cathéter souple.",
+ exp_err:"L'expérience d'un collègue ne change pas le risque physique. Cette manœuvre est dangereuse quelle que soit la distance. En cas d'échec, on retire tout et on recommence.",
+ rule:"<strong>Mandrin retiré = ne jamais réintroduire. Recommencer si nécessaire.</strong>",xp:25},
+
+{cat:"Piège — Durée cathéter",
+ q:"Un cathéter posé il y a 5 jours perfuse parfaitement et il n'y a aucun signe local. Votre chef dit : 'laisse-le, inutile de piquer le patient à nouveau'. Vous ?",
+ choices:["Suivez la recommandation — l'absence de signes locaux justifie le maintien","Surveillez plus souvent pour compenser la durée","Retirez et reposez sur un nouveau site — 72-96h est la durée maximale même sans signes locaux","Attendez les résultats de la CRP avant de décider"],
+ correct:2,
+ exp_ok:"Un cathéter de 5 jours doit être retiré même sans signes locaux. Le risque de bactériémie augmente exponentiellement au-delà de 72-96h.",
+ exp_err:"L'absence de signes locaux est rassurante mais insuffisante. Les bactériémies sur cathéter se déclarent souvent sans signes locaux préalables.",
+ rule:"<strong>72-96h maximum même sans signes. Recommandation basée sur l'épidémiologie.</strong>",xp:20},
+
+{cat:"Piège — Obstruction",
+ q:"La perfusion est lente mais passe encore un peu. Vous injectez 2 mL de sérum physiologique 'en douceur' pour déboucher. C'est ?",
+ choices:["Correct — le sérum physiologique est inoffensif et la technique est douce","Acceptable si le cathéter est récent et qu'on ne force pas","Dangereux — même une injection douce peut disloger un micro-thrombus ou perforer une veine fragilisée","Correct si on vérifie d'abord le retour sanguin"],
+ correct:2,
+ exp_ok:"Forcer sur un cathéter partiellement obstrué est dangereux quel que soit le volume ou la douceur. Un micro-thrombus libéré peut provoquer une embolie pulmonaire. Un cathéter bouché se retire et se remplace.",
+ exp_err:"'En douceur' ne neutralise pas le risque. La règle est absolue : jamais forcer sur une résistance.",
+ rule:"<strong>Cathéter partiellement bouché = retirer et reposer. Jamais forcer.</strong>",xp:25},
+
+{cat:"Piège — FAV",
+ q:"Le patient a une FAV au bras gauche mais ses veines droites sont mauvaises. Le médecin dit : 'pose sur la FAV, c'est une urgence'. Vous ?",
+ choices:["Posez sur la FAV — l'urgence justifie une exception à la règle","Posez sur la FAV uniquement si le débit est bon","Refusez et cherchez d'autres sites (pied, jugulaire externe) — la FAV ne doit jamais être ponctionnée pour une VVP","Posez sur la FAV avec un cathéter fin pour minimiser le risque"],
+ correct:2,
+ exp_ok:"La FAV ne se ponctionné jamais pour une VVP, même en urgence. La thrombose d'une FAV prive le patient de son accès vital pour la dialyse. D'autres sites doivent être explorés (pied, jugulaire externe, voie centrale).",
+ exp_err:"L'urgence ne justifie pas de compromettre l'accès de dialyse. Une FAV thrombosée est une urgence chirurgicale qui peut priver le patient de dialyse pendant des semaines.",
+ rule:"<strong>FAV = jamais ponctionnée pour VVP, même en urgence absolue.</strong>",xp:25},
+
+{cat:"Piège — Phlébite",
+ q:"Le site est légèrement rouge mais la perfusion coule bien et le patient dit que 'c'est supportable'. Vous continuez en surveillant de près ?",
+ choices:["Oui — tant que la perfusion coule et que la douleur est supportable, on peut attendre","Oui — une légère rougeur est normale les premiers jours de perfusion","Non — toute rougeur sur le site est un signe de phlébite débutante : retirer le cathéter","Oui mais en notant dans le dossier et en réévaluant dans 2h"],
+ correct:2,
+ exp_ok:"Toute rougeur sur le site d'insertion est un signe de phlébite débutante. Il faut retirer le cathéter sans attendre. Continuer aggrave la phlébite et risque une infection systémique.",
+ exp_err:"'Supportable' et 'perfusion qui coule' ne sont pas des critères valables pour maintenir un cathéter phlébitique. La phlébite s'aggrave toujours si on continue.",
+ rule:"<strong>Rougeur sur site = phlébite débutante = retrait immédiat du cathéter.</strong>",xp:20},
+
+{cat:"Piège — Extravasation",
+ q:"La zone autour du cathéter gonfle mais le patient ne ressent aucune douleur. La perfusion coule. Vous continuez car il n'y a pas de douleur ?",
+ choices:["Oui — sans douleur, il n'y a pas d'extravasation réelle","Oui — surveiller encore 30 minutes, certains gonflements disparaissent seuls","Non — le gonflement indique une extravasation même sans douleur : stopper et retirer le cathéter","Ralentir le débit de moitié et réévaluer"],
+ correct:2,
+ exp_ok:"Le gonflement autour du cathéter signe une extravasation, qu'il y ait douleur ou non. Certains produits extravasent sans brûler (sérum physiologique, certains antibiotiques). Le gonflement est le signe principal.",
+ exp_err:"L'absence de douleur est trompeuse et dépend du produit perfusé. Le gonflement est un signe objectif plus fiable que la douleur.",
+ rule:"<strong>Gonflement autour du site = extravasation = arrêt immédiat même sans douleur.</strong>",xp:20},
+
+{cat:"Piège — Débit",
+ q:"La perfusion de 500 mL devait se faire en 4h mais sera vide dans 1h30. Vous réajustez le débit vous-même pour finir à l'heure prévue. C'est ?",
+ choices:["Correct — l'essentiel est que le volume total soit administré en 4h comme prescrit","Acceptable pour les solutés simples comme le sérum physiologique","Interdit sans avis médical — toute modification de débit significative nécessite une réévaluation médicale","Correct si le patient ne présente pas de signe de surcharge"],
+ correct:2,
+ exp_ok:"Modifier significativement un débit sans avis médical est une décision qui dépasse vos compétences. Un débit trop lent sur 1h30 puis normal n'équivaut pas au débit prescrit, et peut être dangereux chez un cardiaque ou rénal.",
+ exp_err:"Même pour un sérum physiologique, corriger seul un débit erroné sans signaler l'incident masque un problème et peut être dangereux.",
+ rule:"<strong>Modification de débit significative = avis médical obligatoire.</strong>",xp:20},
+
+{cat:"Piège — Réutilisation tubulure",
+ q:"Vous reposez une VVP après que la première a infiltré. Pouvez-vous garder la même tubulure déjà en place ?",
+ choices:["Oui — la tubulure n'est pas contaminée si la poche n'a pas changé","Oui si elle a été changée il y a moins de 24h","Non — tout changement de cathéter implique un changement de tubulure","Oui si vous désinfectez l'embout avant connexion"],
+ correct:2,
+ exp_ok:"Un changement de cathéter impose un changement de tubulure. Réutiliser une tubulure sur un nouveau cathéter crée un risque de contamination et ne respecte pas les bonnes pratiques d'asepsie.",
+ exp_err:"Désinfecter l'embout ne suffit pas — toute la tubulure peut être colonisée. Le changement complet est la règle.",
+ rule:"<strong>Nouveau cathéter = nouvelle tubulure. Toujours.</strong>",xp:20},
+
+{cat:"Piège — Identité",
+ q:"Le patient dit spontanément son nom et sa date de naissance avant que vous le demandiez. Vous confirmez et commencez le soin. C'est ?",
+ choices:["Correct — il a lui-même décliné son identité de façon active","Correct — la vérification est plus fiable quand c'est spontané","Insuffisant — vous devez quand même lui demander activement et croiser avec les étiquettes","Acceptable car c'est plus naturel et moins anxiogène"],
+ correct:2,
+ exp_ok:"Même si le patient parle spontanément, vous devez lui demander activement son identité et la croiser avec les étiquettes. Il peut avoir entendu le nom d'un autre patient ou être confus.",
+ exp_err:"La spontanéité du patient ne remplace pas la procédure. Un patient peut citer le mauvais nom sans s'en rendre compte (confusion, anxiété, voisin de chambre).",
+ rule:"<strong>Demander activement + croiser avec étiquettes. Même si le patient parle en premier.</strong>",xp:20},
+
+{cat:"Piège — Pansement",
+ q:"Le pansement transparent commence à se décoller sur les bords mais le centre est encore collé. Vous attendez le prochain passage pour le changer. C'est ?",
+ choices:["Acceptable — tant que le centre tient, le cathéter est protégé","Acceptable si vous collez les bords avec du sparadrap provisoirement","Incorrect — un pansement décollé doit être changé immédiatement pour éviter le risque infectieux","Acceptable pour 2-3h maximum jusqu'à la prochaine tournée"],
+ correct:2,
+ exp_ok:"Un pansement décollé, même partiellement, ne protège plus le site d'insertion. Il doit être changé immédiatement avec une nouvelle asepsie complète.",
+ exp_err:"Les bords décollés permettent aux bactéries de migrer sous le pansement. Attendre, même 2-3h, expose à une contamination du site.",
+ rule:"<strong>Pansement décollé = changement immédiat avec nouvelle asepsie.</strong>",xp:20}
+];
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn', questions=[], qi=0;
+let xp=0, streak=0, bestStreak=0, correct=0, wrong=0, lives=3;
+let timerInterval=null, timeLeft=30, totalTime=0, answered=false;
+let catScores={}, errors=[], score=100;
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel'); mode=m;
+}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;
+  if(mode==='learn'){
+    questions=[...STEPS];
+    document.getElementById('tb-mode').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='exam'){
+    questions=[...Q_EXAM].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='📝 Examen';
+    document.getElementById('lives-pill').style.display='none';
+  } else {
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  }
+  showScreen('s-quiz');
+  loadQ();
+}
+
+/* ══════════════════════════════════════════════════
+   QUIZ ENGINE
+══════════════════════════════════════════════════ */
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi]; answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn').classList.remove('show');
+
+  if(mode==='learn') loadStep(q);
+  else loadStdQ(q);
+  startTimer();
+}
+
+function loadStep(step){
+  // Carte contexte bleue avec l'étape
+  const ctx=document.getElementById('ctx-box');
+  ctx.style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon;
+  document.getElementById('ctx-sub').textContent=`Étape ${step.num} sur ${questions.length}`;
+  document.getElementById('ctx-title').textContent=step.title;
+  document.getElementById('ctx-body').innerHTML=
+    `${step.what}<br><span style="display:block;margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);font-style:normal">⚠️ ${step.why}</span>`;
+
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg?`<div class="q-illus">${step.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=
+    `<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:8px">✅ Question de validation :</span>${step.q}`;
+
+  const ch=document.getElementById('choices'); ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step); ch.appendChild(b);
+  });
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};
+  catScores[step.cat].t++;
+
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===questions.length-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${questions.length}`;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return; answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=8*(streak>=3?2:1);xp+=e;catScores[step.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>Règle :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`Bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>Règle :</strong> ${step.rule}`);
+  }
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function loadStdQ(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML='';
+  document.getElementById('q-text').innerHTML=q.q;
+  const ch=document.getElementById('choices'); ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button'); b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q); ch.appendChild(b);
+  });
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};
+  catScores[q.cat].t++;
+  document.getElementById('next-btn').textContent='Suivant →';
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return; answered=true; clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+    if(mode==='learn')showExp('ok','✅','Bonne réponse !',q.exp_ok,q.rule);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),correct:q.choices[q.correct]});
+    if(mode==='survival'){
+      lives--;document.getElementById('lives-n').textContent=lives;
+      if(lives<=0){updateUI();setTimeout(showResult,1400);return;}
+    }
+    if(mode==='learn')showExp('err','❌','Erreur',q.exp_err,q.rule);
+  }
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');
+  eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='exam')dur=30;
+  else if(mode==='survival')dur=25;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;
+  document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--teal)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=8){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{
+          b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');
+        });
+        updateUI();document.getElementById('next-btn').classList.add('show');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:62px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+/* ══════════════════════════════════════════════════
+   RESULT
+══════════════════════════════════════════════════ */
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={learn:'📚 Apprentissage — 15 étapes dans l\'ordre',exam:'📝 Examen — Questions sur le protocole',survival:'💀 Survie — Questions pièges'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#f0fdfa',tc:'#0891b2',brd:'#99f6e4'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'}
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+
+  // Breakdown
+  const bd=document.getElementById('bd-items'); bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+
+  // Erreurs
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,5).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--text3)">→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+
+  // Conseils
+  const cons=[];
+  if(mode==='learn'&&note>=16)cons.push("📝 Protocole bien assimilé. Passez au mode Examen pour tester vos connaissances sans aide.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Excellent résultat. Affrontez le mode Survie — les questions pièges n'ont rien à voir avec l'examen.");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise experte de la VVP. Passez au prochain protocole NurseSimPro.");
+  if(note<10)cons.push("📚 Recommencez par le mode Apprentissage pour revoir les 15 étapes dans l'ordre avec toutes les explications cliniques.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'à 18/20 pour confirmer la maîtrise complète. Concentrez-vous sur vos catégories faibles.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=0.6)return;
+    if(cat.includes('Ponction'))cons.push("💉 Revoir la séquence après le flashback : abaisser l'angle → avancer 2-3mm → glisser le cathéter → comprimer → DASRI.");
+    if(cat.includes('Asepsie'))cons.push("🧴 La désinfection est invalidée par tout contact post-antisepsie. Séchage spontané obligatoire.");
+    if(cat.includes('Surveillance')||cat.includes('Complic'))cons.push("👁️ Phlébite et extravasation = retrait immédiat. Cathéter bouché = jamais forcer.");
+    if(cat.includes('Durée')||cat.includes('Traç'))cons.push("📝 Cathéter max 72-96h + date+calibre+initiales sur pansement = traçabilité obligatoire.");
+    if(cat.includes('Purge'))cons.push("🔄 Zéro bulle visible avant connexion = règle absolue. Tapoter pour faire remonter, repurger.");
+  });
+  if(!cons.length)cons.push("🎯 Excellent sur tous les axes. Niveau professionnel atteint sur ce protocole.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

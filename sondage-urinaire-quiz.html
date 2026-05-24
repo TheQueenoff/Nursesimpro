@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Sondage urinaire femme</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --bl:#0369a1;--bl-d:#0c4a6e;--bl-l:#f0f9ff;--bl-m:#bae6fd;
+  --teal:#0891b2;--teal-l:#ecfeff;--teal-m:#a5f3fc;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;--amber:#92400e;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes checkIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:var(--bl-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--bl-d)}
+.logo-sub{font-size:11px;color:var(--text3)}
+.top-badge{background:var(--bl-l);color:var(--bl);border:1px solid var(--bl-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+
+/* WELCOME */
+#s-welcome{background:var(--bg)}
+.w-body{max-width:800px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:22px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:42px;flex-shrink:0}
+.w-hero-title{font-size:22px;font-weight:800;color:var(--bl-d);margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+.critical-alert{background:linear-gradient(135deg,#fef2f2,#fff5f5);border:2px solid var(--red-m);border-radius:14px;padding:16px 18px;margin-bottom:22px}
+.ca-row{display:flex;align-items:flex-start;gap:12px}
+.ca-icon{font-size:22px;flex-shrink:0}
+.ca-title{font-size:13px;font-weight:800;color:var(--red);margin-bottom:6px}
+.ca-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.ca-list li{font-size:12px;color:#991b1b;display:flex;align-items:flex-start;gap:7px;line-height:1.55}
+.ca-list li::before{content:'⚠️';flex-shrink:0;font-size:11px;margin-top:1px}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--bl-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:600px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--bl));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mc,var(--bl));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{border-color:var(--mc,var(--bl));background:var(--mb,var(--bl-l))}
+.mc-icon{font-size:26px;margin-bottom:10px;display:block}.mc-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mc-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mc-list{list-style:none;margin-top:8px}
+.mc-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mc-list li::before{content:'✓';color:var(--mc,var(--bl));font-weight:700;flex-shrink:0}
+.launch-btn{width:100%;padding:16px;background:var(--bl-d);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(12,74,110,0.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--bl);transform:translateY(-2px)}
+
+/* FICHE PROTOCOLE */
+#s-fiche{background:var(--bg)}
+.fiche-body{max-width:820px;margin:0 auto;padding:24px 20px 48px;animation:fadeUp 0.4s ease}
+.fiche-header{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:18px 22px;margin-bottom:18px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.fiche-title{font-size:18px;font-weight:800;color:var(--bl-d)}
+.fiche-sub{font-size:11px;color:var(--text3);margin-top:3px}
+.fiche-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.ftab{padding:7px 13px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.18s}
+.ftab:hover{border-color:var(--bl);color:var(--bl)}
+.ftab.active{background:var(--bl-d);border-color:var(--bl-d);color:white}
+.fiche-sec{display:none}.fiche-sec.active{display:block;animation:fadeUp 0.2s ease}
+.fs-title{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--bl);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.fs-title::after{content:'';flex:1;height:1px;background:var(--bl-m)}
+
+/* Matériel cards */
+.mat-section-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;margin-top:14px;padding:4px 10px;border-radius:6px;display:inline-block}
+.mat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:500px){.mat-grid{grid-template-columns:1fr}}
+.mat-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5;box-shadow:var(--shadow)}
+.mat-ico{font-size:16px;flex-shrink:0}
+.mat-item.crit{background:var(--red-l);border-color:var(--red-m)}.mat-item.crit .mat-txt{color:#991b1b}
+.mat-item.warn{background:var(--orange-l);border-color:var(--orange-m)}.mat-item.warn .mat-txt{color:var(--amber)}
+.mat-item.ok{background:var(--green-l);border-color:var(--green-m)}
+
+/* Protocol steps */
+.proto-phase{margin-bottom:6px;margin-top:18px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:6px 12px;border-radius:8px;display:flex;align-items:center;gap:8px}
+.step-card{background:var(--white);border:1px solid var(--border);border-radius:13px;overflow:hidden;box-shadow:var(--shadow);margin-bottom:8px}
+.step-card.crit{border-color:var(--red-m);border-width:2px}
+.step-card.att{border-color:var(--orange-m);border-width:1.5px}
+.step-hdr{display:flex;align-items:center;gap:12px;padding:11px 16px;cursor:pointer;user-select:none;transition:background 0.15s}
+.step-hdr:hover{background:var(--bg)}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--bl-d);color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-card.crit .step-num{background:var(--red)}
+.step-card.att .step-num{background:var(--orange)}
+.step-info{flex:1}
+.step-title{font-size:13px;font-weight:700;color:var(--text)}
+.step-tags{display:flex;gap:4px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;align-items:center;border-radius:20px;padding:1px 7px;font-size:9px;font-weight:700;border:1px solid}
+.stag-crit{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.stag-ster{background:var(--bl-l);border-color:var(--bl-m);color:var(--bl)}
+.stag-hyg{background:var(--green-l);border-color:var(--green-m);color:var(--green)}
+.stag-att{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.step-chev{font-size:10px;color:var(--text3);transition:transform 0.2s;flex-shrink:0}
+.step-card.open .step-chev{transform:rotate(180deg)}
+.step-body{display:none;padding:0 16px 14px 54px}
+.step-card.open .step-body{display:block;animation:fadeUp 0.2s ease}
+.step-geste{font-size:12.5px;color:var(--text2);line-height:1.75;margin-bottom:10px}
+.step-2col{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+@media(max-width:480px){.step-2col{grid-template-columns:1fr}}
+.step-why{background:var(--purple-l);border-left:3px solid var(--purple);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:#4c1d95;line-height:1.6}
+.step-rule{background:var(--orange-l);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:9px 12px;font-size:12px;color:var(--amber);line-height:1.6}
+.step-conseil{background:var(--bl-l);border:1px solid var(--bl-m);border-radius:8px;padding:8px 12px;font-size:11.5px;color:var(--bl-d);line-height:1.55;margin-top:7px}
+.step-erreur{background:var(--red-l);border:1.5px solid var(--red-m);border-radius:8px;padding:8px 12px;font-size:11.5px;color:#991b1b;line-height:1.55;margin-top:7px}
+
+/* Complications */
+.compl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.compl-grid{grid-template-columns:1fr}}
+.compl-card{padding:13px 14px;border-radius:12px;font-size:12px;line-height:1.65}
+.compl-card .cc-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.cc-danger{background:var(--red-l);border:1px solid var(--red-m)}.cc-danger .cc-title{color:var(--red)}
+.cc-warn{background:var(--orange-l);border:1px solid var(--orange-m)}.cc-warn .cc-title{color:var(--orange)}
+.cc-info{background:var(--bl-l);border:1px solid var(--bl-m)}.cc-info .cc-title{color:var(--bl)}
+
+/* QUIZ */
+#s-quiz{background:var(--bg)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;background:var(--bl-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--bl-d)}
+.tb-mode{background:var(--bl-l);color:var(--bl);border:1px solid var(--bl-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--bl),var(--teal));transition:width 0.55s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--bl-l);border-color:var(--bl-m);color:var(--bl)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--bl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text)}.t-num.warn{color:var(--red)}
+#quiz-body{flex:1;padding:18px;max-width:700px;width:100%;margin:0 auto}
+.ctx-card{background:linear-gradient(135deg,var(--bl-d),var(--bl));border-radius:16px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;animation:fadeUp 0.3s ease;color:white;box-shadow:0 4px 20px rgba(12,74,110,0.28)}
+.ctx-ico-box{font-size:26px;flex-shrink:0;background:rgba(255,255,255,0.12);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:3px}
+.ctx-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.ctx-body{font-size:12.5px;color:rgba(255,255,255,0.85);line-height:1.65;font-family:'Lora',serif;font-style:italic}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--bl-l);border:1px solid var(--bl-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.qcp-dot{width:6px;height:6px;border-radius:50%;background:var(--bl)}
+.qcp-txt{font-size:10px;font-weight:700;color:var(--bl);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}.q-text strong{color:var(--bl-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all 0.16s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--bl);background:var(--bl-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.3s ease;border:1.5px solid}
+.exp-box.show{display:block}.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:10px;background:var(--white);border-left:3px solid var(--bl);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}.exp-rule strong{color:var(--bl-d)}
+.next-btn{width:100%;padding:13px;background:var(--bl-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(12,74,110,0.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--bl)}
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* RESULT */
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--bl),var(--teal))}
+.res-grade{font-size:52px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:52px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:14px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:10px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:3px}.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:14px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:10px}
+.error-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--bl-l);border:1px solid var(--bl-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--bl);font-weight:700;margin-bottom:10px}
+.conseil-item{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:7px;padding-left:4px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--bl-d);color:white;box-shadow:0 2px 10px rgba(12,74,110,0.3)}.rb.p:hover{background:var(--bl)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--bl-m)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row"><div class="logo-box">🫧</div><div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div></div>
+    <div class="top-badge">🫧 Sondage urinaire — Femme</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🫧</div>
+      <div>
+        <div class="w-hero-title">Sondage urinaire chez la femme</div>
+        <div class="w-hero-desc">Premier soin causant des infections nosocomiales (30-50 % des IAS). Maîtrisez l'asepsie en 4 temps, la technique d'antisepsie grande lèvre → petite lèvre → méat, le système clos et la surveillance du dispositif. Sources : SF2H 2015, CPias Grand Est 2022, SFHH.</div>
+      </div>
+    </div>
+    <div class="critical-alert">
+      <div class="ca-row">
+        <div class="ca-icon">🚨</div>
+        <div>
+          <div class="ca-title">Règles absolues — erreur = faute grave à l'IFSI</div>
+          <ul class="ca-list">
+            <li><strong>Chlorhexidine INTERDITE sur muqueuses</strong> — utiliser uniquement PVPI dermique (Bétadine® dermique) ou Dakin® pour l'antisepsie. La chlorhexidine est réservée à la peau saine.</li>
+            <li><strong>Antisepsie en 4 temps obligatoire</strong> : Détersion → Rinçage eau stérile → Séchage → Antiseptique. Dans l'ordre. Sans sauter d'étape.</li>
+            <li><strong>Ordre d'antisepsie femme</strong> : grandes lèvres → petites lèvres → méat urinaire. Jamais l'inverse. Une compresse différente à chaque zone.</li>
+            <li><strong>Gants stériles obligatoires</strong> pour la pose de la sonde. Ce n'est pas un soin propre.</li>
+            <li><strong>Système clos — jamais déconnecter</strong> la sonde du sac collecteur. Rupture du système clos = risque infectieux majeur.</li>
+            <li><strong>Ballonnet à l'eau stérile UNIQUEMENT</strong> — jamais au sérum physiologique (cristallisation du ballonnet, ablation impossible).</li>
+            <li><strong>Si vagin cathétérisé par erreur</strong> : laisser la sonde en place comme repère visuel, utiliser une NOUVELLE sonde stérile pour le méat, puis retirer la première sonde.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">18</div><div class="ws-lbl">Étapes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Temps antisepsie</div></div>
+      <div class="ws-item"><div class="ws-val">CH 14-18</div><div class="ws-lbl">Calibre femme</div></div>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card" style="--mc:#0c4a6e;--mb:#f0f9ff" onclick="selectMode('fiche',this)">
+        <span class="mc-icon">📖</span><span class="mc-name">Fiche Protocole</span>
+        <div class="mc-diff" style="background:#f0f9ff;border-color:#bae6fd;color:#0369a1">📋 Référence</div>
+        <div class="mc-desc">Protocole complet : matériel, 18 étapes détaillées avec pourquoi, antisepsie 4 temps, complications et surveillance. À lire avant tout soin.</div>
+        <ul class="mc-list" style="--mc:#0c4a6e"><li>Matériel complet listé</li><li>18 étapes avec explications cliniques</li><li>Complications et surveillance</li><li>Mémo récapitulatif</li></ul>
+      </button>
+      <button class="mode-card sel" style="--mc:#0369a1;--mb:#f0f9ff" onclick="selectMode('learn',this)">
+        <span class="mc-icon">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-diff" style="background:#f0f9ff;border-color:#bae6fd;color:#0369a1">⭐ Débutant</div>
+        <div class="mc-desc">Les 18 étapes dans l'ordre. Antisepsie 4 temps, technique de pose, système clos, surveillance. Question de validation à chaque étape.</div>
+        <ul class="mc-list" style="--mc:#0369a1"><li>Protocole dans l'ordre</li><li>Antisepsie 4 temps détaillée</li><li>Question de validation par étape</li><li>Pas de chronomètre</li></ul>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mc-icon">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">Questions directes sur le protocole. Matériel, antisepsie, technique, système clos, complications, surveillance. Chrono 30s.</div>
+        <ul class="mc-list" style="--mc:#d97706"><li>Questions sur tout le protocole</li><li>Chrono 30 secondes</li><li>Rapport détaillé à la fin</li></ul>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('survival',this)">
+        <span class="mc-icon">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Questions pièges : chlorhexidine sur muqueuse, ordre d'antisepsie inversé, sérum physio dans le ballonnet, rupture du système clos. 3 vies. Chrono 25s.</div>
+        <ul class="mc-list" style="--mc:#7c3aed"><li>Erreurs cliniques graves déguisées</li><li>3 vies · Chrono 25s</li><li>Rapport détaillé</li></ul>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()"><span>Commencer →</span></button>
+  </div>
+</div>
+
+<!-- FICHE PROTOCOLE -->
+<div class="screen" id="s-fiche">
+  <div class="top-header">
+    <div class="logo-row"><div class="logo-box">📖</div><div><div class="logo-name">Fiche Protocole — Sondage urinaire femme</div><div class="logo-sub">Sources : SF2H 2015, CPias Grand Est 2022, CPIAS Auvergne, HAD France</div></div></div>
+    <button onclick="goWelcome()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:white;cursor:pointer;font-size:11px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2)">← Retour</button>
+  </div>
+  <div class="fiche-body">
+    <div class="fiche-header">
+      <div><div class="fiche-title">Sondage urinaire à demeure — Femme adulte</div><div class="fiche-sub">Soin stérile sur prescription médicale — Prévention des IUAS prioritaire</div></div>
+      <div class="fiche-tabs">
+        <button class="ftab active" onclick="showFicheTab('ft-mat',this)">🧰 Matériel</button>
+        <button class="ftab" onclick="showFicheTab('ft-proto',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFicheTab('ft-antisepsie',this)">🧴 Antisepsie</button>
+        <button class="ftab" onclick="showFicheTab('ft-compl',this)">⚠️ Complications</button>
+        <button class="ftab" onclick="showFicheTab('ft-memo',this)">🧠 Mémo</button>
+      </div>
+    </div>
+
+    <!-- MATÉRIEL -->
+    <div class="fiche-sec active" id="ft-mat">
+      <div class="fs-title">🧰 Matériel complet</div>
+      <div style="color:#0c4a6e;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:4px 10px;background:#e0f2fe;border-radius:6px;display:inline-block">👷 EPI Infirmier(e)</div>
+      <div class="mat-grid" style="margin-bottom:16px">
+        <div class="mat-item crit"><div class="mat-ico">😷</div><div class="mat-txt"><strong>Masque chirurgical</strong> — obligatoire pendant tout le soin. Protection contre les projections d'urines.</div></div>
+        <div class="mat-item crit"><div class="mat-ico">🧢</div><div class="mat-txt"><strong>Charlotte / calot</strong> — obligatoire. Évite la chute de cheveux sur le champ stérile.</div></div>
+        <div class="mat-item warn"><div class="mat-ico">🥼</div><div class="mat-txt"><strong>Surblouse / tablier à usage unique</strong> — selon protocole institutionnel. Recommandé si risque de projections.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧤</div><div class="mat-txt"><strong>Gants non stériles</strong> — pour la toilette du périnée (phase préparatoire). Retirer avant le soin stérile.</div></div>
+        <div class="mat-item crit"><div class="mat-ico">🧤</div><div class="mat-txt"><strong>Gants stériles</strong> — obligatoires pour la pose de la sonde. Ce n'est pas un soin propre.</div></div>
+      </div>
+
+      <div style="color:#059669;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:4px 10px;background:#d1fae5;border-radius:6px;display:inline-block">🫧 Matériel stérile</div>
+      <div class="mat-grid" style="margin-bottom:16px">
+        <div class="mat-item crit"><div class="mat-ico">🫧</div><div class="mat-txt"><strong>Sonde de Foley CH 14-16</strong> (sondage à demeure femme adulte), en silicone pur (max 2 mois) ou latex siliconé (max 15 jours). Choisir le <strong>plus petit calibre efficace</strong>. Sonde 2 voies pour SAD, 3 voies si lavage vésical.</div></div>
+        <div class="mat-item crit"><div class="mat-ico">🛍️</div><div class="mat-txt"><strong>Sac collecteur stérile en système clos</strong> — pré-connecté à la sonde si possible. Ne JAMAIS déconnecter après pose.</div></div>
+        <div class="mat-item crit"><div class="mat-ico">💉</div><div class="mat-txt"><strong>Seringue 10 mL + eau stérile</strong> — pour gonfler le ballonnet. JAMAIS sérum physiologique (cristallisation).</div></div>
+        <div class="mat-item"><div class="mat-ico">🏕️</div><div class="mat-txt"><strong>2 champs stériles</strong> : 1 grand champ de table + 1 champ fenestré (posé sur la patiente autour de la vulve).</div></div>
+        <div class="mat-item"><div class="mat-ico">🪗</div><div class="mat-txt"><strong>Compresses stériles</strong> (nombreuses) — pour détersion, rinçage, séchage, antisepsie (1 compresse = 1 passage = 1 zone).</div></div>
+        <div class="mat-item warn"><div class="mat-ico">🧴</div><div class="mat-txt"><strong>Lubrifiant stérile en unidose</strong> — gel lubrifiant pour faciliter le passage de la sonde. Si gel anesthésiant (Xylocaïne® gel) : sur prescription médicale, laisser agir 5 minutes.</div></div>
+        <div class="mat-item"><div class="mat-ico">🔗</div><div class="mat-txt"><strong>Système de fixation de sonde</strong> — Sécurfix® ou equivalent, à fixer sur la cuisse pour éviter les tractions.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧴</div><div class="mat-txt"><strong>SHA (solution hydroalcoolique)</strong> — plusieurs frictions nécessaires à des étapes précises.</div></div>
+      </div>
+
+      <div style="color:#d97706;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;padding:4px 10px;background:#fef3c7;border-radius:6px;display:inline-block">🧴 Produits antiseptiques — ATTENTION</div>
+      <div class="mat-grid">
+        <div class="mat-item ok"><div class="mat-ico">✅</div><div class="mat-txt"><strong>PVPI dermique (Bétadine® dermique)</strong> — antiseptique de référence pour les muqueuses. Dilué si besoin selon protocole.</div></div>
+        <div class="mat-item ok"><div class="mat-ico">✅</div><div class="mat-txt"><strong>Dakin® (hypochlorite de sodium)</strong> — alternative acceptée sur muqueuses si allergie PVPI.</div></div>
+        <div class="mat-item crit"><div class="mat-ico">❌</div><div class="mat-txt"><strong>Chlorhexidine — INTERDITE sur muqueuses</strong>. Réservée à la peau saine uniquement. Source : SF2H, CPias Grand Est 2022.</div></div>
+        <div class="mat-item"><div class="mat-ico">💧</div><div class="mat-txt"><strong>Savon doux liquide pH neutre</strong> — pour la détersion du périnée (phase 1 de l'antisepsie 4 temps). + eau stérile pour le rinçage.</div></div>
+      </div>
+    </div>
+
+    <!-- PROTOCOLE -->
+    <div class="fiche-sec" id="ft-proto">
+      <div class="fs-title">📋 Protocole — 18 étapes dans l'ordre</div>
+      <div id="proto-steps"></div>
+    </div>
+
+    <!-- ANTISEPSIE -->
+    <div class="fiche-sec" id="ft-antisepsie">
+      <div class="fs-title">🧴 Antisepsie du périnée — Les 4 temps</div>
+      <div style="background:var(--white);border:2px solid var(--bl-m);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)">
+        <div style="font-size:12px;font-weight:800;color:var(--bl-d);margin-bottom:14px;text-transform:uppercase;letter-spacing:1px">⚡ Règle absolue : les 4 temps, dans l'ordre, sans exception</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+          <div style="background:#fef2f2;border:1.5px solid #fca5a5;border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">1️⃣</div><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">DÉTERSION</div><div style="font-size:10px;color:#991b1b;line-height:1.5">Savon doux liquide + compresses stériles<br>Grande lèvre → petite lèvre → méat<br>1 compresse par zone</div></div>
+          <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">2️⃣</div><div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:4px">RINÇAGE</div><div style="font-size:10px;color:var(--blue-d);line-height:1.5">Eau stérile + compresses stériles<br>Même ordre<br>1 compresse par zone</div></div>
+          <div style="background:#ecfdf5;border:1.5px solid #6ee7b7;border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">3️⃣</div><div style="font-size:11px;font-weight:800;color:var(--green);margin-bottom:4px">SÉCHAGE</div><div style="font-size:10px;color:#065f46;line-height:1.5">Compresses stériles sèches<br>Même ordre<br>Tamponner, ne pas frotter</div></div>
+          <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:12px;text-align:center"><div style="font-size:20px;margin-bottom:6px">4️⃣</div><div style="font-size:11px;font-weight:800;color:var(--orange);margin-bottom:4px">ANTISEPTIQUE</div><div style="font-size:10px;color:var(--amber);line-height:1.5">PVPI dermique ou Dakin®<br>Même ordre<br><strong>≠ Chlorhexidine !</strong></div></div>
+        </div>
+        <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:12px;font-size:12px;color:#991b1b;line-height:1.6">
+          ⚠️ <strong>Ordre de passage pour la femme :</strong> de l'extérieur vers l'intérieur, <strong>des grandes lèvres vers le méat urinaire</strong>. Toujours propre vers sale. Une compresse différente à chaque zone. Ne jamais repasser sur une zone déjà nettoyée avec la même compresse.
+        </div>
+      </div>
+
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:800;color:var(--bl-d);margin-bottom:10px">🔬 Pourquoi ces 4 temps et pas juste l'antiseptique seul ?</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+          <strong>1. Détersion :</strong> élimine les matières organiques (urines, sécrétions, fèces). Un antiseptique posé sur des matières organiques voit son efficacité réduite de 50 à 90%.<br>
+          <strong>2. Rinçage :</strong> élimine le savon qui neutraliserait l'antiseptique. L'eau stérile est préférable à l'eau du robinet sur muqueuse.<br>
+          <strong>3. Séchage :</strong> évite la dilution de l'antiseptique. Un antiseptique dilué par l'humidité résiduelle est moins efficace.<br>
+          <strong>4. Antiseptique :</strong> agit sur une surface propre, sèche, pour une efficacité maximale.
+        </div>
+      </div>
+      <div style="background:#fef2f2;border:2px solid #fca5a5;border-radius:12px;padding:14px;font-size:12.5px;color:#991b1b;line-height:1.7">
+        🚫 <strong>Chlorhexidine sur muqueuses = FORMELLEMENT INTERDITE.</strong> La chlorhexidine est cytotoxique pour les muqueuses et peut provoquer des lésions urothéliales. Elle est réservée à la peau saine. Sur muqueuses : utiliser PVPI dermique (Bétadine® dermique) ou Dakin®. Cette règle est explicitement mentionnée dans les 10 points essentiels du sondage urinaire (CPias Grand Est 2022).
+      </div>
+    </div>
+
+    <!-- COMPLICATIONS -->
+    <div class="fiche-sec" id="ft-compl">
+      <div class="fs-title">⚠️ Complications du sondage urinaire</div>
+      <div class="compl-grid">
+        <div class="compl-card cc-danger"><div class="cc-title">🚨 IUAS — Infection urinaire associée aux soins</div>Complication la plus fréquente — 1ère cause d'IAS (30-50%). Fièvre, urines troubles/malodorantes, douleur sus-pubienne.<br><strong>Prévention :</strong> asepsie stricte, système clos maintenu, durée minimale, toilette quotidienne. Ne PAS traiter une bactériurie asymptomatique (sauf grossesse ou chirurgie urologique).</div>
+        <div class="compl-card cc-danger"><div class="cc-title">🚨 Rupture du système clos</div>Tout débranchement de la sonde du sac collecteur rompt le système clos et multiplie le risque infectieux. Ne jamais déconnecter pour vider le sac (utiliser le robinet de vidange).<br><strong>Conduite à tenir :</strong> changer l'ensemble sonde + sac en stérile si rupture avérée.</div>
+        <div class="compl-card cc-warn"><div class="cc-title">⚠️ Cathétérisme vaginal accidentel</div>Erreur fréquente chez la femme — méat urinaire et orifice vaginal proches. Urines n'apparaissent pas dans la sonde.<br><strong>Conduite :</strong> LAISSER la sonde en place (repère visuel), prendre une NOUVELLE sonde stérile pour le méat, puis retirer la première sonde.</div>
+        <div class="compl-card cc-warn"><div class="cc-title">⚠️ Obstruction de la sonde</div>Absence d'urines dans le collecteur malgré une diurèse normale. Causes : coudure, prise en écharpe, dépôts calcaires, caillots.<br><strong>Conduite :</strong> vérifier l'absence de coudure, vérifier que le collecteur est en déclive. En cas de persistance : signaler au médecin. Ne pas irriguer sans prescription.</div>
+        <div class="compl-card cc-warn"><div class="cc-title">⚠️ Traumatisme urétral</div>Douleur vive à l'introduction, faux trajet, hématurie au retrait. Souvent lié à un gonflement du ballonnet avant confirmation de la position vésicale.<br><strong>Prévention :</strong> ne gonfler le ballonnet QUE si les urines s'écoulent librement. Jamais forcer.</div>
+        <div class="compl-card cc-info"><div class="cc-title">ℹ️ Fuites péri-sonde</div>Écoulement d'urines autour de la sonde malgré le ballonnet. Causes : ballonnet insuffisamment gonflé, sonde trop petite, fuites en cas de spasmes vésicaux.<br><strong>Conduite :</strong> ne pas changer pour une sonde de plus gros calibre (aggrave les spasmes). Contacter le médecin.</div>
+        <div class="compl-card cc-info"><div class="cc-title">ℹ️ Surveillance de la diurèse</div>Diurèse normale : 0,5 à 1 mL/kg/h. Signaler au médecin si diurèse &lt; 500 mL/24h (oligurie) ou &gt; 3 L/24h (polyurie). Urines normales : claires, jaune pâle, sans trouble ni odeur forte.</div>
+      </div>
+    </div>
+
+    <!-- MÉMO -->
+    <div class="fiche-sec" id="ft-memo">
+      <div class="fs-title">🧠 Mémo rapide</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:var(--red-l);border:2px solid var(--red-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#991b1b;line-height:1.75">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--red)">🚨 7 règles absolues — une erreur = 0 à l'IFSI</div>
+          • <strong>Chlorhexidine INTERDITE sur muqueuses</strong> — PVPI dermique ou Dakin® uniquement<br>
+          • <strong>Antisepsie en 4 temps</strong> : Détersion → Rinçage → Séchage → Antiseptique<br>
+          • <strong>Ordre femme</strong> : grandes lèvres → petites lèvres → méat. 1 compresse = 1 zone<br>
+          • <strong>Gants stériles</strong> pour la pose — soin stérile, pas propre<br>
+          • <strong>Système clos</strong> — ne JAMAIS déconnecter sonde du collecteur<br>
+          • <strong>Ballonnet</strong> : eau stérile uniquement. Gonfler SEULEMENT si les urines s'écoulent<br>
+          • <strong>Cathétérisme vaginal</strong> : laisser la sonde, prendre une nouvelle sonde, puis retirer
+        </div>
+        <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#0c4a6e;line-height:1.75">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--bl)">📋 Ordre des SHA dans le protocole</div>
+          ① Après désinfection du plan de travail (gants non stériles)<br>
+          ② Après toilette du périnée (retrait des gants non stériles)<br>
+          ③ Avant la pose des gants stériles<br>
+          ④ Après retrait des gants stériles en fin de soin<br>
+          ⑤ Fin de soin après élimination des déchets
+        </div>
+        <div style="background:var(--orange-l);border:1px solid var(--orange-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--amber);line-height:1.75">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--orange)">⏱️ Durées et calibres à retenir</div>
+          • Sonde latex siliconée : <strong>maximum 15 jours</strong><br>
+          • Sonde silicone pur : <strong>jusqu'à 2 mois</strong><br>
+          • Calibre femme adulte : <strong>CH 14-16</strong> (14-18 selon indication)<br>
+          • Volume ballonnet : <strong>10 mL eau stérile</strong> (vérifier sur l'emballage de la sonde)<br>
+          • Urètre féminin : <strong>3-5 cm</strong> — sonde à introduire sur 5-8 cm
+        </div>
+        <div style="background:var(--green-l);border:1px solid var(--green-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#065f46;line-height:1.75">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--green)">✅ Surveillance quotidienne obligatoire</div>
+          • Toilette génitale au <strong>savon doux liquide</strong> — au minimum 1 fois/jour et après chaque selle<br>
+          • Collecteur en <strong>déclive permanente</strong>, jamais au sol, jamais au-dessus de la vessie<br>
+          • Vérifier la <strong>fixation sur la cuisse</strong> (éviter les tractions)<br>
+          • Observer les urines : aspect, couleur, quantité<br>
+          • Pas de BU chez une patiente sondée — ECBU uniquement si signes cliniques d'IUAS<br>
+          • Réévaluer <strong>chaque jour</strong> la nécessité de maintien de la sonde
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🫧</div><span class="tb-logo-text">Sondage urinaire</span></div>
+    <div class="tb-mode" id="tb-mode">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">Étape 1/18</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36"><circle class="t-bg" cx="18" cy="18" r="14"/><circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="t-num" id="t-num">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="quiz-body">
+    <div class="ctx-card" id="ctx-box" style="display:none">
+      <div class="ctx-ico-box" id="ctx-ico">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctx-sub">Étape</div>
+        <div class="ctx-title" id="ctx-title"></div>
+        <div class="ctx-body" id="ctx-body"></div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row"><div class="logo-box">🫧</div><div><div class="logo-name">Rapport — Sondage urinaire femme</div></div></div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--bl)">0s</div><div class="rs-lbl">Tps / Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-score" style="color:var(--bl-d)">0</div><div class="rs-lbl">Score</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Points à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils personnalisés</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DONNÉES PROTOCOLE — 18 étapes
+   Sources : SF2H 2015, CPias Grand Est 2022,
+   CPIAS Auvergne, HAD France PTC-026 v4.1,
+   CHU Strasbourg, CHU Caen V2022, CODIMS AP-HP 2009
+══════════════════════════════════════════════════════ */
+const STEPS = [
+{num:1,cat:"Cadre légal & Prescription",icon:"📋",crit:false,att:true,
+ title:"Vérifier la prescription médicale + identité",
+ what:"Le sondage urinaire à demeure est un <strong>soin infirmier sur prescription médicale écrite, datée et signée</strong> (Art. R.4311-7). Vérifiez l'identité de la patiente (nom, prénom, date de naissance). Lisez la prescription : indication, type de sondage (évacuateur ou à demeure), calibre souhaité, gel anesthésiant si prescrit. Vérifiez les <strong>allergies</strong> (latex, PVPI).",
+ why:"Sans prescription médicale, le sondage est interdit. L'allergie au latex impose d'utiliser une sonde en silicone pur. L'allergie au PVPI impose d'utiliser du Dakin® à la place de la Bétadine®.",
+ rule:"Prescription médicale obligatoire. Vérifier identité + allergies (latex, PVPI) avant tout.",
+ q:"Avant de commencer à préparer le matériel, quelle information est prioritaire à vérifier concernant la patiente ?",
+ choices:["Sa diurèse des dernières 24h","La prescription médicale + identité + allergies (latex, PVPI)","Sa taille et son poids pour choisir la sonde","La présence d'un sac collecteur disponible en stock"],
+ correct:1},
+
+{num:2,cat:"Information de la patiente",icon:"💬",crit:false,att:false,
+ title:"Informer la patiente et obtenir son consentement",
+ what:"Présentez-vous. Expliquez à la patiente le soin, son but, son déroulement et les sensations possibles (pression, léger inconfort). <strong>Obtenez son consentement éclairé oral.</strong> Proposez-lui un bassin ou une protection. Vérifiez qu'elle a bien compris. Installez le paravent si chambre partagée. Préservez son intimité tout au long du soin.",
+ why:"Le consentement éclairé est un droit fondamental (Art. L1111-4). Une patiente informée et coopérante rend le soin plus facile et diminue le risque de traumatisme urétral. Le maintien de l'intimité est une obligation déontologique.",
+ rule:"Consentement oral recueilli avant tout soin. Intimité préservée = paravent + porte fermée.",
+ q:"La patiente dit : 'Je ne veux pas de sonde.' Sa vie n'est pas en danger. Que faites-vous ?",
+ choices:["Poser la sonde quand même avec douceur — le médecin a prescrit le soin","Appeler le médecin prescripteur pour l'informer du refus et transcrire le refus dans le dossier","Attendre qu'elle change d'avis et revenir plus tard","Demander à la famille d'autoriser le soin"],
+ correct:1},
+
+{num:3,cat:"Préparation de l'environnement",icon:"🧹",crit:false,att:false,
+ title:"Désinfecter le plan de travail + préparer le DASRI",
+ what:"Enfilez des <strong>gants non stériles</strong>. Désinfectez le plan de travail (norme EN 13697, temps de contact respecté). Retirez les gants non stériles. Mettez en place le sac DASRI à portée de main. Préparez le bassin sous la patiente et une protection de lit. Ajustez l'éclairage — le méat urinaire peut être difficile à visualiser.",
+ why:"Gants non stériles pour la désinfection = protection des mains des produits chimiques. Un plan de travail non désinfecté est une source de contamination pour le matériel stérile. L'éclairage correct est capital pour la femme — le méat peut être très difficile à localiser.",
+ rule:"Gants non stériles pour désinfecter → retirer → DASRI → plan propre. Éclairage adapté.",
+ q:"Quelle est l'une des difficultés spécifiques au sondage chez la femme par rapport à l'homme ?",
+ choices:["La longueur de l'urètre est beaucoup plus grande","La localisation du méat urinaire peut être difficile — il est situé entre le clitoris et le vagin, et varie selon l'anatomie","La sonde doit être plus rigide pour traverser la courbure urétrale","Le ballonnet nécessite plus d'eau stérile"],
+ correct:1},
+
+{num:4,cat:"EPI & SHA",icon:"🤲",title:"Mettre les EPI + SHA initiale",
+ crit:false,att:false,
+ what:"Installez votre tenue complète : <strong>tenue propre + charlotte/calot + masque chirurgical</strong> + surblouse si protocole institutionnel ou risque de projections. Effectuez une <strong>friction SHA</strong>. Ouvrez aseptiquement tous les emballages stériles sans les toucher. Déposez le matériel sur le champ stérile de table.",
+ why:"Charlotte + masque = protection du champ stérile contre les cheveux et les projections buccales. Le masque protège aussi l'IDE des projections d'urines lors du retrait du mandrin ou de la déconnexion. L'ouverture aseptique (tenir le bord externe) maintient la stérilité.",
+ rule:"Charlotte + masque + SHA + ouverture aseptique du matériel. Tout le matériel stérile sur le champ avant de commencer.",
+ q:"Quel EPI est particulièrement important lors d'un sondage urinaire pour protéger l'infirmière des projections d'urines ?",
+ choices:["Les gants stériles uniquement","Le masque chirurgical — les urines peuvent projeter lors du retrait du mandrin ou des manipulations","La charlotte — les cheveux contiennent des bactéries","La surblouse — elle couvre le plus de surface"],
+ correct:1},
+
+{num:5,cat:"Installation de la patiente",icon:"🛋️",title:"Installer la patiente en position gynécologique",
+ crit:false,att:true,
+ what:"Installez la patiente en <strong>décubitus dorsal, genoux fléchis et écartés (position gynécologique)</strong>. Placez une protection sous ses fesses. Découvrez uniquement la zone nécessaire pour préserver l'intimité. Assurez-vous que la patiente est confortablement installée et peut maintenir cette position sans effort. Une lampe d'examen ou une torche est recommandée.",
+ why:"La position gynécologique expose la vulve et le méat urinaire et permet une antisepsie et une ponction correctes. Une patiente peu accessible (obésité, raideur articulaire) peut nécessiter une aide pour maintenir les jambes écartées.",
+ rule:"Décubitus dorsal + genoux fléchis/écartés + protection sous-fessière + éclairage. Préserver l'intimité.",
+ svg:`<svg viewBox="0 0 120 80" width="120" height="80"><rect x="5" y="55" width="110" height="18" rx="6" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/><ellipse cx="60" cy="46" rx="42" ry="12" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><circle cx="60" cy="30" r="16" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M30 55 L18 70" stroke="#e8b890" stroke-width="5" stroke-linecap="round"/><path d="M90 55 L102 70" stroke="#e8b890" stroke-width="5" stroke-linecap="round"/><text x="60" y="76" text-anchor="middle" font-size="7.5" fill="#0369a1" font-family="sans-serif">Genoux fléchis + écartés</text></svg>`,
+ q:"La patiente est obèse et a du mal à maintenir les genoux écartés. Que faites-vous ?",
+ choices:["Reporter le soin jusqu'à ce qu'elle puisse maintenir la position","Poser la sonde en décubitus latéral — c'est équivalent","Demander l'aide d'un(e) collègue pour maintenir les jambes écartées ou utiliser un coussin de positionnement","Poser la sonde dans la position accessible sans soins préparatoires supplémentaires"],
+ correct:2},
+
+{num:6,cat:"Toilette du périnée",icon:"🧼",title:"Toilette du périnée avec gants non stériles",
+ crit:false,att:false,
+ what:"Enfilez les <strong>gants non stériles</strong>. Réalisez la <strong>toilette intime du périnée</strong> avec un savon doux liquide pH neutre et une gant ou compresses. <strong>Direction : de l'avant vers l'arrière</strong> (du méat urinaire vers l'anus). Rincez abondamment. Séchez. Profitez de ce moment pour <strong>repérer visuellement le méat urinaire</strong> par rapport au clitoris, au vagin et à l'anus.",
+ why:"La toilette élimine les souillures macroscopiques et réduit la charge bactérienne avant l'antisepsie. Le repérage du méat à ce stade est précieux — une fois les gants stériles posés, toute hésitation à trouver le méat expose au cathétérisme vaginal accidentel.",
+ rule:"Savon doux, avant-arrière. Repérer visuellement le méat maintenant. Retirer les gants non stériles après.",
+ q:"Lors de la toilette du périnée, dans quel sens progresse-t-on pour ne pas contaminer le méat urinaire par des germes fécaux ?",
+ choices:["De l'arrière vers l'avant — de l'anus vers le méat","De l'avant vers l'arrière — du méat urinaire vers l'anus","Dans n'importe quel sens si la pression est suffisante","De gauche à droite pour couvrir toute la surface"],
+ correct:1},
+
+{num:7,cat:"SHA + Gants stériles",icon:"🤲",title:"SHA + Ouverture champ stérile + Gants stériles",
+ crit:true,att:false,
+ title:"SHA + Champ stérile fenestré + Gants stériles",
+ what:"Retirez les gants non stériles. Effectuez une <strong>friction SHA</strong>. Ouvrez le champ stérile fenestré et posez-le sur la vulve de la patiente sans le contaminer. Enfilez les <strong>gants stériles</strong>. Dès ce moment : ne toucher que du matériel stérile avec vos mains. Le champ fenestré délimite la zone stérile autour du méat.",
+ why:"La friction SHA avant les gants stériles réduit la charge bactérienne sur les mains. Les gants stériles sont obligatoires — la sonde doit rester stérile jusqu'à son introduction dans l'urètre. Le champ fenestré protège le site du contact avec la literie ou la peau environnante.",
+ rule:"Gants non stériles retirés → SHA → champ fenestré posé → gants stériles. Après : ne toucher que le matériel stérile.",
+ q:"Vous êtes en gants stériles et vous réalisez que le champ fenestré s'est décollé. Un collègue propose de le re-coller. Vous ?",
+ choices:["Demandez au collègue de le re-coller — vos gants stériles ne servent qu'à tenir la sonde","Reposez le champ vous-même en touchant les bords non stériles avec précaution","Changez de gants stériles après repositionnement du champ — tout contact non stérile impose un changement","Continuez sans champ — l'essentiel est la sonde stérile"],
+ correct:2},
+
+{num:8,cat:"Antisepsie — 4 temps",icon:"🧴",title:"Antisepsie du méat en 4 temps — Étape 1 : Détersion",
+ crit:true,att:false,
+ what:"<strong>Temps 1 — Détersion :</strong> avec votre main non dominante (main de travail), <strong>écartez les grandes lèvres</strong> et maintenez-les écartées pendant TOUTE l'antisepsie. Avec la main dominante, prenez une compresse imbibée de savon doux. Procédez dans l'ordre : <strong>grande lèvre droite → grande lèvre gauche → petite lèvre droite → petite lèvre gauche → méat urinaire</strong>. <strong>Une compresse = une zone. Une seule passe par zone, jamais revenir en arrière.</strong>",
+ why:"L'ordre de l'extérieur vers l'intérieur respecte le principe du 'propre vers sale' — le méat est la zone la plus sensible (porte d'entrée de l'urètre), on la nettoie en dernier pour ne pas contaminer avec les germes de la vulve. Une seule passe évite de ramener les bactéries éliminées.",
+ rule:"Détersion : grandes lèvres → petites lèvres → méat. 1 compresse = 1 zone. Jamais revenir en arrière.",
+ q:"Dans quel ordre réalisez-vous l'antisepsie du périnée chez la femme ?",
+ choices:["Méat → petites lèvres → grandes lèvres (du plus propre vers l'extérieur)","Grandes lèvres → petites lèvres → méat (de l'extérieur vers l'intérieur, du moins propre au plus propre)","Grandes lèvres → méat → petites lèvres (ordre anatomique gauche-droite)","L'ordre n'a pas d'importance si on utilise une compresse différente à chaque passage"],
+ correct:1},
+
+{num:9,cat:"Antisepsie — 4 temps",icon:"🧴",title:"Antisepsie — Étapes 2, 3 et 4 : Rinçage, Séchage, Antiseptique",
+ crit:true,att:false,
+ what:"<strong>Temps 2 — Rinçage</strong> : mêmes zones, même ordre, avec des compresses imbibées d'eau stérile. <br><strong>Temps 3 — Séchage</strong> : mêmes zones, même ordre, avec des compresses stériles sèches. Tamponner sans frotter.<br><strong>Temps 4 — Antiseptique</strong> : mêmes zones, même ordre, avec des compresses imbibées de <strong>PVPI dermique (Bétadine® dermique) ou Dakin®. JAMAIS de chlorhexidine sur muqueuse.</strong><br>Maintenez les grandes lèvres écartées en permanence pendant les 4 temps.",
+ why:"Le rinçage élimine le savon qui neutraliserait l'antiseptique. Le séchage évite la dilution de l'antiseptique. La chlorhexidine est formellement contre-indiquée sur muqueuses (cytotoxicité). L'antiseptique doit agir sur une surface propre et sèche.",
+ rule:"Rinçage eau stérile → séchage → PVPI ou Dakin®. CHLORHEXIDINE = INTERDITE sur muqueuses.",
+ svg:`<svg viewBox="0 0 110 75" width="110" height="75"><rect x="5" y="5" width="22" height="62" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><text x="16" y="22" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="800">①</text><text x="16" y="34" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif">Déter-</text><text x="16" y="43" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif">sion</text><rect x="30" y="5" width="22" height="62" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/><text x="41" y="22" text-anchor="middle" font-size="8" fill="#1d4ed8" font-family="sans-serif" font-weight="800">②</text><text x="41" y="34" text-anchor="middle" font-size="8" fill="#1d4ed8" font-family="sans-serif">Rinçage</text><text x="41" y="43" text-anchor="middle" font-size="8" fill="#1d4ed8" font-family="sans-serif">eau ⊗</text><rect x="55" y="5" width="22" height="62" rx="6" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="66" y="22" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="800">③</text><text x="66" y="34" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif">Séchage</text><rect x="80" y="5" width="22" height="62" rx="6" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/><text x="91" y="22" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="800">④</text><text x="91" y="32" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif">PVPI</text><text x="91" y="41" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">≠ Chlor.</text><text x="55" y="73" text-anchor="middle" font-size="7.5" fill="#7f1d1d" font-family="sans-serif">Même ordre à chaque temps</text></svg>`,
+ q:"Votre infirmière responsable vous dit d'utiliser la chlorhexidine pour l'antisepsie du méat. Vous ?",
+ choices:["Obéissez — une supérieure hiérarchique a raison","Utilisez la chlorhexidine mais en diluée pour limiter l'irritation","Expliquez calmement que la chlorhexidine est contre-indiquée sur les muqueuses selon les recommandations SF2H et CPias, et utilisez le PVPI dermique ou le Dakin®","Utilisez la chlorhexidine si c'est le protocole de l'établissement"],
+ correct:2},
+
+{num:10,cat:"Lubrification de la sonde",icon:"💧",title:"Lubrifier la sonde avant introduction",
+ crit:false,att:true,
+ what:"Déposez du <strong>lubrifiant stérile en unidose</strong> sur une compresse stérile ou directement sur le bout de la sonde. Si gel anesthésiant (Xylocaïne® gel) prescrit : instiller dans le méat et <strong>attendre 5 minutes minimum</strong> avant de poser la sonde. Pour les sondes pré-lubrifiées : activer avec l'eau stérile fournie selon les instructions du fabricant.",
+ why:"Un lubrifiant insuffisant augmente le risque de traumatisme urétral lors de l'introduction. L'urètre féminin (3-5 cm) est court mais fragile. Le gel anesthésiant nécessite 5 minutes pour être efficace — sans ce délai, il n'anesthésie pas.",
+ rule:"Lubrifiant stérile unidose. Gel anesthésiant = attendre 5 minutes. Ne jamais forcer sans lubrification.",
+ q:"Vous devez utiliser du gel de Xylocaïne® prescrit comme anesthésiant local. Combien de temps attendez-vous avant d'introduire la sonde ?",
+ choices:["30 secondes — l'effet est quasi immédiat","2 minutes — délai standard","5 minutes minimum — délai nécessaire pour que l'anesthésie soit efficace","10 minutes — pour une anesthésie complète"],
+ correct:2},
+
+{num:11,cat:"Vérification du ballonnet",icon:"🔵",title:"Vérifier l'étanchéité du ballonnet AVANT insertion",
+ crit:true,att:false,
+ what:"Avant d'introduire la sonde, préparez la seringue de <strong>10 mL d'eau stérile</strong> (volume indiqué sur l'emballage de la sonde — vérifier car variable selon les sondes). Connectez la sonde au sac collecteur si système non pré-connecté. <strong>Testez l'étanchéité du ballonnet</strong> : gonflez-le avec les 10 mL, vérifiez l'absence de fuite, dégonflez complètement et récupérez toute l'eau avant l'insertion.",
+ why:"Un ballonnet défectueux découvert après insertion impose un retrait immédiat de la sonde dans la vessie et une reprise complète du soin. Vérifier avant évite ce traumatisme inutile. <strong>Sérum physiologique interdit</strong> : les sels précipitent et cristallisent le ballonnet, rendant le dégonflage impossible lors de l'ablation.",
+ rule:"Eau stérile UNIQUEMENT dans le ballonnet. Vérifier étanchéité AVANT insertion. Dégonfler complètement avant introduction.",
+ q:"Pour gonfler le ballonnet d'une sonde urinaire, vous utilisez ?",
+ choices:["Du sérum physiologique — solution isotonique inoffensive","De l'eau distillée — plus pure que l'eau stérile","De l'eau stérile — seul liquide recommandé, le sérum physiologique cristallise le ballonnet","De l'air — plus simple et sans risque de cristallisation"],
+ correct:2},
+
+{num:12,cat:"Introduction de la sonde",icon:"💉",title:"Introduire la sonde dans le méat urinaire",
+ crit:true,att:false,
+ what:"Maintenez les grandes lèvres écartées avec votre main non dominante (main non stérile ou avec compresses stériles). Prenez la sonde avec la main dominante (stérile). <strong>Localisez précisément le méat urinaire</strong> (entre le clitoris en haut et l'orifice vaginal en bas). Introduisez la sonde délicatement dans le méat, <strong>direction légèrement vers le haut (vers le pubis)</strong>, sur environ 5 à 8 cm. <strong>Ne jamais forcer.</strong> L'apparition d'urines confirme la position vésicale.",
+ why:"L'urètre féminin est court (3-5 cm) et de direction légèrement postérieure, vers le pubis. Un angle incorrect expose au faux trajet. L'orifice vaginal est juste en dessous du méat — la confusion est fréquente chez les débutants. Ne jamais forcer en cas de résistance : risque de traumatisme urétral.",
+ rule:"Méat = entre clitoris et vagin. Direction vers le pubis. 5-8 cm. Apparition des urines = position vésicale. Jamais forcer.",
+ svg:`<svg viewBox="0 0 100 85" width="100" height="85"><ellipse cx="50" cy="60" rx="38" ry="20" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><circle cx="50" cy="32" r="6" fill="#e8b890" stroke="#c07850" stroke-width="1"/><text x="50" y="22" text-anchor="middle" font-size="7.5" fill="#374151" font-family="sans-serif">Clitoris</text><circle cx="50" cy="55" r="5" fill="#bae6fd" stroke="#0369a1" stroke-width="2"/><text x="50" y="50" text-anchor="middle" font-size="7" fill="#0369a1" font-family="sans-serif" font-weight="800">Méat</text><circle cx="50" cy="72" r="6" fill="#e8b890" stroke="#c07850" stroke-width="1"/><text x="50" y="83" text-anchor="middle" font-size="7.5" fill="#374151" font-family="sans-serif">Vagin</text><path d="M50 55 L50 38" stroke="#0369a1" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4,2"/><polygon points="46,38 50,30 54,38" fill="#0369a1"/><text x="72" y="50" font-size="7" fill="#0369a1" font-family="sans-serif">Direction</text><text x="72" y="58" font-size="7" fill="#0369a1" font-family="sans-serif">↑ pubis</text></svg>`,
+ q:"Vous introduisez la sonde et vous rencontrez une résistance. Que faites-vous ?",
+ choices:["Pousser plus fort avec un mouvement rotatoire","Retirer et ré-introduire plus vite","Retirer la sonde et contacter le médecin — ne jamais forcer. La résistance peut indiquer un faux trajet ou un obstacle anatomique","Essayer de pousser délicatement en faisant tousser la patiente"],
+ correct:2},
+
+{num:13,cat:"Cathétérisme vaginal accidentel",icon:"⚠️",title:"Gestion du cathétérisme vaginal accidentel",
+ crit:true,att:false,
+ what:"Si la sonde est introduite dans le <strong>vagin par erreur</strong> (absence d'écoulement d'urines, résistance différente) : <br>① <strong>Ne pas retirer la sonde immédiatement</strong> — elle sert de <strong>repère visuel</strong> pour identifier l'orifice vaginal et éviter de répéter l'erreur.<br>② Prendre une <strong>nouvelle sonde stérile</strong>.<br>③ Identifier précisément le méat urinaire (au-dessus de la sonde laissée en place).<br>④ Poser la nouvelle sonde dans le méat.<br>⑤ Retirer la première sonde du vagin.<br>Ne jamais réutiliser la sonde qui a touché le vagin pour tenter le méat — contamination fécale certaine.",
+ why:"La sonde laissée en place est un marqueur spatial irremplaçable — sans elle, l'IDE peut réintroduire dans le vagin à nouveau. Réutiliser la sonde vaginale pour le méat introduit des germes fécaux/vaginaux directement dans l'urètre — risque d'infection urinaire quasi-certain.",
+ rule:"Cathétérisme vaginal : LAISSER la sonde en repère → nouvelle sonde stérile pour le méat → retirer la première sonde.",
+ q:"Vous réalisez que vous avez cathétérisé le vagin. Les urines n'apparaissent pas. Quelle est votre 1ère action ?",
+ choices:["Retirer immédiatement la sonde et réessayer dans le méat","Laisser la sonde dans le vagin comme repère visuel et préparer une nouvelle sonde stérile pour le méat","Retirer la sonde, la nettoyer à l'antiseptique et réintroduire dans le méat","Pousser davantage la sonde car le méat est peut-être plus profond"],
+ correct:1},
+
+{num:14,cat:"Confirmation position vésicale",icon:"✅",title:"Confirmer la position vésicale + Gonfler le ballonnet",
+ crit:true,att:false,
+ what:"L'écoulement d'urines dans la sonde confirme la position vésicale. <strong>Introduisez la sonde encore 2 à 5 cm supplémentaires</strong> pour s'assurer que le ballonnet est bien dans la vessie et non dans l'urètre. Gonflez le ballonnet avec les <strong>10 mL d'eau stérile préparés</strong>. Si la patiente ressent une douleur vive lors du gonflement : <strong>dégonfler immédiatement</strong> — le ballonnet est peut-être dans l'urètre.",
+ why:"Gonfler le ballonnet dans l'urètre est un traumatisme grave pouvant provoquer une rupture urétrale. La douleur vive est le signal d'alarme. Avancer la sonde de quelques cm après apparition des urines s'assure que le ballonnet se positionne dans la vésicule et non à l'entrée.",
+ rule:"Urines → avancer encore 2-5 cm → gonfler 10 mL eau stérile → douleur vive = dégonfler immédiatement (ballonnet dans l'urètre).",
+ q:"Vous gonflez le ballonnet et la patiente crie de douleur. Que faites-vous ?",
+ choices:["Finir de gonfler rapidement — la douleur va passer","Dégonfler immédiatement le ballonnet — le ballonnet est probablement dans l'urètre. Avancer la sonde de quelques cm avant de regonfler","Réduire le volume d'eau stérile pour minimiser la douleur","Vérifier si des urines s'écoulent avant de continuer"],
+ correct:1},
+
+{num:15,cat:"Retrait de la sonde et connexion",icon:"🔗",title:"Retrait vers le col vésical + Connexion système clos",
+ crit:true,att:false,
+ what:"Une fois le ballonnet gonflé, <strong>tirez doucement sur la sonde</strong> jusqu'à ce que vous sentiez une légère résistance : le ballonnet appuie sur le col vésical. C'est la position correcte de drainage. Si le système sonde/collecteur n'est pas pré-connecté : connectez-les maintenant en stérile. <strong>Ne jamais déconnecter ce système clos après</strong> — toute rupture du système clos expose à un risque d'infection urinaire.",
+ why:"Le ballonnet trop haut dans la vessie ne permet pas un drainage complet. Le contact du ballonnet avec le col vésical permet un drainage optimal par gravité. Le système clos est la mesure préventive numéro 1 contre les IUAS — toute déconnexion rompt la barrière antimicrobienne.",
+ rule:"Tirer doucement jusqu'à résistance = ballonnet au col vésical. Système clos = ne jamais déconnecter.",
+ q:"Quelle est la mesure UNIQUE la plus efficace pour prévenir les infections urinaires liées au sondage ?",
+ choices:["Antibioprophylaxie systématique lors de la pose","Changement de sonde tous les 5 jours","Maintien permanent du système clos — ne jamais déconnecter la sonde du sac collecteur","Rinçage vésical quotidien au sérum physiologique"],
+ correct:2},
+
+{num:16,cat:"Fixation et installation",icon:"📌",title:"Fixer la sonde + Sac collecteur en déclive",
+ crit:false,att:true,
+ what:"Fixez la sonde sur la <strong>cuisse interne</strong> de la patiente avec le Sécurfix® ou système équivalent pour éviter les <strong>tractions accidentelles</strong>. Positionnez le <strong>sac collecteur en déclive</strong> (plus bas que la vessie) mais sans qu'il touche le sol. Vérifiez que la tubulure ne forme pas de coude. Retirez le champ fenestré en le découpant ou en le décollant sans déconnecter le système.",
+ why:"La traction sur la sonde provoque des traumatismes urétraux douloureux et peut déplacer le ballonnet. Le sac collecteur en déclive utilise la gravité pour le drainage — si le sac est au-dessus de la vessie, les urines reflueraient dans la vessie. La tubulure sans coude assure un drainage continu.",
+ rule:"Sonde fixée sur la cuisse. Sac collecteur en déclive, jamais au sol, jamais au-dessus de la vessie.",
+ q:"Lors d'un transfert de la patiente du lit au fauteuil, quel geste est indispensable concernant la sonde ?",
+ choices:["Décrocher le sac collecteur et le vider pour le transport","Vérifier que le sac reste en déclive et que la tubulure ne tire pas sur la sonde. Clamper si pas de système anti-retour pendant le transfert","Déconnecter la sonde du sac pour faciliter le transfert puis reconnecter","Le sac peut être posé sur le lit pendant le transfert"],
+ correct:1},
+
+{num:17,cat:"Fin de soin et déchets",icon:"🗑️",title:"Retirer les gants + Éliminer les déchets + SHA",
+ crit:false,att:false,
+ what:"Retirez les gants stériles. Éliminez les déchets dans les filières appropriées : <strong>sonde usagée → DASRI</strong>, emballages → ordures ménagères ou DASRI selon contenus. Effectuez une <strong>friction SHA</strong>. Réinstallez confortablement la patiente. <strong>Éduquez-la</strong> sur les signes à surveiller et signaler : brûlures, urines troubles, fièvre, absence d'urines dans le collecteur.",
+ why:"L'éducation de la patiente est une mesure de prévention des IUAS. Une patiente informée signale plus tôt les signes d'infection ou les problèmes mécaniques (traction, obstruction). Les gants stériles usagés vont en DASRI.",
+ rule:"Déchets dans les bonnes filières. SHA après retrait des gants. Éduquer la patiente sur les signes d'alerte.",
+ q:"Avant de quitter la chambre, quels signes expliquez-vous à la patiente comme devant être immédiatement signalés ?",
+ choices:["Uniquement la fièvre — c'est le seul signe grave","Brûlures, urines troubles ou malodorantes, absence d'urines dans le sac, douleur sus-pubienne, fièvre","Uniquement si le sac est plein — c'est la seule complication visible","Ne rien expliquer — l'infirmière surveillera lors des passages"],
+ correct:1},
+
+{num:18,cat:"Traçabilité",icon:"📝",title:"Tracer dans le dossier patient",
+ crit:false,att:false,
+ what:"Documentez dans le dossier infirmier : <strong>date et heure de pose, calibre (charrière) et type de sonde, volume du ballonnet, aspect et quantité initiale d'urines, résidus éventuels, tolérance de la patiente, votre nom et signature.</strong> Indiquez la date d'ablation prévue selon le type de sonde (latex siliconée : 15 jours, silicone pur : jusqu'à 2 mois). Programmer la <strong>réévaluation quotidienne</strong> de l'indication de maintien.",
+ why:"La traçabilité est une obligation légale. La date d'ablation prévue prévient le maintien abusif de la sonde — cause principale des IUAS. La réévaluation quotidienne est recommandée par la SF2H : un patient non sondé n'est pas infecté par sa sonde.",
+ rule:"Tracer : date + calibre + type + ballonnet + urines initiales + tolérance + date ablation prévue + signature. Réévaluer l'indication chaque jour.",
+ q:"Quel est l'élément le plus important à programmer après la pose d'une sonde vésicale à demeure ?",
+ choices:["Planifier le changement systématique à J15","La réévaluation quotidienne de la nécessité du maintien de la sonde — retirer le plus tôt possible","La réalisation d'un ECBU à J3 pour dépistage précoce d'infection","Planifier le changement de sac collecteur toutes les 24h"],
+ correct:1},
+];
+
+/* ══════════════════════════════════════════════════
+   FICHE PROTOCOLE — build steps
+══════════════════════════════════════════════════ */
+const PHASES = [
+  {label:'📋 Phase 1 — Préparation et vérifications (étapes 1-5)', steps:[1,2,3,4,5], color:'#0369a1'},
+  {label:'🧴 Phase 2 — Toilette et antisepsie en 4 temps (étapes 6-9)', steps:[6,7,8,9], color:'#dc2626'},
+  {label:'💉 Phase 3 — Pose de la sonde (étapes 10-14)', steps:[10,11,12,13,14], color:'#7c3aed'},
+  {label:'🔗 Phase 4 — Fixation et installation (étapes 15-16)', steps:[15,16], color:'#059669'},
+  {label:'📝 Phase 5 — Fin de soin et traçabilité (étapes 17-18)', steps:[17,18], color:'#d97706'},
+];
+
+function buildFicheProtocol(){
+  const container=document.getElementById('proto-steps');
+  if(container.children.length>0)return;
+
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,#0c4a6e,#0369a1);border-radius:12px;padding:14px 16px;margin-bottom:16px;color:white;font-size:12.5px;line-height:1.7';
+  intro.innerHTML=`<div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:6px">⚡ Avant d'entrer dans la chambre</div>
+    <strong>Vérifier la prescription médicale + allergies (latex, PVPI).</strong><br>
+    Tenue IDE : tenue propre + charlotte + masque + surblouse si indiqué.<br>
+    <strong>Rappel absolu :</strong> chlorhexidine interdite sur muqueuses · système clos = ne jamais déconnecter · ballonnet = eau stérile uniquement.`;
+  container.appendChild(intro);
+
+  PHASES.forEach(phase=>{
+    const ptitle=document.createElement('div');
+    ptitle.style.cssText=`font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${phase.color};margin:18px 0 10px;padding:6px 12px;border-left:3px solid ${phase.color};padding-left:10px`;
+    ptitle.textContent=phase.label;
+    container.appendChild(ptitle);
+
+    phase.steps.forEach(num=>{
+      const step=STEPS.find(s=>s.num===num);
+      if(!step)return;
+      const cls=step.crit?'crit':step.att?'att':'';
+      let tags='';
+      if(step.crit)tags+='<span class="stag stag-crit">⚠ CRITIQUE</span>';
+      if([7,8,9,10,11,12,13,14,15].includes(num))tags+='<span class="stag stag-ster">🧤 Stérile</span>';
+      if(step.att&&!step.crit)tags+='<span class="stag stag-att">⚡ Attention</span>';
+
+      const div=document.createElement('div');
+      div.className=`step-card ${cls}`;
+      div.innerHTML=`
+        <div class="step-hdr" onclick="this.parentElement.classList.toggle('open')">
+          <div class="step-num">${step.num}</div>
+          <div class="step-info">
+            <div class="step-title">${step.icon} ${step.title}</div>
+            <div class="step-tags">${tags}</div>
+          </div>
+          <div class="step-chev">▼</div>
+        </div>
+        <div class="step-body">
+          <div class="step-geste">${step.what}</div>
+          <div class="step-2col">
+            <div class="step-why"><strong>🧠 Pourquoi :</strong> ${step.why}</div>
+            <div class="step-rule"><strong>📌 Règle :</strong> ${step.rule}</div>
+          </div>
+          ${step.crit?`<div class="step-erreur">🚨 <strong>Erreur critique :</strong> ${getErreur(num)}</div>`:''}
+          ${getConseil(num)?`<div class="step-conseil">💡 <strong>Conseil :</strong> ${getConseil(num)}</div>`:''}
+        </div>`;
+      container.appendChild(div);
+    });
+  });
+  // Ouvrir toutes les étapes
+  document.querySelectorAll('#proto-steps .step-card').forEach(c=>c.classList.add('open'));
+}
+
+function getErreur(n){
+  const e={
+    1:"Ne pas vérifier les allergies avant pose — une allergie au latex peut provoquer un choc anaphylactique. Une allergie au PVPI impose d'utiliser le Dakin®.",
+    7:"Poser des gants stériles sans avoir fait la SHA — réduire la flore bactérienne des mains avant les gants est fondamental.",
+    8:"Commencer l'antisepsie par le méat puis aller vers les grandes lèvres — on contaminerait la zone la plus sensible avec les germes de la vulve.",
+    9:"Utiliser de la chlorhexidine sur les muqueuses — cytotoxicité, lésions urothéliales. Formellement contre-indiquée.",
+    11:"Gonfler le ballonnet avec du sérum physiologique — cristallisation des sels, ballonnet impossible à dégonfler lors de l'ablation.",
+    12:"Forcer l'introduction en cas de résistance — faux trajet, lésion urétrale, hématurie.",
+    13:"Retirer la sonde vaginale accidentelle et la réintroduire dans le méat — contamination certaine par germes vaginaux/fécaux.",
+    14:"Gonfler le ballonnet sans avoir vérifié l'écoulement d'urines — rupture de l'urètre si le ballonnet est dans l'urètre.",
+    15:"Déconnecter la sonde du sac collecteur — rupture du système clos, multiplication du risque infectieux.",
+  };
+  return e[n]||"Ne pas respecter cette étape compromet la stérilité ou la sécurité du soin.";
+}
+
+function getConseil(n){
+  const c={
+    3:"Repérez le méat urinaire dès la toilette préparatoire — une fois les gants stériles posés, toute hésitation à trouver le méat expose au cathétérisme vaginal.",
+    5:"En cas d'anatomie difficile, une traction douce et verticale des petites lèvres vers le haut (avec la main non dominante) peut améliorer la visibilité du méat.",
+    8:"Mnémotechnique pour l'ordre femme : 'GL → PL → M' (Grandes Lèvres → Petites Lèvres → Méat). Toujours de l'extérieur vers l'intérieur.",
+    12:"Si vous hésitez entre le méat et le vagin : le méat urinaire est plus petit, plus ferme, et situé juste sous le clitoris. Le vagin est plus postérieur et plus grand.",
+    14:"Avancer la sonde de 2-5 cm après apparition des urines garantit que le ballonnet est bien dans la cavité vésicale et non à l'entrée.",
+    16:"Lors de chaque changement de position : vérifier que la tubulure n'est pas courbée et que le sac reste en déclive. Une tubulure coudée suffit à bloquer complètement l'écoulement.",
+    18:"La question 'la sonde est-elle encore nécessaire ?' doit être posée chaque jour. Le principal facteur de risque d'IUAS est la durée du sondage.",
+  };
+  return c[n]||'';
+}
+
+function showFicheTab(id,btn){
+  document.querySelectorAll('.fiche-sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='ft-proto')buildFicheProtocol();
+}
+
+/* ══════════════════════════════════════════════════
+   MODE EXAMEN — 15 questions
+══════════════════════════════════════════════════ */
+const Q_EXAM = [
+{cat:"Cadre légal",q:"Le sondage vésical à demeure relève de ?",
+ choices:["Rôle propre infirmier — autonomie totale","Prescription médicale obligatoire (Art. R.4311-7)","Protocole de service suffisant","Décision infirmière si la patiente est en rétention"],
+ correct:1,exp_ok:"Le sondage vésical est un acte sur prescription médicale obligatoire (Art. R.4311-7).",exp_err:"Ce soin n'est pas en rôle propre. Le changement de sonde, en revanche, relève du rôle propre (Art. R.4311-5).",rule:"<strong>Sondage vésical = prescription médicale. Art. R.4311-7.</strong>",xp:10},
+
+{cat:"Antiseptique muqueuse",q:"Quel antiseptique est FORMELLEMENT CONTRE-INDIQUÉ sur les muqueuses lors d'un sondage urinaire ?",
+ choices:["PVPI dermique (Bétadine® dermique)","Dakin® (hypochlorite de sodium)","Chlorhexidine","Alcool à 70°"],
+ correct:2,exp_ok:"La chlorhexidine est cytotoxique sur les muqueuses — elle provoque des lésions urothéliales. Sur muqueuses : utiliser PVPI dermique ou Dakin®. Source : SF2H, CPias Grand Est 2022.",exp_err:"PVPI et Dakin® sont les antiseptiques recommandés sur les muqueuses. L'alcool est contre-indiqué sur muqueuses également.",rule:"<strong>Chlorhexidine = interdite sur muqueuses. PVPI dermique ou Dakin® uniquement.</strong>",xp:15},
+
+{cat:"Antisepsie 4 temps",q:"Quel est l'ordre correct des 4 temps de l'antisepsie du périnée ?",
+ choices:["Antiseptique → rinçage → détersion → séchage","Détersion → rinçage → séchage → antiseptique","Rinçage → détersion → séchage → antiseptique","Séchage → détersion → rinçage → antiseptique"],
+ correct:1,exp_ok:"Les 4 temps dans l'ordre : 1) Détersion (savon doux) 2) Rinçage (eau stérile) 3) Séchage (compresses sèches) 4) Antiseptique (PVPI ou Dakin®). Chaque temps prépare le suivant.",exp_err:"L'ordre est impératif : détersion puis rinçage (sinon le savon neutralise l'antiseptique) puis séchage (sinon l'antiseptique est dilué) puis antiseptique.",rule:"<strong>Détersion → Rinçage → Séchage → Antiseptique. Dans cet ordre.</strong>",xp:15},
+
+{cat:"Ordre antisepsie femme",q:"Dans quel ordre réalise-t-on l'antisepsie du périnée chez la femme ?",
+ choices:["Méat → petites lèvres → grandes lèvres","Grandes lèvres → petites lèvres → méat","Petites lèvres → méat → grandes lèvres","L'ordre est libre si on utilise une compresse différente"],
+ correct:1,exp_ok:"De l'extérieur vers l'intérieur : grandes lèvres → petites lèvres → méat. Principe 'propre vers sale' — le méat (porte d'entrée de l'urètre) est la zone la plus sensible, on la traite en dernier.",exp_err:"Commencer par le méat contaminerait ensuite la zone avec les germes de la vulve si on revenait vers l'extérieur.",rule:"<strong>GL → PL → Méat. Extérieur vers intérieur. 1 compresse = 1 zone.</strong>",xp:12},
+
+{cat:"Ballonnet",q:"Quel liquide utilise-t-on pour gonfler le ballonnet d'une sonde vésicale ?",
+ choices:["Sérum physiologique NaCl 0,9%","Air stérile","Eau stérile uniquement","Eau du robinet stérile filtrée"],
+ correct:2,exp_ok:"Eau stérile uniquement. Le sérum physiologique provoque une cristallisation des sels dans le ballonnet, rendant le dégonflage impossible lors de l'ablation — urgence urologique.",exp_err:"Le sérum physiologique est interdit dans les ballonnets. L'air se comprime et le volume n'est pas fiable.",rule:"<strong>Ballonnet = eau stérile uniquement. Jamais sérum physiologique.</strong>",xp:12},
+
+{cat:"Cathétérisme vaginal",q:"Vous introduisez la sonde et les urines n'apparaissent pas. Vous soupçonnez un cathétérisme vaginal. 1ère action ?",
+ choices:["Retirer immédiatement la sonde et réessayer dans le méat","Laisser la sonde en place comme repère visuel, préparer une nouvelle sonde stérile pour le méat","Retirer, nettoyer la sonde à l'antiseptique et réintroduire","Pousser la sonde plus loin pour trouver la vessie"],
+ correct:1,exp_ok:"La sonde reste en place comme repère visuel — elle identifie l'orifice vaginal pour ne pas répéter l'erreur. On prend une nouvelle sonde stérile pour le méat. Après la pose réussie, on retire la sonde vaginale.",exp_err:"Retirer immédiatement perd le repère visuel. Réutiliser la sonde vaginale pour le méat introduit des germes fécaux.",rule:"<strong>Cathétérisme vaginal : laisser en repère → nouvelle sonde stérile → retirer la première.</strong>",xp:15},
+
+{cat:"Système clos",q:"Pourquoi ne faut-il jamais déconnecter la sonde du sac collecteur ?",
+ choices:["Pour éviter la perte de la mesure de la diurèse","La déconnexion rompt le système clos et multiplie le risque d'infection urinaire — c'est la mesure préventive numéro 1 des IUAS","Pour éviter les fuites d'urines sur le lit","Pour maintenir la pression intravésicale"],
+ correct:1,exp_ok:"Le système clos est la mesure préventive numéro 1 contre les infections urinaires associées aux soins (IUAS). La déconnexion rompt la barrière antimicrobienne et permet la contamination bactérienne ascendante.",exp_err:"Toutes les autres options sont secondaires. La prévention des IUAS est l'objectif principal.",rule:"<strong>Système clos = ne jamais déconnecter = prévention IUAS numéro 1.</strong>",xp:12},
+
+{cat:"Gants",q:"Quel type de gants utilise-t-on pour la POSE de la sonde urinaire ?",
+ choices:["Gants non stériles — la désinfection du méat suffit","Gants propres à usage unique","Gants stériles — la sonde doit rester stérile jusqu'à son introduction dans l'urètre","Pas de gants si la technique est irréprochable"],
+ correct:2,exp_ok:"Gants stériles obligatoires pour la pose. La sonde doit rester stérile jusqu'à son introduction dans l'urètre. Les gants non stériles servent uniquement pour la toilette préparatoire.",exp_err:"Ce soin est stérile, pas propre. Confondre les deux phases du soin est une erreur grave.",rule:"<strong>Pose sonde = gants stériles. Toilette préparatoire = gants non stériles.</strong>",xp:12},
+
+{cat:"Ballonnet — gonflement",q:"Quand gonflez-vous le ballonnet de la sonde ?",
+ choices:["Immédiatement après avoir atteint la longueur d'insertion recommandée","Uniquement après confirmation de l'écoulement d'urines et progression de 2-5 cm supplémentaires","Dès que la sonde rencontre une résistance","Avant d'introduire la sonde pour vérifier son étanchéité — puis le dégonfler"],
+ correct:1,exp_ok:"L'écoulement d'urines confirme la position vésicale. On avance encore 2-5 cm pour assurer que le ballonnet est bien dans la cavité vésicale, puis on gonfle. Gonfler sans confirmation = risque de rupture urétrale.",exp_err:"La longueur d'insertion seule ne garantit pas la position vésicale — l'urètre féminin est court et variable. L'écoulement est la confirmation.",rule:"<strong>Gonfler ballonnet : urines s'écoulent + avancer 2-5 cm + gonfler eau stérile.</strong>",xp:12},
+
+{cat:"Durée sonde",q:"Une sonde en silicone pur peut être maintenue au maximum ?",
+ choices:["7 jours","15 jours","30 jours","Jusqu'à 2 mois"],
+ correct:3,exp_ok:"Sonde silicone pur : jusqu'à 2 mois. Sonde latex siliconée : maximum 15 jours. Mais la durée n'est pas une indication de maintien — réévaluer l'indication chaque jour.",exp_err:"15 jours est pour le latex siliconé. La silicone pur est beaucoup plus biocompatible et peut durer plus longtemps.",rule:"<strong>Silicone pur : jusqu'à 2 mois. Latex siliconé : max 15 jours. Réévaluer chaque jour.</strong>",xp:10},
+
+{cat:"Position du sac",q:"Comment doit être positionné le sac collecteur en permanence ?",
+ choices:["À hauteur de la hanche du patient pour faciliter la vidange","En déclive (plus bas que la vessie), sans toucher le sol","Suspendu au lit à hauteur de la tête","Le niveau n'a pas d'importance si la tubulure est longue"],
+ correct:1,exp_ok:"Déclive = plus bas que la vessie pour que la gravité assure le drainage. Jamais au sol (contamination). Jamais au-dessus de la vessie (reflux des urines dans la vessie).",exp_err:"Au-dessus de la vessie = reflux d'urines contaminées vers la vessie = IUAS garantie.",rule:"<strong>Sac collecteur : déclive permanente, jamais au sol, jamais au-dessus de la vessie.</strong>",xp:10},
+
+{cat:"Surveillance",q:"Doit-on réaliser une bandelette urinaire (BU) chez une patiente sondée ?",
+ choices:["Oui — quotidiennement pour dépistage précoce","Oui si la patiente a de la fièvre","Non — la BU est non fiable chez les patients sondés. ECBU uniquement si signes cliniques d'IUAS","Oui — hebdomadairement"],
+ correct:2,exp_ok:"La BU est non fiable chez les patients sondés — la colonisation bactérienne asymptomatique (bactériurie) est quasi-constante après quelques jours de sondage. On réalise un ECBU uniquement si signes cliniques (fièvre, hypotension, altération de l'état mental). Source : CPias Grand Est 2022.",exp_err:"BU chez patient sondé = faux positifs systématiques = traitements antibiotiques inutiles = résistances.",rule:"<strong>Pas de BU chez patient sondé. ECBU uniquement si signes cliniques d'IUAS.</strong>",xp:12},
+
+{cat:"Fixation",q:"Où fixe-t-on la sonde urinaire chez la femme pour éviter les tractions ?",
+ choices:["Sur l'abdomen, au niveau de l'ombilic","Sur la cuisse interne","Sur le drap de lit pour garder de la mobilité","On ne fixe pas la sonde — le ballonnet suffit à la maintenir"],
+ correct:1,exp_ok:"La sonde est fixée sur la cuisse interne de la patiente avec un Sécurfix® ou système équivalent. Cela évite les tractions lors des mobilisations. Chez l'homme alité : fixer sur l'abdomen.",exp_err:"Le ballonnet seul ne protège pas des tractions — il peut être arraché ou traumatiser le col vésical si traction brusque.",rule:"<strong>Sonde fixée sur la cuisse interne. Évite les tractions accidentelles.</strong>",xp:10},
+
+{cat:"Bactériurie asymptomatique",q:"Une patiente sondée a une bactériurie détectée à l'ECBU mais aucun symptôme. Que fait le médecin ?",
+ choices:["Il prescrit des antibiotiques immédiatement pour éviter l'évolution","Il augmente le débit de perfusion pour diluer les urines","Il ne traite pas — une bactériurie asymptomatique chez un patient sondé ne se traite pas (sauf grossesse ou chirurgie urologique)","Il change la sonde et prescrit des antibiotiques préventifs"],
+ correct:2,exp_ok:"Pas de symptôme = pas de traitement — règle fondamentale selon SF2H 2015 et CPias 2022. Deux exceptions : grossesse et chirurgie urologique. Traiter une bactériurie asymptomatique entraîne des résistances sans bénéfice pour la patiente.",exp_err:"Traiter une bactériurie asymptomatique = surconsommation d'antibiotiques = émergence de bactéries résistantes.",rule:"<strong>Bactériurie asymptomatique chez patient sondé = pas de traitement (sauf grossesse ou chir. uro).</strong>",xp:12},
+
+{cat:"Calibre",q:"Quel calibre de sonde utilise-t-on en général pour un sondage à demeure chez la femme adulte ?",
+ choices:["CH 8-10 — le plus petit possible","CH 14-16 — calibre standard femme adulte","CH 20-22 — pour un drainage efficace","CH 18-20 — standard pour toutes les indications"],
+ correct:1,exp_ok:"CH 14-16 est le calibre standard pour la femme adulte. Principe : utiliser le plus petit calibre efficace. Un calibre trop grand irrite l'urètre et augmente le risque de fuites péri-sonde.",exp_err:"CH 8-10 est pour les enfants. CH 20-22 est excessif en usage courant — favorise les fuites et le confort.",rule:"<strong>Calibre femme adulte standard : CH 14-16 (le plus petit efficace).</strong>",xp:10},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE SURVIE — Questions pièges
+══════════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+{cat:"Piège — Chlorhexidine",
+ q:"Votre collègue prépare le matériel pour un sondage et prend la chlorhexidine alcoolique 2% pour l'antisepsie du méat. Vous ?",
+ choices:["Laissez faire — la chlorhexidine est un antiseptique courant et efficace","Vérifiez qu'elle est bien diluée avant utilisation sur muqueuse","Intervenez immédiatement — la chlorhexidine est formellement contre-indiquée sur les muqueuses. Remplacez par PVPI dermique ou Dakin®","Laissez faire si le protocole du service l'autorise"],
+ correct:2,exp_ok:"La chlorhexidine est cytotoxique pour les muqueuses. Elle provoque des lésions urothéliales et son utilisation sur muqueuses est formellement contre-indiquée selon SF2H et CPias. Diluer ne supprime pas la contre-indication.",exp_err:"Le protocole du service ne peut pas aller à l'encontre des recommandations nationales SF2H. La chlorhexidine diluée reste cytotoxique sur muqueuses.",rule:"<strong>Chlorhexidine sur muqueuses = toujours contre-indiquée. Intervenir immédiatement.</strong>",xp:25},
+
+{cat:"Piège — Ordre antisepsie",
+ q:"Votre collègue réalise l'antisepsie du méat directement sans faire les 4 temps (pas de détersion, pas de rinçage, pas de séchage). Elle dit 'l'antiseptique seul suffit, c'est plus rapide'. C'est ?",
+ choices:["Acceptable si l'antiseptique est laissé en contact suffisamment longtemps","Acceptable pour un sondage évacuateur, pas pour un sondage à demeure","Faux — sans détersion préalable, les matières organiques réduisent l'efficacité de l'antiseptique de 50 à 90%. Les 4 temps sont obligatoires","Acceptable si la patiente vient d'avoir une toilette intime récente"],
+ correct:2,exp_ok:"Les matières organiques (urines, sécrétions) neutralisent partiellement l'antiseptique. Sans détersion préalable, l'antisepsie est inefficace. Les 4 temps sont obligatoires quel que soit le type de sondage.",exp_err:"La toilette intime récente ne remplace pas les 4 temps d'antisepsie stérile. Ce sont deux procédures distinctes.",rule:"<strong>4 temps obligatoires. Sans détersion, l'antiseptique perd 50-90% de son efficacité.</strong>",xp:20},
+
+{cat:"Piège — Ballonnet sérum physio",
+ q:"Vous n'avez plus d'eau stérile pour le ballonnet. Votre chef dit 'mets du sérum physiologique, c'est la même chose — isotonique comme l'eau stérile'. Vous ?",
+ choices:["Utilisez le sérum physiologique — isotonique = sans risque","Utilisez le sérum physiologique en le diluant de moitié","Refusez catégoriquement — le sérum physiologique cristallise les sels dans le ballonnet, rendant le dégonflage impossible lors de l'ablation. Commandez de l'eau stérile","Utilisez de l'eau du robinet si l'eau stérile est épuisée"],
+ correct:2,exp_ok:"Isotonique ne signifie pas équivalent pour les ballonnets. Les sels du sérum physiologique précipitent dans le ballonnet et forment des cristaux. À l'ablation, le ballonnet ne se dégonfle plus — urgence urologique nécessitant parfois une ponction percutanée.",exp_err:"Diluer le sérum physiologique ne supprime pas le risque de cristallisation. L'eau stérile est la seule option.",rule:"<strong>Sérum physio dans ballonnet = cristallisation = ablation impossible. Eau stérile uniquement.</strong>",xp:25},
+
+{cat:"Piège — Système clos",
+ q:"Le sac collecteur est plein. Votre collègue déconnecte la sonde du sac pour mettre un nouveau sac. C'est acceptable ?",
+ choices:["Oui — le sac est plein, il faut bien le changer","Acceptable si on désinfecte les embouts avant la reconnexion","Non — le système clos ne se déconnecte jamais. Pour vider le sac : utiliser le robinet de vidange. Si le sac doit être changé : sonde + sac changés ensemble en stérile","Acceptable si c'est fait rapidement"],
+ correct:2,exp_ok:"Le système clos ne se déconnecte jamais. Le sac se vide via le robinet de vidange (avec désinfection de celui-ci). Si le sac doit être changé (défaillance, saturation totale) : changer sonde + sac ensemble en stérile. La déconnexion rompt le système clos = risque infectieux majeur.",exp_err:"La rapidité ne neutralise pas le risque infectieux. Une déconnexion, même courte, permet la contamination bactérienne ascendante.",rule:"<strong>Système clos = jamais déconnecter. Vidanger via le robinet. Changement = sonde + sac ensemble.</strong>",xp:25},
+
+{cat:"Piège — Cathétérisme vaginal",
+ q:"Vous cathétérisez le vagin par erreur. Vous retirez la sonde et l'essuyez avec une compresse antiseptique. Vous la réintroduisez dans le méat. C'est correct ?",
+ choices:["Oui — la compresse antiseptique a décontaminé la sonde","Acceptable si c'est fait rapidement avant que les germes ne progressent","Non — une sonde ayant touché le vagin est contaminée par des germes vaginaux et fécaux. Elle ne peut jamais être réutilisée même après désinfection externe. Prendre une nouvelle sonde stérile","Correct si c'est la première utilisation de la sonde"],
+ correct:2,exp_ok:"Une compresse antiseptique ne restérilise pas une sonde. Les germes vaginaux pénètrent dans la lumière de la sonde et la contamination est interne. Laisser la sonde vaginale comme repère et utiliser une nouvelle sonde stérile pour le méat.",exp_err:"'Décontaminer' l'extérieur d'une sonde ne stérilise pas son intérieur ni sa surface. La sonde reste contaminée.",rule:"<strong>Sonde vaginale = inutilisable même après désinfection. Nouvelle sonde stérile obligatoire.</strong>",xp:25},
+
+{cat:"Piège — Gonfler avant les urines",
+ q:"Vous avez introduit la sonde sur 7 cm mais aucune urine n'apparaît encore. Vous gonflez quand même le ballonnet pour maintenir la sonde en place. C'est ?",
+ choices:["Acceptable — 7 cm est la longueur standard pour la femme","Acceptable si vous avez senti une légère résistance à l'entrée dans la vessie","Dangereux — si les urines n'apparaissent pas, la sonde peut être dans l'urètre. Gonfler le ballonnet dans l'urètre provoque une rupture urétrale. Jamais gonfler sans écoulement d'urines confirmé","Acceptable si on gonfle progressivement avec peu de volume"],
+ correct:2,exp_ok:"L'écoulement d'urines est la SEULE confirmation valide de la position vésicale. L'urètre féminin fait 3-5 cm — à 7 cm on peut être dans la vessie ou pas selon l'anatomie. Gonfler dans l'urètre = traumatisme grave.",exp_err:"La longueur introduite ne confirme pas la position vésicale. L'anatomie varie. Seules les urines confirment.",rule:"<strong>Gonfler le ballonnet = seulement après écoulement d'urines + 2-5 cm supplémentaires.</strong>",xp:25},
+
+{cat:"Piège — BU chez patient sondé",
+ q:"La température de la patiente monte à 38,2°C. Elle est sondée depuis 4 jours. Votre chef vous demande de faire une bandelette urinaire. Vous répondez ?",
+ choices:["Effectuez la BU — c'est le premier examen à faire face à une fièvre","Effectuez la BU et prescrivez des antibiotiques si positive","Expliquez qu'une BU n'est pas fiable chez une patiente sondée (faux positifs systématiques). Sur signes cliniques, il faut réaliser un ECBU sur le site de prélèvement dédié de la sonde — jamais en déconnectant","Effectuez la BU sur urines prélevées directement dans le sac collecteur"],
+ correct:2,exp_ok:"BU non fiable chez patient sondé = contre-indiquée selon CPias. Face à une fièvre : ECBU prélevé sur le site de prélèvement dédié de la sonde (avec désinfection préalable), sans déconnecter le système clos.",exp_err:"Prélever dans le sac collecteur fausse les résultats — les urines ont stagné. Déconnecter la sonde rompt le système clos.",rule:"<strong>BU chez patient sondé = non fiable. Fièvre → ECBU sur site dédié de la sonde sans déconnecter.</strong>",xp:20},
+
+{cat:"Piège — Traitement bactériurie",
+ q:"L'ECBU de la patiente sondée revient avec une colonisation bactérienne significative. La patiente n'a aucun symptôme (pas de fièvre, pas de douleur, état général conservé). Le médecin prescrit des antibiotiques 'par précaution'. C'est justifié ?",
+ choices:["Oui — prévenir une IUAS est toujours justifié chez un patient sondé","Oui si la patiente est immunodéprimée","Non sauf exceptions — une bactériurie asymptomatique chez un patient sondé ne se traite pas. Traiter expose à des résistances sans bénéfice. Exceptions : grossesse, chirurgie urologique","Oui car la sonde sera retirée dans 48h de toute façon"],
+ correct:2,exp_ok:"Règle fondamentale SF2H 2015 : pas de symptôme = pas de traitement. La bactériurie asymptomatique est quasi-constante chez les patients sondés et ne nécessite pas d'antibiotiques, sauf grossesse ou chirurgie urologique. Traiter = sélection de bactéries résistantes.",exp_err:"'Par précaution' n'est pas une indication d'antibiothérapie. Même en immunodépression, la règle s'applique selon les recommandations.",rule:"<strong>Bactériurie asymptom. sondé = pas de traitement (sauf grossesse ou chir. uro).</strong>",xp:20},
+
+{cat:"Piège — Réévaluation",
+ q:"Une patiente est sondée depuis J3 post-opératoire. Elle est mobile, mange et ne présente aucune complication. Le sac collecteur a été changé hier. L'infirmière de nuit note 'sonde en place, RAS' et ne réévalue pas l'indication. C'est suffisant ?",
+ choices:["Oui — pas de complication = pas de changement à faire","Oui si le médecin a prescrit un maintien jusqu'à J7","Non — l'indication de maintien de la sonde doit être réévaluée chaque jour. À J3, une patiente mobile post-opératoire n'a peut-être plus besoin d'une sonde. Retirer le plus tôt possible","Oui si la diurèse est normale"],
+ correct:2,exp_ok:"La réévaluation quotidienne est une recommandation explicite de SF2H et CPias. 'Pas de complication' ne justifie pas le maintien — le maintien lui-même est le risque. Chaque jour sans indication valide, la sonde doit être retirée.",exp_err:"La prescription initiale ne vaut pas indication permanente. L'indication doit être active chaque jour.",rule:"<strong>Réévaluer l'indication chaque jour. Retirer dès que possible = prévention IUAS.</strong>",xp:20},
+
+{cat:"Piège — Traction accidentelle",
+ q:"En aidant la patiente à se lever, l'aide-soignante accroche la tubulure et tire sur la sonde. La patiente crie de douleur mais les urines continuent de s'écouler. L'aide-soignante dit 'ça va, ça coule encore'. Vous ?",
+ choices:["Acceptez — si les urines coulent, la sonde est en place et fonctionnelle","Vérifiez si le sac est plein et vider si besoin","Examinez le site de ponction et questionnez la patiente sur la douleur. Vérifiez que le ballonnet est toujours bien gonflé, que la sonde est bien fixée. Si douleur persistante ou hématurie : alerter le médecin","Ne rien faire si la patiente dit que la douleur passe"],
+ correct:2,exp_ok:"Une traction peut blesser l'urètre, déplacer le ballonnet ou provoquer une hématurie. 'Ça coule encore' ne suffit pas à confirmer l'intégrité. Vérifier le système complet, évaluer la douleur et surveiller les urines (hématurie).",exp_err:"La douleur qui passe ne signifie pas qu'il n'y a pas eu de traumatisme. Une hématurie peut apparaître secondairement.",rule:"<strong>Traction sur sonde = vérifier site + ballonnet + douleur + couleur urines. Alerter si anomalie.</strong>",xp:20},
+];
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn',questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0,lives=3;
+let timerInterval=null,timeLeft=30,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  if(mode==='fiche'){buildFicheProtocol();showScreen('s-fiche');showFicheTab('ft-mat',document.querySelector('.ftab'));return;}
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;
+  if(mode==='learn'){
+    questions=[...STEPS];
+    document.getElementById('tb-mode').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='exam'){
+    questions=[...Q_EXAM].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='📝 Examen';
+    document.getElementById('lives-pill').style.display='none';
+  } else {
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  }
+  showScreen('s-quiz');loadQ();
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi];answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn').classList.remove('show');
+  if(mode==='learn')loadStep(q);
+  else loadStdQ(q);
+  startTimer();
+}
+
+function loadStep(step){
+  const total=questions.length;
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon;
+  document.getElementById('ctx-sub').textContent=`Étape ${step.num} sur ${total}`;
+  document.getElementById('ctx-title').textContent=step.title;
+  document.getElementById('ctx-body').innerHTML=`${step.what}<br><span style="display:block;margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);font-style:normal">⚠️ ${step.why}</span>`;
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${total}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg?`<div class="q-illus">${step.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=`<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:8px">✅ Question de validation :</span>${step.q}`;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step);ch.appendChild(b);
+  });
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};catScores[step.cat].t++;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===total-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${total}`;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return;answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=8*(streak>=3?2:1);xp+=e;catScores[step.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>Règle :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`Bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>Règle :</strong> ${step.rule}`);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function loadStdQ(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML='';
+  document.getElementById('q-text').innerHTML=q.q;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q);ch.appendChild(b);
+  });
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  document.getElementById('next-btn').textContent='Suivant →';
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+    if(mode==='learn')showExp('ok','✅','Bonne réponse !',q.exp_ok,q.rule);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),correct:q.choices[q.correct]});
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}
+    if(mode==='learn')showExp('err','❌','Erreur',q.exp_err,q.rule);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='exam')dur=30;
+  else if(mode==='survival')dur=25;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--bl)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=8){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        updateUI();document.getElementById('next-btn').classList.add('show');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:62px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={learn:'📚 Apprentissage — 18 étapes dans l\'ordre',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#f0f9ff',tc:'#0369a1',brd:'#bae6fd'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'}
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+  const bd=document.getElementById('bd-items');bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,5).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--text3)">→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+  const cons=[];
+  if(mode==='learn'&&note>=16)cons.push("📝 Protocole bien assimilé. Passez au mode Examen pour vous tester sans aide.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Excellent ! Le mode Survie vous attend — chlorhexidine piège, système clos rompu, ballonnet sérum physio...");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise experte du sondage urinaire femme. Protocole et pièges maîtrisés.");
+  if(note<10)cons.push("📖 Commencez par la Fiche Protocole pour lire toutes les étapes, puis repassez en Apprentissage.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'au 18/20. Points clés : chlorhexidine interdite · 4 temps antisepsie · GL → PL → méat · eau stérile ballonnet · système clos.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=0.6)return;
+    if(cat.includes('Chlor')||cat.includes('Antisept')||cat.includes('4 temps'))cons.push("🧴 Antisepsie : 4 temps (détersion-rinçage-séchage-antiseptique). Ordre GL → PL → méat. Chlorhexidine = INTERDITE sur muqueuses.");
+    if(cat.includes('Ballonnet'))cons.push("🔵 Ballonnet : eau stérile uniquement. Jamais sérum physio. Gonfler seulement après écoulement d'urines + 2-5 cm supplémentaires.");
+    if(cat.includes('Système clos')||cat.includes('Clos'))cons.push("🔗 Système clos = ne jamais déconnecter. Vider via le robinet. Changement = sonde + sac ensemble en stérile.");
+    if(cat.includes('Cathétérisme vaginal')||cat.includes('vaginal'))cons.push("⚠️ Cathétérisme vaginal : laisser la sonde comme repère → nouvelle sonde stérile → retirer la première. Jamais réutiliser.");
+    if(cat.includes('Durée')||cat.includes('Rééval'))cons.push("📅 Réévaluer l'indication chaque jour. Silicone pur max 2 mois, latex siliconé max 15 jours. Retirer le plus tôt possible.");
+  });
+  if(!cons.length)cons.push("🎯 Excellent niveau sur tous les axes. Protocole sondage urinaire femme maîtrisé.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

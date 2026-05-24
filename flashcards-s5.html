@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Flashcards Semestre 5</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#faf9f6;--w:#ffffff;
+  --ink:#1a1a2e;--ink2:#4a4a6a;--ink3:#9090b0;
+  --bd:#e8e6f0;
+  --sh:0 2px 12px rgba(26,26,46,.08);
+  --shm:0 8px 32px rgba(26,26,46,.14);
+  --shl:0 20px 60px rgba(26,26,46,.18);
+  /* UE colors */
+  --c11:#ff6b9d; --c11l:#fff0f5; --c11d:#c9316a;
+  --c13:#7c5cbf; --c13l:#f3f0ff; --c13d:#4a2d8f;
+  --c21:#00b4d8; --c21l:#e8f9fd; --c21d:#007fa0;
+  --c22:#06d6a0; --c22l:#e6fff7; --c22d:#048a66;
+  --c24:#ff9f1c; --c24l:#fff6e8; --c24d:#c06d00;
+  --c210:#ef476f; --c210l:#fff0f3; --c210d:#b01940;
+  --c211:#118ab2; --c211l:#e8f5fa; --c211d:#0a5f7a;
+  --c41:#44cf6c; --c41l:#edfff3; --c41d:#1e8f42;
+}
+html,body{min-height:100vh;font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink)}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.88)}to{opacity:1;transform:scale(1)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-8px)}70%{transform:translateY(-4px)}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-3deg)}40%,80%{transform:rotate(3deg)}}
+@keyframes confetti{0%{opacity:1;transform:translateY(0) rotate(0)}100%{opacity:0;transform:translateY(-60px) rotate(720deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes flip-out{0%{transform:rotateY(0)}100%{transform:rotateY(90deg)}}
+@keyframes flip-in{0%{transform:rotateY(-90deg)}100%{transform:rotateY(0)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(255,107,157,.4)}50%{box-shadow:0 0 40px rgba(255,107,157,.7)}}
+
+.scr{display:none;min-height:100vh}.scr.on{display:block}
+.anim-up{animation:fadeUp .4s ease both}
+.anim-scale{animation:scaleIn .35s cubic-bezier(.34,1.56,.64,1) both}
+
+/* ═══════════════════════════════════
+   ÉCRAN ACCUEIL
+═══════════════════════════════════ */
+.home-wrap{max-width:980px;margin:0 auto;padding:28px 20px 60px}
+
+/* Header accueil */
+.home-hero{background:linear-gradient(135deg,#1a1a2e 0%,#2d2b5a 50%,#1a1a2e 100%);border-radius:24px;padding:36px 36px 30px;margin-bottom:28px;position:relative;overflow:hidden;box-shadow:var(--shl)}
+.home-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,107,157,.25),transparent 70%)}
+.home-hero::after{content:'';position:absolute;bottom:-40px;left:40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,216,.2),transparent 70%)}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px}
+.hero-title span{background:linear-gradient(90deg,#ff6b9d,#7c5cbf,#00b4d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-sub{font-size:14px;color:rgba(255,255,255,.65);line-height:1.65;max-width:520px;position:relative;z-index:1}
+.hero-stats{display:flex;gap:20px;margin-top:22px;flex-wrap:wrap}
+.h-stat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 16px;text-align:center}
+.h-stat-v{font-size:22px;font-weight:900;color:#fff;font-family:'Space Grotesk',sans-serif}
+.h-stat-l{font-size:9.5px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-top:1px}
+
+/* Sélection mode */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+@media(max-width:500px){.mode-row{grid-template-columns:1fr}}
+.mode-card{border-radius:18px;padding:20px;cursor:pointer;border:2.5px solid var(--bd);background:var(--w);transition:all .2s;text-align:left;font-family:'Nunito',sans-serif;position:relative;overflow:hidden}
+.mode-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--mc-a),var(--mc-b));opacity:0;transition:opacity .2s}
+.mode-card:hover{border-color:transparent;transform:translateY(-3px);box-shadow:var(--shm)}
+.mode-card:hover::after{opacity:.07}
+.mode-card.on{border-color:transparent;box-shadow:0 0 0 2.5px var(--mc-a),var(--shm)}
+.mode-ico{font-size:30px;margin-bottom:10px;display:block}
+.mode-name{font-size:15px;font-weight:800;display:block;margin-bottom:4px}
+.mode-desc{font-size:12px;color:var(--ink2);line-height:1.5}
+.mode-tag{display:inline-flex;border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:800;margin-top:8px;background:var(--mc-a);color:white;letter-spacing:.5px}
+
+/* UE grid */
+.ue-section-title{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--ink3);margin-bottom:12px}
+.ue-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.ue-card{border-radius:16px;padding:16px 18px;cursor:pointer;border:2.5px solid transparent;transition:all .2s;text-align:left;font-family:'Nunito',sans-serif;position:relative;overflow:hidden}
+.ue-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.15);transform:translate(30px,-30px)}
+.ue-card:hover{transform:translateY(-3px);box-shadow:var(--shm);filter:brightness(1.04)}
+.ue-card.on{outline:3px solid white;outline-offset:2px;transform:scale(1.02)}
+.ue-card.all-btn{background:linear-gradient(135deg,#1a1a2e,#2d2b5a);color:white}
+.ue-ico{font-size:26px;margin-bottom:8px;display:block}
+.ue-num{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;opacity:.7;margin-bottom:3px}
+.ue-name{font-size:12.5px;font-weight:800;line-height:1.4}
+.ue-count{font-size:10px;opacity:.65;margin-top:5px;font-weight:600}
+.ue-prog{height:3px;border-radius:2px;background:rgba(255,255,255,.25);margin-top:8px;overflow:hidden}
+.ue-prog-fill{height:100%;border-radius:2px;background:rgba(255,255,255,.7);transition:width .8s ease}
+
+.launch-btn{width:100%;padding:16px;background:linear-gradient(135deg,#1a1a2e,#3a2d6a);border:none;border-radius:16px;color:white;font-size:15px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:.3px;transition:all .2s;box-shadow:0 4px 20px rgba(26,26,46,.3)}
+.launch-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(26,26,46,.4)}
+.launch-btn:active{transform:translateY(0)}
+
+/* Barre progression globale */
+.global-prog{background:var(--w);border:1.5px solid var(--bd);border-radius:16px;padding:16px 20px;margin-bottom:20px;box-shadow:var(--sh)}
+.gp-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--ink3);margin-bottom:12px}
+.gp-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.gp-lbl{font-size:11.5px;font-weight:700;color:var(--ink2);width:90px;flex-shrink:0;font-family:'Space Grotesk',sans-serif}
+.gp-bar{flex:1;height:6px;background:#f0eef8;border-radius:3px;overflow:hidden}
+.gp-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.gp-pct{font-size:11px;font-weight:800;font-family:'Space Grotesk',monospace;width:32px;text-align:right}
+
+/* ═══════════════════════════════════
+   ÉCRAN FLASHCARDS
+═══════════════════════════════════ */
+.fc-page{min-height:100vh;display:flex;flex-direction:column}
+.fc-hdr{padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-bottom:2px solid var(--bd);background:var(--w);position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.fc-hdr-l{display:flex;align-items:center;gap:10px}
+.fc-ue-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.fc-ue-name{font-size:12.5px;font-weight:800;color:var(--ink)}
+.fc-hdr-r{display:flex;align-items:center;gap:8px}
+.fc-prog-wrap{display:flex;align-items:center;gap:8px}
+.fc-prog-bar{width:100px;height:6px;background:#f0eef8;border-radius:3px;overflow:hidden}
+.fc-prog-fill{height:100%;border-radius:3px;transition:width .4s}
+.fc-prog-txt{font-size:11px;font-weight:800;color:var(--ink3);font-family:'Space Grotesk',monospace;white-space:nowrap}
+.back-btn{padding:7px 14px;border:2px solid var(--bd);border-radius:20px;background:transparent;cursor:pointer;font-size:11px;font-weight:700;font-family:'Nunito',sans-serif;color:var(--ink2);transition:all .18s}
+.back-btn:hover{border-color:var(--ink);color:var(--ink)}
+
+/* Scores duel */
+.duel-scores{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;padding:10px 20px 0;max-width:640px;margin:0 auto;width:100%}
+.player-score{border-radius:14px;padding:10px 14px;text-align:center;transition:all .3s}
+.player-score.active-player{transform:scale(1.04);box-shadow:var(--shm)}
+.player-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;opacity:.7}
+.player-pts{font-size:24px;font-weight:900;font-family:'Space Grotesk',sans-serif}
+.vs-badge{background:var(--ink);color:white;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800;text-align:center}
+.turn-badge{text-align:center;font-size:11px;font-weight:700;color:var(--ink2);padding:4px 0 10px}
+
+/* Zone carte */
+.card-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;perspective:1200px}
+.card-scene{width:100%;max-width:560px}
+
+/* Carte 3D */
+.flip-card{width:100%;min-height:260px;position:relative;cursor:pointer;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1)}
+.flip-card.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:30px;display:flex;flex-direction:column;box-shadow:var(--shl);min-height:260px}
+.card-front{background:var(--w);border:2.5px solid var(--bd)}
+.card-back{transform:rotateY(180deg)}
+.card-face-badge{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 12px;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;align-self:flex-start}
+.card-ue-label{font-size:10px;font-weight:700;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.card-question{font-size:22px;font-weight:800;line-height:1.4;color:var(--ink);flex:1;display:flex;align-items:center}
+.card-hint{font-size:11px;color:var(--ink3);margin-top:auto;padding-top:14px;display:flex;align-items:center;gap:5px}
+.card-answer{font-size:17px;font-weight:700;line-height:1.65;color:white;flex:1;display:flex;align-items:center}
+.card-answer-wrap{flex:1;display:flex;align-items:center}
+.card-complement{font-size:12.5px;opacity:.8;margin-top:10px;font-style:italic;line-height:1.55;background:rgba(255,255,255,.15);border-radius:10px;padding:9px 12px}
+
+/* Boutons évaluation */
+.eval-row{display:flex;gap:10px;justify-content:center;margin-top:16px;width:100%;max-width:560px}
+.eval-btn{flex:1;padding:13px;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;max-width:200px}
+.eval-ok{background:linear-gradient(135deg,#44cf6c,#1e8f42);color:white;box-shadow:0 4px 16px rgba(68,207,108,.35)}
+.eval-ok:hover{box-shadow:0 6px 24px rgba(68,207,108,.5);transform:translateY(-2px)}
+.eval-ko{background:linear-gradient(135deg,#ff6b6b,#c93030);color:white;box-shadow:0 4px 16px rgba(255,107,107,.35)}
+.eval-ko:hover{box-shadow:0 6px 24px rgba(255,107,107,.5);transform:translateY(-2px)}
+.nxt-btn{padding:13px 28px;background:linear-gradient(135deg,#1a1a2e,#2d2b5a);border:none;border-radius:14px;color:white;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;box-shadow:0 4px 16px rgba(26,26,46,.25);display:none;margin-top:12px}
+.nxt-btn.on{display:block}.nxt-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(26,26,46,.35)}
+
+/* Duel — révéler/valider */
+.duel-actions{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
+.reveal-btn{padding:13px 28px;border:none;border-radius:14px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;color:white;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.reveal-btn:hover{transform:translateY(-2px)}
+
+/* Pièces confetti */
+.confetti-piece{position:fixed;width:10px;height:10px;border-radius:2px;pointer-events:none;animation:confetti 1s ease forwards;z-index:999}
+
+/* ═══════════════════════════════════
+   RÉSULTAT
+═══════════════════════════════════ */
+.res-page{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.res-box{background:var(--w);border-radius:28px;padding:36px;text-align:center;max-width:500px;width:100%;box-shadow:var(--shl);animation:scaleIn .5s cubic-bezier(.34,1.56,.64,1)}
+.res-grade{font-size:72px;margin-bottom:12px;animation:bounce 1s ease .3s}
+.res-score{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;margin-bottom:6px;line-height:1}
+.res-label{font-size:13px;color:var(--ink2);margin-bottom:20px}
+.res-tag{display:inline-flex;border-radius:20px;padding:6px 18px;font-size:13px;font-weight:800;margin-bottom:24px}
+.res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px}
+.res-stat{background:#f8f7ff;border-radius:14px;padding:14px}
+.res-stat-v{font-size:22px;font-weight:900;font-family:'Space Grotesk',sans-serif;margin-bottom:2px}
+.res-stat-l{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--ink3)}
+/* Duel résultat */
+.duel-result{margin-bottom:24px}
+.duel-winner{font-size:16px;font-weight:800;margin-bottom:12px}
+.duel-res-scores{display:flex;gap:12px;justify-content:center}
+.drs-item{border-radius:16px;padding:16px 24px;min-width:120px}
+.drs-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:6px}
+.drs-pts{font-size:32px;font-weight:900;font-family:'Space Grotesk',sans-serif}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.res-btn{padding:13px;border:none;border-radius:13px;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s}
+.res-btn-p{background:linear-gradient(135deg,#1a1a2e,#2d2b5a);color:white;box-shadow:0 4px 16px rgba(26,26,46,.25)}
+.res-btn-s{background:#f8f7ff;border:2px solid var(--bd);color:var(--ink)}
+.res-btn-p:hover,.res-btn-s:hover{transform:translateY(-2px)}
+
+/* Duel — modale setup */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,26,46,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay.show{display:flex}
+.modal-box{background:var(--w);border-radius:24px;padding:32px;max-width:420px;width:100%;text-align:center;box-shadow:var(--shl);animation:scaleIn .35s cubic-bezier(.34,1.56,.64,1)}
+.modal-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--ink2);margin-bottom:22px}
+.modal-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.modal-in{width:100%;padding:12px 16px;border:2px solid var(--bd);border-radius:12px;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;outline:none;transition:border-color .2s;background:var(--bg)}
+.modal-in:focus{border-color:#7c5cbf}
+.modal-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7c5cbf,#c9316a);border:none;border-radius:13px;color:white;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;box-shadow:0 4px 16px rgba(124,92,191,.35)}
+.modal-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(124,92,191,.5)}
+.modal-cancel{background:none;border:none;color:var(--ink3);font-size:12px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:10px;width:100%}
+
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+</style>
+</head>
+<body>
+<!-- ═══ ACCUEIL ═══ -->
+<div class="scr on" id="sw">
+<div class="home-wrap">
+  <div class="home-hero anim-up">
+    <div class="hero-tag">🎓 NurseSimPro</div>
+    <div class="hero-title">Flashcards <span>Semestre 5</span></div>
+    <div class="hero-sub">Révisez seul ou affrontez un ami sur les 9 unités d'enseignement du cinquième semestre IFSI. Référentiel arrêté du 31 juillet 2009.</div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="h-stat-v" id="total-cards">180</div><div class="h-stat-l">Cartes</div></div>
+      <div class="h-stat"><div class="h-stat-v">9</div><div class="h-stat-l">UE</div></div>
+      <div class="h-stat"><div class="h-stat-v" id="mastered-count">0</div><div class="h-stat-l">Maîtrisées</div></div>
+    </div>
+  </div>
+
+  <!-- Mode de jeu -->
+  <div class="ue-section-title">Mode de révision</div>
+  <div class="mode-row">
+    <button class="mode-card on" style="--mc-a:#7c5cbf;--mc-b:#c9316a" onclick="setGameMode('solo',this)">
+      <span class="mode-ico">🎯</span>
+      <span class="mode-name">Mode Solo</span>
+      <div class="mode-desc">Révise à ton rythme. Retourne les cartes et évalue-toi : "Je savais" ou "À revoir".</div>
+      <span class="mode-tag">Apprentissage</span>
+    </button>
+    <button class="mode-card" style="--mc-a:#ff6b9d;--mc-b:#ff9f1c" onclick="setGameMode('duel',this)">
+      <span class="mode-ico">⚔️</span>
+      <span class="mode-name">Mode Duel</span>
+      <div class="mode-desc">2 joueurs s'affrontent. Un lit la question à voix haute, l'autre répond. Points pour les bonnes réponses !</div>
+      <span class="mode-tag" style="background:linear-gradient(135deg,#ff6b9d,#ff9f1c)">Avec un ami</span>
+    </button>
+  </div>
+
+  <!-- Barre de progression globale -->
+  <div class="global-prog anim-up">
+    <div class="gp-title">Progression — session en cours</div>
+    <div id="prog-bars"></div>
+  </div>
+
+  <!-- UE sélection -->
+  <div class="ue-section-title">Choisir une unité d'enseignement</div>
+  <div class="ue-grid" id="ue-grid"></div>
+  <button class="launch-btn" onclick="launch()">Commencer la révision →</button>
+</div>
+</div>
+
+<!-- ═══ FLASHCARDS ═══ -->
+<div class="scr" id="sf">
+<div class="fc-page" id="fc-page">
+  <div class="fc-hdr">
+    <div class="fc-hdr-l">
+      <div class="fc-ue-dot" id="fc-dot"></div>
+      <span class="fc-ue-name" id="fc-ue-name">UE</span>
+    </div>
+    <div class="fc-hdr-r">
+      <div class="fc-prog-wrap">
+        <div class="fc-prog-bar"><div class="fc-prog-fill" id="fc-prog-fill" style="width:0%"></div></div>
+        <span class="fc-prog-txt" id="fc-prog-txt">0/0</span>
+      </div>
+      <button class="back-btn" onclick="goHome()">← Menu</button>
+    </div>
+  </div>
+
+  <!-- Duel scores (caché en solo) -->
+  <div id="duel-hdr" style="display:none">
+    <div class="duel-scores">
+      <div class="player-score" id="p1-score-box"><div class="player-name" id="p1-name">J1</div><div class="player-pts" id="p1-pts">0</div></div>
+      <div class="vs-badge">VS</div>
+      <div class="player-score" id="p2-score-box"><div class="player-name" id="p2-name">J2</div><div class="player-pts" id="p2-pts">0</div></div>
+    </div>
+    <div class="turn-badge" id="turn-badge">—</div>
+  </div>
+
+  <!-- Carte -->
+  <div class="card-area">
+    <div class="card-scene">
+      <div class="flip-card" id="flip-card" onclick="flipCard()">
+        <div class="card-face card-front" id="card-front">
+          <div class="card-face-badge" id="cf-badge">❓ Question</div>
+          <div class="card-ue-label" id="cf-ue-lbl"></div>
+          <div class="card-question" id="cf-question"><span id="cf-q-text"></span></div>
+          <div class="card-hint" id="cf-hint">👆 Cliquez pour révéler la réponse</div>
+        </div>
+        <div class="card-face card-back" id="card-back">
+          <div class="card-face-badge" id="cb-badge">✅ Réponse</div>
+          <div class="card-answer-wrap">
+            <div class="card-answer" id="cb-answer"></div>
+          </div>
+          <div class="card-complement" id="cb-comp" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions solo -->
+    <div id="solo-eval" style="display:none">
+      <div class="eval-row">
+        <button class="eval-btn eval-ko" onclick="evalCard(false)">✗ À revoir</button>
+        <button class="eval-btn eval-ok" onclick="evalCard(true)">✓ Je savais !</button>
+      </div>
+    </div>
+
+    <!-- Actions duel -->
+    <div id="duel-actions" style="display:none">
+      <div class="duel-actions">
+        <button class="reveal-btn" id="reveal-btn" style="background:linear-gradient(135deg,#7c5cbf,#c9316a)" onclick="duelReveal()">👁 Révéler la réponse</button>
+        <button class="reveal-btn" id="correct-btn" style="background:linear-gradient(135deg,#44cf6c,#1e8f42);display:none" onclick="duelScore(true)">✓ Bonne réponse !</button>
+        <button class="reveal-btn" id="wrong-btn" style="background:linear-gradient(135deg,#ff6b6b,#c93030);display:none" onclick="duelScore(false)">✗ Mauvaise réponse</button>
+      </div>
+    </div>
+
+    <button class="nxt-btn" id="nxt-btn" onclick="nextCard()">Carte suivante →</button>
+  </div>
+</div>
+</div>
+
+<!-- ═══ RÉSULTAT ═══ -->
+<div class="scr" id="sres">
+<div class="res-page">
+  <div class="res-box">
+    <div class="res-grade" id="res-grade">🎓</div>
+    <div class="res-score" id="res-score">—</div>
+    <div class="res-label" id="res-label">—</div>
+    <div class="res-tag" id="res-tag">—</div>
+    <!-- Solo stats -->
+    <div id="solo-res-stats" style="display:none">
+      <div class="res-stats">
+        <div class="res-stat"><div class="res-stat-v" id="rs-ok" style="color:#44cf6c">0</div><div class="res-stat-l">Je savais</div></div>
+        <div class="res-stat"><div class="res-stat-v" id="rs-ko" style="color:#ff6b6b">0</div><div class="res-stat-l">À revoir</div></div>
+        <div class="res-stat"><div class="res-stat-v" id="rs-total" style="color:#7c5cbf">0</div><div class="res-stat-l">Total</div></div>
+      </div>
+    </div>
+    <!-- Duel résultat -->
+    <div class="duel-result" id="duel-res" style="display:none">
+      <div class="duel-winner" id="duel-winner"></div>
+      <div class="duel-res-scores">
+        <div class="drs-item" id="drs1"><div class="drs-name" id="drs1-name">J1</div><div class="drs-pts" id="drs1-pts">0</div></div>
+        <div class="drs-item" id="drs2"><div class="drs-name" id="drs2-name">J2</div><div class="drs-pts" id="drs2-pts">0</div></div>
+      </div>
+    </div>
+    <div class="res-actions">
+      <button class="res-btn res-btn-s" onclick="goHome()">← Accueil</button>
+      <button class="res-btn res-btn-p" onclick="relaunch()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ MODALE DUEL ═══ -->
+<div class="modal-overlay" id="duel-modal">
+  <div class="modal-box">
+    <div style="font-size:40px;margin-bottom:10px">⚔️</div>
+    <div class="modal-title">Mode Duel</div>
+    <div class="modal-sub">Entrez les prénoms des deux joueurs pour commencer la partie !</div>
+    <div class="modal-inputs">
+      <input class="modal-in" id="p1-input" type="text" placeholder="Prénom Joueur 1 🔴" maxlength="15"/>
+      <input class="modal-in" id="p2-input" type="text" placeholder="Prénom Joueur 2 🔵" maxlength="15"/>
+    </div>
+    <button class="modal-btn" onclick="startDuel()">Lancer le duel ⚔️</button>
+    <button class="modal-cancel" onclick="closeDuelModal()">Annuler</button>
+  </div>
+</div>
+<script>
+/* ════════════════════════════════════════════
+   FLASHCARDS SEMESTRE 5 — 9 UE — 180 CARTES
+════════════════════════════════════════════ */
+const UES = {
+ ue26s5:{id:'ue26s5',num:'UE 2.6 S5',name:'Processus psychopathologiques',ico:'🧩',color:'#7b2d8b',light:'#f5f0ff',dark:'#4a1060',
+  cards:[
+  {q:"Définissez la schizophrénie : physiopathologie, symptômes et traitements.",a:"Dysrégulation dopaminergique (hyperdopaminergie mésolimbique = symptômes positifs, hypodopaminergie mésocorticale = symptômes négatifs). Symptômes positifs : hallucinations auditives (voix), délires. Négatifs : apathie, anhédonie, alogie, repli social. Traitements : antipsychotiques + psychoéducation + réhabilitation psychosociale.",c:"Le déficit cognitif est présent dans 75% des cas et fortement prédicteur du handicap fonctionnel. La schizophrénie débute généralement entre 15 et 25 ans. Risque suicidaire : 5-10%."},
+  {q:"Définissez le trouble bipolaire de type I vs type II.",a:"Type I : au moins un épisode maniaque caractérisé (humeur euphorique ou irritable, ↓ besoin sommeil, fuite des idées, désinhibition, grandiosité). Type II : hypomanie (< intensité) + épisodes dépressifs majeurs. Les deux incluent des phases dépressives.",c:"Thymorégulateurs : lithium (référence), valproate, lamotrigine. Surveillance lithiémie (0,6-0,8 mEq/L). Marge thérapeutique étroite. Le risque suicidaire est maximal en phase dépressive."},
+  {q:"Définissez la dépression sévère et son risque suicidaire.",a:"EDM sévère : symptômes au quotidien > 2 semaines (tristesse profonde, anhédonie, ralentissement psychomoteur, insomnie ou hypersomnie, idées de mort). Risque suicidaire : évaluer intention (plan, moyen, accès).",c:"Facteurs de risque suicidaire : tentative antérieure, isolement, alcool, accès aux armes ou médicaments. Hospitalisation si plan précis ou moyen accessible. Contrat de non-suicide non validé scientifiquement."},
+  {q:"Définissez les troubles anxieux et leur traitement.",a:"TAG (trouble anxieux généralisé) : inquiétude persistante > 6 mois. Trouble panique : attaques de panique récurrentes avec agoraphobie possible. Phobies spécifiques, phobie sociale. Traitements : TCC (1ère ligne) + ISRS (long terme), BZD (court terme uniquement).",c:"Les TCC (thérapies cognitivo-comportementales) sont plus efficaces que les médicaments à long terme pour les troubles anxieux. Exposition graduelle = technique clé pour les phobies."},
+  {q:"Définissez l'état de stress post-traumatique (ESPT) et ses traitements.",a:"Syndrome survenant après exposition à un événement traumatique menaçant la vie. Symptômes : reviviscences (flashbacks, cauchemars), hypervigilance, évitement, engourdissement émotionnel. Dure > 1 mois.",c:"Traitements : EMDR (Eye Movement Desensitization and Reprocessing) = 1ère intention, TCC centrée trauma, paroxétine/sertraline. Terrain : personnel soignant, militaires, victimes de violence."},
+  {q:"Définissez les troubles de la personnalité et leur prise en charge.",a:"Modes durables et rigides de perception et de comportement déviant des normes culturelles, causant une souffrance ou un dysfonctionnement. Clusters A (bizarre), B (dramatique/instable), C (anxieux/inhibé).",c:"Cluster B : borderline (instabilité émotionnelle), antisocial, histrionique, narcissique. TCC dialectique (Linehan) = référence pour le borderline. Ces troubles ne sont pas des maladies mentales mais des organisations de personnalité."},
+  {q:"Définissez les conduites addictives et la réduction des risques.",a:"Addiction avec substance (alcool, drogues, tabac) ou sans substance (jeu, écrans, sexe). Traitement : substitution (méthadone, buprénorphine), sevrage progressif, psychothérapie motivationnelle, groupes d'entraide.",c:"Réduction des risques : programmes d'échange de seringues, salles de consommation à moindre risque, naloxone disponible (overdose opioïdes). L'objectif n'est pas toujours l'abstinence totale immédiate."},
+  {q:"Définissez la psychose puerpérale et sa prise en charge.",a:"Urgence psychiatrique débutant dans les 2-3 semaines post-partum : confusion, délire, hallucinations, agitation, risque de néonaticide. Nécessite hospitalisation mère-enfant en urgence.",c:"Facteurs de risque : ATCD personnels ou familiaux de troubles de l'humeur. Traitement : antipsychotiques + stabilisateurs de l'humeur. La distinction avec le baby blues (3-5 jours) et la dépression post-partum (2-8 semaines) est essentielle."},
+  {q:"Définissez le syndrome de Münchhausen et les troubles factices.",a:"Le patient simule ou provoque délibérément des maladies ou blessures pour assumer le rôle de malade. Par procuration (sur un enfant) : forme de maltraitance grave.",c:"Diagnostic difficile. Aborder avec tact sans confrontation brutale. Psychothérapie à long terme. Le soignant doit informer l'équipe et documenter sans accuser directement le patient."},
+  {q:"Définissez la démence et ses particularités psychiatriques.",a:"Les troubles psychiatriques (dépression, anxiété, psychose, agitation) surviennent dans 80-90% des démences et sont souvent les premiers symptômes. BPSD (Behavioral and Psychological Symptoms of Dementia).",c:"Prise en charge non médicamenteuse prioritaire : approche Montessori, musicothérapie, aromathérapie, validation de Naomi Feil. Antipsychotiques = dernier recours (risque AVC, surmortalité chez le sujet âgé dément)."},
+  {q:"Qu'est-ce que l'hospitalisation psychiatrique sous contrainte (soins sans consentement) ?",a:"SDPT : soins à la demande d'un tiers (famille) + 2 certificats médicaux. SPDT péril imminent : 1 certificat si danger immédiat. SDRE : décision préfectorale si danger pour autrui. Contrôle JLD après 12 jours.",c:"Le juge des libertés et de la détention (JLD) contrôle systématiquement la légalité des mesures. Le patient hospitalisé sans consentement conserve tous ses droits civils. L'infirmier trace et surveille rigoureusement."},
+  {q:"Définissez la prise en charge infirmière en unité psychiatrique.",a:"Observation clinique quotidienne (humeur, comportement, sommeil, alimentation, hygiène), entretiens infirmiers, gestion des médicaments, participation aux activités thérapeutiques, prévention des fugues et passages à l'acte.",c:"La présence soignante continue et la relation thérapeutique stable sont les outils thérapeutiques principaux en psychiatrie. L'infirmier est le premier interlocuteur du patient hospitalisé."},
+  {q:"Définissez la réhabilitation psychosociale.",a:"Ensemble d'interventions visant à aider les personnes atteintes de troubles mentaux sévères à retrouver un fonctionnement optimal dans leur vie quotidienne, professionnelle et sociale (remédiation cognitive, entraînement aux habiletés sociales).",c:"Modèle du rétablissement (recovery) : l'objectif est la vie la plus satisfaisante possible, pas nécessairement l'absence totale de symptômes. Le rétablissement est possible même avec des symptômes persistants."},
+  {q:"Définissez la psychiatrie de liaison.",a:"Activité psychiatrique consistant à répondre aux demandes d'avis formulées par d'autres spécialités médicales pour des patients présentant des troubles psychiques associés à une pathologie somatique.",c:"L'infirmier de liaison psychiatrique réalise des évaluations, des consultations infirmières et des entretiens de crise dans les services non psychiatriques. Fréquent aux urgences, en oncologie, en réanimation."},
+  {q:"Définissez le trouble du spectre autistique (TSA).",a:"Trouble neuro-développemental caractérisé par des difficultés persistantes dans la communication et les interactions sociales, et des comportements répétitifs et/ou intérêts restreints.",c:"Prévalence : 1/100 enfants. Diagnostic basé sur l'observation clinique (ADI-R, ADOS). Pas de traitement curatif. Approches éducatives (ABA, PECS, TEACCH) = référence. L'infirmier adapte sa communication."},
+  {q:"Définissez le syndrome de sevrage alcoolique et sa prise en charge.",a:"Apparaît 6-24h après arrêt de l'alcool chez un patient dépendant : tremblements, sueurs, anxiété, tachycardie. Formes graves : convulsions (J1-2), delirium tremens (J2-5) = urgence vitale.",c:"Traitement : benzodiazépines (diazépam) selon score CIWA-Ar, thiamine IV (prévention Gayet-Wernicke), hydratation. Le score CIWA-Ar guide les doses de benzodiazépines. Décroissance progressive des BZD."},
+  {q:"Définissez le trouble déficit de l'attention avec hyperactivité (TDAH).",a:"Trouble neurodéveloppemental caractérisé par inattention, hyperactivité et impulsivité, débutant avant 12 ans et s'exprimant dans plusieurs contextes. Prévalence adulte : 2-3%.",c:"Traitements : méthylphénidate (Ritaline) = 1ère ligne. TCC + accompagnement scolaire/professionnel. L'adulte avec TDAH non traité est à risque de dépression, addiction, accidents."},
+  {q:"Définissez la crise suicidaire et l'évaluation du risque.",a:"Crise psychique aiguë avec idéations suicidaires intenses. Évaluation : intention (idéation passive vs active), plan (méthode, moyen, accès), urgence (passage à l'acte imminent), dangerosité (létalité du moyen).",c:"Facteurs de risque principaux : tentative antérieure (×30 risque), isolement, alcool, dépression non traitée, accès aux moyens. L'infirmier doit rester avec le patient, alerter et sécuriser l'environnement."},
+  {q:"Définissez les soins infirmiers centrés sur le rétablissement en psychiatrie.",a:"Approche orientée vers les forces du patient, ses projets de vie et son pouvoir d'agir (empowerment), plutôt que sur les symptômes et les limitations.",c:"Principes du rétablissement : espoir, autodétermination, participation sociale, sens donné à l'expérience. L'infirmier valorise les ressources du patient et ne le réduit pas à sa maladie."},
+  {q:"Définissez la gestion des crises d'agitation en psychiatrie.",a:"Désescalade verbale (ton calme, distance sécurisante, empathie, écoute) → médication sédative si nécessaire → contention physique en dernier recours, avec prescription médicale et surveillance.",c:"La désescalade verbale est efficace dans 70% des cas. L'infirmier ne s'isole jamais avec un patient agité. La contention mécanique n'est jamais une sanction mais une mesure de sécurité temporaire."},
+ ]},
+
+ ue29:{id:'ue29',num:'UE 2.9 S5',name:'Processus tumoraux',ico:'🎗️',color:'#e63946',light:'#fff0f2',dark:'#9b1a24',
+  cards:[
+  {q:"Définissez le cancer et ses mécanismes carcinogénétiques.",a:"Prolifération cellulaire incontrôlée liée à des mutations de gènes régulateurs (proto-oncogènes → oncogènes, gènes suppresseurs de tumeurs). Mécanismes : instabilité génomique, échappement à l'apoptose, néoangiogenèse, invasion.",c:"Modèle multi-étapes : initiation (mutation initiale) → promotion (expansion clonale) → progression (invasion, métastases). Le cancer résulte de l'accumulation de plusieurs mutations."},
+  {q:"Définissez les facteurs de risque et la prévention des cancers.",a:"Modifiables : tabac (30% des cancers), alcool (12%), obésité, sédentarité, infections (HPV, VHB, VHC, Helicobacter pylori). Non modifiables : âge, sexe, génétique (BRCA1/2).",c:"Prévention primaire : arrêt tabac, vaccination HPV et VHB, alimentation équilibrée. Prévention secondaire : dépistages organisés (sein, colorectal, col utérin). L'infirmier promeut ces actions à chaque contact."},
+  {q:"Définissez la classification TNM des cancers.",a:"T (Tumeur) : T0 à T4 selon la taille et l'extension locale. N (Node) : N0 (pas de ganglion) à N3 (ganglions à distance). M (Métastase) : M0 (absence) ou M1 (présence). Détermine le stade I à IV.",c:"Le stade conditionne le traitement et le pronostic. Un cancer N0M0 est localisé, meilleur pronostic. Un cancer M1 est métastatique, traitement à visée palliative en général."},
+  {q:"Définissez la chimiothérapie et ses mécanismes d'action.",a:"Agents cytotoxiques agissant sur différentes phases du cycle cellulaire : alkylants (cisplatine), antimétabolites (5-FU, méthotrexate), inhibiteurs des topoisomérases (irinotécan), poisons du fuseau (taxanes, vinca-alcaloïdes).",c:"Cycles de 21-28 jours. Toxicité systémique car cible toutes les cellules à division rapide (médullaires, digestives, pilaires). Aplasie = période de vulnérabilité maximale."},
+  {q:"Définissez la radiothérapie et ses effets secondaires.",a:"Utilisation de rayonnements ionisants pour détruire les cellules tumorales par dommages à l'ADN. Externe (accélérateur linéaire), interne (curiethérapie), conformationnelle, stéréotaxique.",c:"Effets secondaires locaux selon la zone irradiée : mucite, oesophagite, cystite, entérite, radiodermatite. Effets systémiques : fatigue, aplasie modérée. L'infirmier surveille et prend en charge les effets locaux."},
+  {q:"Définissez l'immunothérapie du cancer et ses toxicités.",a:"Inhibiteurs de points de contrôle immunitaires (checkpoint inhibitors) : anti-PD1/PDL1 (nivolumab, pembrolizumab), anti-CTLA4 (ipilimumab). Réactivent l'immunité anti-tumorale.",c:"Toxicités immune-related (irAE) : pneumopathie, colite, hépatite, thyroïdite, hypophysite, toxicité cutanée. Peut survenir des mois après le traitement. Traitement : corticoïdes + arrêt si sévère."},
+  {q:"Définissez les thérapies ciblées et la médecine de précision.",a:"Médicaments ciblant des altérations moléculaires spécifiques de la tumeur : imatinib (BCR-ABL), trastuzumab (HER2+), erlotinib (EGFR muté). Nécessitent un test moléculaire préalable.",c:"Médecine de précision = traitement individualisé basé sur le profil moléculaire de la tumeur (biomarqueurs). Améliore l'efficacité et réduit la toxicité par rapport à la chimiothérapie classique."},
+  {q:"Définissez les soins de support en oncologie.",a:"Ensemble des soins non antitumoraux améliorant la qualité de vie : prise en charge de la douleur, de la fatigue, des nausées/vomissements (5-HT3 inhibiteurs, corticoïdes, NK1), soins nutritionnels, soutien psychologique.",c:"L'infirmier coordinateur en oncologie (ICO) coordonne les soins de support et le suivi entre les chimiothérapies. Les soins de support sont intégrés dès le début du traitement."},
+  {q:"Définissez la neutropénie fébrile et sa prise en charge.",a:"Polynucléaires neutrophiles < 0,5 G/L avec fièvre ≥ 38,5°C (ou > 38°C à deux reprises). Urgence médicale : hémocultures x2 + ECBU + RX thorax → antibiothérapie IV à large spectre dans les 60 min.",c:"Score MASCC pour évaluer le risque : ≥ 21 = faible risque (antibiothérapie orale possible). < 21 = haut risque, hospitalisation obligatoire. Facteurs de croissance (G-CSF) en prévention primaire si risque > 20%."},
+  {q:"Définissez l'alopécie et l'accompagnement infirmier.",a:"Perte des cheveux liée à la chimiothérapie (agents alkylants, taxanes), souvent réversible (3-6 mois après arrêt). Peut affecter profondément l'image corporelle et l'estime de soi.",c:"Casque réfrigérant = prévention de l'alopécie dans certains cas. L'infirmier aborde le sujet avec sensibilité, informe sur le casque de refroidissement, oriente vers la prothèse capillaire (remboursée)."},
+  {q:"Définissez la mucite et sa prise en charge.",a:"Inflammation douloureuse des muqueuses de la bouche et du tube digestif liée à la chimiothérapie ou la radiothérapie. Grades I-IV selon l'OMS (érythème → ulcérations → incapacité à s'alimenter).",c:"Prévention : hygiène buccale rigoureuse (bain de bouche bicarbonate + chlorhexidine), hydratation, glace pendant la chimiothérapie (cytoprotection locale). Traitement : antifongiques si candidose, morphine si grade III-IV."},
+  {q:"Définissez les soins infirmiers lors de l'administration de chimiothérapie.",a:"Avant : vérification NFS (seuils : PNN > 1 G/L, plaquettes > 75-100 G/L), bilan biologique, pesée, consentement, VVP ou chambre implantable. Pendant : surveillance signes anaphylaxie, extravasation. Après : rinçage voie, traçabilité, éducation effets secondaires.",c:"Chambre implantable (PAC) : ponction avec aiguille de Huber non-carottante, sous asepsie chirurgicale. Rinçage sérum physiologique + héparine (ou serum phy selon protocole) après utilisation."},
+  {q:"Définissez la greffe de cellules souches hématopoïétiques (CSH).",a:"Remplacement de la moelle osseuse défaillante ou cancéreuse par des CSH saines (autologue = propres CSH, allogénique = donneur). Indications : leucémies, lymphomes, myélomes.",c:"Phase critique : aplasie post-conditionnement (10-14 jours). Risque GVH (Graft Versus Host Disease) dans l'allogreffe : cellules du donneur attaquent les tissus du receveur. Isolement protecteur strict."},
+  {q:"Définissez le cancer du sein et les soins infirmiers.",a:"1er cancer chez la femme. Facteurs de risque : âge, BRCA1/2, hormones. Dépistage : mammographie 50-74 ans. Traitement : chirurgie (mastectomie ou tumorectomie) + radiothérapie + hormonothérapie ± chimiothérapie.",c:"Soins infirmiers post-mastectomie : drain de redon, prévention lymphœdème (mesures préventives), soins de la cicatrice, accompagnement image corporelle, rééducation du membre supérieur."},
+  {q:"Définissez le cancer colorectal et ses soins infirmiers.",a:"2e cancer en incidence. Dépistage : test immunologique FIT (50-74 ans). Traitement : chirurgie (colectomie) ± FOLFOX/FOLFIRI en adjuvant. Soins : stomie (colostomie ou iléostomie) = éducation prioritaire.",c:"Éducation stomie : appareillage, vidange de la poche, hygiène de la stomie, alimentation adaptée, reprise progressive des activités. L'infirmier stomathérapeute = référent."},
+  {q:"Définissez la fatigue cancéreuse et sa prise en charge.",a:"Épuisement persistant, multidimensionnel (physique, cognitif, émotionnel), non soulagé par le repos, lié au cancer ou ses traitements. Prévalence : 70-100% des patients sous traitement.",c:"Prise en charge : activité physique adaptée (preuves solides), psychothérapie (TCC), gestion du sommeil, correction des facteurs réversibles (anémie, hypothyroïdie, dépression, douleur)."},
+  {q:"Définissez les troubles nutritionnels en oncologie et leur prise en charge.",a:"Cachexie tumorale : perte de poids > 5% en 6 mois avec syndrome inflammatoire systémique, résistant à la nutrition. Dénutrition : NRS-2002 ≥ 3. Prise en charge : nutrition orale enrichie → entérale → parentérale.",c:"L'anorexie-cachexie tumorale ne répond pas à la seule augmentation des apports. Elle est multifactorielle (cytokines, métabolisme altéré). La corticothérapie courte améliore temporairement l'appétit."},
+  {q:"Définissez le lymphœdème post-traitement et sa prévention.",a:"Accumulation de lymphe dans les tissus après curage ganglionnaire ou radiothérapie des aires ganglionnaires. Prévention : éviter les piqûres/prises de sang du côté traité, port de vêtements serrés, chaleur excessive.",c:"Traitement : drainage lymphatique manuel, manchon de compression, mobilisation, soins de peau. L'infirmier éduque dès l'hospitalisation sur les gestes à éviter à vie pour le membre concerné."},
+  {q:"Définissez l'annonce diagnostique du cancer et le rôle infirmier.",a:"Dispositif d'annonce HAS : consultation médicale d'annonce + consultation infirmière d'annonce + accès aux soins de support + temps d'accompagnement soignant. L'infirmier reçoit le patient après le médecin.",c:"La consultation infirmière d'annonce : reformuler, identifier les émotions, évaluer la compréhension, présenter les soins de support disponibles. L'infirmier ne donne pas le diagnostic, il accompagne."},
+  {q:"Définissez les soins palliatifs précoces en oncologie.",a:"Introduction précoce des soins palliatifs dès le diagnostic de cancer avancé, simultanément aux traitements curatifs. Améliore la qualité de vie et, pour certains cancers, la survie (étude Temel 2010).",c:"Les soins palliatifs précoces ne signifient pas arrêter les traitements. Ils préparent progressivement le patient à une possible évolution défavorable tout en maintenant l'espoir."},
+ ]},
+
+ ue211s5:{id:'ue211s5',num:'UE 2.11 S5',name:'Pharmacologie et thérapeutiques',ico:'💊',color:'#0077b6',light:'#e8f4fd',dark:'#005180',
+  cards:[
+  {q:"Définissez la pharmacocinétique et ses 4 étapes (ADME).",a:"Absorption (passage dans le sang), Distribution (répartition dans l'organisme), Métabolisme (transformation hépatique, effet de premier passage), Élimination (rénale, biliaire, pulmonaire).",c:"La biodisponibilité = fraction du médicament atteignant la circulation systémique. Par voie IV : 100%. Voie orale : variable selon l'effet de premier passage hépatique et l'absorption intestinale."},
+  {q:"Définissez le calcul de dose infirmier et la règle des 3 temps.",a:"Calcul : dose à administrer (mg) = [dose prescrite (mg/kg) × poids (kg)]. Volume = [dose (mg) / concentration (mg/mL)]. Règle des 3 temps : avant préparation (vérifier), pendant (lire étiquette), avant administration (re-vérifier).",c:"Erreur classique : confusion mg et mL, facteur 10. Double vérification obligatoire pour les médicaments à risque (insuline, anticoagulants, morphine). Toujours utiliser une calculatrice pour les dilutions."},
+  {q:"Définissez les chimiothérapies anticancéreuses et leurs toxicités spécifiques.",a:"Alkylants (cisplatine) : néphrotoxicité, neuropathie. Anthracyclines (doxorubicine) : cardiotoxicité (dose-cumulée limitante). Taxanes (paclitaxel) : neuropathie. Fluorouracile (5-FU) : mucite, syndrome main-pied.",c:"Cardiotoxicité des anthracyclines : surveillance FEVG avant chaque cure au-delà d'une certaine dose cumulée. Néphrotoxicité cisplatine : hyperhydratation IV obligatoire 2h avant et après l'injection."},
+  {q:"Définissez les psychotropes et leur classification.",a:"Anxiolytiques (BZD : alprazolam, diazépam). Hypnotiques (zolpidem, zopiclone). Antidépresseurs (ISRS, IRSNA, tricycliques). Antipsychotiques (halopéridol, rispéridone). Thymorégulateurs (lithium, valproate).",c:"BZD : dépendance et tolérance en cas d'usage prolongé. Ne pas arrêter brutalement (convulsions). Durée maximale : 4-12 semaines selon les BZD. L'infirmier surveille la sédation, les chutes chez la personne âgée."},
+  {q:"Définissez les anticoagulants et les antiagrégants plaquettaires.",a:"HNF (héparine non fractionnée) : contrôle TCA. HBPM (énoxaparine) : contrôle activité anti-Xa. AVK (warfarine) : contrôle INR (cible 2-3). AOD (rivaroxaban, apixaban) : pas de surveillance routine. Antiagrégants : aspirine (COX-1), clopidogrel (P2Y12).",c:"Antagonisation : sulfate de protamine pour HNF/HBPM, vitamine K + CCP pour AVK, idarucizumab pour dabigatran, andexanet alfa pour rivaroxaban/apixaban. Surveillance infirmière : signes hémorragiques, urines rosées, hémostase."},
+  {q:"Définissez la pharmacologie gériatrique et ses spécificités.",a:"Le vieillissement modifie la pharmacocinétique : ↓ absorption, ↓ masse musculaire (↓ Vd pour médicaments hydrophiles), ↓ métabolisme hépatique (CYP450), ↓ filtration rénale (↑ toxicité des médicaments à élimination rénale).",c:"Règle START/STOPP pour optimiser les prescriptions chez le sujet âgé. Médicaments à risque chez le sujet âgé (liste de Beers) : BZD, anticholinergiques, AINS, opioïdes. Règle : start low, go slow."},
+  {q:"Définissez la pharmacologie pédiatrique et ses règles.",a:"Posologies basées sur le poids (mg/kg) ou la surface corporelle (mg/m²). Métabolisme différent selon l'âge. Certains médicaments ont des CI absolues chez l'enfant : aspirine (syndrome de Reye), fluoroquinolones (< 15 ans), tétracyclines (< 8 ans).",c:"Les formes pédiatriques (sirop, suppositoire, solution buvable) facilitent l'administration mais nécessitent une adaptation stricte des doses. Ne jamais couper une gélule à libération prolongée."},
+  {q:"Définissez les interactions médicamenteuses et leur prévention.",a:"Pharmacocinétiques : inhibition/induction du CYP450 (fluconazole + AVK = ↑ INR). Pharmacodynamiques : effets additifs (morphine + BZD = dépression respiratoire) ou antagonistes. Vérification : Thériaque, Vidal.",c:"Inducteurs CYP3A4 : rifampicine, phénytoïne, millepertuis (↓ concentration des médicaments métabolisés par CYP3A4). Inhibiteurs : clarithromycine, kétoconazole (↑ toxicité). L'infirmier signale toute association suspecte."},
+  {q:"Définissez les médicaments néphrotoxiques et leur surveillance.",a:"Principaux : aminosides (gentamicine), cisplatine, AINS, produits de contraste iodés, lithium. Surveillance : créatinine + DFG avant et après. Chez l'insuffisant rénal : adapter les doses ou CI.",c:"Règle de la « triple whammy » (triple effet néphrotoxique) : IEC + AINS + diurétique = risque majeur d'IRA (insuffisance rénale aiguë). L'infirmier doit identifier cette association et alerter."},
+  {q:"Définissez les médicaments tératogènes et les précautions en âge de procréer.",a:"Isotrétinoïne, valproate (malformations), MTX, thalidomide, AVK (fœtopathie). Test de grossesse négatif obligatoire avant certains traitements. Contraception efficace requise pendant et après le traitement.",c:"Programme de prévention grossesse (PPG) obligatoire pour le valproate depuis 2018 (malformations majeures, retard neurodéveloppement). Signature d'un accord de soins annuel."},
+  {q:"Définissez le syndrome sérotoninergique et ses signes cliniques.",a:"Toxicité liée à une hypersérotoninémie : triade confusion/agitation + hyperactivité neurovégétative (tachycardie, hyperthermie, diaphorèse) + anomalies neuromusculaires (clonus, myoclonies, hyperréflexie).",c:"Causes : association ISRS + tramadol, triptan, linézolide, IMAO. Traitement : arrêt des médicaments sérotoninergiques, cyproheptadine (antagoniste sérotoninergique), refroidissement, BZD pour l'agitation."},
+  {q:"Définissez le syndrome malin des neuroleptiques (SMN).",a:"Complication rare mais grave des antipsychotiques : hyperthermie > 40°C, rigidité musculaire diffuse, dysautonomie, confusion. CPK très élevée, insuffisance rénale possible.",c:"Urgence vitale. Traitement : arrêt immédiat du neuroleptique, refroidissement, dantrolène (relaxant musculaire), bromocriptine, réanimation. Mortalité 10-20% sans traitement. Différent du SMN : syndrome sérotoninergique."},
+  {q:"Définissez la voie transdermique et ses médicaments.",a:"Absorption cutanée permettant un effet systémique : patches de fentanyl (douleur chronique, changement toutes les 72h), nitroglycérine (angor), œstrogènes (contraception, ménopause), nicotine (sevrage tabagique).",c:"Avantages : évite l'effet premier passage hépatique, libération prolongée, bonne observance. Inconvénients : délai d'action long (6-12h pour le fentanyl), irritation cutanée, variabilité d'absorption."},
+  {q:"Définissez le calcul de débit de perfusion.",a:"Débit (mL/h) = Volume total (mL) / Durée (h). Gouttes/min = Volume (mL) / Durée (min) × facteur de gouttes (20 gttes/mL pour macrogouttes, 60 gttes/mL pour microgouttes). Toujours vérifier avec la pompe.",c:"Exemple : 500 mL en 4h = 125 mL/h. En gouttes/min sur macrogouttes = 500 / 240 × 20 = 41,7 gttes/min ≈ 42 gttes/min. Une erreur de débit peut être fatale pour les médicaments vasoactifs."},
+  {q:"Définissez les antiseptiques et leur bon usage.",a:"Antiseptiques locaux : polyvidone iodée (Bétadine), chlorhexidine, alcool 70°. Utilisations : désinfection cutanée, pansements. Jamais sur tissu de granulation (cytotoxique). Ne pas mélanger les antiseptiques.",c:"La chlorhexidine est l'antiseptique de référence pour la pose de cathéters (HAS 2010). La Bétadine n'est plus recommandée pour la désinfection cutanée avant geste invasif (moins efficace)."},
+  {q:"Définissez les antalgiques et l'échelle de l'OMS.",a:"Palier 1 : non-opioïdes (paracétamol 1g/6h, AINS, aspirine). Palier 2 : opioïdes faibles (tramadol, codéine). Palier 3 : opioïdes forts (morphine, oxycodone, fentanyl, hydromorphone).",c:"Paracétamol : maximum 4 g/j adulte sain, 2 g/j si hépatopathie ou dénutrition. Surdosage = 1ère cause d'hépatite fulminante. Antidote : N-acétylcystéine IV."},
+  {q:"Définissez les diurétiques et leurs contre-indications.",a:"Diurétiques de l'anse (furosémide) : ↓ kaliémie, ototoxicité à fortes doses. Thiazidiques : dyslipidémie, hyperuricémie. Épargneurs potassium (spironolactone) : hyperkaliémie, gynécomastie.",c:"Surveillance systématique : kaliémie, créatinine, diurèse, poids. Furosémide IV : bolus à ne pas dépasser 4 mg/min (ototoxicité). Hyponatrémie = complication fréquente des diurétiques thiazidiques chez la personne âgée."},
+  {q:"Définissez les règles de stockage et de conservation des médicaments.",a:"Température ambiante (15-25°C) pour la plupart. Réfrigérateur (2-8°C) : insuline ouverte, vaccins, ampoules certains médicaments. À l'abri de la lumière : nitrites, métronidazole, furosémide. Stupéfiants : armoire sécurisée.",c:"Les médicaments périmés doivent être retirés et détruits selon la procédure DASRI médicale. L'infirmier vérifie systématiquement les dates de péremption lors de la préparation. Jamais utiliser un médicament altéré (couleur, précipité)."},
+  {q:"Définissez l'éducation thérapeutique sur les médicaments en oncologie.",a:"Informer sur : les horaires et modalités de prise des thérapies orales, les effets secondaires à surveiller (fièvre = urgence si chimio, diarrhée, mucite), les médicaments à éviter (AINS, produits naturels interagissants).",c:"Les interactions des thérapies ciblées et chimiothérapies orales avec les médicaments courants (millepertuis, jus de pamplemousse) sont fréquentes et potentiellement graves. L'infirmier éduque systématiquement."},
+  {q:"Définissez les antinéoplasiques oraux et leurs précautions d'administration.",a:"Capécitabine, imatinib, erlotinib : stocker à domicile hors de portée des enfants, port de gants lors de la manipulation, ne pas écraser, signaler au pharmacien pour traitement substitutif.",c:"La chimiothérapie orale expose l'entourage. L'infirmier éduque sur le stockage, la manipulation et le port de gants. Tout médicament antinéoplasique = déchets DASRI."}
+  ]},
+
+ ue33s5:{id:'ue33s5',num:'UE 3.3 S5',name:'Rôles infirmiers, organisation du travail et interprofessionnalité',ico:'👥',color:'#06d6a0',light:'#e6fff7',dark:'#048a66',
+  cards:[
+  {q:"Définissez la coordination des soins en équipe pluridisciplinaire de spécialité.",a:"Organisation structurée des interventions de différents professionnels (médecin, infirmier, kiné, orthophoniste, psychologue, diététicien) autour d'un patient, avec des objectifs partagés et une communication continue.",c:"En oncologie : réunion de concertation pluridisciplinaire (RCP) hebdomadaire obligatoire. L'infirmier coordinateur (ICO) assure le lien entre les RCP et la prise en charge quotidienne du patient."},
+  {q:"Définissez le rôle de l'infirmier coordinateur et ses fonctions.",a:"Infirmier assurant la coordination du parcours de soins d'un patient complexe : planification des soins et examens, communication entre professionnels, soutien au patient et à sa famille, suivi et évaluation.",c:"Exemples : infirmier coordinateur en oncologie (ICO), en réhabilitation respiratoire, en dialyse. Rôle pivot entre la ville et l'hôpital. Compétence organisationnelle et relationnelle forte requise."},
+  {q:"Définissez l'Infirmier de Pratique Avancée (IPA) et ses 5 mentions.",a:"Master 2 requis. 5 mentions : pathologies chroniques stabilisées (polyvalent), oncologie, psychiatrie/santé mentale, maladie rénale, urgences (en cours de création). Peut renouveler des prescriptions, suivre des patients, demander des examens.",c:"Décret du 18 juillet 2018. L'IPA agit en collaboration avec un médecin référent. Objectif : répondre aux déserts médicaux et libérer du temps médical. Environ 5 000 IPA en France en 2024."},
+  {q:"Définissez la gestion d'un service de soins et ses outils.",a:"Planning des équipes, gestion des lits (capacitaire), répartition des patients entre IDE, suivi des indicateurs de qualité, coordination des admissions et sorties, management de proximité.",c:"Le cadre de santé est responsable de cette gestion. L'infirmier senior participe : organisation des transmissions, coordination avec les médecins, gestion des urgences internes, encadrement des nouveaux agents."},
+  {q:"Définissez la permanence des soins et l'organisation des gardes.",a:"Continuité des soins 24h/24, 7j/7 dans les établissements de santé. Organisation : gardes (médecins), astreintes, rotations d'équipes infirmières. Obligations de continuité de service pour les infirmiers.",c:"L'infirmier est soumis à l'obligation de continuité des soins. Abandon de poste = faute grave. En cas de conflit entre obligation professionnelle et situation personnelle urgente, prévenir immédiatement le cadre."},
+  {q:"Définissez la délégation de tâches médicales aux infirmiers (protocoles de coopération).",a:"Article L4011-1 CSP : protocoles de coopération permettant de déléguer des actes médicaux à des professionnels paramédicaux, sous conditions de formation et de supervision.",c:"Exemples : protocoles de vaccination par l'infirmier, suivi tensionnel, renouvellement d'ordonnances pour les IPA, téléconsultation infirmière. Validés par l'ARS et la HAS."},
+  {q:"Définissez les transmissions infirmières ciblées et leur structure.",a:"Méthode SOAP adaptée ou DAR (Donnée-Action-Résultat) : Donnée = observation clinique ciblée. Action = intervention réalisée. Résultat = évolution après l'action.",c:"Les transmissions ciblées remplacent les transmissions narratives (trop longues, pas centrées sur le problème). Elles permettent un suivi ciblé des problèmes cliniques identifiés."},
+  {q:"Définissez l'organisation des soins en réhabilitation.",a:"Approche pluridisciplinaire intensive : kiné (mobilisation, renforcement), ergothérapeute (autonomie AVQ), orthophoniste (déglutition, langage), psychologue, travailler social. Objectif : récupération fonctionnelle maximale.",c:"L'infirmier en réhabilitation maintient les acquis entre les séances de rééducation, encourage et supervise les exercices, prévient les complications (TVP, escarres) et prépare le retour à domicile."},
+  {q:"Définissez le burnout soignant et ses 3 dimensions.",a:"Épuisement émotionnel (vide intérieur), dépersonnalisation/cynisme (détachement envers les patients), perte du sentiment d'accomplissement personnel. Touche 30-40% des infirmiers.",c:"Facteurs de risque : surcharge de travail, manque d'autonomie, conflits de valeurs, manque de reconnaissance. Prévention : supervision clinique, cohésion d'équipe, gestion du temps, formations, soutien institutionnel."},
+  {q:"Définissez le management par les valeurs en soins infirmiers.",a:"Style de management alignant les décisions et comportements de l'équipe sur des valeurs partagées (respect, équité, excellence, bienveillance) plutôt que sur des règles et procédures seules.",c:"Le management par les valeurs génère une culture d'équipe positive, une meilleure adhésion aux pratiques professionnelles et une plus grande satisfaction soignante. Le cadre de santé le met en œuvre."},
+  {q:"Définissez les réseaux de santé et leur rôle dans l'organisation.",a:"Structures pluridisciplinaires coordonnant les soins pour des patients complexes (oncologie, gériatrie, psychiatrie) entre ville et hôpital, avec des protocoles partagés et une continuité assurée.",c:"Exemples : réseau gérontologique, réseau de soins palliatifs, réseau VIH, réseau périnatalité. L'infirmier libéral participe aux réunions de coordination. La CPTS (voir S2) est une forme récente de réseau."},
+  {q:"Définissez le projet d'établissement et la démarche qualité.",a:"Document stratégique quinquennal fixant les objectifs médicaux, soignants, éducatifs et organisationnels d'un établissement. La démarche qualité vise l'amélioration continue des pratiques et des soins.",c:"L'infirmier participe à la démarche qualité via les audits de pratiques, les groupes de travail, la gestion des EIG et la certification HAS. La certification est obligatoire tous les 4 ans."},
+  {q:"Définissez le rôle de l'infirmier dans la gestion des lits.",a:"L'infirmier participe à la gestion de la capacité : signale au cadre les sorties possibles, prépare les dossiers de sortie, coordonne les admissions avec les urgences, informe sur les besoins en lits spécialisés.",c:"La gestion des lits est une compétence organisationnelle clé. La pression sur les lits ne doit jamais compromettre la qualité et la sécurité des soins. L'infirmier est le garde-fou de cette tension."},
+  {q:"Définissez l'organisation de la permanence des soins en ambulatoire (PDSA).",a:"Continuité des soins de ville en dehors des horaires d'ouverture des cabinets (nuits, weekends, jours fériés) via : médecins de garde, maisons médicales de garde, numéro national 15, téléconsultation.",c:"L'IPA peut contribuer à la PDSA dans les zones sous-dotées. L'infirmier libéral peut assurer des soins techniques à domicile en urgence dans le cadre de la PDSA avec prescription médicale."},
+  {q:"Définissez la sécurité des soins comme responsabilité collective.",a:"La sécurité des soins ne repose pas sur un individu mais sur l'ensemble du système soignant : culture de sécurité, communication ouverte, double vérification, check-lists, signalement des erreurs.",c:"L'infirmier est acteur de la sécurité collective : il signale les non-conformités, participe aux CREX/RMM, respecte les protocoles et soutient ses collègues dans la vigilance."},
+  {q:"Définissez la gestion du temps en soins infirmiers.",a:"Priorisation (urgent vs important), anticipation (préparation avant le poste), délégation adaptée aux compétences, gestion des interruptions, respect des heures de médicaments et de surveillance.",c:"Les interruptions pendant la préparation des médicaments = facteur de risque majeur d'erreur. Les établissements qui imposent des zones sans interruption (tablier spécial) réduisent les erreurs de 50%."},
+  {q:"Définissez le retour d'expérience (REX) en équipe soignante.",a:"Analyse collective d'un événement (incident, EIG, presque-accident) visant à identifier les facteurs contributifs et à proposer des améliorations systémiques pour éviter la récidive.",c:"Le REX bienveillant et non punitif est la base de l'amélioration continue de la sécurité. L'infirmier participe au REX et peut en être l'animateur dans son service."},
+  {q:"Définissez les outils de coordination numérique en soins infirmiers.",a:"Dossier Patient Informatisé (DPI), DMP, messagerie sécurisée de santé (MSSanté), télésuivi, visioconférence interdisciplinaire, applications de coordination (Globule, MaCorbeille).",c:"La coordination numérique améliore la continuité des soins et réduit les erreurs de communication. L'infirmier est responsable de la qualité des données saisies dans le DPI."},
+  {q:"Définissez la reconnaissance professionnelle infirmière et la revalorisation.",a:"Le Ségur de la Santé (2020) a revalorisé les salaires infirmiers (+183€/mois net). L'accès à l'IPA, le DPC obligatoire et la reconnaissance de la discipline infirmière contribuent à la valorisation.",c:"La reconnaissance infirmière passe aussi par la visibilité des actes de soins (codification des actes infirmiers, recherche infirmière, publications). L'infirmier est un professionnel de santé à part entière."},
+  {q:"Définissez le rôle de l'infirmier référent ou infirmier expert clinique.",a:"Infirmier expérimenté dans un domaine clinique spécifique (stomathérapie, plaies chroniques, diabète, oncologie) qui conseille l'équipe, forme les pairs et coordonne la prise en charge dans son domaine.",c:"L'infirmier expert clinique améliore la qualité des soins par la diffusion de connaissances spécialisées. Il peut être consulté par d'autres services (avis expert externe)."}
+  ]},
+
+ ue42s5:{id:'ue42s5',num:'UE 4.2 S5',name:'Soins relationnels',ico:'🤝',color:'#3a86ff',light:'#eef5ff',dark:'#1a4fa0',
+  cards:[
+  {q:"Définissez la relation thérapeutique avancée en psychiatrie.",a:"Relation structurée utilisant des techniques spécifiques (entretien infirmier, psychodrame, groupes thérapeutiques) pour accompagner le patient dans son rétablissement, en respectant sa subjectivité.",c:"H. Peplau (1952) : 4 phases de la relation infirmier-patient = orientation, identification, exploitation, résolution. La relation est un outil thérapeutique en psychiatrie, au même titre que les médicaments."},
+  {q:"Définissez la communication avec le patient en soins palliatifs avancés.",a:"Communication ouverte sur le pronostic (répondre honnêtement aux questions), les directives anticipées, les souhaits de fin de vie. Utiliser la fenêtre d'ouverture : accueillir et nommer la mort si le patient y fait référence.",c:"Éviter le mensonge par omission. Si le patient demande combien de temps il lui reste, répondre par une question ouverte : Qu'est-ce qui vous fait poser cette question ? Laisse le patient mener la conversation."},
+  {q:"Définissez la relation soignant-soigné dans les situations de violence.",a:"Face à un patient violent : se mettre en sécurité (sortie dégagée), appeler du renfort (jamais seul), désescalade verbale (ton calme, posture ouverte, valider les émotions), médication si nécessaire.",c:"L'infirmier ne doit jamais prendre seul en charge un patient agressif. La violence est souvent l'expression d'une douleur, d'une peur ou d'un délire. Chercher à comprendre avant d'intervenir médicalement."},
+  {q:"Définissez la communication thérapeutique en oncologie.",a:"Soutien émotionnel après l'annonce, gestion de la peur de la récidive, accompagnement dans la prise de décision de traitement, communication sur les effets secondaires.",c:"L'infirmier en oncologie est souvent la personne à qui le patient confie ses inquiétudes. La relation de confiance construite au fil des traitements est précieuse. Technique de décharge émotionnelle (ventilation)."},
+  {q:"Définissez la relation d'aide dans le contexte de la maladie chronique avancée.",a:"Accompagnement continu à travers les phases de la maladie : adaptation initiale, rechutes et rémissions, progression, phase terminale. Soutenir l'espoir sans mentir, s'adapter aux besoins changeants.",c:"La relation d'aide en maladie chronique est un marathon, pas un sprint. L'infirmier maintient la régularité de la présence et de l'écoute tout au long du parcours."},
+  {q:"Définissez l'entretien infirmier structuré et ses techniques avancées.",a:"Techniques avancées : questionnement socratique (amener le patient à ses propres conclusions), confrontation douce (signaler une contradiction), validation (reconnaître l'expérience subjective du patient), recentrage.",c:"L'entretien structuré est différent de la conversation. L'infirmier suit un fil conducteur, utilise les techniques de façon intentionnelle et évalue l'impact de chaque intervention sur le patient."},
+  {q:"Définissez la relation avec la famille en soins palliatifs.",a:"La famille est un système souffrant à part entière. L'infirmier soutient les proches : anticiper le deuil, répondre aux questions sur la fin de vie, permettre la présence et la participation aux soins, réunion familiale si conflit.",c:"La conférence familiale (family meeting) est un outil structuré pour aborder les décisions difficiles (LAT, lieu de décès) avec la famille et l'équipe soignante. L'infirmier peut y participer activement."},
+  {q:"Définissez la communication non-verbale avancée dans les soins.",a:"Maîtrise du regard (contact visuel naturel sans fixité), de la posture (miroir corporel), de la voix (tonalité, débit, silence), des gestes (ouverture, calme) et de la proxemique (distance adaptée).",c:"L'infirmier expert peut lire le non-verbal du patient (incongruence entre le discours et les gestes = signal d'alerte). Sa propre congruence non-verbale renforce l'authenticité de la relation."},
+  {q:"Définissez le soutien des aidants naturels.",a:"Les aidants (famille, proches) peuvent développer un syndrome d'épuisement de l'aidant : fatigue physique et psychologique, dépression, isolement social. L'infirmier évalue régulièrement leur charge.",c:"Outils : questionnaire de Zarit (charge de l'aidant), orientation vers les plateformes de répit (Alzheimer Café, accueil de jour, hébergement temporaire), groupes de parole pour aidants."},
+  {q:"Définissez la relation interculturelle dans les soins infirmiers avancés.",a:"Compétence culturelle avancée : ne pas projeter ses propres valeurs culturelles, négocier entre les exigences médicales et les croyances culturelles, utiliser la médiation culturelle si nécessaire.",c:"Ex : patient refusant une transfusion pour raison religieuse (Témoin de Jéhovah). Procédure : informer sur les risques, respecter le refus de l'adulte conscient, tracer, explorer les alternatives."},
+  {q:"Définissez la relation soignant-soigné avec un patient en fin de vie.",a:"Être présent sans être intrusif, répondre aux besoins immédiats (douleur, inconfort), permettre les moments de silence, laisser le patient décider de ce qu'il veut partager.",c:"La peur de la mort du soignant peut parasiter la relation. La supervision clinique aide l'infirmier à travailler sur ses propres émotions face à la mort pour rester disponible pour le patient."},
+  {q:"Définissez la relation avec les patients en difficultés cognitives (démence avancée).",a:"Techniques adaptées : validation (Naomi Feil), approche OMEGA (Alzheimer), stimulation sensorielle (Snoezelen), communication par le toucher, musique, images.",c:"La communication avec un patient dément sévère est non-verbale essentiellement. Le toucher bienveillant, la voix douce et le regard sont les principaux vecteurs de la relation thérapeutique."},
+  {q:"Définissez la gestion des émotions du soignant (intelligence émotionnelle).",a:"Capacité à identifier ses propres émotions, à les réguler pour ne pas les projeter sur le patient et à utiliser ses émotions comme des informations cliniques supplémentaires.",c:"Outils : supervision clinique, analyse de pratiques, journal réflexif, soutien entre pairs. L'intelligence émotionnelle se développe tout au long de la carrière et est un facteur protecteur du burnout."},
+  {q:"Définissez la relation soignant-soigné dans le refus de traitement en fin de vie.",a:"Accepter le refus sans le vivre comme un échec personnel. Comprendre les raisons profondes du refus, explorer les alternatives, respecter l'autonomie, rester disponible si le patient change d'avis.",c:"L'infirmier peut être le premier à entendre le refus du patient. Son rôle est de l'écouter sans juger et de le transmettre à l'équipe. Il est le défenseur (advocate) du patient auprès de l'équipe."},
+  {q:"Définissez la sexualité et les soins relationnels.",a:"Reconnaître que les patients sont des êtres sexués dont la sexualité peut être affectée par la maladie (cancer, stomie, chirurgie pelvienne, diabète, médicaments). Aborder le sujet avec professionnalisme et sans jugement.",c:"L'infirmier peut initier la discussion ou y répondre si le patient aborde la question. Il peut orienter vers un sexologue si besoin. Ne pas projeter ses propres valeurs ou inhibitions sur le patient."},
+  {q:"Définissez la communication lors de situations éthiques complexes.",a:"Réunion éthique avec toutes les parties prenantes (patient si possible, famille, équipe soignante) pour délibérer collectivement sur une décision difficile (LAT, sédation palliative, refus de traitement).",c:"L'infirmier apporte son point de vue spécifique : observation quotidienne du patient, recueil de ses volontés, impact des décisions sur son confort. Son témoignage est essentiel dans les délibérations éthiques."},
+  {q:"Définissez la relation soignant-soigné en situation de violence institutionnelle.",a:"Identifier les comportements institutionnels qui portent atteinte à la dignité du patient (contention abusive, commentaires désobligeants, négligence) et s'y opposer de façon assertive.",c:"L'infirmier ne doit pas normaliser les comportements non bientraitants de ses collègues. Il peut alerter le cadre, utiliser le signalement interne et, si nécessaire, le Conseil de l'Ordre."},
+  {q:"Définissez les directives anticipées et leur place dans la relation soignante.",a:"Document écrit par lequel une personne exprime ses volontés sur sa fin de vie (refus d'acharnement thérapeutique, souhaits sur le lieu de décès). L'infirmier peut aider à la rédaction et doit les rechercher dans le dossier.",c:"Directives anticipées contraignantes depuis la loi Claeys-Leonetti 2016. Valides 10 ans (renouvelables). Consultables sur le DMP. L'infirmier doit systématiquement vérifier leur existence à l'admission."},
+  {q:"Définissez la relation soignant-soigné en néonatologie et pédiatrie.",a:"Accompagner les parents dans leur rôle parental (méthode kangourou, soin de développement), reconnaître la douleur du nouveau-né (EDIN, DAN), développer la relation parent-enfant malgré la pathologie.",c:"La méthode kangourou (peau à peau) améliore la stabilité physiologique du prématuré et renforce l'attachement parent-enfant. L'infirmier guide et encourage les parents dans ces soins."},
+  {q:"Définissez la relation thérapeutique dans les troubles du comportement alimentaire.",a:"Approche relationnelle spécifique dans les TCA : alliance thérapeutique difficile (patient ambivalent), pas de confrontation directe sur le comportement, valoriser les progrès minimes, tolérer les rechutes.",c:"L'infirmier ne doit jamais forcer l'alimentation sauf danger vital immédiat. La relation de confiance, construite sur le respect et la cohérence, est le principal levier thérapeutique."}
+  ]},
+
+ ue44s5:{id:'ue44s5',num:'UE 4.4 S5',name:'Thérapeutiques et contribution au diagnostic médical',ico:'🩺',color:'#023e8a',light:'#e8f0fb',dark:'#012a5e',
+  cards:[
+  {q:"Définissez la biopsie ganglionnaire et le rôle infirmier.",a:"Prélèvement d'un ganglion lymphatique pour analyse anatomopathologique. Préparation : consentement, bilan coagulation, asepsie chirurgicale. Surveillance : hémostase, douleur, infection locale, résultat anatomopathologique.",c:"Le ganglion sentinelle (cancer du sein, mélanome) = premier ganglion drainant la tumeur, prélevé en peropératoire pour éviter un curage systématique. Résultat négatif = pas de curage = moins de lymphœdème."},
+  {q:"Définissez la ponction d'ascite (paracentèse) de grand volume.",a:"Évacuation de > 5 litres d'ascite en une séance. Nécessite une perfusion d'albumine (8 g/L de liquide retiré) pour prévenir la dysfonction circulatoire post-paracentèse.",c:"Surveillance post-ponction : PA toutes les 30 min (risque hypotension orthostatique), aspect du liquide (jaune citrin = séreux, hémorragique, lactescent = chyleux, purulent = péritonite), bilan biologique."},
+  {q:"Définissez le Doppler vasculaire et le rôle infirmier.",a:"Examen échographique non invasif évaluant les flux sanguins artériels et veineux. Préparation : pas de déodorant ou crème sur le membre examiné. L'infirmier informe et installe le patient.",c:"Applications : TVP (Doppler veineux membres inférieurs), AOMI (IPS = index de pression systolique), sténose carotidienne. Résultats interprétés par le médecin. L'infirmier peut calculer l'IPS."},
+  {q:"Définissez l'électromyogramme (EMG) et son rôle diagnostique.",a:"Enregistrement de l'activité électrique des muscles et des nerfs périphériques. Diagnostic : neuropathies, myopathies, syndrome du canal carpien, neuropathie diabétique. Réalisé par le neurologue ou le rhumatologue.",c:"Préparation : pas de crème sur la peau, éviter les anti-douleurs si possible. Douloureux (stimulations électriques). L'infirmier informe sur le déroulement et soutient le patient anxieux."},
+  {q:"Définissez la spirométrie avancée et ses valeurs cliniques.",a:"VEMS/CV < 70% après bronchodilatateurs = BPCO (obstruction). ↓ CV seule = syndrome restrictif (fibrose pulmonaire). ↓ VEMS + CV = syndrome mixte. Courbe débit-volume : aspect obstructif vs restrictif.",c:"L'infirmier ou le technicien respiratoire réalise la spirométrie. Les instructions au patient sont essentielles pour la qualité du résultat (expiration maximale, forcée, manœuvre reproductible)."},
+  {q:"Définissez la bronchoscopie interventionnelle et son rôle.",a:"Fibroscopie bronchique à visée thérapeutique : extraction de corps étrangers, désobstruction tumorale (laser, cryothérapie), dilatation de sténose, pose de prothèse trachéo-bronchique.",c:"Préparation : jeûne 6h, VVP, anesthésie locale + sédation. Surveillance post-bronchoscopie : SpO2, FR, hémoptysie, pneumothorax (complication rare). L'infirmier surveille le retour à la conscience."},
+  {q:"Définissez la myélogramme (ponction sternale) et son utilité.",a:"Ponction aspirative de moelle osseuse au niveau du sternum ou de l'épine iliaque. Analyse : morphologie des cellules médullaires, bilan de leucémie, lymphome, myélome, aplasie.",c:"Préparation : anesthésie locale, position décubitus dorsal. Surveillance : hémostase (pression 10 min), douleur résiduelle (normal 24h), hématome. Résultat : cytologie médullaire."},
+  {q:"Définissez le test de marche de 6 minutes (TM6) et son utilité.",a:"Mesure la distance parcourue en 6 minutes à allure libre. Évalue la capacité fonctionnelle à l'effort dans l'insuffisance respiratoire, cardiaque, les HTAP et la BPCO.",c:"Protocole standardisé : corridor de 30 mètres, encouragements standardisés, arrêt si SpO2 < 85% ou symptômes graves. L'infirmier réalise et surveille le test. Résultat : distance + Borg + SpO2 nadir."},
+  {q:"Définissez le holter ECG et le holter tensionnel (MAPA).",a:"Holter ECG : enregistrement continu de l'ECG 24-48h (arythmies intermittentes). MAPA (Mesure Ambulatoire de la Pression Artérielle) : PA toutes les 20-30 min sur 24h (HTA blouse blanche, HTA masquée).",c:"Préparation holter ECG : rasage si nécessaire, colle électrodes. Consignes : noter les symptômes sur un agenda avec l'heure, éviter les champs magnétiques. Retrait après 24-48h."},
+  {q:"Définissez la paracentèse, la thoracocentèse et leur différence.",a:"Paracentèse : ponction péritonéale pour ascite. Thoracocentèse (ponction pleurale) : ponction de l'espace pleural pour épanchement pleural liquidien. Préparation identique (asepsie, coagulation).",c:"Complication de la thoracocentèse : pneumothorax (surveiller SpO2, FR post-procédure, RX thorax). Complication de la paracentèse : hypotension orthostatique (perfusion d'albumine si > 5L)."},
+  {q:"Définissez la cœlioscopie diagnostique et le rôle infirmier.",a:"Exploration de la cavité abdominale par 2-3 petits orifices sous anesthésie générale. Diagnostics : endométriose, cancer, adhérences. L'infirmier assure la préparation pré-opératoire et la surveillance postopératoire.",c:"Préparation : jeûne 6h, dépilation abdominale, VVP, consentement, bilan préopératoire. Surveillance post-cœlioscopie : douleur épaule (liée au CO2 résiduel, 1-2 jours), hémostase aux points d'entrée."},
+  {q:"Définissez la biologie moléculaire en oncologie et les tests NGS.",a:"Next Generation Sequencing (NGS) : séquençage simultané de nombreux gènes pour identifier les mutations tumorales et guider le choix des thérapies ciblées.",c:"L'infirmier recueille les prélèvements biologiques et tumoraux nécessaires (biopsie fraîche, prélèvement de sang tumoral/ADN circulant). Assure la traçabilité et l'acheminement des prélèvements."},
+  {q:"Définissez l'électroencéphalogramme (EEG) et son utilité clinique.",a:"Enregistrement de l'activité électrique cérébrale par électrodes de surface. Indications : épilepsie (confirmer, classer, décision thérapeutique), encéphalopathie, coma.",c:"Préparation : cheveux propres, sans gel ou laque. Le patient doit rester éveillé ou s'endormir selon le type d'EEG (de veille ou de sommeil). L'infirmier surveille la tolérance pendant l'examen."},
+  {q:"Définissez le prélèvement pour hémocultures et la technique.",a:"Prélèvement de sang stérile pour détecter une bactériémie/fongémie. Technique : 2 flacons aérobie + anaérobie par ponction, asepsie stricte, à 2 sites différents, avant l'antibiothérapie si possible.",c:"Le volume prélevé est crucial : 10 mL/flacon adulte (minimum 5 mL). L'infirmier ne doit pas prélever sur un cathéter existant (contamination fréquente) sauf si bactériémie sur cathéter suspectée."},
+  {q:"Définissez la ponction biopsie hépatique (PBH) et la surveillance.",a:"Prélèvement de foie par ponction percutanée pour diagnostic histologique (cirrhose, hépatite, cancer). Surveillance post-PBH : douleur (hypocondre droit, épaule droite), FC, PA, signes hémorragiques.",c:"Décubitus latéral droit (compressif) 2h après PBH. Surveillance toutes les 15 min la 1ère heure, puis toutes les 30 min. Risque hémorragique = complication la plus fréquente. Bilan de coagulation obligatoire avant."},
+  {q:"Définissez le monitorage de la douleur et les outils avancés.",a:"CPOT (Critical-Care Pain Observation Tool) : évalue la douleur chez le patient non communicant en réanimation (expression faciale, mouvements, tension musculaire, compliance au ventilateur).",c:"BPI (Brief Pain Inventory) : évalue la douleur chronique multidimensionnelle (intensité + retentissement sur les activités). L'infirmier choisit l'outil adapté au contexte clinique et à l'état du patient."},
+  {q:"Définissez la surveillance hémodynamique non invasive avancée.",a:"Pression artérielle non invasive par brassard oscillométrique (automatique), débit cardiaque par thermodilution transpulmonaire (PiCCO), bioimpédance, or échographie cardiaque au point de soin (POCUS).",c:"POCUS (Point-Of-Care UltraSound) : écho-Doppler réalisé au lit par le médecin ou l'infirmier IPA formé. Évalue rapidement la précharge cardiaque, la fonction ventriculaire, les épanchements."},
+  {q:"Définissez le rôle infirmier dans les essais cliniques (thérapeutiques).",a:"L'infirmier investigateur dans un essai clinique : recueille le consentement éclairé, administre les traitements expérimentaux, surveille les effets indésirables et les déclare, recueille les données dans le cahier d'observation.",c:"Chaque établissement de recherche a une unité de recherche clinique (URC) coordonnant les essais. L'infirmier investigateur doit être formé aux BPC (Bonnes Pratiques Cliniques, ICH-GCP)."},
+  {q:"Définissez le suivi de la chambre implantable (PAC) au long cours.",a:"Ponction mensuelle en cas d'utilisation continue, rinçage hépariné ou au sérum physiologique mensuel si inutilisée. Surveillance : douleur au site, œdème, signes d'infection, signe de Twiddler (rotation du boîtier).",c:"Durée de vie d'un PAC : 5-10 ans. Retrait si complications (infection, thrombose) ou fin de traitement. L'infirmier éduque le patient : présenter la carte de porteur à chaque soignant."},
+  {q:"Définissez la gestion d'une chambre implantable (PAC) en urgence.",a:"PAC perméable non aspirant (obstruction partielle) : rinçage forcé contre-indiqué, urokinase possible selon protocole. Extravasation sur PAC : arrêt perfusion, aspiration, marquage, antidote selon molécule, urgence oncologique.",c:"L'infirmier ne force jamais un rinçage sur un PAC résistant. L'obstruction partielle peut précéder une thrombose complète. L'imagerie (RX thorax, contrôle de la perméabilité) oriente la prise en charge."}
+  ]},
+
+ ue47:{id:'ue47',num:'UE 4.7 S5',name:'Soins palliatifs et de fin de vie',ico:'🕊️',color:'#2a9d8f',light:'#e6f7f5',dark:'#1a6b60',
+  cards:[
+  {q:"Définissez les soins palliatifs et leur philosophie.",a:"Soins actifs et continus, pluridisciplinaires, visant à soulager la douleur et les symptômes pénibles, à soutenir le patient et ses proches, à maintenir la qualité de vie jusqu'à la mort naturelle.",c:"OMS 2002 : les soins palliatifs ne hâtent ni ne retardent la mort. Ils l'affirment comme un processus naturel. Intègrent l'accompagnement spirituel et existentiel. Débutent idéalement dès le diagnostic de maladie grave."},
+  {q:"Définissez la loi Leonetti 2005 et ses 4 dispositions principales.",a:"1) Interdiction de l'obstination déraisonnable (acharnement thérapeutique). 2) Droit à la sédation et aux traitements de la douleur même si effet secondaire de raccourcir la vie (double effet). 3) Directives anticipées (5 ans). 4) Personne de confiance.",c:"La loi Leonetti est une loi d'équilibre : elle refuse à la fois l'euthanasie et l'acharnement thérapeutique. Elle place le patient et ses volontés au centre des décisions de fin de vie."},
+  {q:"Définissez la sédation palliative profonde et continue jusqu'au décès.",a:"Administration de médicaments sédatifs (midazolam) pour diminuer la conscience jusqu'à la mort chez un patient dont la souffrance est réfractaire, avec pronostic vital engagé à court terme et accord du patient.",c:"Loi Claeys-Leonetti 2016. Droit du patient, à sa demande. Décision collégiale de l'équipe. Sédation ≠ euthanasie (intention = soulager, pas accélérer le décès). Traçabilité rigoureuse obligatoire."},
+  {q:"Définissez la décision de limitation ou d'arrêt de traitement (LAT).",a:"Décision collégiale de ne pas initier ou d'arrêter un traitement disproportionné par rapport au bénéfice escompté chez un patient en fin de vie. Respecte l'interdiction de l'obstination déraisonnable.",c:"Procédure : concertation pluridisciplinaire, avis motivé inscrit dans le dossier, consultation de la personne de confiance et des proches, recherche des directives anticipées. Décision finale = médecin."},
+  {q:"Définissez la prise en charge de la douleur en soins palliatifs.",a:"Douleur globale (Cicely Saunders) : physique, psychologique, sociale, spirituelle. Traitement : opioïdes à doses adaptées, adjuvants (corticoïdes, antidépresseurs, anticonvulsivants), sédation procédurale.",c:"La morphine est le médicament de référence en soins palliatifs. Titration initiale : 5-10 mg/4h voie orale, ou 2,5-5 mg SC si difficultés de déglutition. Réévaluation toutes les 24-48h."},
+  {q:"Définissez les symptômes réfractaires en fin de vie et leur gestion.",a:"Symptômes ne répondant pas aux traitements habituels malgré des doses optimales : douleur réfractaire, dyspnée réfractaire, agitation réfractaire, nausées persistantes. Justifient la sédation palliative.",c:"Dyspnée réfractaire : morphine à faible dose (soulage la sensation de dyspnée sans accélérer le décès), position semi-assise, air frais. Agitation terminale : midazolam SC ou IV."},
+  {q:"Définissez le rôle infirmier dans l'accompagnement de fin de vie.",a:"Soins de confort (hygiène, soins de bouche, prévention escarres), gestion des symptômes, présence et disponibilité, accompagnement des proches, communication honnête sur le processus de fin de vie.",c:"L'infirmier est le professionnel le plus présent auprès du mourant. Sa présence rassurante, son geste bienveillant et sa disponibilité constituent une part essentielle du soin palliatif."},
+  {q:"Définissez les signes du processus de fin de vie (agonie).",a:"Épuisement général, modifications de la respiration (respiration de Cheyne-Stokes, respiration agonique), extrémités froides et marbrées, cyanose, peau grisâtre, bouche ouverte, yeux mi-clos, silence.",c:"Ces signes permettent d'anticiper le décès et d'informer la famille. L'infirmier explique ce que le patient ressent (très peu, inconscient dans les dernières heures) et ce que la famille peut faire (présence, parole)."},
+  {q:"Définissez les soins du corps après le décès (thanatologie).",a:"Soins de présentation du corps (soins de toilette, habillage, soins du visage, fermeture des yeux et de la bouche, position digne) réalisés par l'infirmier avec respect et dignité.",c:"Ces soins peuvent être réalisés avec la famille si elle le souhaite. L'infirmier guide et soutient les proches dans ce processus. Les soins du corps sont un acte clinique ET un rituel de passage."},
+  {q:"Définissez le deuil et l'accompagnement des proches.",a:"Les soins palliatifs incluent le soutien aux proches avant, pendant et après le décès. Soutien du deuil anticipé, présence lors du décès, visite de condoléances, groupe de parole de deuil.",c:"Le deuil compliqué (deuil prolongé, intensité anormale) touche 10-15% des endeuillés. Critères : durée > 12 mois, retentissement fonctionnel. Traitement : psychothérapie du deuil."},
+  {q:"Définissez la personne de confiance et son rôle légal.",a:"Personne désignée par écrit par le patient pour l'accompagner lors des entretiens médicaux, être informée et consulter les médecins si le patient est hors d'état d'exprimer sa volonté.",c:"Loi 2002. Différente du mandataire curatelle/tutelle. Son avis prévaut sur celui de la famille dans les décisions médicales. Si directives anticipées existent, elles prévalent sur l'avis de la personne de confiance."},
+  {q:"Définissez les unités de soins palliatifs (USP) et les EMSP.",a:"USP : unités hospitalières spécialisées pour les situations les plus complexes (symptômes réfractaires, situations éthiques difficiles). EMSP (Équipe Mobile de Soins Palliatifs) : soutien mobile dans les services hospitaliers.",c:"Capacité USP insuffisante en France (1 lit pour 600 000 habitants recommandé). Les EMSP ne prennent pas en charge directement mais conseillent les équipes. L'HAD palliatif permet de mourir à domicile."},
+  {q:"Définissez la communication de mauvaises nouvelles (méthode SPIKES).",a:"S (Setting) : préparer le cadre. P (Perception) : évaluer ce que le patient sait. I (Invitation) : demander ce qu'il veut savoir. K (Knowledge) : annoncer. E (Empathy) : accueillir les émotions. S (Summary) : résumer et planifier.",c:"L'infirmier ne donne pas les annonces diagnostiques mais utilise SPIKES pour les entretiens qui suivent et pour la communication sur l'évolution. Soutenir les émotions est souvent plus important que l'information."},
+  {q:"Définissez la gestion des médicaments en soins palliatifs à domicile.",a:"Anticiper les médicaments de secours (morphine SC, midazolam, butylscopolamine pour les sécrétions, haloperidol pour l'agitation) disponibles au domicile avant qu'ils soient nécessaires.",c:"L'infirmier libéral ou HAD gère ces traitements à domicile. La disponibilité des médicaments d'urgence évite les hospitalisations en fin de vie et permet de respecter les volontés de mourir à domicile."},
+  {q:"Définissez l'obstination déraisonnable (anciennement acharnement thérapeutique).",a:"Poursuite de traitements ou d'investigations disproportionnés par rapport aux bénéfices attendus, inutiles ou déraisonnables dans une situation sans espoir raisonnable de guérison.",c:"Interdit par la loi depuis 2005. L'infirmier peut et doit signaler à l'équipe tout traitement qui lui semble déraisonnable. La discussion éthique collective protège le patient et les soignants."},
+  {q:"Définissez les soins palliatifs pédiatriques.",a:"Spécificités : famille au centre, maintien du développement de l'enfant, soins à domicile privilégiés, deuil parental anticipé, fratrie, équipes spécialisées (ERRSPP - équipes ressources régionales).",c:"La mort d'un enfant est un événement particulièrement douloureux pour les soignants. Le soutien institutionnel (supervision, groupe de parole) est essentiel pour prévenir le traumatisme secondaire."},
+  {q:"Définissez l'éthique de fin de vie et les questions non résolues.",a:"Débats actuels en France : aide à mourir (sédation avec décès prévisible à court terme = déjà légale en 2016), euthanasie (administrer intentionnellement une substance létale = non légale en France), suicide assisté.",c:"Comparaison européenne : Belgique, Pays-Bas = euthanasie légale sous conditions strictes. Suisse = suicide assisté légal. France = position intermédiaire (sédation profonde et continue)."},
+  {q:"Définissez le soutien psychologique des soignants en soins palliatifs.",a:"Les soignants en soins palliatifs sont exposés au deuil répété, à des décisions éthiques difficiles et à une proximité intense avec la souffrance et la mort, pouvant conduire au burnout ou à un traumatisme secondaire.",c:"Ressources : supervision clinique, groupe de parole de l'équipe, psychologue institutionnel, formation continue en soins palliatifs. L'équipe qui prend soin d'elle-même prend mieux soin de ses patients."},
+  {q:"Définissez la sédation procédurale et son cadre en soins palliatifs.",a:"Sédation légère ou profonde administrée avant un soin douloureux (mobilisation, pansement complexe) chez un patient en fin de vie, pour prévenir la douleur et la détresse lors du soin.",c:"Différente de la sédation palliative continue. Titration du midazolam IV ou MEOPA. Monitoring continu. L'infirmier anticipe les soins potentiellement douloureux et prévient le médecin pour programmer la sédation procédurale."},
+  {q:"Définissez l'accompagnement spirituel en soins palliatifs.",a:"Dimension non-religieuse (quête de sens, liens relationnels, héritage) ET religieuse (croyances, rites, prières) de la fin de vie. L'infirmier est attentif aux besoins spirituels et oriente vers l'aumônier si besoin.",c:"L'infirmier ne doit pas imposer ses propres croyances ni les minimiser. La neutralité respectueuse est la posture professionnelle. La question du sens est universelle, indépendamment des croyances religieuses."},
+ ]},
+
+ ue55:{id:'ue55',num:'UE 5.5 S5',name:'Mise en oeuvre des thérapeutiques et coordination des soins',ico:'🎯',color:'#f77f00',light:'#fff5eb',dark:'#a04800',
+  cards:[
+  {q:"Qu'est-ce que l'UE 5.5 S5 (unité d'intégration) et son objectif ?",a:"UE d'intégration du semestre 5 mobilisant toutes les UE du semestre pour analyser des situations cliniques complexes. Développe les compétences 4 (thérapeutiques) et 9 (organisation et coordination des soins).",c:"Le semestre 5 est le plus chargé cliniquement. L'étudiant doit démontrer une capacité de prise en charge autonome de situations complexes en oncologie, psychiatrie, soins palliatifs et spécialités."},
+  {q:"Comment intégrer les soins palliatifs (UE 4.7) dans une situation oncologique complexe ?",a:"Patient en cancer avancé avec douleurs réfractaires + dénutrition + détresse psychologique : combiner soins oncologiques actifs + ETP (chimiothérapie orale) + soins de support + accompagnement palliatif précoce.",c:"La co-existence des traitements curatifs et palliatifs est la norme en oncologie avancée. L'infirmier coordonne ces deux logiques en s'assurant de la cohérence du message donné au patient."},
+  {q:"Comment coordonner une sortie vers les soins palliatifs à domicile ?",a:"Évaluation des besoins (AGGIR, NRS, EVA), organisation HAD ou SSIAD, prescription des médicaments de secours, formation de l'aidant, lien avec le médecin traitant, transmission infirmière détaillée.",c:"La sortie vers le domicile en fin de vie nécessite une anticipation rigoureuse. Chaque défaillance dans la coordination peut conduire à une ré-hospitalisation non désirée qui va à l'encontre des volontés du patient."},
+  {q:"Comment analyser une situation de détresse psychique aiguë en service somatique ?",a:"Identifier les signes de crise suicidaire ou de délire, sécuriser l'environnement, contacter la psychiatrie de liaison, rester avec le patient, informer le cadre et le médecin, tracer les observations.",c:"La présence d'une pathologie somatique n'exclut pas un trouble psychiatrique comorbide. L'infirmier doit maintenir une vigilance psychiatrique dans tous les services, pas seulement en psychiatrie."},
+  {q:"Définissez la coordination ville-hôpital dans le suivi oncologique.",a:"L'infirmier coordinateur en oncologie (ICO) assure le lien entre la RCP, les cures de chimiothérapie à l'hôpital et le suivi à domicile : appels téléphoniques, gestion des effets secondaires, liaison avec le médecin traitant.",c:"Le programme PEPS (Programme Éducatif Pour un Parcours de Soins) : ICO appelle le patient entre les cures pour détecter précocement les effets secondaires graves (neutropénie fébrile, déshydratation)."},
+  {q:"Comment gérer une situation de neutropénie fébrile dans l'UE 5.5 ?",a:"Identifier (T ≥ 38,5°C + chimio récente) → bilan urgence (NFS, hémocultures, CRP, ECBU) → antibiothérapie IV dans les 60 min → score MASCC → hospitalisation ou ambulatoire selon le score.",c:"L'infirmier qui identifie une fièvre chez un patient sous chimiothérapie doit considérer immédiatement la neutropénie fébrile comme diagnostic probable et activer le protocole d'urgence."},
+  {q:"Comment intégrer la pharmacologie (UE 2.11) dans une situation psychiatrique complexe ?",a:"Patient schizophrène sous clozapine : surveillance NFS (agranulocytose), glycémie (diabète), ECG (QT), tension artérielle (hypotension orthostatique), observance, éducation sur les effets secondaires.",c:"La clozapine est l'antipsychotique le plus efficace pour les schizophrénies résistantes mais le plus surveillé. L'infirmier joue un rôle clé dans la détection précoce des effets indésirables graves."},
+  {q:"Définissez la mise en oeuvre des thérapeutiques complexes en réhabilitation.",a:"Gestion simultanée : prescription médicale (médicaments, kinésithérapie, orthophonie), soins infirmiers (surveillance, pansements, voies), ETP (autogestion des symptômes), coordination des intervenants.",c:"La réhabilitation post-AVC est un exemple : l'infirmier gère les soins de base, coordonne les séances de kiné et d'orthophonie, surveille les complications (TVP, pneumonie d'inhalation) et prépare la sortie."},
+  {q:"Comment analyser les données biologiques dans une situation clinique complexe ?",a:"Intégrer les résultats biologiques dans le contexte clinique : NFS (leucopénie → immunosuppression, anémie → fatigue), troponine (IDM), lactates (choc), CRP (infection/inflammation), ionogramme (troubles hydroélectrolytiques).",c:"L'infirmier qui constate une anomalie biologique significative (plaquettes < 50 G/L, créatinine doublée) doit immédiatement en informer le médecin, même si aucun signe clinique n'est apparent."},
+  {q:"Définissez la mise en oeuvre d'un soin complexe invasif dans l'UE 5.5.",a:"Soin complexe : chimiothérapie sur chambre implantable, nutrition parentérale sur VVC, administration de sang. Chaque soin nécessite vérification complète, asepsie rigoureuse, surveillance continue, traçabilité.",c:"La complexité du soin ne justifie pas l'omission d'une étape de vérification. L'infirmier expert sait aller vite ET être rigoureux. La vitesse ne doit jamais primer sur la sécurité."},
+  {q:"Comment coordonner les intervenants dans une situation palliative à domicile ?",a:"Réunion de coordination (médecin traitant + IDE libérale + kiné + assistant social + psychologue + HAD si besoin) pour définir les objectifs de soins, les rôles de chacun et le plan de crise.",c:"La clarté des rôles et la communication entre intervenants sont les facteurs clés de succès d'une prise en charge palliative à domicile. Une réunion mensuelle minimum est recommandée."},
+  {q:"Définissez l'évaluation d'une situation d'urgence vitale dans l'UE 5.5.",a:"ABCDE + score de gravité (NEWS, SOFA) + bilan biologique ciblé + alerter le médecin/réanimateur + mettre en place les thérapeutiques d'urgence selon les protocoles du service.",c:"L'autonomie infirmière dans les situations d'urgence est maximale dans la reconnaissance et les premières minutes d'intervention. Elle est limitée par la prescription médicale pour les traitements spécifiques."},
+  {q:"Comment intégrer la recherche (UE 3.4) dans la prise en charge du S5 ?",a:"Baser les décisions infirmières sur les recommandations HAS et les données probantes : protocole de prévention des escarres selon NPUAP/EPUAP, bundle PAVM en réa, guide HAS sur la sédation palliative.",c:"L'infirmier du S5 justifie ses choix cliniques par des références scientifiques. Cette habitude devient un réflexe professionnel qui améliore la qualité des soins tout au long de la carrière."},
+  {q:"Définissez la prise en charge d'une stomie dans le cadre de l'UE 5.5.",a:"Stomie = intégration de tous les domaines : soins techniques (appareillage), ETP (autogestion), soins relationnels (image corporelle), pharmacologie (médicaments et stomie), coordination (stomathérapeute, libéral).",c:"La stomie illustre parfaitement l'approche globale de l'UE 5.5 : chaque UE du S5 contribue à une prise en charge optimale. L'infirmier mobilise simultanément toutes ses compétences."},
+  {q:"Comment gérer une urgence médicamenteuse dans une unité de spécialité ?",a:"Identifier le médicament en cause (interaction, surdosage, effet indésirable grave), arrêter l'administration si en cours, contacter le médecin, surveiller les paramètres vitaux, préparer l'antidote si disponible.",c:"Exemple : patient sous morphine, FR < 8/min → arrêt de la pompe, O2, naloxone IV selon protocole, appel médecin, surveillance continue. La rapidité de reconnaissance et d'action est déterminante."},
+  {q:"Définissez la coordination de soins pour un patient avec multiples comorbidités.",a:"Identifier toutes les pathologies actives, hiérarchiser selon la dangerosité immédiate, planifier les soins dans l'ordre des priorités, anticiper les interactions entre pathologies et traitements.",c:"Ex : patient BPCO + diabète + IC + dépression + cancer = 5 pathologies actives. L'infirmier construit un plan de soins qui tient compte des interactions et des priorités changeantes selon l'évolution."},
+  {q:"Définissez la transmission clinique SBAR dans les situations complexes du S5.",a:"Situation (urgence clinique, problème identifié) + Background (contexte médical, antécédents) + Assessment (évaluation infirmière précise, hypothèses) + Recommendation (que demander au médecin).",c:"En oncologie : SBAR lors d'une fièvre chez patient chimiothérapé. En psychiatrie : SBAR lors d'une aggravation clinique. En palliatif : SBAR lors d'une douleur réfractaire. Outil universel."},
+  {q:"Définissez la place de l'étudiant en S5 dans une équipe spécialisée.",a:"L'ESI de S5 peut prendre en charge des patients complexes avec une supervision à distance. Il participe aux staffs, aux RCP (si autorisé), aux décisions d'équipe et développe sa posture professionnelle.",c:"C'est au S5 que l'identité professionnelle infirmière se consolide. L'étudiant doit savoir dire ce qu'il ne sait pas faire tout en démontrant ses compétences dans les domaines maîtrisés."},
+  {q:"Comment rédiger une synthèse infirmière de sortie dans le contexte du S5 ?",a:"Résumé clinique complet : état général à la sortie, problèmes en cours, traitements prescrits, résultats d'examens récents, rendez-vous de suivi, points d'éducation abordés, soins nécessaires à domicile.",c:"La qualité de la synthèse de sortie conditionne la continuité des soins. Une synthèse incomplète peut entraîner des erreurs médicamenteuses, des oublis de soins ou des réhospitalisations évitables."},
+  {q:"Définissez la coordination de soins entre HAD et équipe hospitalière.",a:"Transmission infirmière complète (synthèse clinique, plan de soins, médicaments, ordonnances), appel téléphonique de présentation, vérification de la disponibilité des médicaments de secours à domicile avant la sortie.",c:"La HAD (Hospitalisation à Domicile) permet de continuer des soins complexes à domicile. La transmission est la clé : une information manquante peut compromettre la sécurité et la continuité des soins."}
+  ]},
+
+ ue62s5:{id:'ue62s5',num:'UE 6.2 S5',name:'Anglais médical — Spécialités et pratique avancée',ico:'🇬🇧',color:'#457b9d',light:'#eef4f8',dark:'#2a5169',
+  cards:[
+  {q:"Comment présenter un patient en oncologie en anglais (handover) ?",a:"Mrs X, 58y, admitted for cycle 3 of FOLFOX chemotherapy for stage 3 colorectal cancer. Last cycle complicated by grade 2 neutropenia. Pre-chemo bloods taken, awaiting results. PICC line in situ, flushed this morning.",c:"FOLFOX/FOLFIRI = régimes de chimiothérapie pour le cancer colorectal. Grade 2 neutropenia = neutropénie grade 2. Pre-chemo bloods = bilan pré-chimiothérapie. PICC in situ = PICC en place."},
+  {q:"Comment documenter des soins palliatifs en anglais ?",a:"Patient comfortable, no pain reported (VAS 0/10). RR 10/min, mottled extremities, non-responsive. Family at bedside. Mouth care given. Anticipatory medications prescribed and available. Palliative team notified.",c:"Mottled = marbré. Anticipatory medications = médicaments de secours anticipés. Non-responsive = sans réponse aux stimuli. Mouth care = soins de bouche. Comfortable = confortable (sans douleur)."},
+  {q:"Quels sont les termes clés en psychiatrie en anglais ?",a:"Mental health assessment (évaluation psychiatrique), psychotic episode (épisode psychotique), mood disorder (trouble de l'humeur), suicidal ideation (idéation suicidaire), risk assessment (évaluation du risque).",c:"Voluntary admission = hospitalisation libre. Involuntary admission = hospitalisation sous contrainte. Capacity assessment = évaluation de la capacité de décision. Insight = conscience de la maladie."},
+  {q:"Comment communiquer sur les soins palliatifs avec la famille en anglais ?",a:"Your mother is very unwell and we believe she may only have a few hours/days left. We are focusing on keeping her comfortable. We will keep you informed and you are welcome to stay with her.",c:"A few hours/days left = quelques heures/jours. Focusing on comfort = centrés sur le confort. Keep you informed = vous tenir informé. Welcome to stay = bienvenue pour rester."},
+  {q:"Quels sont les termes oncologiques clés en anglais ?",a:"Chemotherapy (chimiothérapie), radiotherapy (radiothérapie), targeted therapy (thérapie ciblée), immunotherapy (immunothérapie), bone marrow transplant (greffe de moelle), tumour markers (marqueurs tumoraux).",c:"Staging (stadification), remission (rémission), relapse (rechute), response rate (taux de réponse), overall survival (survie globale), progression-free survival (survie sans progression)."},
+  {q:"Comment documenter une évaluation du risque suicidaire en anglais ?",a:"Patient expressed passive suicidal ideation (wish to be dead) but denies active plans or intent. No access to means identified. Patient agreed to a safety plan. Psychiatry team notified. 1:1 observations commenced.",c:"Passive ideation = idéation passive. Active plans = plans actifs. Safety plan = plan de sécurité. 1:1 observations = surveillance rapprochée (un soignant pour un patient). Means = moyens létaux."},
+  {q:"Comment décrire une réaction à la chimiothérapie en anglais ?",a:"Patient developed grade 3 nausea and vomiting 4 hours post-chemotherapy. Ondansetron 8mg IV given as prescribed. IV fluids started for hydration. Consultant informed. Patient education provided on managing nausea at home.",c:"Grade 3 nausea = nausée grade 3 (incapacité à s'alimenter). Ondansetron = antiémétique (sétron). IV fluids = solutés de remplissage. Education provided = information donnée."},
+  {q:"Comment documenter une discussion de LAT (Limitation des soins) en anglais ?",a:"Family meeting held at 14:00. Present: consultant, nurse, patient's wife and son. Current poor prognosis explained. Consensus reached to withhold further aggressive treatment and focus on comfort measures. Decision documented.",c:"Withhold = ne pas initier. Comfort measures = soins de confort. Family meeting = conférence familiale. Prognosis = pronostic. Consensus = accord collectif. Documented = documenté."},
+  {q:"Quels sont les termes pour les voies d'administration en soins palliatifs ?",a:"Subcutaneous infusion/syringe driver (perfusion sous-cutanée continue), buccal (voie buccale), sublingual (voie sublinguale), transdermal patch (timbre transdermique), oral morphine solution (solution orale de morphine).",c:"Syringe driver = pousse-seringue portable pour perfusion SC continue. Gold standard en fin de vie à domicile. Titration = ajustement progressif des doses. Breakthrough dose = dose de secours."},
+  {q:"Comment expliquer un essai clinique à un patient anglophone ?",a:"We would like to invite you to participate in a clinical trial. This is a research study to test a new treatment. Participation is voluntary. You can withdraw at any time without affecting your care. Do you have any questions?",c:"Clinical trial = essai clinique. Voluntary = volontaire. Withdraw = se retirer. Informed consent = consentement éclairé. Principal investigator = investigateur principal. Placebo = placebo."},
+  {q:"Comment communiquer en équipe en anglais en situation d'urgence ?",a:"Code blue called. Patient unresponsive, no pulse. CPR started. Crash cart requested. IV access secured. Adrenaline drawn up. Defibrillator attached. Team leader: please direct the resuscitation.",c:"Code blue = appel d'urgence. CPR started = RCP débutée. Crash cart = chariot d'urgence. Drawn up = préparé en seringue. Team leader = chef d'équipe. Direct the resuscitation = diriger la RCP."},
+  {q:"Quels sont les termes de la documentation clinique en anglais de spécialité ?",a:"Multidisciplinary meeting (réunion pluridisciplinaire), MDT note (compte rendu RCP), care pathway (chemin clinique), escalation protocol (protocole d'escalade), clinical governance (gouvernance clinique).",c:"Care bundle = bundle de soins. Evidence-based guideline = recommandation fondée sur les preuves. Audit trail = traçabilité. Near miss (presque-accident). Root cause analysis (analyse des causes racines)."},
+  {q:"Comment expliquer les directives anticipées à un patient anglophone ?",a:"An advance directive (or living will) lets you record your wishes about future medical treatment in case you become unable to speak for yourself. It is legally binding. Would you like information about how to complete one?",c:"Advance directive = directive anticipée. Living will = testament de vie. Legally binding = contraignant légalement. Designate = désigner. Power of attorney for healthcare = mandat de protection future."},
+  {q:"Comment documenter une évaluation nutritionnelle en anglais ?",a:"Patient refusing oral intake for 3 days. Weight: 58kg (10% loss in 2 weeks). MUST score: 3 (high risk). Dietitian referral made. Nutritional supplements offered and refused. Nasogastric feeding discussed with patient and family.",c:"MUST score = outil de dépistage nutritionnel. High risk = risque élevé. Dietitian = diététicien. Oral intake = apports oraux. Nutritional supplements = compléments nutritionnels oraux."},
+  {q:"Comment communiquer sur la douleur en oncologie en anglais ?",a:"Patient reports pain 8/10, constant, burning in nature, left leg. Consistent with neuropathic pain secondary to chemotherapy. Gabapentin commenced as prescribed. Non-pharmacological measures reviewed (positioning, distraction).",c:"Neuropathic pain = douleur neuropathique. Burning = brûlure. Gabapentin commenced = gabapentine débutée. Non-pharmacological = non médicamenteux. Distraction = techniques de distraction."},
+  {q:"Comment rédiger un rapport d'incident en anglais ?",a:"Date/time of incident. Description: incorrect dose of metoprolol administered (50mg instead of 25mg). Actions taken: physician notified, patient monitored, no adverse effects. Contributing factors: similar packaging, distraction during preparation.",c:"Incident report = rapport d'incident. Contributing factors = facteurs contributifs. Adverse effects = effets indésirables. Action taken = mesure prise. Lesson learned = leçon tirée."},
+  {q:"Comment présenter une situation de soins palliatifs pédiatriques en anglais ?",a:"This is Tom, a 7-year-old with stage 4 neuroblastoma, no further curative treatment options. Current focus is comfort and quality of life. Parents are present and very involved. Tom is in pain (FLACC 8/10). Morphine ordered.",c:"FLACC = échelle de douleur pédiatrique (Face, Legs, Activity, Cry, Consolability). Comfort focus = centrés sur le confort. Involved = impliqués. Stage 4 = stade métastatique."},
+  {q:"Quels sont les termes pour les complications de la chimiothérapie en anglais ?",a:"Febrile neutropenia (neutropénie fébrile), mucositis (mucite), peripheral neuropathy (neuropathie périphérique), alopecia (alopécie), extravasation (extravasation), hand-foot syndrome (syndrome main-pied).",c:"Nadir = point bas des globules blancs (8-14 jours après chimiothérapie). Recovery = récupération. Dose reduction = réduction de dose. Delay (report de la cure). Prophylaxis (prophylaxie : G-CSF, antiémétiques)."},
+  {q:"Comment communiquer sur les avancées de la recherche avec des collègues en anglais ?",a:"Have you seen the new ESMO guidelines on immunotherapy for lung cancer? There is emerging evidence that early palliative care integration improves survival. We should discuss implementing this in our unit.",c:"ESMO = European Society for Medical Oncology. Guidelines = recommandations. Emerging evidence = données émergentes. Implementing = mettre en place. Unit = service."},
+  {q:"Comment documenter la gestion d'une extravasation en anglais ?",a:"Extravasation noted at PICC site at 15:20. Infusion stopped immediately. Catheter left in situ, residual drug aspirated. Antidote applied per protocol. Area marked. Ice pack applied. Oncology team notified. Patient education provided.",c:"Extravasation = extravasation (épanchement du médicament hors de la veine). Left in situ = laissé en place. Aspirated = aspiré. Antidote applied = antidote appliqué. Marked = délimité au marqueur."},
+ ]},
+};
+const UE_ORDER=['ue26s5','ue29','ue211s5','ue33s5','ue42s5','ue44s5','ue47','ue55','ue62s5'];
+
+
+
+
+/* ══════════════════════════════════════
+   ÉTAT GLOBAL
+══════════════════════════════════════ */
+const progress = {}; // ueId → {seen, known}
+UE_ORDER.forEach(id => { progress[id] = {seen:0, known:0}; });
+
+let gameMode = 'solo';
+let currentUE = null;
+let cardList = [];
+let cardIdx = 0;
+let flipped = false;
+// Duel
+let p1 = {name:'Joueur 1', pts:0};
+let p2 = {name:'Joueur 2', pts:0};
+let currentAnswerer = 1; // who is answering (1 or 2)
+let duelRevealed = false;
+// Session
+let sessionKnown = 0;
+let sessionUnknown = 0;
+
+function setGameMode(m, btn) {
+  document.querySelectorAll('.mode-card').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  gameMode = m;
+}
+
+function selectUE(id, el) {
+  currentUE = id === 'all' ? 'all' : id;
+  document.querySelectorAll('.ue-card').forEach(c => c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function launch() {
+  if (!currentUE) { alert('Sélectionne d\'abord une UE !'); return; }
+  if (gameMode === 'duel') {
+    document.getElementById('duel-modal').classList.add('show');
+  } else {
+    startSession();
+  }
+}
+
+function startDuel() {
+  const n1 = document.getElementById('p1-input').value.trim() || 'Joueur 1';
+  const n2 = document.getElementById('p2-input').value.trim() || 'Joueur 2';
+  p1 = {name: n1, pts: 0};
+  p2 = {name: n2, pts: 0};
+  currentAnswerer = 1;
+  document.getElementById('duel-modal').classList.remove('show');
+  startSession();
+}
+
+function closeDuelModal() {
+  document.getElementById('duel-modal').classList.remove('show');
+}
+
+function startSession() {
+  // Build card list
+  if (currentUE === 'all') {
+    cardList = [];
+    UE_ORDER.forEach(id => {
+      UES[id].cards.forEach(c => cardList.push({...c, ueId: id}));
+    });
+  } else {
+    cardList = UES[currentUE].cards.map(c => ({...c, ueId: currentUE}));
+  }
+  // Shuffle
+  cardList = cardList.sort(() => Math.random() - .5);
+  cardIdx = 0;
+  flipped = false;
+  sessionKnown = 0;
+  sessionUnknown = 0;
+
+  // Setup screen
+  const ue = currentUE === 'all' ? {num:'Toutes les UE',name:'Semestre 1 complet',color:'#1a1a2e',light:'#f0eeff'} : UES[currentUE];
+  document.getElementById('fc-dot').style.background = ue.color;
+  document.getElementById('fc-ue-name').textContent = ue.num + ' — ' + ue.name;
+  document.getElementById('fc-prog-fill').style.background = ue.color;
+
+  // Show/hide duel header
+  if (gameMode === 'duel') {
+    document.getElementById('duel-hdr').style.display = 'block';
+    document.getElementById('solo-eval').style.display = 'none';
+    document.getElementById('duel-actions').style.display = 'block';
+    updateDuelUI();
+  } else {
+    document.getElementById('duel-hdr').style.display = 'none';
+    document.getElementById('solo-eval').style.display = 'none';
+    document.getElementById('duel-actions').style.display = 'none';
+  }
+  document.getElementById('nxt-btn').classList.remove('on');
+
+  showScr('sf');
+  loadCard();
+}
+
+/* ══════════════════════════════════════
+   CARTE
+══════════════════════════════════════ */
+function loadCard() {
+  if (cardIdx >= cardList.length) { showResult(); return; }
+  const card = cardList[cardIdx];
+  const ue = UES[card.ueId];
+  flipped = false;
+  duelRevealed = false;
+
+  // Progress bar
+  const pct = cardIdx / cardList.length * 100;
+  document.getElementById('fc-prog-fill').style.width = pct + '%';
+  document.getElementById('fc-prog-txt').textContent = `${cardIdx + 1}/${cardList.length}`;
+
+  // Front face
+  document.getElementById('cf-badge').textContent = '❓ Question';
+  document.getElementById('cf-badge').style.cssText = `background:${ue.light};color:${ue.color};border:1.5px solid ${ue.color}40;font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:4px 12px;border-radius:20px;margin-bottom:14px;align-self:flex-start`;
+  document.getElementById('cf-ue-lbl').textContent = ue.num;
+  document.getElementById('cf-q-text').textContent = card.q;
+  document.getElementById('cf-hint').style.display = gameMode === 'duel' ? 'none' : 'flex';
+
+  // Back face
+  const back = document.getElementById('card-back');
+  back.style.background = `linear-gradient(135deg,${ue.color},${ue.dark})`;
+  document.getElementById('cb-badge').textContent = '✅ Réponse';
+  document.getElementById('cb-badge').style.cssText = 'background:rgba(255,255,255,.2);color:white;border:1.5px solid rgba(255,255,255,.3);font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:4px 12px;border-radius:20px;margin-bottom:14px;align-self:flex-start';
+  document.getElementById('cb-answer').textContent = card.a;
+  const comp = document.getElementById('cb-comp');
+  if (card.c) { comp.style.display = 'block'; comp.textContent = '📌 ' + card.c; }
+  else { comp.style.display = 'none'; }
+
+  // Reset card flip
+  const fc = document.getElementById('flip-card');
+  fc.style.transition = 'none';
+  fc.classList.remove('flipped');
+  setTimeout(() => { fc.style.transition = 'transform .55s cubic-bezier(.4,0,.2,1)'; }, 30);
+
+  // Reset buttons
+  document.getElementById('nxt-btn').classList.remove('on');
+  document.getElementById('solo-eval').style.display = 'none';
+
+  if (gameMode === 'duel') {
+    document.getElementById('reveal-btn').style.display = 'block';
+    document.getElementById('correct-btn').style.display = 'none';
+    document.getElementById('wrong-btn').style.display = 'none';
+    document.getElementById('duel-actions').style.display = 'block';
+    updateDuelUI();
+  }
+}
+
+function flipCard() {
+  if (gameMode === 'duel' && !duelRevealed) return; // Duel: only via button
+  if (flipped) return;
+  flipped = true;
+  document.getElementById('flip-card').classList.add('flipped');
+
+  if (gameMode === 'solo') {
+    setTimeout(() => {
+      document.getElementById('solo-eval').style.display = 'flex';
+    }, 400);
+  }
+}
+
+function evalCard(knew) {
+  const card = cardList[cardIdx];
+  const ueId = card.ueId;
+  progress[ueId].seen++;
+  if (knew) { progress[ueId].known++; sessionKnown++; }
+  else { sessionUnknown++; }
+  updateHomeStats();
+  cardIdx++;
+  setTimeout(loadCard, 180);
+}
+
+/* ── DUEL ── */
+function updateDuelUI() {
+  const answerer = currentAnswerer === 1 ? p1 : p2;
+  const reader = currentAnswerer === 1 ? p2 : p1;
+  document.getElementById('p1-name').textContent = p1.name;
+  document.getElementById('p2-name').textContent = p2.name;
+  document.getElementById('p1-pts').textContent = p1.pts;
+  document.getElementById('p2-pts').textContent = p2.pts;
+  const c1 = UES[cardList[Math.min(cardIdx, cardList.length-1)]?.ueId || UE_ORDER[0]].color;
+  document.getElementById('p1-score-box').style.background = currentAnswerer === 1 ? `linear-gradient(135deg,${c1}22,${c1}44)` : '#f8f7ff';
+  document.getElementById('p1-score-box').style.borderRadius = '14px';
+  document.getElementById('p2-score-box').style.background = currentAnswerer === 2 ? `linear-gradient(135deg,${c1}22,${c1}44)` : '#f8f7ff';
+  document.getElementById('p2-score-box').style.borderRadius = '14px';
+  document.getElementById('p1-pts').style.color = currentAnswerer === 1 ? c1 : '#1a1a2e';
+  document.getElementById('p2-pts').style.color = currentAnswerer === 2 ? c1 : '#1a1a2e';
+  document.getElementById('turn-badge').textContent = `📖 ${reader.name} lit la question à voix haute — ${answerer.name} répond !`;
+}
+
+function duelReveal() {
+  duelRevealed = true;
+  document.getElementById('flip-card').classList.add('flipped');
+  document.getElementById('reveal-btn').style.display = 'none';
+  document.getElementById('correct-btn').style.display = 'block';
+  document.getElementById('wrong-btn').style.display = 'block';
+}
+
+function duelScore(correct) {
+  if (correct) {
+    if (currentAnswerer === 1) p1.pts++;
+    else p2.pts++;
+    launchConfetti();
+  }
+  document.getElementById('correct-btn').style.display = 'none';
+  document.getElementById('wrong-btn').style.display = 'none';
+  // Switch answerer
+  currentAnswerer = currentAnswerer === 1 ? 2 : 1;
+  cardIdx++;
+  const card = cardList[Math.min(cardIdx-1, cardList.length-1)];
+  if (card) { progress[card.ueId].seen++; if(correct) progress[card.ueId].known++; }
+  updateHomeStats();
+  setTimeout(loadCard, 200);
+}
+
+function nextCard() { cardIdx++; loadCard(); }
+
+/* ══════════════════════════════════════
+   RÉSULTAT
+══════════════════════════════════════ */
+function showResult() {
+  const total = cardList.length;
+  const pct = sessionKnown / total;
+  const grade = pct >= .9 ? '🏆' : pct >= .7 ? '✅' : pct >= .5 ? '⚠️' : '📚';
+  const note = Math.round(pct * 20);
+
+  document.getElementById('res-grade').textContent = grade;
+
+  if (gameMode === 'solo') {
+    document.getElementById('res-score').textContent = `${note}/20`;
+    document.getElementById('res-score').style.color = pct >= .7 ? '#44cf6c' : pct >= .5 ? '#ff9f1c' : '#ef476f';
+    document.getElementById('res-label').textContent = `${total} cartes · ${sessionKnown} maîtrisées`;
+    const msgs = ['Continue à réviser !', 'Bien !', 'Très bien !', 'Excellent !'];
+    const msg = pct >= .9 ? msgs[3] : pct >= .7 ? msgs[2] : pct >= .5 ? msgs[1] : msgs[0];
+    const rt = document.getElementById('res-tag');
+    rt.textContent = msg;
+    rt.style.cssText = `background:${pct>=.7?'#edfff3':pct>=.5?'#fff6e8':'#fff0f3'};color:${pct>=.7?'#1e8f42':pct>=.5?'#c06d00':'#b01940'};border:1.5px solid ${pct>=.7?'#44cf6c':pct>=.5?'#ff9f1c':'#ef476f'};border-radius:20px;padding:6px 18px;font-size:13px;font-weight:800;margin-bottom:24px`;
+    document.getElementById('rs-ok').textContent = sessionKnown;
+    document.getElementById('rs-ko').textContent = sessionUnknown;
+    document.getElementById('rs-total').textContent = total;
+    document.getElementById('solo-res-stats').style.display = 'block';
+    document.getElementById('duel-res').style.display = 'none';
+  } else {
+    // Duel result
+    document.getElementById('solo-res-stats').style.display = 'none';
+    document.getElementById('duel-res').style.display = 'block';
+    const winner = p1.pts > p2.pts ? p1 : p2.pts > p1.pts ? p2 : null;
+    document.getElementById('res-score').textContent = total + ' cartes';
+    document.getElementById('res-score').style.color = '#1a1a2e';
+    document.getElementById('res-label').textContent = 'Partie terminée !';
+    document.getElementById('res-tag').textContent = winner ? `🏆 ${winner.name} gagne !` : '🤝 Égalité !';
+    document.getElementById('res-tag').style.cssText = `background:#fff6e8;color:#c06d00;border:1.5px solid #ff9f1c;border-radius:20px;padding:6px 18px;font-size:13px;font-weight:800;margin-bottom:24px`;
+    document.getElementById('duel-winner').textContent = winner ? `🏆 ${winner.name} remporte la partie !` : '🤝 Match nul !';
+    document.getElementById('drs1-name').textContent = p1.name;
+    document.getElementById('drs2-name').textContent = p2.name;
+    document.getElementById('drs1-pts').textContent = p1.pts;
+    document.getElementById('drs2-pts').textContent = p2.pts;
+    const c1 = UES[UE_ORDER[0]].color;
+    document.getElementById('drs1').style.cssText = `background:linear-gradient(135deg,${p1.pts>=p2.pts?'#44cf6c22':'#f8f7ff'},${p1.pts>=p2.pts?'#1e8f4222':'#f0eeff'});border-radius:16px;padding:16px 24px;min-width:120px`;
+    document.getElementById('drs2').style.cssText = `background:linear-gradient(135deg,${p2.pts>=p1.pts?'#44cf6c22':'#f8f7ff'},${p2.pts>=p1.pts?'#1e8f4222':'#f0eeff'});border-radius:16px;padding:16px 24px;min-width:120px`;
+    if (winner) launchConfetti();
+  }
+  showScr('sres');
+}
+
+function relaunch() { startSession(); }
+function goHome() { showScr('sw'); }
+
+/* ══════════════════════════════════════
+   ACCUEIL — RENDU
+══════════════════════════════════════ */
+function renderHome() {
+  const grid = document.getElementById('ue-grid');
+  grid.innerHTML = '';
+
+  // Bouton "Tout réviser"
+  const allCard = document.createElement('button');
+  allCard.className = 'ue-card all-btn' + (currentUE === 'all' ? ' on' : '');
+  const totalCards = UE_ORDER.reduce((s,id) => s + UES[id].cards.length, 0);
+  allCard.innerHTML = `<span class="ue-ico">🌐</span><div class="ue-num">S1 complet</div><div class="ue-name">Toutes les UE</div><div class="ue-count">${totalCards} cartes</div>`;
+  allCard.onclick = () => selectUE('all', allCard);
+  grid.appendChild(allCard);
+
+  UE_ORDER.forEach(id => {
+    const ue = UES[id];
+    const pr = progress[id];
+    const pct = ue.cards.length ? Math.round(pr.known / ue.cards.length * 100) : 0;
+    const card = document.createElement('button');
+    card.className = 'ue-card' + (currentUE === id ? ' on' : '');
+    card.style.background = `linear-gradient(135deg,${ue.color},${ue.dark})`;
+    card.style.color = 'white';
+    card.innerHTML = `
+      <span class="ue-ico">${ue.ico}</span>
+      <div class="ue-num">${ue.num}</div>
+      <div class="ue-name">${ue.name}</div>
+      <div class="ue-count">${ue.cards.length} cartes · ${pct}% maîtrisées</div>
+      <div class="ue-prog"><div class="ue-prog-fill" style="width:${pct}%"></div></div>`;
+    card.onclick = () => selectUE(id, card);
+    grid.appendChild(card);
+  });
+
+  // Barres de progression
+  const bars = document.getElementById('prog-bars');
+  bars.innerHTML = '';
+  UE_ORDER.forEach(id => {
+    const ue = UES[id];
+    const pr = progress[id];
+    const pct = ue.cards.length ? Math.round(pr.known / ue.cards.length * 100) : 0;
+    bars.innerHTML += `<div class="gp-row">
+      <div class="gp-lbl">${ue.ico} ${ue.num}</div>
+      <div class="gp-bar"><div class="gp-fill" style="width:${pct}%;background:${ue.color}"></div></div>
+      <div class="gp-pct" style="color:${ue.color}">${pct}%</div>
+    </div>`;
+  });
+}
+
+function updateHomeStats() {
+  const mastered = UE_ORDER.reduce((s,id) => s + progress[id].known, 0);
+  const total = UE_ORDER.reduce((s,id) => s + UES[id].cards.length, 0);
+  document.getElementById('mastered-count').textContent = mastered;
+  document.getElementById('total-cards').textContent = total;
+  renderHome();
+}
+
+/* ══════════════════════════════════════
+   CONFETTI
+══════════════════════════════════════ */
+function launchConfetti() {
+  const colors = ['#ff6b9d','#7c5cbf','#00b4d8','#44cf6c','#ff9f1c'];
+  for (let i = 0; i < 18; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `left:${20+Math.random()*60}%;top:${10+Math.random()*30}%;background:${colors[Math.floor(Math.random()*colors.length)]};transform:rotate(${Math.random()*360}deg);animation-delay:${Math.random()*0.4}s;animation-duration:${0.8+Math.random()*0.5}s`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+function showScr(id) {
+  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if (id === 'sw') { renderHome(); window.scrollTo(0, 0); }
+}
+
+// Init
+renderHome();
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Rhumatologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --am:#b45309;--am-d:#78350f;--am-l:#fef3c7;--am-m:#fcd34d;--am-b:#fde68a;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--am-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--am-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--am-l);color:var(--am);border:1px solid var(--am-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--am-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--am-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--am-b);border:1px solid var(--am-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#78350f;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--am));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--am));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--am-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--am-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(120,53,15,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--am);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--am-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--am-d)}
+.tb-mode{background:var(--am-l);color:var(--am);border:1px solid var(--am-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--am-d),var(--am));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--am);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--am-d),#92400e);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(120,53,15,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--am-l);border:1px solid var(--am-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--am)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--am);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--am-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--am);background:var(--am-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--am);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--am-d)}
+.next-btn{width:100%;padding:12px;background:var(--am-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(120,53,15,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--am)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+.frappe-input:focus{border-color:var(--am)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.frappe-hint span{color:var(--am);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--am-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--am)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--am);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--am-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--am);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--am);background:var(--am-l);color:var(--am-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--am-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--am)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--am-d),var(--am))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--am-d);color:white;box-shadow:0 2px 10px rgba(120,53,15,.3)}.rb.p:hover{background:var(--am)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--am-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🦴</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🦴 Rhumatologie</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🦴</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Rhumatologie</div>
+        <div class="w-hero-desc">68 termes couvrant toute la rhumatologie clinique : anatomie ostéo-articulaire, arthroses et arthrites, polyarthrite rhumatoïde, spondyloarthrites, goutte, ostéoporose, lupus, fibromyalgie, explorations, traitements et prothèses. Indispensable pour vos stages MCO et SSR.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">68</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">11</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Contenu validé — Recommandations HAS/SFR/EULAR/ACR 2024.</strong> Ce module est basé sur les référentiels officiels en vigueur. Il ne remplace pas les protocoles institutionnels de votre établissement de stage. En cas de doute clinique, référez-vous toujours à votre encadrant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#b45309;--mb:#fef3c7" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#fef3c7;border-color:#fcd34d;color:#b45309">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former le terme rhumatologique. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">68 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🦴</div><span class="tb-logo-text">Rhumato</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/68</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🦴</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Rhumatologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--am)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Contenu basé sur recommandations HAS/SFR/EULAR/ACR 2024 — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── ANATOMIE OSTÉO-ARTICULAIRE (8) ──
+{id:`articulation`,t:`Articulation`,cat:`Anatomie`,
+ def:`Zone de jonction entre deux ou plusieurs os, permettant ou limitant les mouvements. Trois types : synoviales (mobiles, ex : genou, épaule), cartilagineuses (semi-mobiles, ex : symphyse pubienne) et fibreuses (immobiles, ex : sutures crâniennes).`,
+ ex:`L'arthrose est une atteinte dégénérative des articulations synoviales, principalement aux genoux, hanches, mains et rachis cervical/lombaire.`,
+ mnemo:`Articulation = jonction entre 2 os = mobile / semi-mobile / fixe`},
+{id:`cartilage`,t:`Cartilage articulaire`,cat:`Anatomie`,
+ def:`Tissu conjonctif spécialisé recouvrant les surfaces osseuses des articulations synoviales. Composé essentiellement de chondrocytes et de matrice (collagène II, protéoglycanes). Rôle : amortir les chocs et permettre le glissement. Pas de vaisseaux, pas de nerfs.`,
+ ex:`Dans l'arthrose, le cartilage s'amincit progressivement (pincement articulaire visible à la radiographie). La régénération du cartilage est très limitée chez l'adulte.`,
+ mnemo:`Cartilage = couverture des os pour glisser sans douleur = abîmé en arthrose`},
+{id:`synovie`,t:`Synovie / Liquide synovial`,cat:`Anatomie`,
+ def:`Liquide visqueux jaune clair présent dans la cavité articulaire, sécrété par la membrane synoviale. Rôle : lubrification (acide hyaluronique) et nutrition du cartilage (avascularisé). Volume normal : 0,5-2 mL par grosse articulation.`,
+ ex:`Analyse du liquide articulaire après ponction : mécanique (< 2000 GB/mm³), inflammatoire (> 2000 GB/mm³), septique (> 50 000 GB/mm³ + germe). Examen clé en rhumatologie d'urgence.`,
+ mnemo:`Synovie = huile articulaire = analyse pour différencier inflammation, infection ou arthrose`},
+{id:`tendon`,t:`Tendon`,cat:`Anatomie`,
+ def:`Tissu conjonctif fibreux dense reliant le muscle à l'os, transmettant la force musculaire pour produire le mouvement. Constitué de fibres de collagène I parallèles. Vascularisation pauvre = cicatrisation lente.`,
+ ex:`Tendinite : inflammation du tendon (épaule, coude, Achille). Rupture tendineuse : tendon d'Achille fréquent chez le sportif d'âge mûr ou sous fluoroquinolones.`,
+ mnemo:`Tendon = corde reliant muscle et os = transmet la force du muscle`},
+{id:`ligament`,t:`Ligament`,cat:`Anatomie`,
+ def:`Bande de tissu conjonctif fibreux reliant deux os entre eux, stabilisant l'articulation et limitant les mouvements anormaux. À distinguer du tendon (qui relie muscle à os).`,
+ ex:`Entorse de cheville : étirement ou rupture des ligaments latéraux (LLE le plus fréquent). Rupture du LCA (Ligament Croisé Antérieur) du genou : sportif, impact en torsion.`,
+ mnemo:`Ligament = lie 2 os entre eux ≠ tendon (muscle-os)`},
+{id:`menisque`,t:`Ménisque`,cat:`Anatomie`,
+ def:`Fibrocartilage en forme de croissant situé dans certaines articulations (genou principalement, ménisques médial et latéral). Rôle : amortir, stabiliser, répartir les pressions. Vascularisation pauvre périphérique uniquement.`,
+ ex:`Lésion méniscale du genou : douleur, blocages articulaires, hydarthrose. Fréquente en sport (rotation forcée). Méniscectomie partielle sous arthroscopie.`,
+ mnemo:`Ménisque = coussin du genou en forme de croissant = blocages si déchiré`},
+{id:`os_compact`,t:`Os compact / Os spongieux`,cat:`Anatomie`,
+ def:`Deux types de tissu osseux : Os compact (cortical) : dense, périphérique, supporte les charges (ex : diaphyse des os longs). Os spongieux (trabéculaire) : structure en travées, central, contient la moelle hématopoïétique (ex : épiphyses, vertèbres).`,
+ ex:`L'ostéoporose touche préférentiellement l'os trabéculaire (corps vertébraux, col fémoral, poignet) → fractures par tassement vertébral, fracture du col, fracture de Pouteau-Colles.`,
+ mnemo:`Compact = dur en surface / Spongieux = aéré au centre = riche en moelle`},
+{id:`enthese`,t:`Enthèse`,cat:`Anatomie`,
+ def:`Zone d'insertion d'un tendon ou d'un ligament sur l'os. Site de transition tissu fibreux → os. Riche en innervation. Lieu privilégié des inflammations dans les spondyloarthrites (enthésite).`,
+ ex:`Enthésite achilléenne ou plantaire : douleur d'insertion typique des spondyloarthrites. Différent de la tendinite (inflammation du corps tendineux).`,
+ mnemo:`Enthèse = point d'attache du tendon sur l'os = enflammée en spondyloarthrites`},
+// ── ARTHROSE (5) ──
+{id:`arthrose`,t:`Arthrose`,cat:`Arthrose`,
+ def:`Maladie articulaire dégénérative la plus fréquente, caractérisée par la destruction progressive du cartilage articulaire, associée à un remodelage osseux sous-chondral. Pas d'inflammation systémique. Critères radiologiques de Kellgren-Lawrence (0 à 4).`,
+ ex:`Triade radiologique : pincement articulaire (perte cartilage) + ostéophytes (becs osseux) + sclérose sous-chondrale + géodes. CRP normale (à différencier de l'arthrite).`,
+ mnemo:`Arthrose = usure du cartilage = pincement + ostéophytes + pas d'inflammation systémique`},
+{id:`gonarthrose`,t:`Gonarthrose`,cat:`Arthrose`,
+ def:`Arthrose du genou. Très fréquente, favorisée par le surpoids, les microtraumatismes répétés, les antécédents de lésions méniscales ou ligamentaires. Atteinte fémoro-tibiale (médiale ou latérale) ou fémoro-patellaire.`,
+ ex:`Traitement : amaigrissement, kinésithérapie, antalgiques palier 1-2, AINS courte durée, infiltrations corticoïdes ou acide hyaluronique. PTG (prothèse totale de genou) si échec et sévérité.`,
+ mnemo:`gono- (genou) + arthrose = usure du genou = surpoids + sport`},
+{id:`coxarthrose`,t:`Coxarthrose`,cat:`Arthrose`,
+ def:`Arthrose de la hanche. Douleur inguinale ou fessière irradiant vers le genou. Favorisée par les dysplasies de hanche, le surpoids, les antécédents de fracture de hanche. PTH (prothèse totale de hanche) si évolution sévère.`,
+ ex:`Préparation pré-opératoire PTH : bilan biologique, ECG, ASA, fiche de consignes, kinésithérapie pré-op. Anticoagulation HBPM 35 jours minimum après PTH.`,
+ mnemo:`coxa- (hanche) + arthrose = usure de la hanche = douleur inguinale`},
+{id:`rachis_arthrose`,t:`Arthrose rachidienne`,cat:`Arthrose`,
+ def:`Atteinte dégénérative des disques intervertébraux (discarthrose) et des articulations interapophysaires postérieures. Fréquente après 50 ans. Cervicarthrose et lombarthrose sont les plus communes. Peut entraîner canal lombaire étroit, sciatique, NCB.`,
+ ex:`Canal lombaire étroit : claudication intermittente neurogène (douleur des jambes à la marche, soulagée par la flexion antérieure). À distinguer de la claudication artérielle.`,
+ mnemo:`Arthrose rachis = discarthrose + interapophysaire = lombalgie chronique`},
+{id:`hernie_discale`,t:`Hernie discale`,cat:`Arthrose`,
+ def:`Saillie du nucleus pulposus à travers une fissure de l'anneau fibreux du disque intervertébral. Compression de la racine nerveuse adjacente. Localisation préférentielle : L4-L5 et L5-S1.`,
+ ex:`Hernie discale L5-S1 droite : sciatique S1 droite (face postérieure de cuisse, mollet, talon, plante du pied). Lasègue positif. Traitement médical d'abord, chirurgie si signes neurologiques déficitaires ou douleur résistante.`,
+ mnemo:`Hernie discale = noyau du disque qui sort = comprime un nerf = sciatique`},
+// ── ARTHRITES INFLAMMATOIRES (8) ──
+{id:`pr`,t:`Polyarthrite Rhumatoïde (PR)`,cat:`Arthrites`,
+ def:`Rhumatisme inflammatoire chronique auto-immun touchant préférentiellement les femmes (3:1) entre 40-60 ans. Atteinte symétrique des petites articulations (MCP, IPP, poignets, MTP). Critères ACR/EULAR 2010 : score ≥ 6/10.`,
+ ex:`Signes IDE : raideur matinale > 1h, gonflement articulaire bilatéral et symétrique. Bilan : FR + anti-CCP (plus spécifiques), CRP, VS. Radiographies : pincements + érosions + déminéralisation périarticulaire.`,
+ mnemo:`PR = polyarthrite + symétrique + raideur matinale > 1h + anti-CCP`},
+{id:`mtx`,t:`Méthotrexate (MTX)`,cat:`Arthrites`,
+ def:`Antimétabolite immunosuppresseur, traitement de fond conventionnel de 1ère ligne dans la PR. Dose 7,5-25 mg en prise unique hebdomadaire (PO ou SC). Acide folique 5-10 mg/sem en prévention des effets secondaires (hors jour de prise).`,
+ ex:`Surveillance MTX : NFS + créatinine + bilan hépatique mensuel pendant 3 mois puis tous les 3 mois. Tératogène : contraception efficace H et F. Risque infectieux à signaler.`,
+ mnemo:`MTX = traitement de fond PR 1x/sem + acide folique + surveillance NFS/foie/rein`},
+{id:`anti_tnf`,t:`Anti-TNF alpha`,cat:`Arthrites`,
+ def:`Biothérapies bloquant le TNF alpha (cytokine pro-inflammatoire majeure). Indiquées dans la PR en cas d'échec du MTX, dans les spondyloarthrites, le rhumatisme psoriasique, MICI. Médicaments : infliximab (Remicade), adalimumab (Humira), étanercept (Enbrel), golimumab.`,
+ ex:`Bilan pré-thérapeutique anti-TNF : recherche tuberculose latente (IDR ou IGRA + radio thorax), sérologies VHB/VHC, vaccinations à jour. Risque de réactivation tuberculeuse +++. Pas de vaccin vivant pendant traitement.`,
+ mnemo:`Anti-TNF = biothérapie PR/spondylo = surveiller la tuberculose AVANT et PENDANT`},
+{id:`spa`,t:`Spondylarthrite ankylosante (SA)`,cat:`Arthrites`,
+ def:`Forme axiale prototypique des spondyloarthrites. Atteinte inflammatoire chronique du rachis et des sacro-iliaques, souvent associée à une atteinte enthésitique et périphérique. HLA-B27 positif chez 90% des cas. Touche surtout l'homme jeune.`,
+ ex:`Critères ASAS 2009 : sacro-iliite à l'imagerie + ≥ 1 critère SpA OU HLA-B27 + ≥ 2 critères SpA. Traitement : AINS en continu si actif (1ère ligne), kiné, anti-TNF si échec.`,
+ mnemo:`SA = rachis enraidi + sacro-iliaque + HLA-B27 + AINS en continu`},
+{id:`sacro_iliite`,t:`Sacro-iliite`,cat:`Arthrites`,
+ def:`Inflammation de l'articulation sacro-iliaque. Signe cardinal des spondyloarthrites. Imagerie de référence : IRM (sacro-iliite active) ou radiographie standard (signes tardifs : sclérose, érosions, ankylose). Douleur fessière à bascule.`,
+ ex:`Sacro-iliite radiologique = un des critères ASAS 2009 pour le diagnostic de spondyloarthrite axiale. Premier signe imagerie : œdème de la moelle osseuse à l'IRM en T2 STIR.`,
+ mnemo:`Sacro-iliite = inflammation de l'articulation entre sacrum et iliaque = douleur fessière à bascule`},
+{id:`rhum_pso`,t:`Rhumatisme psoriasique`,cat:`Arthrites`,
+ def:`Spondyloarthrite associée au psoriasis cutané (90% précèdent l'atteinte articulaire). Cinq formes cliniques : axiale, oligoarticulaire asymétrique, polyarticulaire, distale (IPD), mutilante. Atteinte enthésitique et dactylite (orteil ou doigt en saucisse) caractéristiques.`,
+ ex:`Atteinte unguéale (psoriasis des ongles) corrélée à l'atteinte articulaire. Diagnostic : critères CASPAR. Traitement : AINS, MTX, anti-TNF, anti-IL17, anti-IL23 selon la sévérité.`,
+ mnemo:`Rhumatisme psoriasique = psoriasis + arthrite + dactylite (doigt saucisse)`},
+{id:`arthrite_septique`,t:`Arthrite septique`,cat:`Arthrites`,
+ def:`Infection bactérienne d'une articulation. Urgence absolue (atteinte cartilagineuse irréversible si non traitée < 24h). Mono-arthrite aiguë + fièvre + impotence + syndrome inflammatoire. Germe principal : Staphylococcus aureus.`,
+ ex:`Conduite urgente : ponction articulaire AVANT antibiothérapie (cytologie, bactériologie, antibiogramme). ATB IV probabiliste couvrant Staph aureus + lavage articulaire chirurgical si pyarthrose.`,
+ mnemo:`Arthrite septique = mono-arthrite + fièvre = ponction + ATB IV en URGENCE`},
+{id:`arthrite_micro`,t:`Arthrite microcristalline`,cat:`Arthrites`,
+ def:`Arthrite par dépôt et libération de cristaux dans l'articulation. Deux principales : goutte (urate de sodium) et chondrocalcinose (pyrophosphate de calcium). Diagnostic par identification des cristaux au microscope à lumière polarisée sur liquide articulaire.`,
+ ex:`Goutte : cristaux d'urate aiguës aciculaires, biréfringence négative. Chondrocalcinose : cristaux de pyrophosphate rhomboïdes, biréfringence positive. Pas de PR sous-jacente.`,
+ mnemo:`Arthrite microcristalline = goutte (urate) ou chondrocalcinose (pyrophosphate)`},
+// ── GOUTTE (5) ──
+{id:`goutte`,t:`Goutte`,cat:`Goutte`,
+ def:`Maladie liée à l'hyperuricémie chronique entraînant le dépôt de cristaux d'urate de sodium dans les articulations et tissus. Hyperuricémie : > 360 µmol/L (60 mg/L). Touche préférentiellement l'homme après 40 ans, la femme après la ménopause.`,
+ ex:`Crise typique : podagre = arthrite aiguë de la 1ère MTP du gros orteil. Tophus : dépôts d'urate sous-cutanés (oreille, coude). Lithiase urinaire urique. Insuffisance rénale chronique possible.`,
+ mnemo:`Goutte = uricémie chronique + cristaux d'urate + podagre + tophus`},
+{id:`crise_goutte`,t:`Crise de goutte aiguë`,cat:`Goutte`,
+ def:`Arthrite microcristalline aiguë par précipitation des cristaux d'urate dans l'articulation. Début brutal, douleur intense, articulation rouge, chaude, gonflée, peu mobilisable. Classiquement nocturne, déclenchée par alcool, repas copieux, médicaments.`,
+ ex:`Traitement crise : colchicine (1 mg puis 0,5 mg/h max 3 mg/j) OU AINS (si pas de CI rénale ou digestive) OU corticoïdes courte durée. NE JAMAIS introduire allopurinol pendant la crise (risque d'aggravation).`,
+ mnemo:`Crise de goutte = colchicine OU AINS OU cortico, jamais allopurinol pendant la crise`},
+{id:`uricémie`,t:`Uricémie`,cat:`Goutte`,
+ def:`Concentration sanguine d'acide urique. Valeurs normales : < 360 µmol/L (60 mg/L). Hyperuricémie : > 360 µmol/L. Cible thérapeutique sous traitement de fond : < 360 µmol/L (asymptomatique) ; < 300 µmol/L (avec tophus, lithiases).`,
+ ex:`Hyperuricémie asymptomatique : pas de traitement systématique. Indications : crises répétées, tophus, lithiases uriques, néphropathie urique, atteinte osseuse à la radio.`,
+ mnemo:`Uricémie cible : < 360 µmol/L (sans tophus) / < 300 µmol/L (avec tophus)`},
+{id:`allopurinol`,t:`Allopurinol`,cat:`Goutte`,
+ def:`Inhibiteur de la xanthine oxydase, traitement hypouricémiant de référence dans la goutte. Dose initiale : 100 mg/j puis augmentation progressive jusqu'à atteindre la cible d'uricémie. À démarrer à distance de la crise, sous couverture colchicine 0,5-1 mg/j pendant 3-6 mois.`,
+ ex:`Effets secondaires : DRESS syndrome (toxidermie sévère), rash, éosinophilie. À éviter chez sujet HLA-B*5801 positif (Asiatiques). Adapter la dose à la fonction rénale.`,
+ mnemo:`Allopurinol = traitement de fond goutte + couverture colchicine + DRESS possible`},
+{id:`tophus`,t:`Tophus`,cat:`Goutte`,
+ def:`Dépôt sous-cutané de cristaux d'urate de sodium, formant des nodules durs, souvent jaunâtres, parfois ulcérés. Localisations préférentielles : oreilles (hélix), coudes, mains, pieds (gros orteil). Témoigne d'une goutte chronique évoluée.`,
+ ex:`Tophus = indication de traitement de fond hypouricémiant avec cible plus stricte (uricémie < 300 µmol/L) pour favoriser la dissolution des cristaux. Régression possible mais lente (mois à années).`,
+ mnemo:`Tophus = boules d'urate sous la peau = signe de goutte chronique évoluée`},
+// ── OSTÉOPOROSE (6) ──
+{id:`osteoporose`,t:`Ostéoporose`,cat:`Ostéoporose`,
+ def:`Maladie squelettique caractérisée par une diminution de la masse osseuse et une altération de la microarchitecture, augmentant la fragilité osseuse et le risque fracturaire. Définition densitométrique OMS : T-score ≤ -2,5 DS au col fémoral ou rachis lombaire.`,
+ ex:`Première cause de fracture chez la femme ménopausée. Localisations préférentielles : col fémoral (PTH urgente), vertèbres (tassement), poignet (Pouteau-Colles). Calcium 1000-1200 mg/j + vitamine D 800-1000 UI/j.`,
+ mnemo:`Ostéoporose = T-score ≤ -2,5 = os fragiles = fractures par fragilité`},
+{id:`dexa`,t:`DEXA (Densitométrie osseuse / DMO)`,cat:`Ostéoporose`,
+ def:`Examen de référence pour mesurer la densité minérale osseuse. Sites : col fémoral, rachis lombaire L1-L4. Résultats en T-score (vs adulte jeune) et Z-score (vs même âge). Indication remboursée HAS : ATCD fracture par fragilité, ménopause précoce, corticothérapie > 7,5 mg/j > 3 mois.`,
+ ex:`Interprétation T-score : ≥ -1 normal / -1 à -2,5 ostéopénie / ≤ -2,5 ostéoporose / ≤ -2,5 + fracture = ostéoporose sévère. Surveillance tous les 2-3 ans selon l'évolution.`,
+ mnemo:`DEXA = T-score : ≥ -1 normal / -1 à -2,5 ostéopénie / ≤ -2,5 ostéoporose`},
+{id:`bisphosphonates`,t:`Bisphosphonates`,cat:`Ostéoporose`,
+ def:`Inhibiteurs de la résorption osseuse par les ostéoclastes, traitement de référence de l'ostéoporose post-ménopausique. Voies : orale hebdomadaire (alendronate 70 mg, risédronate 35 mg) ou IV annuelle (zolédronate 5 mg).`,
+ ex:`Conditions de prise PO (alendronate, risédronate) : à jeun le matin, à distance des autres médicaments et aliments, station debout 30 min, grand verre d'eau. Effets secondaires : œsophagite, ostéonécrose mâchoire (rare).`,
+ mnemo:`Bisphosphonates = à jeun + debout 30 min + grand verre d'eau`},
+{id:`denosumab`,t:`Dénosumab (Prolia)`,cat:`Ostéoporose`,
+ def:`Anticorps monoclonal humain anti-RANKL, inhibant la formation et l'activité des ostéoclastes. Une injection SC tous les 6 mois. Indication : ostéoporose post-ménopausique, ostéoporose masculine. Attention : effet rebond à l'arrêt avec risque de fractures vertébrales multiples.`,
+ ex:`Surveillance : calcémie avant chaque injection (risque hypocalcémie surtout si IR). Soins dentaires programmés avant traitement (risque ostéonécrose mâchoire). Ne JAMAIS arrêter sans relais par bisphosphonate.`,
+ mnemo:`Dénosumab Prolia = SC tous les 6 mois + ne jamais arrêter sans relais (rebond)`},
+{id:`fracture_fragilite`,t:`Fracture par fragilité`,cat:`Ostéoporose`,
+ def:`Fracture survenant lors d'un traumatisme de faible énergie (chute de sa hauteur, simple geste de la vie quotidienne). Fractures sévères : col fémoral, vertèbres, humérus proximal, bassin. Indication directe au traitement anti-ostéoporotique sans nécessité de DEXA.`,
+ ex:`Tassement vertébral : douleur dorsale aiguë + perte de taille > 4 cm + cyphose. Diagnostic : radiographie + IRM (œdème = tassement récent). Vertébroplastie/cyphoplastie si douloureux et invalidant.`,
+ mnemo:`Fracture par fragilité = chute de sa hauteur + > 50 ans = traitement anti-ostéoporose`},
+{id:`vitamine_d`,t:`Vitamine D / Calcium`,cat:`Ostéoporose`,
+ def:`Vitamine D : essentielle à l'absorption intestinale du calcium et à la minéralisation osseuse. Cible 25(OH)D : 30-100 ng/mL (75-250 nmol/L). Apports recommandés : 800-1000 UI/j chez le sujet âgé. Calcium : 1000-1200 mg/j (alimentation + supplémentation si besoin).`,
+ ex:`Carence en vitamine D fréquente (> 50% des sujets âgés en France). Supplémentation : ampoules de 50 000-100 000 UI/3 mois ou 800-1000 UI/j. Toujours associée au calcium dans la prévention de l'ostéoporose.`,
+ mnemo:`Vitamine D 800-1000 UI/j + calcium 1000-1200 mg/j = trépied prévention ostéoporose`},
+// ── MALADIES SYSTÉMIQUES (5) ──
+{id:`lupus`,t:`Lupus érythémateux systémique (LES)`,cat:`Maladies systémiques`,
+ def:`Maladie auto-immune systémique non spécifique d'organe touchant préférentiellement la femme jeune. Diagnostic : critères ACR/EULAR 2019. Anticorps anti-nucléaires (AAN) > 1/160 obligatoires. Anti-DNA natifs et anti-Sm spécifiques.`,
+ ex:`Atteintes : cutanées (éruption malaire en aile de papillon, photosensibilité), articulaires, rénale (néphropathie lupique = pronostic), neurologique, hématologique, sérites. Hydroxychloroquine = traitement de fond systématique.`,
+ mnemo:`Lupus = femme jeune + AAN + anti-DNA + plaquenil + protection solaire`},
+{id:`sjogren`,t:`Syndrome de Gougerot-Sjögren`,cat:`Maladies systémiques`,
+ def:`Maladie auto-immune touchant les glandes exocrines (lacrymales, salivaires). Syndrome sec oculaire (xérophtalmie) et buccal (xérostomie). Anticorps anti-SSA (Ro) et anti-SSB (La). Risque accru de lymphome MALT.`,
+ ex:`Bilan : test de Schirmer (sécrétion lacrymale), biopsie de glandes salivaires accessoires, AAN, anti-SSA/SSB. Traitement symptomatique : larmes artificielles, hygiène buccale rigoureuse, salive artificielle.`,
+ mnemo:`Sjögren = sécheresse oculaire + buccale + anti-SSA/SSB + risque lymphome MALT`},
+{id:`sclerodermie`,t:`Sclérodermie systémique`,cat:`Maladies systémiques`,
+ def:`Maladie auto-immune avec fibrose progressive de la peau et des organes (poumons, cœur, reins, tube digestif). Phénomène de Raynaud quasi constant, sclérose cutanée acrale. Anticorps anti-centromère (forme limitée) ou anti-Scl70 (forme diffuse).`,
+ ex:`Crise rénale sclérodermique : urgence (HTA maligne + IRA). IEC à dose efficace en urgence. Atteinte pulmonaire : pneumopathie interstitielle, HTAP (mauvais pronostic).`,
+ mnemo:`Sclérodermie = fibrose peau + Raynaud + organes internes = anti-Scl70 ou centromère`},
+{id:`vascularites`,t:`Vascularites`,cat:`Maladies systémiques`,
+ def:`Groupe de maladies caractérisées par l'inflammation de la paroi vasculaire. Classification de Chapel Hill 2012 selon le calibre des vaisseaux : grands vaisseaux (Horton, Takayasu), moyens (PAN), petits (vascularites à ANCA, IgA).`,
+ ex:`Maladie de Horton : sujet > 50 ans, céphalées, claudication mâchoire, VS > 50 mm/h, biopsie artère temporale. Risque cécité = urgence corticothérapie 1 mg/kg/j (sans attendre la biopsie).`,
+ mnemo:`Vascularites = inflammation des vaisseaux = grands/moyens/petits selon Chapel Hill`},
+{id:`fibromyalgie`,t:`Fibromyalgie`,cat:`Maladies systémiques`,
+ def:`Syndrome de douleur chronique diffuse > 3 mois, associée à une fatigue, des troubles du sommeil, des troubles cognitifs (fibrofog). Pas de marqueur biologique. Critères ACR 2016. Touche préférentiellement la femme entre 30 et 50 ans.`,
+ ex:`Diagnostic d'élimination après bilan biologique normal (NFS, CRP, TSH, CPK, ferritine). Traitement : antidépresseurs tricycliques (amitriptyline), pregabaline, exercice physique adapté, TCC.`,
+ mnemo:`Fibromyalgie = douleur diffuse chronique + fatigue + sans marqueur biologique`},
+// ── EXPLORATIONS RHUMATO (4) ──
+{id:`ponction_artic`,t:`Ponction articulaire`,cat:`Explorations`,
+ def:`Prélèvement de liquide articulaire à l'aiguille à des fins diagnostiques (analyse) ou thérapeutiques (évacuation, infiltration corticoïdes). Asepsie stricte. Liquide : analyse macroscopique, cytologique, bactériologique, recherche de cristaux.`,
+ ex:`Liquide mécanique (arthrose) : < 2000 GB/mm³, prédominance lymphocytes/macrophages. Liquide inflammatoire : > 2000 GB/mm³, PNN. Liquide septique : > 50 000 GB/mm³ + bactéries = urgence.`,
+ mnemo:`Ponction articulaire = mécanique < 2000 / inflammatoire > 2000 / septique > 50 000 GB/mm³`},
+{id:`facteur_rhum`,t:`Facteur rhumatoïde (FR)`,cat:`Explorations`,
+ def:`Auto-anticorps dirigé contre le fragment Fc des IgG. Marqueur classique mais peu spécifique de la PR (positif dans 70-80% des PR mais aussi Sjögren, lupus, hépatite C, sujets sains âgés). À associer aux anti-CCP (plus spécifiques).`,
+ ex:`Bilan PR : FR + anti-CCP + CRP + VS + radio main/pied. Anti-CCP positifs ≥ 3x normale = score critères ACR/EULAR 2010. FR isolé = peu d'orientation.`,
+ mnemo:`FR = peu spécifique = associer anti-CCP (plus spécifique de la PR)`},
+{id:`anti_ccp`,t:`Anti-CCP (anti-peptides citrullinés cycliques)`,cat:`Explorations`,
+ def:`Auto-anticorps dirigés contre les protéines citrullinées. Très spécifiques de la PR (> 95% spécificité). Souvent positifs avant les signes cliniques. Marqueur de PR active et érosive. Score élevé ACR/EULAR si ≥ 3x la normale.`,
+ ex:`Anti-CCP positifs = PR plus érosive et plus rapide. Bilan annuel chez patient à risque (parents PR). Traitement de fond précoce et intensif.`,
+ mnemo:`Anti-CCP = très spécifiques PR + facteur de mauvais pronostic`},
+{id:`hla_b27`,t:`HLA-B27`,cat:`Explorations`,
+ def:`Antigène HLA de classe I associé aux spondyloarthrites. Présent chez 90% des patients atteints de spondylarthrite ankylosante (vs 5-10% en population générale). Critère majeur des classifications ASAS. Pas un test de dépistage en l'absence de signes cliniques.`,
+ ex:`Indication : suspicion de spondyloarthrite axiale (rachialgies inflammatoires, sacro-iliite). Permet la classification ASAS quand l'imagerie est normale + critères cliniques.`,
+ mnemo:`HLA-B27 = signature génétique des spondyloarthrites = 90% des SA`},
+// ── TRAITEMENTS (8) ──
+{id:`ains`,t:`AINS (Anti-Inflammatoires Non Stéroïdiens)`,cat:`Traitements`,
+ def:`Médicaments inhibant les cyclo-oxygénases (COX-1 et COX-2). Effets : antalgique, anti-inflammatoire, antipyrétique. Familles : ibuprofène, diclofénac, naproxène, kétoprofène. Coxibs (célécoxib) plus sélectifs COX-2.`,
+ ex:`Effets secondaires : gastrites/ulcères (IPP préventif si risque), IRA (déshydratation, IR, IEC, AINS = "triade noire"), HTA, décompensation IC, allergies cutanées. Durée la plus courte possible.`,
+ mnemo:`AINS = anti-inflammatoires + COX 1/2 + risque ulcères/rein/cardio`},
+{id:`corticoides`,t:`Corticoïdes`,cat:`Traitements`,
+ def:`Hormones glucocorticoïdes synthétiques aux puissants effets anti-inflammatoires et immunosuppresseurs. Prednisone, prednisolone, méthylprednisolone (orale, IV) ou dexaméthasone. Indications larges en rhumatologie : poussées de PR, vascularites, lupus.`,
+ ex:`Effets secondaires : ostéoporose cortisonique (Ca + vit D + bisphosphonate si > 7,5 mg/j > 3 mois), diabète cortico-induit, HTA, prise de poids, troubles psychiques, immunodépression. Décroissance progressive obligatoire.`,
+ mnemo:`Corticoïdes = anti-inflammatoires forts + risque ostéoporose/diabète/HTA`},
+{id:`infiltration`,t:`Infiltration intra-articulaire`,cat:`Traitements`,
+ def:`Injection intra-articulaire de corticoïdes retards (acétate de méthylprednisolone, hexacétonide de triamcinolone) ou d'acide hyaluronique (visco-supplémentation). Asepsie rigoureuse, geste médical. Repos relatif 24-48h après.`,
+ ex:`Indications corticoïdes : poussées arthrosiques, arthrites inflammatoires localisées. Acide hyaluronique : gonarthrose, coxarthrose. Pas plus de 3-4 infiltrations par an dans une articulation. CI : infection cutanée, articulation septique.`,
+ mnemo:`Infiltration = corticoïdes ou hyaluronique = max 3-4 par an et par articulation`},
+{id:`colchicine`,t:`Colchicine`,cat:`Traitements`,
+ def:`Antimitotique utilisé dans la goutte aiguë et chronique (en couverture du début d'allopurinol). Dose : 1 mg puis 0,5 mg/h, max 3 mg/j sur 24h. Index thérapeutique étroit. Toxicité : digestive (diarrhée), hématologique, neuromusculaire en surdosage.`,
+ ex:`Adapter la dose si IR (DFG < 30 = CI ou réduction). Interactions médicamenteuses dangereuses : macrolides (clarithromycine), inhibiteurs CYP3A4. Surveillance digestive si > 6 mg/j.`,
+ mnemo:`Colchicine = goutte = max 3 mg/j sur 24h = diarrhée si surdosage`},
+{id:`biotherapie`,t:`Biothérapies`,cat:`Traitements`,
+ def:`Médicaments produits par génie biologique (anticorps monoclonaux, protéines de fusion). Familles : anti-TNF (infliximab, adalimumab), anti-IL6 (tocilizumab), anti-CD20 (rituximab), anti-IL17 (sécukinumab), anti-IL23. Indications : PR, spondyloarthrites, psoriasis sévère, MICI.`,
+ ex:`Bilan pré-thérapeutique : tuberculose latente (IDR/IGRA + radio thorax), sérologies VHB/VHC/VIH, vaccinations à jour, NFS, créatinine, bilan hépatique. Risque infectieux à surveiller, vaccins vivants contre-indiqués.`,
+ mnemo:`Biothérapies = anti-TNF/IL6/CD20/IL17 = surveiller infections + tuberculose +++`},
+{id:`pth`,t:`PTH (Prothèse Totale de Hanche)`,cat:`Traitements`,
+ def:`Remplacement chirurgical complet de l'articulation coxofémorale par une prothèse (cotyle + tige fémorale + tête). Indications : coxarthrose évoluée, fracture du col fémoral, ostéonécrose. Voies d'abord : antérieure ou postéro-latérale.`,
+ ex:`Surveillance IDE post-PTH : douleur, mobilité (kiné précoce J0-J1), absence de mouvements interdits selon la voie d'abord, signes d'infection, anticoagulation HBPM 35 jours minimum, lever précoce J1.`,
+ mnemo:`PTH = prothèse hanche = lever précoce + HBPM 35 jours + rééducation`},
+{id:`ptg`,t:`PTG (Prothèse Totale de Genou)`,cat:`Traitements`,
+ def:`Remplacement chirurgical de l'articulation du genou par des composants prothétiques (fémoral, tibial, parfois patellaire). Indication : gonarthrose tricompartimentale évoluée résistante au traitement médical. Récupération longue : 3-6 mois.`,
+ ex:`Surveillance IDE post-PTG : kiné précoce et intensive (objectif flexion ≥ 90° à J5-J7), antalgiques multimodaux (PCA possible), HBPM 35 jours, surveillance plaie et drains, mobilisation précoce.`,
+ mnemo:`PTG = prothèse genou = kiné intensive + flexion 90° à J5-J7 + HBPM`},
+{id:`kine`,t:`Kinésithérapie en rhumatologie`,cat:`Traitements`,
+ def:`Rééducation indispensable dans les pathologies rhumatologiques. Objectifs : maintien des amplitudes articulaires, renforcement musculaire, prévention des chutes, amélioration de la qualité de vie. Personnalisée selon la pathologie et le patient.`,
+ ex:`PR : entretien des amplitudes, renforcement doux. Spondyloarthrite : assouplissement rachis, exercices respiratoires. Arthrose : renforcement quadriceps. Post-prothèse : rééducation intensive précoce.`,
+ mnemo:`Kiné = pilier du traitement rhumato = pas de douleur post-séance`},
+// ── RACINES RHUMATO (4) ──
+{id:`arthro_rac`,t:`Arthr- / Arthro-`,cat:`Racines`,
+ def:`Préfixe ou racine d'origine grecque (arthron = articulation) désignant tout ce qui est en rapport avec les articulations. Racine fondamentale en rhumatologie.`,
+ ex:`Arthrite (inflammation), arthrose (dégénérescence), arthrose, arthroscopie (examen endoscopique), arthralgie (douleur), arthroplastie (prothèse).`,
+ mnemo:`arthron = articulation en grec = racine universelle de la rhumatologie`},
+{id:`osteo_rac`,t:`Ostéo-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque (osteon = os) désignant tout ce qui est en rapport avec l'os. Utilisé dans les termes relatifs au tissu osseux et à ses pathologies.`,
+ ex:`Ostéoporose, ostéomalacie, ostéosynthèse, ostéoarthrite, ostéoblaste, ostéoclaste, ostéocyte, ostéome, ostéosarcome.`,
+ mnemo:`osteon = os en grec = tout ce qui touche au tissu osseux`},
+{id:`chondro_rac`,t:`Chondro-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque (chondros = cartilage) désignant le cartilage. Utilisé dans les termes relatifs au tissu cartilagineux et à ses pathologies.`,
+ ex:`Chondrocyte (cellule du cartilage), chondrome, chondropathie, chondroprotecteur, chondrocalcinose, chondromalacie, chondrosarcome.`,
+ mnemo:`chondros = cartilage en grec`},
+{id:`-algie_rac`,t:`-Algie / -dynie`,cat:`Racines`,
+ def:`Suffixes d'origine grecque (algos = douleur / odynê = douleur) désignant la douleur localisée à un organe. Précédés d'un préfixe topographique. Très fréquents en rhumatologie pour décrire les douleurs articulaires et musculaires.`,
+ ex:`Arthralgie (articulation), myalgie (muscle), lombalgie (lombes), cervicalgie (cou), céphalée, sciatique. Coccygodynie, pubodynie.`,
+ mnemo:`-algie = douleur en grec = lombalgie, arthralgie, myalgie...`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Arthrite`,def:`Inflammation d'une articulation, souvent douloureuse et chaude.`,
+ pieces:[`arthr-`,`osteo-`,`-ite`,`-ose`,`-algie`],correct:[`arthr-`,`-ite`],
+ meaning:`arthr- (articulation) + -ite (inflammation) = inflammation articulaire`},
+{term:`Arthrose`,def:`Maladie articulaire dégénérative par destruction du cartilage.`,
+ pieces:[`arthr-`,`osteo-`,`-ose`,`-ite`,`-algie`],correct:[`arthr-`,`-ose`],
+ meaning:`arthr- (articulation) + -ose (état dégénératif) = dégénérescence articulaire`},
+{term:`Arthralgie`,def:`Douleur articulaire sans inflammation manifeste.`,
+ pieces:[`arthr-`,`osteo-`,`-algie`,`-ite`,`-ose`],correct:[`arthr-`,`-algie`],
+ meaning:`arthr- (articulation) + -algie (douleur) = douleur articulaire`},
+{term:`Ostéoporose`,def:`Diminution de la masse osseuse augmentant le risque fracturaire.`,
+ pieces:[`osteo-`,`arthr-`,`-porose`,`-ite`,`-algie`],correct:[`osteo-`,`-porose`],
+ meaning:`osteo- (os) + -porose (porosité) = os poreux et fragiles`},
+{term:`Ostéoarthrite`,def:`Inflammation simultanée de l'os et de l'articulation, souvent infectieuse.`,
+ pieces:[`osteo-`,`chondro-`,`-arthrite`,`-ose`,`-algie`],correct:[`osteo-`,`-arthrite`],
+ meaning:`osteo- (os) + -arthrite (inflammation articulaire) = inflammation os + articulation`},
+{term:`Chondropathie`,def:`Atteinte pathologique du cartilage articulaire.`,
+ pieces:[`chondro-`,`osteo-`,`-pathie`,`-ite`,`-algie`],correct:[`chondro-`,`-pathie`],
+ meaning:`chondro- (cartilage) + -pathie (maladie) = maladie du cartilage`},
+{term:`Polyarthrite`,def:`Inflammation simultanée de plusieurs articulations (≥ 4).`,
+ pieces:[`poly-`,`mono-`,`oligo-`,`-arthrite`,`-ose`],correct:[`poly-`,`-arthrite`],
+ meaning:`poly- (plusieurs) + -arthrite (inflammation articulation) = plusieurs articulations enflammées`},
+{term:`Monoarthrite`,def:`Inflammation d'une seule articulation, urgence si fébrile (arthrite septique).`,
+ pieces:[`mono-`,`poly-`,`oligo-`,`-arthrite`,`-ose`],correct:[`mono-`,`-arthrite`],
+ meaning:`mono- (un seul) + -arthrite (inflammation articulaire) = une seule articulation enflammée`},
+{term:`Lombalgie`,def:`Douleur localisée à la région lombaire du rachis.`,
+ pieces:[`lomb-`,`cervic-`,`arthr-`,`-algie`,`-ite`],correct:[`lomb-`,`-algie`],
+ meaning:`lomb- (lombaire) + -algie (douleur) = douleur lombaire`},
+{term:`Cervicalgie`,def:`Douleur localisée à la région cervicale du rachis.`,
+ pieces:[`cervic-`,`lomb-`,`arthr-`,`-algie`,`-ite`],correct:[`cervic-`,`-algie`],
+ meaning:`cervic- (cou) + -algie (douleur) = douleur cervicale`},
+{term:`Synovite`,def:`Inflammation de la membrane synoviale articulaire.`,
+ pieces:[`synovi-`,`arthr-`,`-ite`,`-ose`,`-algie`],correct:[`synovi-`,`-ite`],
+ meaning:`synovi- (synovie/membrane synoviale) + -ite (inflammation) = inflammation de la synoviale`},
+{term:`Tendinite`,def:`Inflammation d'un tendon (épaule, coude, cheville).`,
+ pieces:[`tendin-`,`arthr-`,`osteo-`,`-ite`,`-algie`],correct:[`tendin-`,`-ite`],
+ meaning:`tendin- (tendon) + -ite (inflammation) = inflammation d'un tendon`},
+];
+
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[];
+
+function selectMode(m,btn){document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));btn.classList.add(`sel`);mode=m;}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  if(mode===`qcm`)questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`)questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`)questions=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const p3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){if(i===ci)choices.push(flip?t.t:t.def.substring(0,90)+`…`);else{const d=p3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}}
+    return{term:t.t,cat:t.cat,def:t.def,q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,questionText:flip?t.def.substring(0,140):null,choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`)loadQCM();
+  else if(mode===`frappe`)loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">🦴 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Terme médical</div><div class="tc-term">${q.term}</div><div class="tc-cat">🦴 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{const b=document.createElement(`button`);b.className=`choice`;b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);});
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}});
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition — Quel est ce terme ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">🦴 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez le terme médical correspondant :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t.split(`(`)[0].trim());const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">🦴 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme rhumatologique :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--am)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`Le terme était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Astuce :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Vocabulaire maîtrisé`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#fef3c7`,tc:`#b45309`,brd:`#fcd34d`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent ! Essayez le Mode Frappe pour mémoriser sans choix multiples.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Parfait. Le Mode Examen avec 15 secondes est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 arthr-/osteo-/chondro- + -ite/-ose/-algie = vous décodez tous les termes rhumatologiques.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en rhumatologie. Passez au module suivant.`);
+  if(note<10)cons.push(`📚 Commencez par Anatomie et Arthrose avant les pathologies inflammatoires.`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 puis passez au mode suivant.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`Arthrites`)cons.push(`🦴 PR : symétrique + raideur > 1h + anti-CCP. SA : axiale + HLA-B27 + AINS continu. Arthrite septique = urgence absolue.`);
+    if(cat===`Goutte`)cons.push(`💎 Crise = colchicine OU AINS OU cortico, JAMAIS allopurinol. Cible uricémie < 360 µmol/L (< 300 si tophus).`);
+    if(cat===`Ostéoporose`)cons.push(`🦴 T-score ≤ -2,5 = ostéoporose. Calcium 1000-1200 mg/j + vit D 800-1000 UI/j + bisphosphonates en 1ère ligne.`);
+    if(cat===`Maladies systémiques`)cons.push(`🌸 Lupus : femme jeune + AAN + plaquenil. Sjögren : sécheresse + anti-SSA/SSB. Horton : > 50 ans + cortico urgent.`);
+    if(cat===`Traitements`)cons.push(`💊 MTX : 1x/sem + acide folique + surveillance NFS/foie/rein. Anti-TNF : tuberculose à exclure AVANT.`);
+    if(cat===`Explorations`)cons.push(`🔬 Ponction : septique > 50 000 GB/mm³ / inflammatoire > 2000 / mécanique < 2000.`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise complète sur tous les axes. Excellent travail.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

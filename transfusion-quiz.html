@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Transfusion Sanguine</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --red:#dc2626;--red-d:#7f1d1d;--red-l:#fef2f2;--red-m:#fca5a5;--red-b:#fee2e2;
+  --blue:#1d4ed8;--blue-d:#1e3a8a;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes checkIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:var(--red-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--red-d)}
+.logo-sub{font-size:11px;color:var(--text3)}
+.top-badge{background:var(--red-l);color:var(--red);border:1px solid var(--red-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:22px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:42px;flex-shrink:0}
+.w-hero-title{font-size:22px;font-weight:800;color:var(--red-d);margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* Alerte dossier examen */
+.exam-alert{background:var(--red-b);border:2px solid var(--red-m);border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:12px}
+.ea-icon{font-size:22px;flex-shrink:0}
+.ea-title{font-size:13px;font-weight:800;color:var(--red-d);margin-bottom:5px}
+.ea-body{font-size:12px;color:var(--red);line-height:1.6}
+
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--red-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--red));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mc,var(--red));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{border-color:var(--mc,var(--red));background:var(--mb,var(--red-l))}
+.mc-icon{font-size:26px;margin-bottom:10px;display:block}
+.mc-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mc-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mc-list{list-style:none;margin-top:8px}
+.mc-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mc-list li::before{content:'✓';color:var(--mc,var(--red));font-weight:700;flex-shrink:0}
+.launch-btn{width:100%;padding:16px;background:var(--red-d);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(127,29,29,0.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--red);transform:translateY(-2px)}
+
+#s-quiz{background:var(--bg)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;background:var(--red-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--red-d)}
+.tb-mode{background:var(--red-l);color:var(--red);border:1px solid var(--red-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red),var(--purple));transition:width 0.55s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--red);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+
+#quiz-body{flex:1;padding:18px;max-width:720px;width:100%;margin:0 auto}
+
+/* Carte étape rouge sang */
+.ctx-card{background:linear-gradient(135deg,var(--red-d),#991b1b);border-radius:16px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;animation:fadeUp 0.3s ease;color:white;box-shadow:0 4px 20px rgba(127,29,29,0.3)}
+.ctx-ico-box{font-size:26px;flex-shrink:0;background:rgba(255,255,255,0.12);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:3px}
+.ctx-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.ctx-body{font-size:12.5px;color:rgba(255,255,255,0.85);line-height:1.65;font-family:'Lora',serif;font-style:italic}
+
+/* Carte documents obligatoires */
+.docs-card{background:var(--white);border:2px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px;animation:slideIn 0.3s ease}
+.docs-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--red-d);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.docs-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+@media(max-width:480px){.docs-grid{grid-template-columns:1fr}}
+.doc-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border-radius:8px;font-size:11.5px;line-height:1.5}
+.doc-item.obligatoire{background:var(--red-l);border:1px solid var(--red-m)}
+.doc-item.important{background:var(--orange-l);border:1px solid var(--orange-m)}
+.doc-num{width:18px;height:18px;border-radius:50%;background:var(--red);color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0;margin-top:1px}
+.doc-text{color:var(--text2)}.doc-text strong{color:var(--text)}
+
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--red-l);border:1px solid var(--red-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.qcp-dot{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.qcp-txt{font-size:10px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}
+.q-text strong{color:var(--red-d);font-style:italic}
+
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all 0.16s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--red);background:var(--red-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}
+.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:10px;background:var(--white);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--red-d)}
+.next-btn{width:100%;padding:13px;background:var(--red-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(127,29,29,0.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--red)}
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+#s-result{background:var(--bg)}
+.res-body{max-width:640px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--red),var(--purple))}
+.res-grade{font-size:52px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:52px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:14px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:10px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:3px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:14px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:10px}
+.error-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:10px}
+.conseil-item{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:7px;padding-left:4px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--red-d);color:white;box-shadow:0 2px 10px rgba(127,29,29,0.3)}.rb.p:hover{background:var(--red)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--red-m)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🩸</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div>
+    </div>
+    <div class="top-badge">🩸 Transfusion sanguine</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🩸</div>
+      <div>
+        <div class="w-hero-title">Transfusion sanguine</div>
+        <div class="w-hero-desc">Le protocole le plus strict de la profession. Chaque document manquant, chaque vérification omise peut coûter une vie. Et à l'examen oral d'IFSI : <strong>un document oublié = note de 0</strong>.</div>
+      </div>
+    </div>
+    <div class="exam-alert">
+      <div class="ea-icon">⚠️</div>
+      <div>
+        <div class="ea-title">Ce que vos formateurs attendent à l'oral</div>
+        <div class="ea-body">Vous devez citer dans l'ordre les <strong>7 documents du dossier transfusionnel</strong> (ordonnance PSL, carte de groupe, RAI &lt;72h, FDN, kit CUPT, fiche surveillance, fiche incidents), les délais réglementaires, les étapes du CUPT, le Beth-Vincent, la surveillance et la procédure en cas d'accident. <strong>Un document oublié = 0.</strong></div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">16</div><div class="ws-lbl">Étapes</div></div>
+      <div class="ws-item"><div class="ws-val">7</div><div class="ws-lbl">Documents obligatoires</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">8</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid" style="grid-template-columns:repeat(2,1fr) repeat(2,1fr);gap:12px">
+      <button class="mode-card sel" style="--mc:#dc2626;--mb:#fef2f2" onclick="selectMode('learn',this)">
+        <span class="mc-icon">📚</span>
+        <span class="mc-name">Apprentissage</span>
+        <div class="mc-diff" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626">⭐ Débutant</div>
+        <div class="mc-desc">Les 16 étapes dans l'ordre. Documents obligatoires, délais réglementaires, CUPT, Beth-Vincent. Tout ce qu'on vous demande à l'oral.</div>
+        <ul class="mc-list" style="--mc:#dc2626">
+          <li>Protocole complet dans l'ordre</li>
+          <li>Tous les documents du dossier</li>
+          <li>Explications cliniques complètes</li>
+          <li>Pas de chronomètre</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mc-icon">📝</span>
+        <span class="mc-name">Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">Questions directes sur le protocole. Délais, documents, CUPT, accidents. Comme un examen écrit ou oral. Chrono 30s.</div>
+        <ul class="mc-list" style="--mc:#d97706">
+          <li>Questions sur tout le protocole</li>
+          <li>Délais réglementaires</li>
+          <li>Chrono 30 secondes</li>
+          <li>Rapport détaillé à la fin</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('survival',this)">
+        <span class="mc-icon">💀</span>
+        <span class="mc-name">Survie</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Questions pièges avec réponses qui semblent toutes logiques. Erreurs mortelles déguisées. 3 vies. Chrono 25s.</div>
+        <ul class="mc-list" style="--mc:#7c3aed">
+          <li>Réponses volontairement piégeuses</li>
+          <li>Erreurs qui coûtent des vies</li>
+          <li>3 vies seulement</li>
+          <li>Chrono 25 secondes</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#0891b2;--mb:#f0fdfa" onclick="selectMode('bethvincent',this)">
+        <span class="mc-icon">🔬</span>
+        <span class="mc-name">Beth-Vincent</span>
+        <div class="mc-diff" style="background:#f0fdfa;border-color:#99f6e4;color:#0891b2">⭐⭐ Visuel</div>
+        <div class="mc-desc">Lisez les résultats de cupules et identifiez le groupe sanguin. 10 situations avec illustrations réalistes des réactions d'agglutination.</div>
+        <ul class="mc-list" style="--mc:#0891b2">
+          <li>Cupules Anti-A, Anti-B, Anti-AB, Anti-D</li>
+          <li>Agglutination visible en image</li>
+          <li>Devinez le groupe + Rhésus</li>
+          <li>Explication après chaque réponse</li>
+        </ul>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()"><span>Commencer →</span></button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🩸</div><span class="tb-logo-text">Transfusion</span></div>
+    <div class="tb-mode" id="tb-mode">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">Étape 1/16</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="quiz-body">
+    <div class="ctx-card" id="ctx-box" style="display:none">
+      <div class="ctx-ico-box" id="ctx-ico">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctx-sub">Étape</div>
+        <div class="ctx-title" id="ctx-title"></div>
+        <div class="ctx-body" id="ctx-body"></div>
+      </div>
+    </div>
+    <div class="docs-card" id="docs-card" style="display:none">
+      <div class="docs-title">📁 Documents obligatoires du dossier transfusionnel</div>
+      <div class="docs-grid" id="docs-grid"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🩸</div>
+      <div><div class="logo-name">Rapport — Transfusion sanguine</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--red)">0s</div><div class="rs-lbl">Tps / Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-score" style="color:var(--red-d)">0</div><div class="rs-lbl">Score</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Points à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils personnalisés</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   APPRENTISSAGE — 16 étapes dans l'ordre du protocole
+   Conçu pour l'examen oral IFSI
+═══════════════════════════════════════════════════════ */
+const STEPS = [
+{num:1,cat:"Prescription médicale",icon:"📋",title:"Vérifier la prescription médicale",
+ what:"La transfusion ne peut être réalisée que sur <strong>ordonnance médicale nominative et datée</strong>, signée par un médecin. Elle doit mentionner : identité du patient, nature du PSL (Produit Sanguin Labile), quantité, indication, et le nom du médecin prescripteur.",
+ why:"Toute transfusion sans prescription médicale valide est une faute grave. L'infirmier(e) ne peut jamais décider seul(e) de transfuser.",
+ rule:"Pas de prescription médicale valide = pas de transfusion. Jamais.",
+ docs:null,
+ q:"Vous arrivez pour poser la transfusion. Le médecin vous dit verbalement de transfuser. Que faites-vous ?",
+ choices:["Transfuser immédiatement — le médecin est responsable de sa prescription orale","Transfuser en notant 'prescription orale du Dr X' dans le dossier","Attendre la prescription écrite et signée avant tout geste transfusionnel","Transfuser si une infirmière confirme avoir entendu le médecin"],
+ correct:2},
+
+{num:2,cat:"Dossier transfusionnel — Documents",icon:"📁",title:"Vérifier le dossier transfusionnel COMPLET",
+ what:"Avant toute transfusion, le dossier doit contenir <strong>7 documents</strong>. Un seul document manquant = transfusion impossible. Le consentement du patient n'est PAS dans cette liste — c'est une obligation d'information médicale distincte. À l'examen oral IFSI : réciter ces 7 documents dans l'ordre est une attente explicite de vos formateurs.",
+ why:"Chaque document a un rôle précis dans la chaîne transfusionnelle. Un manquant peut masquer une incompatibilité ABO ou une RAI positive — accident potentiellement mortel. Erreur fréquente : ajouter le consentement à cette liste — il n'en fait pas partie.",
+ rule:"Les 7 documents : Ordonnance · Carte de groupe · RAI &lt;72h · FDN · CUPT · Fiche surveillance · Fiche incidents. Le consentement N'en fait PAS partie.",
+ docs:[
+   {num:1,text:"<strong>Ordonnance médicale de PSL</strong> — nominative, datée, signée par le médecin prescripteur",cls:"obligatoire"},
+   {num:2,text:"<strong>Carte de groupe sanguin</strong> — 2 déterminations ABO-Rhésus sur 2 prélèvements différents, par 2 préleveurs",cls:"obligatoire"},
+   {num:3,text:"<strong>RAI</strong> (Recherche d'Agglutinines Irrégulières) — <strong>moins de 72h</strong> avant la transfusion",cls:"obligatoire"},
+   {num:4,text:"<strong>Fiche de délivrance nominative (FDN)</strong> — émise par l'EFS ou le dépôt de sang",cls:"obligatoire"},
+   {num:5,text:"<strong>Carte / Kit de contrôle ultime pré-transfusionnel (CUPT)</strong> — non périmée, intègre",cls:"obligatoire"},
+   {num:6,text:"<strong>Fiche de surveillance transfusionnelle</strong> — constantes avant, pendant et après",cls:"obligatoire"},
+   {num:7,text:"<strong>Fiche d'incidents transfusionnels</strong> — à remplir en cas d'événement indésirable",cls:"important"},
+ ],
+ q:"Parmi ces éléments, lequel ne fait PAS partie des 7 documents obligatoires du dossier transfusionnel ?",
+ choices:["La carte de groupe sanguin (2 déterminations sur 2 prélèvements différents)","La fiche de délivrance nominative (FDN)","Le consentement écrit du patient","La fiche d'incidents transfusionnels"],
+ correct:2},
+
+{num:3,cat:"RAI — Délai réglementaire",icon:"⏱️",title:"Vérifier la validité de la RAI",
+ what:"La RAI (Recherche d'Agglutinines Irrégulières) doit être datée de <strong>moins de 72 heures</strong> avant la transfusion. Si la RAI dépasse 72h, elle doit être refaite avant de transfuser. Une RAI positive doit faire l'objet d'une procédure spécifique avec le centre de transfusion.",
+ why:"Les anticorps irréguliers peuvent apparaître rapidement (post-grossesse, post-transfusion). Une RAI de 5 jours peut avoir raté un anticorps récemment apparu, exposant le patient à une réaction hémolytique grave.",
+ rule:"RAI valide = moins de 72 heures. Au-delà = refaire avant de transfuser.",
+ docs:null,
+ q:"La RAI a été réalisée il y a 80 heures. Le patient est stable et la transfusion est programmée. Que faites-vous ?",
+ choices:["Transfuser — 80h c'est proche de 72h, la marge est acceptable","Contacter le médecin pour signaler que la RAI est périmée et obtenir une nouvelle prescription de RAI avant transfusion","Transfuser en urgence si le médecin est d'accord verbalement","Transfuser et refaire la RAI en parallèle pour ne pas perdre de temps"],
+ correct:1},
+
+{num:4,cat:"Consentement éclairé",icon:"✍️",title:"Information du patient — Obligation médicale",
+ what:"Le médecin prescripteur a l'obligation d'<strong>informer le patient</strong> des bénéfices, des risques et des alternatives à la transfusion. Cette information est <strong>tracée dans le dossier médical</strong>. Point essentiel à retenir pour l'oral : le consentement écrit du patient <strong>NE fait PAS partie des 7 documents du dossier transfusionnel</strong>. C'est une obligation d'information médicale distincte.",
+ why:"L'information du patient est obligatoire (Loi du 4 mars 2002 sur les droits des malades). En cas de refus, celui-ci est tracé dans le dossier. En urgence vitale avec patient inconscient, la transfusion peut être réalisée sans recueil préalable.",
+ rule:"Information patient = obligation du médecin prescripteur, tracée dans le dossier médical. Ce n'est PAS un document du dossier transfusionnel.",
+ docs:null,
+ q:"Un étudiant affirme que le consentement signé fait partie des 7 documents du dossier transfusionnel. C'est ?",
+ choices:["Vrai — il est indispensable pour protéger le soignant","Vrai — c'est le 7ème document obligatoire","Faux — le consentement est une obligation d'information médicale (dossier médical), pas un des 7 documents transfusionnels","Vrai uniquement pour les premières transfusions"],
+ correct:2},
+
+{num:5,cat:"Réception des PSL",icon:"🏥",title:"Réceptionner les PSL du dépôt de sang",
+ what:"Les Produits Sanguins Labiles (PSL) sont délivrés par le dépôt de sang sur présentation de la fiche de délivrance nominative. Vérifiez immédiatement à la réception : <strong>concordance identité patient, groupe ABO-Rhésus, numéro du PSL, date de péremption, intégrité de la poche, absence de trouble ou de fuite.</strong>",
+ why:"Une poche périmée, trouble, ou avec une fuite ne peut jamais être transfusée. Le risque est une contamination bactérienne ou une dégradation des globules rouges.",
+ rule:"PSL réceptionné = vérification immédiate avant de quitter le dépôt de sang. Un PSL ne s'utilise pas après 6h hors du dépôt si non entamé.",
+ docs:null,
+ q:"À la réception du PSL, vous constatez que la poche semble légèrement trouble. Que faites-vous ?",
+ choices:["Transfuser — un léger trouble est normal sur les CGR","Contacter le dépôt de sang et ne pas utiliser cette poche","Agiter doucement la poche pour homogénéiser","Transfuser si la date de péremption est valide"],
+ correct:1},
+
+{num:6,cat:"Transport et délais",icon:"🚗",title:"Connaître les délais post-réception",
+ what:"Un CGR (Culot Globulaire Rouge) non entamé doit être transfusé dans les <strong>6 heures</strong> après sa sortie du dépôt de sang. Une fois la transfusion débutée, elle doit se terminer en <strong>maximum 4 heures</strong> (pour un CGR). Les PSL ne se conservent jamais dans un réfrigérateur ordinaire.",
+ why:"Au-delà de 6h hors du dépôt de sang, le CGR est exposé à des variations thermiques et une dégradation cellulaire. Transfuser un CGR dégradé expose à une hémolyse.",
+ rule:"PSL non entamé : transfuser dans les 6h après sortie du dépôt. Transfusion débutée : terminer en 4h maximum.",
+ docs:null,
+ q:"La transfusion a débuté à 10h. Il est maintenant 14h30 et la poche est encore à moitié pleine. Que faites-vous ?",
+ choices:["Accélérer le débit pour finir avant 15h","Continuer normalement — 5h c'est encore acceptable","Arrêter la transfusion et jeter la poche — la limite de 4h est dépassée","Contacter le médecin pour prolonger la durée"],
+ correct:2},
+
+{num:7,cat:"Matériel spécifique",icon:"🧰",title:"Préparer le matériel spécifique à la transfusion",
+ what:"Pour une transfusion, vous avez besoin : <strong>tubulure à filtre transfusionnel</strong> (filtre 170-200 µm obligatoire), VVP avec cathéter ≥ 18G, ou VVC, ou chambre implantable (PAC). Aucune tubulure standard ne peut être utilisée. La poche de NaCl 0,9% est à préparer pour rinçage entre deux PSL ou en cas d'arrêt d'urgence.",
+ why:"La tubulure standard n'a pas de filtre adapté pour retenir les micro-agrégats. Le calibre minimal de 18G est nécessaire pour éviter l'hémolyse des globules rouges par friction.",
+ rule:"Tubulure transfusionnelle avec filtre = obligatoire. Cathéter ≥ 18G. NaCl 0,9% à proximité.",
+ docs:null,
+ q:"Vous n'avez plus de tubulure transfusionnelle avec filtre. Pouvez-vous utiliser une tubulure de perfusion standard pour ne pas retarder la transfusion ?",
+ choices:["Oui — l'urgence justifie cette adaptation","Oui si vous accélérez légèrement le débit pour compenser","Non — la tubulure transfusionnelle avec filtre est obligatoire pour toute transfusion","Oui uniquement pour les plaquettes, pas pour les CGR"],
+ correct:2},
+
+{num:8,cat:"Identité & Sécurité",icon:"🏷️",title:"Vérifier l'identité du patient — Étape 1 du CUPT",
+ what:"C'est la <strong>première étape du Contrôle Ultime Pré-Transfusionnel (CUPT)</strong>. Demandez au patient de décliner son nom, prénom, date de naissance. Vérifiez sur le bracelet d'identification, les étiquettes, et la fiche de délivrance nominative (FDN). La concordance doit être parfaite.",
+ why:"Les accidents transfusionnels par incompatibilité ABO sont quasi toujours dus à une erreur d'identité. Cette étape, réalisée au lit du patient, est le dernier filet de sécurité.",
+ rule:"CUPT = au lit du patient, juste avant de commencer. Pas en avance, pas dans le couloir.",
+ docs:null,
+ q:"Vous réalisez le CUPT. En comparant la FDN et le bracelet, vous trouvez une discordance sur le prénom (abréviation différente). Que faites-vous ?",
+ choices:["Transfuser — une abréviation différente est une erreur administrative sans conséquence clinique","Suspendre et appeler le médecin — toute discordance, même mineure, interdit la transfusion jusqu'à résolution","Demander au patient de confirmer son identité et transfuser si il confirme","Transfuser en notant la discordance dans le dossier"],
+ correct:1},
+
+{num:9,cat:"CUPT — Groupe ABO",icon:"🔬",title:"Contrôle ultime — Vérification groupe ABO",
+ what:"<strong>Étape 2 du CUPT :</strong> Vérifiez la concordance du groupe ABO entre la carte de groupe du patient et l'étiquette apposée sur la poche de PSL. Les deux groupes doivent être identiques (ou compatibles pour le plasma). Ce contrôle est visuel et documentaire.",
+ why:"Une incompatibilité ABO est l'accident transfusionnel le plus grave : hémolyse aiguë intravasculaire, insuffisance rénale, choc, décès possible en quelques minutes.",
+ rule:"Groupe patient = groupe PSL. Toute discordance = arrêt immédiat, appel médecin, renvoi poche au dépôt.",
+ docs:null,
+ q:"En vérifiant la poche, vous lisez 'groupe A+'. La carte de groupe du patient indique 'groupe O+'. Que faites-vous ?",
+ choices:["Transfuser — le groupe A peut donner au groupe O dans certains cas","Appeler le médecin pour confirmation car vous pensez avoir mal lu","Arrêter immédiatement, renvoyer la poche au dépôt, alerter le médecin — incompatibilité ABO potentielle","Vérifier avec un collègue et transfuser si concordant"],
+ correct:2},
+
+{num:10,cat:"Beth-Vincent — CUPT",icon:"🧪",title:"Contrôle ultime — Beth-Vincent au lit du patient",
+ what:"<strong>Étape 3 du CUPT pour les CGR :</strong> réalisez le test de Beth-Vincent au lit du patient avec le kit fourni. Le test utilise des sérums-tests anti-A et anti-B pour déterminer le groupe ABO du sang du patient ET du PSL. Les résultats doivent être concordants entre eux et avec les documents.",
+ why:"Beth-Vincent est le dernier contrôle avant l'introduction du sang dans la veine. Il détecte une erreur d'étiquetage de la poche ou de la carte de groupe. C'est une obligation réglementaire pour les CGR en France.",
+ rule:"Beth-Vincent = obligatoire pour tout CGR. Se réalise au lit du patient avec le kit ad hoc. Résultat concordant = transfusion possible.",
+ docs:null,
+ svg:`<svg viewBox="0 0 110 80" width="110" height="80"><rect x="5" y="20" width="100" height="52" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><text x="55" y="35" text-anchor="middle" font-size="9" fill="#991b1b" font-family="sans-serif" font-weight="800">BETH-VINCENT</text><circle cx="30" cy="54" r="12" fill="#3b82f6" opacity="0.25" stroke="#1d4ed8" stroke-width="1.5"/><text x="30" y="58" text-anchor="middle" font-size="8" fill="#1d4ed8" font-family="sans-serif" font-weight="700">Anti-A</text><circle cx="55" cy="54" r="12" fill="#dc2626" opacity="0.25" stroke="#dc2626" stroke-width="1.5"/><text x="55" y="58" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">Anti-B</text><circle cx="80" cy="54" r="12" fill="#7c3aed" opacity="0.25" stroke="#7c3aed" stroke-width="1.5"/><text x="80" y="58" text-anchor="middle" font-size="7" fill="#7c3aed" font-family="sans-serif" font-weight="700">Anti-AB</text><text x="55" y="14" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">Obligatoire pour CGR</text></svg>`,
+ q:"Le résultat du Beth-Vincent est concordant avec la carte de groupe. Mais votre collègue vous dit : 'le médecin nous a dit de commencer avant de finir le Beth-Vincent car le patient est urgent'. Vous ?",
+ choices:["Commencez immédiatement — l'urgence prime et le médecin est responsable","Attendez le résultat complet du Beth-Vincent quoi qu'il arrive — c'est l'ultime filet de sécurité","Demandez confirmation écrite du médecin puis transfusez","Transfusez lentement pendant que vous terminez le test"],
+ correct:1},
+
+{num:11,cat:"CUPT — Traçabilité",icon:"✅",title:"Remplir et signer la fiche de CUPT",
+ what:"Après chaque étape du CUPT, remplissez et signez la <strong>fiche de contrôle ultime</strong> : résultats du Beth-Vincent (réaction avec anti-A, anti-B, anti-AB du patient ET du PSL), résultats concordants, identité vérifiée, heure du début de transfusion. Cette fiche reste dans le dossier.",
+ why:"Le CUPT non tracé n'a juridiquement pas eu lieu. En cas d'accident transfusionnel, c'est cette fiche qui prouve que toutes les vérifications ont été réalisées.",
+ rule:"CUPT rempli, daté, signé = dans le dossier patient. Conservation minimale : 40 ans.",
+ docs:null,
+ q:"Vous avez réalisé toutes les étapes du CUPT oralement mais n'avez pas encore rempli la fiche. Pouvez-vous débuter la transfusion ?",
+ choices:["Oui — la fiche peut être remplie pendant la transfusion, l'essentiel c'est d'avoir fait les vérifications","Oui si vous avez un collègue témoin","Non — la fiche de CUPT doit être remplie et signée AVANT de débuter la transfusion","Oui en urgence, à régulariser dans l'heure"],
+ correct:2},
+
+{num:12,cat:"Début de transfusion",icon:"🩸",title:"Début de transfusion — Surveillance initiale",
+ what:"Débuter la transfusion <strong>lentement (10-20 gttes/min)</strong> pendant les <strong>15 premières minutes</strong>. Rester au chevet du patient pendant ces 15 minutes. Prendre les constantes de référence avant de débuter : <strong>température, tension artérielle, fréquence cardiaque, saturation en oxygène.</strong> Les noter sur la fiche transfusionnelle.",
+ why:"La majorité des accidents transfusionnels graves surviennent dans les 15 premières minutes. Cette surveillance rapprochée permet une détection et un arrêt immédiat avant aggravation.",
+ rule:"15 premières minutes = débit lent + soignant présent + surveillance clinique continue.",
+ docs:null,
+ q:"Vous débutez la transfusion. Après 5 minutes, le patient dit qu'il se sent bien. Pouvez-vous le laisser seul ?",
+ choices:["Oui — s'il se sent bien, le risque est écarté après 5 minutes","Oui si vous passez toutes les 10 minutes","Non — vous devez rester au chevet pendant les 15 premières minutes complètes","Non seulement si c'est sa première transfusion"],
+ correct:2},
+
+{num:13,cat:"Surveillance pendant la transfusion",icon:"👁️",title:"Surveiller pendant toute la transfusion",
+ what:"Pendant la transfusion, surveiller toutes les 30 minutes : <strong>température, TA, FC, SpO2, diurèse si nécessaire.</strong> Observer : frissons, malaise, douleur lombaire, urticaire, dyspnée, fièvre. Éduquer le patient à appeler immédiatement en cas de symptôme inhabituel.",
+ why:"Les réactions transfusionnelles peuvent survenir à tout moment, pas seulement au début. Une fièvre ou des frissons en milieu de transfusion peuvent annoncer une réaction hémolytique retardée.",
+ rule:"Constantes toutes les 30 min + traçabilité sur la fiche transfusionnelle. Éduquer le patient à signaler.",
+ docs:null,
+ q:"Pendant la transfusion, le patient développe de l'urticaire et dit qu'il a chaud. La transfusion continue à couler. Quelle est votre première action ?",
+ choices:["Ralentir le débit et surveiller","Donner un antihistaminique sans arrêter la transfusion","Arrêter immédiatement la transfusion, maintenir la VVP avec NaCl 0,9%, appeler le médecin","Terminer la poche rapidement avant que l'état s'aggrave"],
+ correct:2},
+
+{num:14,cat:"Accident transfusionnel",icon:"🚨",title:"Procédure en cas d'accident transfusionnel",
+ what:"En cas de réaction (fièvre > 38°C, frissons, urticaire, choc, douleur lombaire, dyspnée) : <strong>1) Arrêter la transfusion immédiatement, 2) Maintenir la VVP avec NaCl 0,9%, 3) Appeler le médecin en urgence, 4) Conserver la poche + tubulure (ne pas jeter), 5) Prélèvements de contrôle, 6) Déclaration d'hémovigilance obligatoire.</strong>",
+ why:"La conservation de la poche permet d'analyser le PSL et de rechercher la cause de l'accident. La déclaration d'hémovigilance est obligatoire par la loi et permet de prévenir d'autres accidents.",
+ rule:"Accident transfusionnel : STOP + NaCl + Médecin + Conserver poche + Hémovigilance. Dans cet ordre.",
+ docs:null,
+ q:"En cas d'accident transfusionnel, que faites-vous de la poche de sang et de la tubulure ?",
+ choices:["Vous les jetez immédiatement pour éviter toute contamination","Vous les conservez et les retournez au dépôt de sang avec signalement — elles seront analysées","Vous les gardez dans la chambre jusqu'au passage du médecin puis jetez","Vous notez le numéro du PSL et jetez la poche"],
+ correct:1},
+
+{num:15,cat:"Fin de transfusion",icon:"✅",title:"Fin de transfusion — Rinçage et traçabilité",
+ what:"À la fin de la transfusion : <strong>rincez la tubulure avec NaCl 0,9%</strong> pour transfuser le sang restant dans la tubulure. Prenez les constantes finales. Complétez la fiche transfusionnelle (heure de fin, constantes finales, incidents éventuels, signature). Conservez la poche vide 2h en cas de réaction retardée.",
+ why:"Le rinçage avec NaCl permet de récupérer le sang dans la tubulure. Les constantes finales servent de référence post-transfusionnelle. La poche vide conservée permet une analyse en cas de réaction retardée.",
+ rule:"Fin de transfusion : rinçage NaCl → constantes finales → fiche complétée → poche vide conservée 2h.",
+ docs:null,
+ q:"La transfusion est terminée. Vous jetez immédiatement la poche vide. C'est ?",
+ choices:["Correct — une poche vide ne présente plus de risque","Incorrect — la poche doit être conservée 2h après la fin de la transfusion en cas de réaction retardée","Incorrect — la poche est retournée au dépôt de sang systématiquement","Correct si le patient ne présente aucun symptôme"],
+ correct:1},
+
+{num:16,cat:"Traçabilité complète",icon:"📝",title:"Tracer l'ensemble du soin — Documents post-transfusionnels",
+ what:"Après toute transfusion, vous devez compléter et archiver : <strong>la fiche transfusionnelle complète</strong> (CUPT, constantes, incidents, heure début et fin), le <strong>dossier infirmier</strong> (tracé du soin), la <strong>déclaration d'hémovigilance</strong> si incident, et informer le patient des signes tardifs à surveiller pendant 24-48h (fièvre, frissons, urines foncées).",
+ why:"La traçabilité post-transfusionnelle permet le suivi du patient, l'épidémiosurveillance des accidents, et constitue la protection légale du soignant. Les réactions retardées (allo-immunisation) peuvent survenir jusqu'à 48h après la transfusion.",
+ rule:"Toute transfusion doit être tracée intégralement. Conservation des documents transfusionnels : 40 ans minimum.",
+ docs:null,
+ q:"À l'examen oral, votre formateur vous demande : 'Quelle est la durée minimale de conservation des documents transfusionnels ?' Votre réponse ?",
+ choices:["5 ans, comme la plupart des dossiers médicaux","10 ans après la fin du traitement","40 ans minimum — en raison des maladies à incubation longue (VIH, hépatites, prion)","20 ans pour les adultes, jusqu'à 28 ans pour les mineurs"],
+ correct:2},
+];
+
+/* ═══════════════════════════════════════════════════════
+   MODE EXAMEN — Questions sur le protocole
+═══════════════════════════════════════════════════════ */
+const Q_EXAM = [
+{cat:"Documents obligatoires",
+ q:"Combien de documents obligatoires compose le dossier transfusionnel minimum avant de transfuser ?",
+ choices:["4 documents","5 documents","7 documents","9 documents"],
+ correct:2,exp_ok:"Le dossier transfusionnel contient <strong>7 documents</strong> : ordonnance PSL, carte de groupe (2 déterminations), RAI &lt;72h, FDN, kit CUPT, fiche de surveillance, fiche d'incidents. Le consentement écrit n'en fait PAS partie.",exp_err:"7 est le nombre correct. Un seul document manquant = transfusion impossible.",rule:"<strong>6 documents obligatoires.</strong> À réciter à l'examen oral.",xp:12},
+
+{cat:"RAI — Délai",
+ q:"Quelle est la durée de validité maximale de la RAI avant une transfusion ?",
+ choices:["24 heures","48 heures","72 heures","7 jours"],
+ correct:2,exp_ok:"La RAI est valide 72 heures maximum avant la transfusion. Au-delà, elle doit être refaite.",exp_err:"72h est le délai réglementaire. Un anticorps peut apparaître en quelques heures (post-transfusion, post-grossesse).",rule:"<strong>RAI valide = moins de 72 heures.</strong>",xp:12},
+
+{cat:"Groupage sanguin",
+ q:"Pourquoi faut-il 2 déterminations de groupe sanguin sur 2 prélèvements différents ?",
+ choices:["Pour confirmer le résultat du laboratoire","Pour éliminer les erreurs d'identité (confusion de patient) et les rares discordances techniques","Par obligation administrative uniquement","Pour vérifier que le groupe n'a pas changé entre les deux prélèvements"],
+ correct:1,exp_ok:"La double détermination sur 2 prélèvements distincts élimine les erreurs d'identité (confusion de patients) et les rares discordances techniques.",exp_err:"Le groupe sanguin ne change pas. L'objectif est d'éliminer les erreurs d'identification.",rule:"<strong>2 groupages = 2 prélèvements différents = sécurité identité.</strong>",xp:12},
+
+{cat:"CUPT",
+ q:"Quelles sont les 3 étapes du Contrôle Ultime Pré-Transfusionnel (CUPT) dans l'ordre ?",
+ choices:["Vérifier la poche → vérifier la RAI → vérifier l'identité","Vérifier l'identité → vérifier la concordance groupe ABO → réaliser le Beth-Vincent","Réaliser le Beth-Vincent → vérifier l'identité → vérifier la FDN","Vérifier la RAI → vérifier l'identité → vérifier le groupe"],
+ correct:1,exp_ok:"CUPT : 1) Vérification identité patient, 2) Concordance groupe ABO (carte groupe ↔ étiquette PSL), 3) Beth-Vincent au lit du patient.",exp_err:"L'ordre est précis et important. L'identité passe toujours en premier.",rule:"<strong>CUPT : Identité → Groupe ABO → Beth-Vincent.</strong>",xp:15},
+
+{cat:"Beth-Vincent",
+ q:"Pour quelle catégorie de PSL le Beth-Vincent est-il obligatoire ?",
+ choices:["Tous les PSL sans exception","Uniquement le Plasma Frais Congelé (PFC)","Uniquement les CGR (Culots Globulaires Rouges)","Les CGR et les Concentrés de Plaquettes"],
+ correct:2,exp_ok:"Le Beth-Vincent est obligatoire pour les CGR (Culots Globulaires Rouges) car ils contiennent les antigènes ABO responsables des accidents hémolytiques.",exp_err:"Pour le PFC et les plaquettes, le test de compatibilité est différent.",rule:"<strong>Beth-Vincent obligatoire pour les CGR.</strong>",xp:12},
+
+{cat:"Surveillance début",
+ q:"Pendant combien de temps le soignant doit-il rester au chevet du patient en début de transfusion ?",
+ choices:["5 minutes","10 minutes","15 premières minutes","30 minutes"],
+ correct:2,exp_ok:"Le soignant reste au chevet pendant les 15 premières minutes avec un débit lent. La majorité des accidents graves surviennent dans cet intervalle.",exp_err:"5 ou 10 minutes sont insuffisantes. 30 minutes seraient idéales mais 15 min est la règle.",rule:"<strong>15 premières minutes = présence obligatoire + débit lent.</strong>",xp:10},
+
+{cat:"Débit initial",
+ q:"Quel débit pratiquez-vous pendant les 15 premières minutes de transfusion ?",
+ choices:["Débit maximal — pour détecter rapidement toute réaction","Débit normal prescrit","Débit lent (10-20 gttes/min) pour permettre la détection précoce d'une réaction","Débit variable selon le terrain du patient"],
+ correct:2,exp_ok:"Les 15 premières minutes se font à débit lent (10-20 gttes/min). Une réaction grave se manifeste même à faible débit, et l'arrêt rapide limite les dégâts.",exp_err:"Un débit maximal en début de transfusion augmenterait la quantité de sang transfusée avant détection d'un accident.",rule:"<strong>Début = 10-20 gttes/min pendant 15 min.</strong>",xp:10},
+
+{cat:"Délais PSL",
+ q:"Dans quel délai maximum un CGR non entamé doit-il être transfusé après sortie du dépôt de sang ?",
+ choices:["2 heures","4 heures","6 heures","12 heures"],
+ correct:2,exp_ok:"Un CGR non entamé doit être transfusé dans les 6h après sa sortie du dépôt de sang. Au-delà, il est à jeter (variation thermique, dégradation).",exp_err:"2h et 4h sont trop restrictifs. 12h est bien trop long.",rule:"<strong>CGR non entamé : 6h maximum hors dépôt.</strong>",xp:10},
+
+{cat:"Durée transfusion",
+ q:"Quelle est la durée maximale d'une transfusion de CGR une fois débutée ?",
+ choices:["2 heures","3 heures","4 heures","6 heures"],
+ correct:2,exp_ok:"Une transfusion de CGR débutée doit se terminer en 4h maximum. Au-delà, risque de dégradation du produit et de contamination bactérienne.",exp_err:"4h est la règle pour les CGR. Pour les plaquettes, la durée est différente.",rule:"<strong>Transfusion CGR : 4h maximum une fois débutée.</strong>",xp:10},
+
+{cat:"Accident transfusionnel",
+ q:"En cas d'accident transfusionnel, dans quel ordre agissez-vous ?",
+ choices:["Appeler le médecin → arrêter la transfusion → maintenir la VVP → conserver la poche","Arrêter la transfusion → maintenir VVP avec NaCl 0,9% → appeler le médecin → conserver poche + tubulure → déclarer en hémovigilance","Conserver la poche → arrêter la transfusion → appeler le médecin","Accélérer le débit → appeler le médecin → évaluer le patient"],
+ correct:1,exp_ok:"Ordre d'urgence : STOP transfusion → VVP NaCl → Médecin → Conserver poche+tubulure → Hémovigilance.",exp_err:"Appeler le médecin avant d'arrêter fait perdre des secondes précieuses. L'arrêt est le premier geste.",rule:"<strong>Accident : STOP → NaCl → Médecin → Conserver → Hémovigilance.</strong>",xp:15},
+
+{cat:"Conservation documents",
+ q:"Quelle est la durée minimale de conservation des documents transfusionnels ?",
+ choices:["5 ans","10 ans","20 ans","40 ans"],
+ correct:3,exp_ok:"Les documents transfusionnels se conservent 40 ans minimum, en raison des maladies à longue incubation (VIH, hépatites, prion - variant de la maladie de Creutzfeldt-Jakob).",exp_err:"40 ans est la règle. Les maladies transmissibles par transfusion peuvent se déclarer des décennies après.",rule:"<strong>Documents transfusionnels : conservation 40 ans minimum.</strong>",xp:12},
+
+{cat:"Tubulure",
+ q:"Quelle tubulure est obligatoire pour toute transfusion sanguine ?",
+ choices:["Tubulure de perfusion standard","Tubulure transfusionnelle avec filtre 170-200 µm","Tubulure à micro-débit","Tubulure avec filtre anti-bactérien"],
+ correct:1,exp_ok:"La tubulure transfusionnelle avec filtre 170-200 µm est obligatoire. Elle retient les micro-agrégats qui se forment dans le sang stocké.",exp_err:"Une tubulure standard n'a pas de filtre adapté. Utiliser une tubulure standard pour une transfusion est une erreur grave.",rule:"<strong>Tubulure transfusionnelle + filtre 170-200 µm = obligatoire.</strong>",xp:10},
+
+{cat:"Calibre VVP",
+ q:"Quel est le calibre minimum du cathéter pour une transfusion sanguine ?",
+ choices:["22G","20G","18G","16G"],
+ correct:2,exp_ok:"Un cathéter ≥ 18G est nécessaire pour éviter l'hémolyse des globules rouges par friction dans un cathéter trop étroit.",exp_err:"Un 20G ou 22G est trop petit pour une transfusion — les GR seraient hémolysés par friction.",rule:"<strong>Transfusion : cathéter ≥ 18G minimum.</strong>",xp:10},
+
+{cat:"Information & Refus",
+ q:"Parmi ces éléments, lequel N'est PAS un document du dossier transfusionnel ?",
+ choices:["La fiche de délivrance nominative (FDN)","La fiche d'incidents transfusionnels","Le consentement écrit du patient","La carte de groupe sanguin"],
+ correct:2,exp_ok:"Le consentement écrit du patient n'est PAS dans les 7 documents du dossier transfusionnel. C'est une obligation d'information du médecin (Loi 2002), tracée dans le dossier médical. Les 7 documents sont : ordonnance PSL, carte de groupe, RAI, FDN, kit CUPT, fiche surveillance, fiche incidents.",exp_err:"Beaucoup d'étudiants ajoutent le consentement à tort. Il relève du dossier médical, pas du dossier transfusionnel.",rule:"<strong>Consentement = dossier médical (Loi 2002). Pas dans les 7 documents transfusionnels.</strong>",xp:15},
+
+{cat:"Surveillance post-transfusionnelle",
+ q:"Pendant combien de temps le patient doit-il être surveillé après la fin de la transfusion pour une réaction retardée ?",
+ choices:["30 minutes","2 heures","24 à 48 heures","1 semaine"],
+ correct:2,exp_ok:"Les réactions retardées (allo-immunisation, hémoglobinurie) peuvent survenir jusqu'à 24-48h après la transfusion. Le patient doit être informé des signes à surveiller.",exp_err:"2h est le minimum pour les réactions immédiates. Les réactions retardées peuvent prendre 24-48h pour se manifester.",rule:"<strong>Surveillance post-transfusionnelle : informer sur les signes pendant 24-48h.</strong>",xp:10},
+];
+
+/* ═══════════════════════════════════════════════════════
+   MODE SURVIE — Questions pièges plausibles
+═══════════════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+{cat:"Piège — Documents",
+ q:"Votre collègue prépare la transfusion et dit : 'j'ai tout : l'ordonnance, les 2 groupages, la RAI, la FDN, le kit CUPT et la fiche de surveillance — le dossier est complet.' Il manque ?",
+ choices:["Rien — le dossier est complet avec ces 6 éléments","Le consentement écrit du patient","La fiche d'incidents transfusionnels","L'étiquette du PSL"],
+ correct:2,
+ exp_ok:"Il manque la <strong>fiche d'incidents transfusionnels</strong>. Elle doit être disponible et dans le dossier même si elle ne sera remplie qu'en cas d'événement indésirable. Les 7 documents sont : ordonnance, carte de groupe, RAI, FDN, kit CUPT, fiche surveillance, fiche incidents.",
+ exp_err:"Le consentement n'est pas un document du dossier transfusionnel. La fiche d'incidents est le 7ème document souvent oublié car on espère ne jamais l'utiliser.",
+ rule:"<strong>7ème document souvent oublié : la fiche d'incidents transfusionnels.</strong>",xp:25},
+
+{cat:"Piège — RAI",
+ q:"La RAI date de 71h. Le patient est stable et la transfusion est programmée dans 2h. Votre collègue dit : 'on a encore du temps, on transfuse maintenant et on refait la RAI si nécessaire'. Vous ?",
+ choices:["Vous transfusez — 71h c'est encore dans les délais et il y aura 2h de marge","Vous transfusez immédiatement car dans 2h la RAI sera périmée et il faudra la refaire de toute façon","Vous attendez car dans 2h la RAI aura plus de 72h, donc vous signalez dès maintenant au médecin pour une nouvelle RAI avant la transfusion","Vous transfusez en urgence pour profiter des 71h valides"],
+ correct:2,exp_ok:"La RAI sera périmée au moment prévu de la transfusion. Il faut signaler dès maintenant au médecin pour organiser une nouvelle RAI. Transfuser 'juste avant' n'est pas une stratégie valable.",exp_err:"Transfuser maintenant pour profiter des 71h valides sans consulter le médecin n'est pas dans vos compétences. Le médecin doit décider.",rule:"<strong>RAI périmée avant la transfusion prévue = signaler le médecin maintenant.</strong>",xp:25},
+
+{cat:"Piège — Groupage",
+ q:"Le patient n'a qu'un seul groupage dans son dossier. La transfusion est urgente. Le médecin dit : 'on fera le 2ème groupage après la transfusion'. Vous ?",
+ choices:["Transfusez — le médecin est responsable et a prescrit la transfusion","Transfusez car l'urgence justifie une exception à la règle des 2 groupages","Signalez que les 2 groupages sont obligatoires — s'il y a une urgence vitale absolue, la procédure spécifique doit être déclenchée, pas une simple prescription orale","Transfusez si le second groupage est prévu dans les 2h suivantes"],
+ correct:2,exp_ok:"2 groupages sur 2 prélèvements différents = règle de sécurité transfusionnelle absolue. En cas d'urgence vitale réelle, il existe une procédure d'urgence (sang O négatif, procédure spécifique), pas une dérogation informelle.",exp_err:"L'autorité médicale ne peut pas déroger à cette règle de sécurité. Un accident par incompatibilité ABO sur groupage unique est un accident évitable.",rule:"<strong>2 groupages obligatoires. En urgence vitale = procédure spécifique, pas dérogation informelle.</strong>",xp:25},
+
+{cat:"Piège — Beth-Vincent",
+ q:"Vous réalisez le Beth-Vincent. La réaction est claire pour le patient mais ambiguë sur la goutte de sang du PSL (agglutination faible). Votre collègue dit : 'c'est souvent normal sur les vieilles poches, transfusez'. Vous ?",
+ choices:["Transfusez — votre collègue a de l'expérience et une réaction faible est souvent artefactuelle","Transfusez en débutant lentement et en surveillant","Stoppez et contactez le dépôt de sang — un résultat ambigu du Beth-Vincent interdit la transfusion","Transfusez si le groupe affiché sur la poche correspond au groupe patient"],
+ correct:2,exp_ok:"Tout résultat ambigu ou douteux du Beth-Vincent interdit la transfusion. Contacter le dépôt de sang pour investigation. Une 'réaction faible' peut révéler une erreur d'étiquetage.",exp_err:"L'expérience d'un collègue ne remplace pas la règle de sécurité. Beth-Vincent ambigu = arrêt. Point.",rule:"<strong>Beth-Vincent ambigu = ne pas transfuser + contacter le dépôt de sang.</strong>",xp:25},
+
+{cat:"Piège — Incident",
+ q:"Pendant la transfusion, le patient a une poussée de fièvre à 38,5°C mais dit se sentir bien sinon. Vous décidez de ralentir le débit, de donner du paracétamol et de surveiller. C'est ?",
+ choices:["Correct — la fièvre isolée est souvent une réaction fébrile non hémolytique bénigne, gérable sans arrêter","Correct si vous prévenez le médecin pour qu'il décide","Incorrect — tout symptôme pendant une transfusion impose l'arrêt immédiat et l'appel médecin. L'infirmier(e) ne décide jamais de continuer seul","Correct pour une première réaction fébrile, incorrect si récidive"],
+ correct:2,exp_ok:"Tout symptôme apparu pendant une transfusion = arrêt immédiat + NaCl + médecin. L'infirmier(e) n'a pas la compétence de distinguer une réaction bénigne d'un accident grave en cours.",exp_err:"Une réaction fébrile isolée peut être le début d'un choc septique ou d'une réaction hémolytique. Le soignant ne peut pas faire ce diagnostic différentiel seul.",rule:"<strong>Tout symptôme pendant transfusion = STOP immédiat + médecin. Sans exception.</strong>",xp:25},
+
+{cat:"Piège — Poche vide",
+ q:"La transfusion est terminée, le patient va bien. Vous jetez la poche vide avec les déchets. C'est ?",
+ choices:["Correct — une poche vide ne présente plus de risque infectieux pour les autres","Correct si le patient ne présente aucun symptôme pendant la transfusion","Incorrect — la poche vide doit être conservée 2h après la fin de la transfusion","Incorrect — la poche est systématiquement retournée au dépôt de sang"],
+ correct:2,exp_ok:"La poche vide est conservée 2h dans un endroit identifié. Si une réaction retardée survient, elle peut être analysée microbiologiquement.",exp_err:"Une poche jetée ne peut plus être analysée. Une réaction retardée peut survenir dans les 2h suivant la fin.",rule:"<strong>Poche vide : conservation 2h post-transfusion avant élimination.</strong>",xp:20},
+
+{cat:"Piège — Consentement",
+ q:"Le patient est inconscient, sa famille refuse catégoriquement la transfusion pour raisons religieuses. La transfusion est vitale selon le médecin. Vous ?",
+ choices:["Respectez le refus de la famille — la famille représente le patient","Contactez le médecin — en urgence vitale absolue, le médecin peut décider de transfuser malgré le refus de la famille; c'est lui qui porte la responsabilité médicale","Ne transfusez pas — le principe d'autonomie s'applique même par procuration familiale","Demandez une décision judiciaire en urgence avant tout geste"],
+ correct:1,exp_ok:"La famille n'a pas de pouvoir de décision médicale contraignant pour un adulte inconscient en urgence vitale. Le médecin peut décider de transfuser en urgence absolue. L'infirmier(e) exécute la prescription médicale.",exp_err:"Le refus familial n'est pas légalement contraignant en urgence vitale pour un tiers adulte. La décision appartient au médecin.",rule:"<strong>Urgence vitale patient inconscient : décision médicale prime sur refus familial.</strong>",xp:25},
+
+{cat:"Piège — Discordance",
+ q:"Le groupe sur la poche indique 'A+'. La carte de groupe du patient indique 'A+'. Mais la FDN mentionne 'B+'. Que faites-vous ?",
+ choices:["Transfusez — carte de groupe et poche concordent, la FDN est probablement une erreur administrative","Vérifiez sur le dossier et transfusez si 2 documents sur 3 concordent","Stoppez tout — toute discordance entre les documents oblige à contacter le dépôt de sang et le médecin avant de transfuser","Appelez le dépôt de sang uniquement pour corriger la FDN et transfusez ensuite"],
+ correct:2,exp_ok:"Toute discordance entre documents transfusionnels interdit la transfusion. Même si 2 documents sur 3 concordent, la FDN incorrecte peut signaler une erreur de délivrance.",exp_err:"'2 sur 3' n'est pas une règle en transfusion. La moindre discordance stoppe tout jusqu'à éclaircissement.",rule:"<strong>Discordance entre documents = STOP + dépôt de sang + médecin.</strong>",xp:25},
+
+{cat:"Piège — Tubulure",
+ q:"Vous n'avez pas de tubulure transfusionnelle disponible. La transfusion est urgente. Vous utilisez une tubulure de perfusion standard + un filtre à microparticules séparé. C'est acceptable ?",
+ choices:["Oui — l'association tubulure standard + filtre séparé est équivalente à une tubulure transfusionnelle","Oui si le médecin valide cette adaptation","Non — seule la tubulure transfusionnelle avec filtre intégré homologuée est autorisée. Commander en urgence au pharmacie","Oui pour un CGR mais pas pour les plaquettes"],
+ correct:2,exp_ok:"La tubulure transfusionnelle avec filtre intégré est homologuée comme dispositif médical pour cet usage spécifique. Une association non homologuée ne peut pas s'y substituer.",exp_err:"L'adaptation 'tubulure standard + filtre séparé' n'est pas validée et crée des risques de connexion non étanche et de performance de filtration non garantie.",rule:"<strong>Tubulure transfusionnelle homologuée = pas de substitution possible.</strong>",xp:20},
+
+{cat:"Piège — Délai",
+ q:"Le CGR est sorti du dépôt de sang il y a 5h30. La transfusion doit durer 2h. Vous débutez la transfusion. C'est ?",
+ choices:["Correct — le CGR est encore dans les 6h réglementaires à la sortie du dépôt","Incorrect — il reste moins de 30 min avant la limite des 6h, la transfusion ne pourra pas se terminer dans les délais réglementaires","Correct — seul le début de la transfusion doit être dans les 6h","Correct si vous accélérez le débit pour finir en 30 min"],
+ correct:1,exp_ok:"Le CGR a 6h après sortie du dépôt, durée transfusion maximale 4h une fois débutée. Si on commence à 5h30 post-sortie, la transfusion dépasserait les 6h. Il faut commander un nouveau CGR.",exp_err:"La règle des 6h s'applique à l'ensemble (sortie + transfusion). Commencer à 5h30 = dépasser le délai.",rule:"<strong>Délai total : sortie dépôt + transfusion ≤ 6h (pour le CGR).</strong>",xp:25},
+
+{cat:"Piège — Hémovigilance",
+ q:"Un patient présente une urticaire légère 20 minutes après la transfusion. L'urticaire disparaît en 15 minutes avec un antihistaminique. Devez-vous déclarer un incident d'hémovigilance ?",
+ choices:["Non — c'est une réaction mineure résolue, la déclaration n'est pas nécessaire","Non — seuls les accidents graves sont déclarables","Oui — toute réaction survenue pendant ou après une transfusion doit être déclarée en hémovigilance, quelle qu'en soit la gravité","Oui uniquement si le médecin le demande"],
+ correct:2,exp_ok:"Toute réaction transfusionnelle, même mineure et résolue, doit être déclarée au système d'hémovigilance. Ces données permettent de détecter des problèmes de lot ou de procédure.",exp_err:"L'hémovigilance est un système de surveillance épidémiologique. Même les réactions mineures contribuent à améliorer la sécurité transfusionnelle nationale.",rule:"<strong>Toute réaction transfusionnelle = déclaration hémovigilance obligatoire.</strong>",xp:20},
+
+{cat:"Piège — Identité CUPT",
+ q:"Le patient est aphasique (ne peut pas parler). Vous vérifiez son identité en comparant son bracelet avec la FDN. Vous pouvez transfuser ?",
+ choices:["Oui — le bracelet est une source d'identification valide","Oui si un proche confirme l'identité du patient","Oui, mais tracez dans le dossier la modalité de vérification utilisée (patient non verbalisable + concordance bracelet + FDN)","Non — le patient doit toujours décliner son identité verbalement, sinon la transfusion est impossible"],
+ correct:2,exp_ok:"Un patient non verbalisable ne peut pas décliner son identité. La vérification se fait alors par bracelet, dossier, FDN, avec traçabilité de la modalité utilisée. La transfusion reste possible.",exp_err:"L'impossibilité de parler n'est pas une contre-indication à la transfusion. La vérification s'adapte avec traçabilité.",rule:"<strong>Patient non verbalisable : bracelet + FDN + traçabilité de la modalité.</strong>",xp:20},
+];
+
+/* ═══════════════════════════════════════════════════════
+   BETH-VINCENT — 10 questions visuelles
+   Chaque question montre 4 cupules (Anti-A, Anti-B, Anti-AB, Anti-D)
+   avec agglutination (+) ou pas (-).
+   Logique :
+   Anti-A + = présence antigène A (groupes A, AB)
+   Anti-B + = présence antigène B (groupes B, AB)
+   Anti-AB + = présence A ou B (tout sauf O)
+   Anti-D + = Rhésus positif
+═══════════════════════════════════════════════════════ */
+
+/*
+  SVG cupule : agg=true → agglutination (amas rouges = danger positif)
+               agg=false → pas d'agglutination (liquide homogène rouge clair)
+*/
+function cupule(label, agg, color){
+  const cx=22, cy=28, r=16;
+  // Fond de cupule
+  const bg = agg ? '#fee2e2' : '#fef9f9';
+  const border = agg ? '#dc2626' : '#fca5a5';
+  let inside = '';
+  if(agg){
+    // Agglutination : amas de grumeaux
+    inside = `
+      <circle cx="16" cy="24" r="5" fill="${color}" opacity="0.9"/>
+      <circle cx="26" cy="20" r="4" fill="${color}" opacity="0.85"/>
+      <circle cx="30" cy="30" r="5" fill="${color}" opacity="0.9"/>
+      <circle cx="18" cy="33" r="4" fill="${color}" opacity="0.8"/>
+      <circle cx="24" cy="27" r="3" fill="${color}" opacity="0.95"/>
+      <circle cx="14" cy="30" r="3" fill="${color}" opacity="0.75"/>
+    `;
+  } else {
+    // Pas d'agglutination : liquide homogène
+    inside = `<circle cx="22" cy="26" r="13" fill="${color}" opacity="0.18"/>
+      <circle cx="22" cy="26" r="9" fill="${color}" opacity="0.12"/>`;
+  }
+  const sign = agg
+    ? `<text x="22" y="54" text-anchor="middle" font-size="9" fill="#dc2626" font-family="sans-serif" font-weight="800">✚ Agglu.</text>`
+    : `<text x="22" y="54" font-size="9" text-anchor="middle" fill="#94a3b8" font-family="sans-serif">— Négatif</text>`;
+  return `<svg viewBox="0 0 44 58" width="60" height="74">
+    <ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${r-2}" fill="${bg}" stroke="${border}" stroke-width="1.5"/>
+    ${inside}
+    <text x="22" y="8" text-anchor="middle" font-size="7.5" fill="#374151" font-family="sans-serif" font-weight="700">${label}</text>
+    ${sign}
+  </svg>`;
+}
+
+function makeBVSvg(antiA, antiB, antiAB, antiD, simple){
+  if(simple){
+    return `<div style="display:flex;align-items:center;justify-content:center;gap:24px;padding:18px 20px;background:#fafafa;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:14px;flex-wrap:wrap">
+      ${cupule('Anti-A', antiA, '#2563eb')}
+      ${cupule('Anti-B', antiB, '#f59e0b')}
+      <div style="font-size:10px;color:#94a3b8;text-align:center;width:100%;margin-top:6px;font-family:sans-serif">
+        🏥 Contrôle ultime en service — 2 sérums &nbsp;|&nbsp; Bleu = Anti-A &nbsp;·&nbsp; Jaune = Anti-B
+      </div>
+    </div>`;
+  }
+  return `<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;background:#fafafa;border:1px solid #e2e8f0;border-radius:14px;margin-bottom:14px;flex-wrap:wrap">
+    ${cupule('Anti-A', antiA, '#2563eb')}
+    ${cupule('Anti-B', antiB, '#f59e0b')}
+    ${cupule('Anti-AB', antiAB, '#7c3aed')}
+    ${cupule('Anti-D', antiD, '#dc2626')}
+    <div style="font-size:10px;color:#94a3b8;text-align:center;width:100%;margin-top:4px;font-family:sans-serif">
+      Bleu = Anti-A &nbsp;|&nbsp; Jaune = Anti-B &nbsp;|&nbsp; Violet = Anti-AB &nbsp;|&nbsp; Rouge = Anti-D (Rhésus)
+    </div>
+  </div>`;
+}
+
+const BV_QUESTIONS = [
+  // ── 5 premières : Anti-A + Anti-B uniquement (contrôle ultime en service) ──
+  {
+    simple:true,
+    antiA:false, antiB:false,
+    correct:"Groupe O",
+    choices:["Groupe O","Groupe A","Groupe B","Groupe AB"],
+    exp:"Aucune agglutination avec Anti-A ni Anti-B → <strong>aucun antigène A ou B</strong> → groupe <strong>O</strong>. Avec seulement 2 sérums en service, on ne peut pas déterminer le Rhésus — cela est vérifié sur la carte de groupe.",
+    rule:"O = Anti-A négatif + Anti-B négatif. Pas d'agglutination des deux côtés."
+  },
+  {
+    simple:true,
+    antiA:true, antiB:false,
+    correct:"Groupe A",
+    choices:["Groupe A","Groupe O","Groupe AB","Groupe B"],
+    exp:"Agglutination avec Anti-A → présence de l'<strong>antigène A</strong>. Pas d'agglutination avec Anti-B → absence de l'antigène B. → Groupe <strong>A</strong>.",
+    rule:"A = Anti-A positif + Anti-B négatif."
+  },
+  {
+    simple:true,
+    antiA:false, antiB:true,
+    correct:"Groupe B",
+    choices:["Groupe B","Groupe O","Groupe A","Groupe AB"],
+    exp:"Pas d'agglutination avec Anti-A → pas d'antigène A. Agglutination avec Anti-B → présence de l'<strong>antigène B</strong>. → Groupe <strong>B</strong>.",
+    rule:"B = Anti-A négatif + Anti-B positif."
+  },
+  {
+    simple:true,
+    antiA:true, antiB:true,
+    correct:"Groupe AB",
+    choices:["Groupe AB","Groupe A","Groupe B","Groupe O"],
+    exp:"Agglutination avec Anti-A <strong>et</strong> Anti-B → présence des deux antigènes A et B → groupe <strong>AB</strong>. Patient receveur universel (peut recevoir de tous les groupes).",
+    rule:"AB = Anti-A positif + Anti-B positif. Les deux agglutinent."
+  },
+  {
+    simple:true,
+    antiA:false, antiB:false,
+    correct:"Groupe O",
+    choices:["Groupe O","Groupe AB","Groupe B","Groupe A"],
+    exp:"Aucune réaction avec Anti-A ni Anti-B → <strong>groupe O</strong> confirmé. Rappel : le groupe O est le plus fréquent en France (~43% de la population). Ces patients peuvent donner à tous (Rh mis à part).",
+    rule:"O = zéro agglutination des deux côtés. Donneur ABO universel."
+  },
+  // ── 5 dernières : 4 sérums (Anti-A, Anti-B, Anti-AB, Anti-D) ──
+  {
+    simple:false,
+    antiA:false, antiB:false, antiAB:false, antiD:true,
+    correct:"O+",
+    choices:["O+","O−","A+","B+"],
+    exp:"Anti-A négatif + Anti-B négatif + Anti-AB négatif → pas d'antigène A ni B → groupe <strong>O</strong>. Anti-D positif → <strong>Rhésus positif</strong>. Groupe : <strong>O+</strong>.",
+    rule:"O = aucune agglutination Anti-A, Anti-B, Anti-AB. Anti-D+ = Rh+."
+  },
+  {
+    simple:false,
+    antiA:true, antiB:false, antiAB:true, antiD:false,
+    correct:"A−",
+    choices:["A−","A+","O−","AB−"],
+    exp:"Anti-A positif → antigène A. Anti-B négatif → pas d'antigène B. Anti-AB positif (logique, A détecté). Anti-D <strong>négatif</strong> → Rhésus négatif. Groupe : <strong>A−</strong>.",
+    rule:"A− = Anti-A+ Anti-B− Anti-AB+ Anti-D−."
+  },
+  {
+    simple:false,
+    antiA:false, antiB:true, antiAB:true, antiD:true,
+    correct:"B+",
+    choices:["B+","AB+","B−","O+"],
+    exp:"Anti-A négatif → pas d'antigène A. Anti-B positif → antigène B. Anti-AB positif (B détecté). Anti-D positif → Rh+. Groupe : <strong>B+</strong>.",
+    rule:"B+ = Anti-A− Anti-B+ Anti-AB+ Anti-D+."
+  },
+  {
+    simple:false,
+    antiA:true, antiB:true, antiAB:true, antiD:true,
+    correct:"AB+",
+    choices:["AB+","A+","B+","AB−"],
+    exp:"Agglutination Anti-A <strong>et</strong> Anti-B → antigènes A et B présents → groupe <strong>AB</strong>. Anti-AB positif (logique). Anti-D positif → Rh+. Groupe : <strong>AB+</strong>. Receveur universel.",
+    rule:"AB+ = Anti-A+ Anti-B+ Anti-AB+ Anti-D+. Receveur universel."
+  },
+  {
+    simple:false,
+    antiA:true, antiB:true, antiAB:true, antiD:false,
+    correct:"AB−",
+    choices:["AB−","AB+","A−","B−"],
+    exp:"Anti-A et Anti-B positifs → antigènes A et B → groupe <strong>AB</strong>. Anti-AB positif (cohérent). Anti-D <strong>négatif</strong> → Rhésus négatif. Groupe : <strong>AB−</strong>.",
+    rule:"AB− = Anti-A+ Anti-B+ Anti-AB+ Anti-D−."
+  }
+];
+
+/* ═══════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════ */
+let mode='learn',questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0,lives=3;
+let timerInterval=null,timeLeft=30,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;
+  if(mode==='learn'){
+    questions=[...STEPS];
+    document.getElementById('tb-mode').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='exam'){
+    questions=[...Q_EXAM].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='📝 Examen';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='survival'){
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  } else {
+    // Beth-Vincent : mélanger les questions
+    questions=[...BV_QUESTIONS].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='🔬 Beth-Vincent';
+    document.getElementById('lives-pill').style.display='none';
+  }
+  showScreen('s-quiz');loadQ();
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi];answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn').classList.remove('show');
+  document.getElementById('docs-card').style.display='none';
+  if(mode==='learn')loadStep(q);
+  else if(mode==='bethvincent')loadBV(q);
+  else loadStdQ(q);
+  startTimer();
+}
+
+function loadStep(step){
+  // Carte contextuelle
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon;
+  document.getElementById('ctx-sub').textContent=`Étape ${step.num} sur ${questions.length}`;
+  document.getElementById('ctx-title').textContent=step.title;
+  document.getElementById('ctx-body').innerHTML=`${step.what}<br><span style="display:block;margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);font-style:normal">⚠️ ${step.why}</span>`;
+
+  // Carte documents si présente
+  if(step.docs&&step.docs.length){
+    document.getElementById('docs-card').style.display='block';
+    document.getElementById('docs-grid').innerHTML=step.docs.map(d=>
+      `<div class="doc-item ${d.cls}"><div class="doc-num">${d.num}</div><div class="doc-text">${d.text}</div></div>`
+    ).join('');
+  }
+
+  const total=questions.length;
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${total}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg?`<div class="q-illus">${step.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=`<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:8px">✅ Question de validation :</span>${step.q}`;
+
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step);ch.appendChild(b);
+  });
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};
+  catScores[step.cat].t++;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===total-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${total}`;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return;answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=8*(streak>=3?2:1);xp+=e;catScores[step.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>À retenir :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`Bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>À retenir :</strong> ${step.rule}`);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function loadStdQ(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML='';
+  document.getElementById('q-text').innerHTML=q.q;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q);ch.appendChild(b);
+  });
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};
+  catScores[q.cat].t++;
+  document.getElementById('next-btn').textContent='Suivant →';
+}
+
+function loadBV(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('docs-card').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent='Beth-Vincent';
+  // Build the 4 cupules SVG
+  document.getElementById('q-illus').innerHTML='';
+  const subtitle = q.simple
+    ? '🏥 Contrôle ultime en service (2 sérums) — Identifiez le groupe ABO :'
+    : '🔬 Contrôle complet (4 sérums) — Identifiez le groupe sanguin + Rhésus :';
+  document.getElementById('q-text').innerHTML=
+    `<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:10px">${subtitle}</span>`
+    + makeBVSvg(q.antiA, q.antiB, q.antiAB, q.antiD, q.simple);
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  q.choices.forEach((c,i)=>{
+    const b=document.createElement('button');b.className='choice';
+    b.style.justifyContent='center';b.style.fontSize='16px';b.style.fontWeight='800';b.style.letterSpacing='0.5px';
+    b.innerHTML=`<span class="c-ltr">${'ABCD'[i]}</span>${c}`;
+    b.onclick=()=>answerBV(i,b,q);ch.appendChild(b);
+  });
+  if(!catScores['Beth-Vincent'])catScores['Beth-Vincent']={c:0,t:0};
+  catScores['Beth-Vincent'].t++;
+  document.getElementById('next-btn').textContent=qi===questions.length-1?'Voir mon rapport →':'Question suivante →';
+}
+
+function answerBV(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=q.choices[idx]===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(q.choices[i]===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=12*(streak>=3?2:1);xp+=e;catScores['Beth-Vincent'].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Groupe identifié !',q.exp,`<strong>À retenir :</strong> ${q.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:`Groupe ${q.correct}`,correct:`Réponse : ${q.correct}`});
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}
+    showExp('err','❌','Groupe incorrect',`Le groupe correct est <strong>${q.correct}</strong>.<br><br>${q.exp}`,`<strong>À retenir :</strong> ${q.rule}`);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:q.q.substring(0,80),correct:q.choices[q.correct]});
+    if(mode==='survival'){
+      lives--;document.getElementById('lives-n').textContent=lives;
+      if(lives<=0){updateUI();setTimeout(showResult,1400);return;}
+    }
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');
+  eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='exam')dur=30;
+  else if(mode==='survival')dur=25;
+  else if(mode==='bethvincent')dur=0;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;
+  document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--red)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=8){num.classList.add('warn');}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        updateUI();document.getElementById('next-btn').classList.add('show');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:62px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={learn:'📚 Apprentissage — 16 étapes dans l\'ordre',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges',bethvincent:'🔬 Beth-Vincent — Lecture de cupules'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#991b1b',brd:'#fca5a5'}
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+
+  const bd=document.getElementById('bd-items');bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,6).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--text3)">→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+
+  const cons=[];
+  if(mode==='learn'&&note>=16)cons.push("📝 Bonne maîtrise du protocole. Passez au mode Examen pour vous tester sans aide.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Excellent. Le mode Survie vous attend — des pièges conçus pour tromper les experts.");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise experte de la transfusion sanguine. Vous êtes prêt(e) pour l'examen oral IFSI.");
+  if(note<10)cons.push("📚 Recommencez par le mode Apprentissage. Les 7 documents et les délais réglementaires doivent être sus par cœur.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'au 18/20. À l'oral IFSI, un seul oubli peut coûter la note.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=0.6)return;
+    if(cat.includes('Document'))cons.push("📁 Récitez les 7 documents : Ordonnance PSL · Carte de groupe · RAI &lt;72h · FDN · Kit CUPT · Fiche surveillance · Fiche incidents. Le consentement n'en fait PAS partie.");
+    if(cat.includes('RAI')||cat.includes('délai')||cat.includes('Délai'))cons.push("⏱️ Délais clés : RAI < 72h · PSL hors dépôt < 6h · Transfusion débutée < 4h.");
+    if(cat.includes('CUPT')||cat.includes('Beth'))cons.push("🔬 CUPT : Identité → Groupe ABO → Beth-Vincent → Fiche signée. Cet ordre ne change jamais.");
+    if(cat.includes('Accident'))cons.push("🚨 Accident transfusionnel : STOP → NaCl → Médecin → Conserver poche → Hémovigilance.");
+    if(cat.includes('Surveil'))cons.push("👁️ Surveillance : 15 min au chevet + débit lent au début. Constantes toutes les 30 min.");
+  });
+  if(!cons.length)cons.push("🎯 Excellente maîtrise sur tous les axes. Vous êtes prêt(e) pour l'examen.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Cardiologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --red:#e11d48;--red-d:#881337;--red-l:#fff1f2;--red-m:#fecdd3;--red-b:#ffe4e6;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── HEADER ── */
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--red-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--red-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--red-l);color:var(--red);border:1px solid var(--red-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px}
+.free-tag{background:var(--green);color:#fff;border-radius:10px;padding:2px 7px;font-size:9px;font-weight:800;letter-spacing:.05em}
+
+/* ── WELCOME ── */
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--red-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:20px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--red-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--red));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--red));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--red-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--red-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(136,19,55,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--red);transform:translateY(-2px)}
+
+/* ── TOPBAR ── */
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--red-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--red-d)}
+.tb-mode{background:var(--red-l);color:var(--red);border:1px solid var(--red-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--red-d),var(--red));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--red);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220;transition:stroke .3s}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+
+/* ── QUIZ BODY ── */
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+
+/* Terme card (flashcard) */
+.term-card{background:linear-gradient(135deg,var(--red-d),#9f1239);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(136,19,55,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-prononce{font-size:11px;color:rgba(255,255,255,.6);font-style:italic;font-family:'Lora',serif;margin-bottom:6px}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+
+/* Question card */
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--red-l);border:1px solid var(--red-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--red)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--red-d);font-style:italic}
+
+/* Choices */
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--red);background:var(--red-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+
+/* Explanation */
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--red-d)}
+.next-btn{width:100%;padding:12px;background:var(--red-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(136,19,55,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--red)}
+
+/* Footer */
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ── MODE FRAPPE ── */
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s;letter-spacing:.02em}
+.frappe-input:focus{border-color:var(--red)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px;padding:0 2px}
+.frappe-hint span{color:var(--red);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--red-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--red)}
+
+/* ── MODE CONSTRUCTION ── */
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--red);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--red-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:.01em;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--red);transform:scale(.97)}
+.cz-piece.placed{background:var(--red);opacity:.85}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--red);background:var(--red-l);color:var(--red-d)}
+.piece-btn:disabled{opacity:.3;cursor:not-allowed}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-meaning{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:9px;padding:10px 13px;font-size:12px;color:var(--blue);font-style:italic;margin-bottom:12px;display:none}
+.construct-submit{width:100%;padding:12px;background:var(--red-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--red)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── RESULT ── */
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--red-d),var(--red))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--red-d);color:white;box-shadow:0 2px 10px rgba(136,19,55,.3)}.rb.p:hover{background:var(--red)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--red-m)}
+</style>
+</head>
+<body>
+
+<!-- ════ WELCOME ════ -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🫀</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🫀 Cardiologie <span class="free-tag">GRATUIT</span></div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🫀</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Cardiologie</div>
+        <div class="w-hero-desc">45 termes essentiels du service cardiologique. Anatomie, pathologies, ECG, marqueurs biologiques, traitements. Tout le vocabulaire que vous devez maîtriser dès le premier stage.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">45</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">🆓</div><div class="ws-lbl">Gratuit</div></div>
+    </div>
+    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px">
+      <span style="font-size:15px;flex-shrink:0">ℹ️</span>
+      <div style="font-size:11px;color:#1e40af;line-height:1.6">
+        <strong>Contenu validé — Recommandations ESC/HAS 2024.</strong>
+        Ce module est basé sur les référentiels officiels en vigueur. Il ne remplace pas les protocoles institutionnels de votre établissement de stage. En cas de doute clinique, référez-vous toujours à votre encadrant.
+      </div>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#e11d48;--mb:#fff1f2" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span>
+        <span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#fff1f2;border-color:#fecdd3;color:#e11d48">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Avec explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span>
+        <span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span>
+        <span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez les préfixes, racines et suffixes pour former le terme médical. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span>
+        <span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">Les 45 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<!-- ════ QUIZ ════ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🫀</div><span class="tb-logo-text">Cardio</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/45</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body">
+    <!-- Dynamically populated -->
+  </div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- ════ RESULT ════ -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🫀</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Cardiologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--red)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:4px 0 2px">
+        Contenu basé sur recommandations ESC/HAS 2024 — NurseSimPro
+      </div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   45 TERMES — CARDIOLOGIE
+   Chaque terme : id, terme, catégorie, définition,
+   exemple clinique, racines (pour mode Construction)
+════════════════════════════════════════ */
+const TERMES = [
+// ── ANATOMIE (9) ──
+{id:'myocarde',t:'Myocarde',cat:'Anatomie',
+ def:`Muscle cardiaque constituant la paroi des cavités du cœur. Responsable des contractions qui propulsent le sang.`,
+ ex:`Un IDM détruit une partie du myocarde, réduisant la force de contraction.`,
+ mnemo:`myo- = muscle · -carde = cœur`},
+{id:'endocarde',t:'Endocarde',cat:'Anatomie',
+ def:`Membrane lisse tapissant l'intérieur des cavités cardiaques et les valves. En contact direct avec le sang.`,
+ ex:`L'endocardite infectieuse est une inflammation de l'endocarde souvent due à une bactériémie.`,
+ mnemo:`endo- = intérieur · -carde = cœur`},
+{id:'péricarde',t:'Péricarde',cat:'Anatomie',
+ def:`Enveloppe fibreuse à double feuillet entourant le cœur et la racine des gros vaisseaux. Contient un liquide lubrifiant.`,
+ ex:`La péricardite est une inflammation du péricarde qui provoque une douleur thoracique positionnelle.`,
+ mnemo:`péri- = autour · -carde = cœur`},
+{id:'oreillette',t:'Oreillette',cat:'Anatomie',
+ def:`Cavité supérieure du cœur (gauche et droite) qui reçoit le sang avant de le propulser vers le ventricule correspondant.`,
+ ex:`La fibrillation auriculaire est un trouble du rythme des oreillettes (auriculaire = de l'oreillette).`,
+ mnemo:`De l'latin auricula = petite oreille — référence à la forme`},
+{id:'ventricule',t:'Ventricule',cat:'Anatomie',
+ def:`Cavité inférieure du cœur (gauche et droite) qui assure l'éjection du sang vers la circulation pulmonaire ou systémique.`,
+ ex:`Le ventricule gauche éjecte le sang vers l'aorte ; le droit vers l'artère pulmonaire.`,
+ mnemo:`Du latin ventriculus = petit ventre`},
+{id:'valvule_mitrale',t:'Valvule mitrale',cat:'Anatomie',
+ def:`Valve à 2 feuillets séparant l'oreillette gauche du ventricule gauche. S'ouvre en diastole, se ferme en systole.`,
+ ex:`Un rétrécissement mitral (sténose) gêne le remplissage du ventricule gauche.`,
+ mnemo:`Mitrale → forme de mitre (coiffure d'évêque à 2 pointes)`},
+{id:'valvule_aortique',t:'Valvule aortique',cat:'Anatomie',
+ def:`Valve à 3 feuillets (sigmoïde) située entre le ventricule gauche et l'aorte. Empêche le reflux sanguin en diastole.`,
+ ex:`Le rétrécissement aortique (RA) est la valvulopathie la plus fréquente après 70 ans.`,
+ mnemo:`Aorte + valvule → valve de sortie du cœur gauche`},
+{id:'aorte',t:'Aorte',cat:'Anatomie',
+ def:`Artère principale issue du ventricule gauche. Distribue le sang oxygéné à toute la circulation systémique.`,
+ ex:`La dissection aortique est une urgence chirurgicale avec douleur thoracique déchirante irradiant dans le dos.`,
+ mnemo:`Du grec aortê = ce qui est suspendu`},
+{id:'coronaires',t:'Artères coronaires',cat:'Anatomie',
+ def:`Artères vascularisant le muscle cardiaque. Deux artères principales : coronaire droite et tronc coronaire gauche.`,
+ ex:`L'occlusion d'une coronaire provoque un infarctus du myocarde (IDM) dans le territoire irrigué.`,
+ mnemo:`Coronaire → corona = couronne, elles entourent le cœur comme une couronne`},
+// ── PHYSIOLOGIE (4) ──
+{id:'systole',t:'Systole',cat:'Physiologie',
+ def:`Phase de contraction du muscle cardiaque. Le ventricule se contracte et éjecte le sang. La pression artérielle systolique correspond au pic de pression lors de cette phase.`,
+ ex:`La TA systolique normale est < 140 mmHg au repos (seuil HTA : ≥ 140 mmHg selon HAS/ESC).`,
+ mnemo:`sys- = ensemble, contraction coordonnée`},
+{id:'diastole',t:'Diastole',cat:'Physiologie',
+ def:`Phase de relaxation et de remplissage du cœur. Le ventricule se relâche et se remplit de sang. Correspond à la pression artérielle diastolique.`,
+ ex:`Une pression diastolique > 90 mmHg définit une hypertension artérielle diastolique.`,
+ mnemo:`dia- = séparation, dilatation`},
+{id:'debit_cardiaque',t:'Débit cardiaque',cat:'Physiologie',
+ def:`Volume de sang éjecté par le cœur par minute. Débit = fréquence cardiaque × volume d'éjection systolique. Normale : 4–6 L/min au repos.`,
+ ex:`En insuffisance cardiaque sévère, le débit peut chuter à 2–3 L/min, insuffisant pour perfuser les organes.`,
+ mnemo:`FC × VES = débit`},
+{id:'fraction_ejection',t:`Fraction d'éjection (FE)`,cat:'Physiologie',
+ def:`Pourcentage du volume sanguin éjecté par le ventricule gauche à chaque systole. Normale ≥ 55%. Calculée à l'échocardiographie.`,
+ ex:`Une FE < 40% définit l'insuffisance cardiaque à fraction d'éjection réduite (ICFEr).`,
+ mnemo:`FE = VES/VTD × 100`},
+// ── FRÉQUENCE ET RYTHME (6) ──
+{id:'fc',t:'Fréquence cardiaque',cat:'Rythme',
+ def:`Nombre de battements cardiaques par minute. Normale au repos : 60–100 bpm.`,
+ ex:`Surveillance FC chez un patient sous digoxine : arrêter si FC < 60 bpm.`,
+ mnemo:`FC = nombre de battements/min`},
+{id:'tachycardie',t:'Tachycardie',cat:'Rythme',
+ def:`Fréquence cardiaque supérieure à 100 bpm. Peut être sinusale (physiologique) ou pathologique (arythmie).`,
+ ex:`Un patient septique développe souvent une tachycardie compensatrice pour maintenir le débit cardiaque.`,
+ mnemo:`tachy- = rapide · -cardie = cœur`},
+{id:'bradycardie',t:'Bradycardie',cat:'Rythme',
+ def:`Fréquence cardiaque inférieure à 60 bpm. Peut être physiologique (sportifs) ou pathologique (BAV, hypothyroïdie).`,
+ ex:`Les bêta-bloquants peuvent induire une bradycardie iatrogène nécessitant une réduction de dose.`,
+ mnemo:`brady- = lent · -cardie = cœur`},
+{id:'fa',t:'Fibrillation auriculaire (FA)',cat:'Rythme',
+ def:`Arythmie cardiaque la plus fréquente. Activité électrique auriculaire anarchique, irrégulière. Risque majeur : thrombose auriculaire et AVC embolique.`,
+ ex:`La FA nécessite une anticoagulation efficace (INR 2–3 sous AVK ou AOD) pour prévenir les AVC.`,
+ mnemo:`fibrill- = vibrations rapides · -auriculaire = des oreillettes`},
+{id:'flutter',t:'Flutter auriculaire',cat:'Rythme',
+ def:`Arythmie auriculaire avec activité organisée à ~300 battements/min et bloc AV variable. Onde F en dents de scie à l'ECG.`,
+ ex:`Le flutter peut conduire à une fréquence ventriculaire de 150/min (flutter 2:1) entraînant une détresse hémodynamique.`,
+ mnemo:`Flutter (anglais) = battement d'ailes rapide`},
+{id:'extrasystole',t:'Extrasystole',cat:'Rythme',
+ def:`Battement cardiaque prématuré, hors du rythme sinusal normal. Peut être auriculaire (ESA) ou ventriculaire (ESV).`,
+ ex:`Les ESV nombreuses et polymorphes chez un coronarien sont un facteur de risque de fibrillation ventriculaire.`,
+ mnemo:`extra- = en dehors · -systole = contraction`},
+{id:'bav',t:'Bloc auriculo-ventriculaire (BAV)',cat:'Rythme',
+ def:`Trouble de la conduction entre oreillettes et ventricules. Degrés 1 (allongement PR), 2 (blocages intermittents), 3 (dissociation complète).`,
+ ex:`Un BAV III complet nécessite souvent l'implantation d'un pace-maker définitif.`,
+ mnemo:`Blocage du signal électrique entre oreillettes et ventricules`},
+// ── PATHOLOGIES (8) ──
+{id:'ic',t:'Insuffisance cardiaque',cat:'Pathologies',
+ def:`Incapacité du cœur à assurer un débit sanguin suffisant aux besoins métaboliques de l'organisme. Signes : dyspnée, œdèmes, fatigue.`,
+ ex:`Surveillance infirmière : pesée quotidienne, restriction hydrique, prise des diurétiques le matin.`,
+ mnemo:`Cœur insuffisant = débit insuffisant`},
+{id:'idm',t:'Infarctus du myocarde (IDM)',cat:'Pathologies',
+ def:`Nécrose du muscle cardiaque par occlusion totale ou subtotale d'une artère coronaire. Urgence absolue : "time is muscle".`,
+ ex:`Signes IDM : douleur thoracique constrictive irradiant au bras gauche ou à la mâchoire, élévation de la troponine, sus-décalage ST.`,
+ mnemo:`infarctus = zone nécrosée · myocarde = muscle cardiaque`},
+{id:'angor',t:'Angor (angine de poitrine)',cat:'Pathologies',
+ def:`Douleur thoracique d'origine ischémique par inadéquation entre apport et demande en oxygène du myocarde. Transitoire, sans nécrose.`,
+ ex:`L'angor stable survient à l'effort et cède au repos ou à la trinitrine. L'angor instable survient au repos : urgence.`,
+ mnemo:`angor = étranglement (latin) · thoracique`},
+{id:'hta',t:'Hypertension artérielle (HTA)',cat:'Pathologies',
+ def:`Pression artérielle systolique ≥ 140 mmHg et/ou diastolique ≥ 90 mmHg, mesurée à au moins 2 reprises. Premier facteur de risque cardiovasculaire.`,
+ ex:`Objectif tensionnel chez l'adulte < 140/90 mmHg. Surveillance biquotidienne en phase d'équilibration.`,
+ mnemo:`hyper- = au-dessus · tension artérielle`},
+{id:'valvulopathie',t:'Valvulopathie',cat:'Pathologies',
+ def:`Atteinte pathologique d'une ou plusieurs valves cardiaques. Peut être sténosante (rétrécissement) ou régurgitante (insuffisance).`,
+ ex:`Valvulopathie mitrale : le souffle est entendu au foyer mitral (5ème EIC gauche, ligne médio-claviculaire).`,
+ mnemo:`valvulo- = valve · -pathie = maladie`},
+{id:'endocardite',t:'Endocardite infectieuse',cat:'Pathologies',
+ def:`Infection de l'endocarde valvulaire ou pariétal, souvent bactérienne (Staphylocoque, Streptocoque). Critères de Duke pour le diagnostic.`,
+ ex:`Bilan : hémocultures x3, échocardiographie. Antibiothérapie IV prolongée 4–6 semaines.`,
+ mnemo:`endo- = intérieur · -carde = cœur · -ite = inflammation`},
+{id:'pericardite',t:'Péricardite',cat:'Pathologies',
+ def:`Inflammation du péricarde, souvent virale. Douleur thoracique augmentée en décubitus et soulagée en position penchée en avant.`,
+ ex:`ECG : sus-décalage ST diffus en selle, signe du miroir absent. Traitement : AINS + colchicine.`,
+ mnemo:`péri- = autour · -carde = cœur · -ite = inflammation`},
+{id:'cardiomyopathie',t:'Cardiomyopathie',cat:'Pathologies',
+ def:`Maladie primitive du muscle cardiaque. Formes : dilatée (dilatation et faiblesse), hypertrophique (épaississement), restrictive (rigidité).`,
+ ex:`La cardiomyopathie dilatée peut nécessiter une transplantation cardiaque en phase terminale.`,
+ mnemo:`cardio- = cœur · myo- = muscle · -pathie = maladie`},
+// ── ECG (5) ──
+{id:'onde_p',t:'Onde P',cat:'ECG',
+ def:`Première déflexion de l'ECG, représentant la dépolarisation des oreillettes. Durée normale < 120 ms, amplitude < 2,5 mm en DII.`,
+ ex:`Absence d'onde P en FA ; ondes F de flutter à la place.`,
+ mnemo:`P = première lettre, première dépolarisation`},
+{id:'qrs',t:'Complexe QRS',cat:'ECG',
+ def:`Déflexion principale de l'ECG représentant la dépolarisation des ventricules. Durée normale < 120 ms. Élargissement = bloc de branche.`,
+ ex:`QRS large ≥ 120 ms : bloc de branche gauche (BBG) ou droit (BBD), ou tachycardie ventriculaire.`,
+ mnemo:`Q + R + S = dépolarisation ventriculaire complète`},
+{id:'onde_t',t:'Onde T',cat:'ECG',
+ def:`Déflexion après le QRS représentant la repolarisation ventriculaire. Normalement positive en V1–V6 et DI, DII.`,
+ ex:`Onde T négative en V1–V4 : possible ischémie antérieure. Onde T ample pointue : hyperkaliémie.`,
+ mnemo:`T = terminaison de la dépolarisation ventriculaire`},
+{id:'st_sus',t:'Sus-décalage ST',cat:'ECG',
+ def:`Élévation du segment ST au-dessus de la ligne isoélectrique. Signe d'ischémie transmurale aiguë ou IDM STEMI en cours. Urgence absolue.`,
+ ex:`Sus-décalage ST ≥ 1 mm en DII, DIII, aVF → IDM inférieur. Appel immédiat SAMU, pose VVP, aspirine, héparine.`,
+ mnemo:`ST élevé = muscle cardiaque en train de mourir`},
+{id:'qt',t:'Espace QT',cat:'ECG',
+ def:`Intervalle entre le début du QRS et la fin de l'onde T. Représente la durée totale de la systole électrique. Normal : QTc < 440 ms chez l'homme, < 460 ms chez la femme.`,
+ ex:`Allongement du QT (certains médicaments : amiodarone, haloperidol) → risque de torsades de pointes.`,
+ mnemo:`Q au T = systole électrique complète`},
+// ── SYMPTÔMES (5) ──
+{id:'dyspnee',t:'Dyspnée',cat:'Symptômes',
+ def:`Sensation subjective d\'essoufflement ou de difficulté à respirer. Peut être d'origine cardiaque, pulmonaire, anémique ou anxieuse.`,
+ ex:`Dyspnée d'effort en IC : cotée selon NYHA (I à IV). NYHA IV = dyspnée au moindre effort ou au repos.`,
+ mnemo:`dys- = difficile · -pnée = respiration`},
+{id:'orthopnee',t:'Orthopnée',cat:'Symptômes',
+ def:`Dyspnée survenant en position allongée, soulagée en position assise ou semi-assise. Signe d'insuffisance cardiaque gauche.`,
+ ex:`Le patient se couche avec 3 oreillers pour dormir → orthopnée à 3 oreillers. Préférez position demi-assise.`,
+ mnemo:`ortho- = droit, vertical · -pnée = respiration`},
+{id:'oedeme',t:'Œdème',cat:'Symptômes',
+ def:`Accumulation anormale de liquide interstitiel dans les tissus. En IC droite : œdèmes déclives des membres inférieurs, prenant le godet.`,
+ ex:`Surveillance infirmière : pesée quotidienne, périmètre abdominal, recherche du signe du godet aux chevilles.`,
+ mnemo:`Œdème vient du grec oidêma = gonflement`},
+{id:'palpitations',t:'Palpitations',cat:'Symptômes',
+ def:`Perception consciente et désagréable des battements cardiaques. Peuvent témoigner d'une arythmie (FA, ESV) ou d'une anxiété.`,
+ ex:`Palpitations + syncope + antécédent familial de mort subite → bilan cardiologique urgent (Holter ECG, écho).`,
+ mnemo:`palpit- = battre rapidement`},
+{id:'syncope',t:'Syncope',cat:'Symptômes',
+ def:`Perte de connaissance brève, totale et spontanément résolutive, par hypoperfusion cérébrale globale transitoire.`,
+ ex:`Syncope + sténose aortique + angor = triade de sténose aortique grave. Chirurgie urgente.`,
+ mnemo:`Du grec synkopê = interruption brutale`},
+// ── BIOLOGIE (4) ──
+{id:'troponine',t:'Troponine',cat:'Biologie',
+ def:`Protéine structurale du cardiomyocyte libérée dans le sang lors de la nécrose myocardique. Marqueur de référence de l'IDM. Cinétique troponine ultrasensible : élévation détectable dès 1h (protocole 0h/1h ou 0h/2h), pic à 12–24h, normalisation en 5–10j.`,
+ ex:`Troponine ultrasensible : protocole 0h/1h ou 0h/2h en urgence. Élévation ≥ 99e percentile (limite haute de la normale) → IDM confirmé ou possible selon cinétique.`,
+ mnemo:`Troponine = protéine spécifique du muscle cardiaque`},
+{id:'bnp',t:'BNP / NT-proBNP',cat:'Biologie',
+ def:`Brain Natriuretic Peptide : peptide libéré par les cardiomyocytes sous stress mécanique (étirement). Marqueur de l'insuffisance cardiaque. Seuils diagnostiques : BNP > 100 pg/mL ou NT-proBNP > 125 pg/mL (< 75 ans) / > 450 pg/mL (> 75 ans) — suggestifs d'IC.`,
+ ex:`BNP ou NT-proBNP utile pour distinguer une dyspnée cardiaque (valeurs élevées) de pulmonaire ou autre. Valeur prédictive négative excellente : BNP < 100 pg/mL exclut quasi une IC aiguë.`,
+ mnemo:`BNP = Natriurétique cérébral → sécrété par le ventricule gauche`},
+{id:'dimer',t:'D-Dimères',cat:'Biologie',
+ def:`Produits de dégradation de la fibrine. Élevés en cas de thrombose (TVP, EP). Valeur prédictive négative excellente : D-dimères normaux éliminent une EP si probabilité faible.`,
+ ex:`D-dimères < 500 µg/L + score de Wells faible → EP exclue sans scanner.`,
+ mnemo:`D-D = dégradation du caillot de fibrine`},
+{id:'ck_mb',t:'CK-MB',cat:'Biologie',
+ def:`Créatine kinase isoforme MB (myocardique). Marqueur de nécrose myocardique, moins spécifique que la troponine. Utile pour détecter une réocclusion (second pic).`,
+ ex:`CK-MB > 6% des CK totales → fraction myocardique significative. Remplacée en pratique par la troponine us.`,
+ mnemo:`CK-MB = Créatine Kinase Myocardique Band`},
+// ── TRAITEMENTS (4) ──
+{id:'defibrillation',t:'Défibrillation',cat:'Traitements',
+ def:`Choc électrique externe non synchronisé délivré pour interrompre une fibrillation ventriculaire ou une tachycardie ventriculaire sans pouls. Geste de réanimation urgent.`,
+ ex:`Algorithme RCP : RCP 2 min → analyse du rythme → choc si FV/TV sans pouls → 2 min RCP → reprendre.`,
+ mnemo:`dé- = mettre fin · -fibrillation = rythme chaotique`},
+{id:'cardioversion',t:'Cardioversion',cat:'Traitements',
+ def:`Choc électrique synchronisé sur le QRS pour restaurer un rythme sinusal lors d'une arythmie (FA, flutter, TV stable). Patient sédaté.`,
+ ex:`Recommandations ESC 2020 : anticoagulation efficace à débuter dès la cardioversion quelle que soit la durée de la FA. FA > 48h ou durée inconnue : anticoagulation thérapeutique ≥ 3 semaines avant, ou ETO préalable pour exclure un thrombus auriculaire.`,
+ mnemo:`cardio- = cœur · -version = retournement, conversion`},
+{id:'pacemaker',t:'Pace-maker (stimulateur cardiaque)',cat:'Traitements',
+ def:`Dispositif implantable qui détecte les arythmies lentes et délivre des stimulations électriques pour maintenir une fréquence cardiaque correcte. Indiqué en cas de BAV III, maladie sinusale.`,
+ ex:`Porteur de pace-maker : éviter IRM sauf si pace-maker compatible. Carte de porteur à toujours avoir sur soi.`,
+ mnemo:`pace = rythme (anglais) · maker = fabricant`},
+{id:'thrombolyse',t:'Thrombolyse',cat:'Traitements',
+ def:`Traitement médicamenteux (tPA, altéplase, ténectéplase) dissolvant un thrombus en activant le plasminogène. Indiqué dans l'IDM STEMI si pas d'angioplastie disponible dans les 2h, et dans l'EP grave.`,
+ ex:`Thrombolyse IDM : dans les 12h si angioplastie primaire impossible. Contre-indications : chirurgie récente, AVC < 3 mois, hémorragie active.`,
+ mnemo:`thrombo- = caillot · -lyse = destruction`},
+// ── RACINES (5) ──
+{id:'tachy',t:'Tachy-',cat:'Racines',
+ def:`Préfixe d'origine grecque signifiant rapide, accéléré. Utilisé pour décrire tout phénomène physiologique ou pathologique caractérisé par une vitesse anormalement élevée.`,
+ ex:`Tachycardie (cœur rapide), tachypnée (respiration rapide), tachyarythmie.`,
+ mnemo:`tachy- = ταχύς (takhys) = rapide en grec`},
+{id:'brady',t:'Brady-',cat:'Racines',
+ def:`Préfixe d'origine grecque signifiant lent, ralenti. Opposé de tachy-.`,
+ ex:`Bradycardie (cœur lent), bradypnée (respiration lente), bradykinésie (mouvement lent, Parkinson).`,
+ mnemo:`brady- = βραδύς (bradus) = lent en grec`},
+{id:'cardio',t:'Cardio- / -cardie',cat:'Racines',
+ def:`Racine d'origine grecque désignant le cœur. Retrouvée dans de nombreux termes médicaux cardiovasculaires.`,
+ ex:`Cardiologie, cardiomyopathie, tachycardie, bradycardie, endocarde, myocarde.`,
+ mnemo:`kardia = cœur en grec`},
+{id:'angios',t:'Angio-',cat:'Racines',
+ def:`Préfixe d'origine grecque désignant les vaisseaux sanguins ou lymphatiques.`,
+ ex:`Angioplastie (dilatation d'un vaisseau), angiographie (imagerie des vaisseaux), angiome.`,
+ mnemo:`angeion = vaisseau en grec`},
+{id:'stenose',t:'Sténose',cat:'Racines',
+ def:`Rétrécissement pathologique d'un conduit ou d'un orifice anatomique. Peut être valvulaire, vasculaire ou digestive.`,
+ ex:`Sténose aortique, sténose coronaire, sténose mitrale. Stenos = étroit en grec.`,
+ mnemo:`stenos = étroit en grec · -ose = état pathologique`},
+];
+
+/* ════════════════════════════════════════
+   MODE CONSTRUCTION — 12 termes décomposables
+════════════════════════════════════════ */
+const CONSTRUCTION_Q = [
+{term:'Tachycardie',def:`Fréquence cardiaque supérieure à 100 bpm.`,
+ pieces:['tachy-','brady-','-cardie','-pnée','myo-'],correct:['tachy-','-cardie'],
+ meaning:'tachy- (rapide) + -cardie (cœur) = cœur rapide'},
+{term:'Bradycardie',def:`Fréquence cardiaque inférieure à 60 bpm.`,
+ pieces:['brady-','tachy-','-cardie','-pathie','-ite'],correct:['brady-','-cardie'],
+ meaning:'brady- (lent) + -cardie (cœur) = cœur lent'},
+{term:'Myocarde',def:`Muscle cardiaque constituant la paroi du cœur.`,
+ pieces:['myo-','endo-','-carde','-ite','péri-'],correct:['myo-','-carde'],
+ meaning:'myo- (muscle) + -carde (cœur) = muscle du cœur'},
+{term:'Endocarde',def:`Membrane interne tapissant les cavités cardiaques.`,
+ pieces:['endo-','péri-','-carde','-ose','myo-'],correct:['endo-','-carde'],
+ meaning:'endo- (intérieur) + -carde (cœur) = intérieur du cœur'},
+{term:'Péricarde',def:`Enveloppe fibreuse entourant le cœur.`,
+ pieces:['péri-','endo-','-carde','-ite','myo-'],correct:['péri-','-carde'],
+ meaning:'péri- (autour) + -carde (cœur) = autour du cœur'},
+{term:'Endocardite',def:`Infection de l\'endocarde valvulaire, souvent bactérienne.`,
+ pieces:['endo-','péri-','-carde','-ite','-ose'],correct:['endo-','-carde','-ite'],
+ meaning:'endo- (intérieur) + -carde (cœur) + -ite (inflammation) = inflammation de l\'intérieur du cœur'},
+{term:'Péricardite',def:`Inflammation du péricarde, souvent virale.`,
+ pieces:['péri-','endo-','-carde','-ite','-ose'],correct:['péri-','-carde','-ite'],
+ meaning:'péri- (autour) + -carde (cœur) + -ite (inflammation) = inflammation du péricarde'},
+{term:'Cardiomyopathie',def:`Maladie primitive du muscle cardiaque.`,
+ pieces:['cardio-','angio-','myo-','-pathie','-ite'],correct:['cardio-','myo-','-pathie'],
+ meaning:'cardio- (cœur) + myo- (muscle) + -pathie (maladie) = maladie du muscle cardiaque'},
+{term:'Valvulopathie',def:`Atteinte pathologique d\'une ou plusieurs valves cardiaques.`,
+ pieces:['valvulo-','cardio-','-pathie','-ite','myo-'],correct:['valvulo-','-pathie'],
+ meaning:'valvulo- (valvule) + -pathie (maladie) = maladie valvulaire'},
+{term:'Dyspnée',def:`Sensation de difficulté à respirer.`,
+ pieces:['dys-','ortho-','-pnée','-cardie','-ite'],correct:['dys-','-pnée'],
+ meaning:'dys- (difficile) + -pnée (respiration) = respiration difficile'},
+{term:'Orthopnée',def:`Dyspnée survenant en position allongée, soulagée en position assise.`,
+ pieces:['ortho-','dys-','-pnée','-cardie','-pathie'],correct:['ortho-','-pnée'],
+ meaning:'ortho- (droit/vertical) + -pnée (respiration) = respiration possible seulement en position verticale'},
+{term:'Tachypnée',def:`Fréquence respiratoire supérieure à 20 cycles/min.`,
+ pieces:['tachy-','brady-','-pnée','-cardie','-ite'],correct:['tachy-','-pnée'],
+ meaning:'tachy- (rapide) + -pnée (respiration) = respiration rapide'},
+];
+
+/* ════ STATE ════ */
+let mode='qcm',questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0,lives=3;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+// Construction state
+let cqIndex=0,placed=[],cqList=[];
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goWelcome(){clearInterval(timerInterval);showScreen('s-welcome');}
+function restart(){launch();}
+
+/* ════ LAUNCH ════ */
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;
+  totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const modeLabels={qcm:'🧠 QCM',frappe:'⌨️ Mode Frappe',construction:'🔩 Construction',examen:'📋 Examen'};
+  document.getElementById('tb-mode').textContent=modeLabels[mode];
+  document.getElementById('lives-pill').style.display='none';
+  if(mode==='qcm'){
+    questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  } else if(mode==='frappe'){
+    questions=[...TERMES].sort(()=>Math.random()-.5);
+  } else if(mode==='construction'){
+    cqList=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+    questions=cqList;
+  } else {
+    // Examen : tous les termes, QCM strict, 15s
+    questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  }
+  showScreen('s-quiz');
+  loadQ();
+}
+
+/* Build QCM questions from TERMES */
+function buildQCM(pool, isExam=false){
+  return pool.map(t=>{
+    // Alternate: definition→term or term→definition
+    const flip=Math.random()>.5;
+    const distractors=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const extra=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const pool3=[...distractors,...extra].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];
+    const correctIdx=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){
+      if(i===correctIdx) choices.push(flip?t.t:t.def.substring(0,90)+'…');
+      else {
+        const d=pool3.shift();
+        choices.push(d?(flip?d.t:d.def.substring(0,90)+'…'):'—');
+      }
+    }
+    return {
+      term:t.t,cat:t.cat,def:t.def,
+      q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,
+      questionText:flip?t.def.substring(0,140):null,
+      choices,correct:correctIdx,
+      exp_ok:t.def,exp_err:t.def,
+      mnemo:t.mnemo,ex:t.ex,
+      xp:isExam?8:10,
+    };
+  });
+}
+
+/* ════ LOAD Q ════ */
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('tb-ql').textContent=`${qi+1}/${total}`;
+  document.getElementById('exp-box')&&document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn')&&document.getElementById('next-btn').classList.remove('show');
+
+  if(mode==='qcm'||mode==='examen') loadQCM();
+  else if(mode==='frappe') loadFrappe();
+  else if(mode==='construction') loadConstruction();
+  startTimer();
+}
+
+function nextQ(){qi++;loadQ();}
+
+/* ════ QCM ════ */
+function loadQCM(){
+  const q=questions[qi];
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};
+  catScores[q.cat].t++;
+  const isExam=mode==='examen';
+
+  let html=``;
+  // Term card (show term if asking definition, show definition if asking term)
+  if(q.questionText){
+    html+=`<div class="term-card">
+      <div class="tc-label">Définition</div>
+      <div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div>
+      <div class="tc-cat">🫀 ${q.cat}</div>
+    </div>`;
+  } else {
+    html+=`<div class="term-card">
+      <div class="tc-label">Terme médical</div>
+      <div class="tc-term">${q.term}</div>
+      <div class="tc-cat">🫀 ${q.cat}</div>
+    </div>`;
+  }
+  html+=`<div class="q-card">
+    <div class="q-top">
+      <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div>
+      <span class="q-num">Q${qi+1}</span>
+    </div>
+    <div class="q-text">${q.q}</div>
+  </div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-rule" id="exp-rule"></div>
+  </div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?'Voir le rapport →':'Suivant →'}</button>`;
+  document.getElementById('quiz-body').innerHTML=html;
+
+  const ch=document.getElementById('choices');
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);
+  });
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+    if(mode!=='examen') showExp('ok','✅','Correct !',q.exp_ok,q.mnemo);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-8);
+    errors.push({term:q.term,def:q.exp_ok.substring(0,80)});
+    if(mode!=='examen') showExp('err','❌','Erreur',`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_err.substring(0,120)}`,q.mnemo);
+  }
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+/* ════ FRAPPE ════ */
+function loadFrappe(){
+  const t=questions[qi];
+  if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};
+  catScores[t.cat].t++;
+
+  const html=`
+  <div class="term-card">
+    <div class="tc-label">Définition — Quel est ce terme ?</div>
+    <div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div>
+    <div class="tc-cat">🫀 ${t.cat}</div>
+  </div>
+  <div class="q-card">
+    <div class="q-top">
+      <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div>
+      <span class="q-num">Q${qi+1}</span>
+    </div>
+    <div class="q-text">Tapez le terme médical correspondant :</div>
+  </div>
+  <div class="frappe-input-wrap">
+    <input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+    <div class="frappe-hint">Exemple : «&nbsp;<span>${t.mnemo}</span>&nbsp;»</div>
+  </div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-rule" id="exp-rule"></div>
+  </div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?'Voir le rapport →':'Suivant →'}</button>`;
+  document.getElementById('quiz-body').innerHTML=html;
+
+  const inp=document.getElementById('frappe-inp');
+  inp.focus();
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;
+  const t=questions[qi];
+  const inp=document.getElementById('frappe-inp');
+  const val=inp.value.trim();
+  if(!val)return;
+  answered=true;clearInterval(timerInterval);
+
+  const expected=t.t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const got=val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const dist=levenshtein(expected,got);
+  const tol=expected.length<=5?1:expected.length<=10?2:3;
+  const ok=dist<=tol;
+
+  if(ok){
+    inp.classList.add('ok');
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅',`Correct${dist>0?' (tolérance orthographique)':''}!`,t.def.substring(0,120),t.mnemo);
+  } else {
+    inp.classList.add('err');
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({term:t.t,def:t.def.substring(0,80)});
+    showExp('err','❌',`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);
+  }
+  document.querySelector('.frappe-submit').style.display='none';
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+/* ════ CONSTRUCTION ════ */
+function loadConstruction(){
+  placed=[];
+  const q=questions[qi];
+  if(!catScores['Construction'])catScores['Construction']={c:0,t:0};
+  catScores['Construction'].t++;
+
+  const shuffled=[...q.pieces].sort(()=>Math.random()-.5);
+  const html=`
+  <div class="term-card">
+    <div class="tc-label">Définition</div>
+    <div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div>
+    <div class="tc-cat">🫀 Construction</div>
+  </div>
+  <div class="q-card">
+    <div class="q-top">
+      <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div>
+      <span class="q-num">Q${qi+1}</span>
+    </div>
+    <div class="q-text">Assemblez les éléments pour former le terme médical :</div>
+  </div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans l'ordre correct…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${shuffled.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join('')}</div>
+  <div class="construct-meaning" id="c-meaning"></div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box">
+    <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+    <div class="exp-body" id="exp-body"></div>
+    <div class="exp-rule" id="exp-rule"></div>
+  </div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?'Voir le rapport →':'Suivant →'}</button>`;
+  document.getElementById('quiz-body').innerHTML=html;
+}
+
+function addPiece(p,btnIdx){
+  if(answered)return;
+  const q=questions[qi];
+  if(placed.includes(p))return;
+  placed.push(p);
+
+  const cz=document.getElementById('cz');
+  const ph=document.getElementById('cz-ph');
+  if(ph)ph.remove();
+  cz.classList.add('has-content');
+
+  const span=document.createElement('button');
+  span.className='cz-piece placed';
+  span.textContent=p;
+  span.onclick=()=>removePiece(p,btnIdx,span);
+  cz.appendChild(span);
+
+  document.getElementById('pb-'+btnIdx).classList.add('used');
+  document.getElementById('pb-'+btnIdx).disabled=true;
+
+  // Enable submit if something placed
+  document.getElementById('c-submit').disabled=false;
+}
+
+function removePiece(p,btnIdx,el){
+  if(answered)return;
+  placed=placed.filter(x=>x!==p);
+  el.remove();
+  const btn=document.getElementById('pb-'+btnIdx);
+  if(btn){btn.classList.remove('used');btn.disabled=false;}
+  const cz=document.getElementById('cz');
+  if(placed.length===0){
+    cz.classList.remove('has-content');
+    cz.innerHTML='<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans l\'ordre correct…</span>';
+    document.getElementById('c-submit').disabled=true;
+  }
+}
+
+function checkConstruction(){
+  if(answered)return;
+  answered=true;clearInterval(timerInterval);
+  const q=questions[qi];
+  const cz=document.getElementById('cz');
+
+  // Check if placed matches correct (order matters)
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+
+  if(ok){
+    cz.classList.add('correct');
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=15*(streak>=3?2:1);xp+=e;catScores['Construction'].c++;floatXP(e,streak>=3);
+    const meaning=document.getElementById('c-meaning');
+    meaning.style.display='block';meaning.textContent='✨ '+q.meaning;
+    showExp('ok','✅',`${q.term} — correct !`,q.meaning,'');
+  } else {
+    cz.classList.add('wrong');
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({term:q.term,def:q.def.substring(0,80)});
+    showExp('err','❌',`La réponse : ${q.correct.join(' + ')}`,`${q.term} = ${q.meaning}`,'');
+  }
+  document.getElementById('c-submit').style.display='none';
+  updateUI();
+  document.getElementById('next-btn').classList.add('show');
+}
+
+/* ════ TIMER ════ */
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='qcm')dur=20;
+  else if(mode==='frappe')dur=25;
+  else if(mode==='examen')dur=15;
+  else if(mode==='construction')dur=30;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;
+  document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--red)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode==='qcm'||mode==='examen'){
+          document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        } else if(mode==='frappe'){
+          const t=questions[qi];
+          errors.push({term:t.t,def:t.def.substring(0,80)});
+          showExp('err','⏱','Temps écoulé',`Le terme était : <strong>${t.t}</strong>`,t.mnemo);
+        } else if(mode==='construction'){
+          const q=questions[qi];
+          errors.push({term:q.term,def:q.def.substring(0,80)});
+          showExp('err','⏱','Temps écoulé',`La réponse : ${q.correct.join(' + ')} → ${q.term}`,'');
+        }
+        updateUI();
+        const nb=document.getElementById('next-btn');if(nb)nb.classList.add('show');
+      }
+    }
+  },1000);
+}
+
+/* ════ HELPERS ════ */
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');if(!eb)return;
+  eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule&&rule.trim()){er.style.display='block';er.innerHTML='<strong>Étymologie :</strong> '+rule;}
+  else er.style.display='none';
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+/* ════ RESULT ════ */
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={qcm:'🧠 QCM',frappe:'⌨️ Mode Frappe',construction:'🔩 Construction',examen:'📋 Mode Examen'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Vocabulaire maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#fff1f2',tc:'#e11d48',brd:'#fecdd3'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — À retravailler',bc:'#fff1f2',tc:'#881337',brd:'#fecdd3'},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-correct').textContent=correct;
+
+  const bd=document.getElementById('bd-items');bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,6).map(e=>
+      `<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?'...':''}</div></div>`
+    ).join('');
+  } else eb.style.display='none';
+
+  const cons=[];
+  if(mode==='qcm'&&note>=16)cons.push('⌨️ Excellent en QCM ! Passez au Mode Frappe pour un vrai défi sans choix multiples.');
+  if(mode==='frappe'&&note>=16)cons.push('📋 Maîtrise experte. Essayez le Mode Examen avec le chrono à 15 secondes.');
+  if(mode==='construction'&&note>=10)cons.push('🔩 Les racines médicales vous aident à décoder n\'importe quel terme. Continuez !');
+  if(mode==='examen'&&note>=16)cons.push('🏆 Excellent en conditions d\'examen. Passez au module suivant.');
+  if(note<10)cons.push('📚 Repassez en mode QCM pour revoir les définitions avec les explications, puis revenez.');
+  if(note>=10&&note<16)cons.push('🔄 Recommencez jusqu\'à 16/20 avant de passer au mode suivant.');
+  // Per-cat advice
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat==='ECG')cons.push('📈 Revoir l\'ECG : onde P (oreillettes), QRS (ventricules), onde T (repolarisation).');
+    if(cat==='Biologie')cons.push('🧪 Troponine pour l\'IDM, BNP pour l\'insuffisance cardiaque — les 2 marqueurs clés.');
+    if(cat==='Racines')cons.push('🔩 Mémoriser tachy/brady/cardio/myo/endo/péri vous aide à décoder automatiquement les termes.');
+    if(cat==='Pathologies')cons.push('❤️ IDM + IC + FA = le trio pathologique le plus fréquent en stage de cardiologie.');
+  });
+  if(!cons.length)cons.push('🎯 Maîtrise complète sur tous les axes. Passez au module suivant.');
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+  showScreen('s-result');
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    const nb=document.getElementById('next-btn');
+    if(nb&&nb.classList.contains('show'))nextQ();
+  }
+});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:'height',value:document.body.scrollHeight},'*');}
+window.addEventListener('load',resizeWix);
+window.addEventListener('resize',resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

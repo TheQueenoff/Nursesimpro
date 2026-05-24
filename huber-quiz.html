@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Aiguille de Huber</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --pu:#7c3aed;--pu-d:#4c1d95;--pu-l:#f5f3ff;--pu-m:#c4b5fd;
+  --blue:#1d4ed8;--blue-d:#1e3a8a;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --teal:#0891b2;--teal-l:#ecfeff;--teal-m:#a5f3fc;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes checkIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:0.3}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:var(--pu-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--pu-d)}
+.logo-sub{font-size:11px;color:var(--text3)}
+.top-badge{background:var(--pu-l);color:var(--pu);border:1px solid var(--pu-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+
+/* ══ WELCOME ══ */
+#s-welcome{background:var(--bg)}
+.w-body{max-width:800px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:22px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:42px;flex-shrink:0}
+.w-hero-title{font-size:22px;font-weight:800;color:var(--pu-d);margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+.critical-alert{background:linear-gradient(135deg,#fef2f2,#fff5f5);border:2px solid var(--red-m);border-radius:14px;padding:16px 18px;margin-bottom:22px}
+.ca-row{display:flex;align-items:flex-start;gap:12px}
+.ca-icon{font-size:22px;flex-shrink:0}
+.ca-title{font-size:13px;font-weight:800;color:var(--red);margin-bottom:6px}
+.ca-list{list-style:none;display:flex;flex-direction:column;gap:4px}
+.ca-list li{font-size:12px;color:#991b1b;display:flex;align-items:flex-start;gap:7px;line-height:1.55}
+.ca-list li::before{content:'⚠️';flex-shrink:0;font-size:11px;margin-top:1px}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--pu-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:600px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--pu));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mc,var(--pu));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{border-color:var(--mc,var(--pu));background:var(--mb,var(--pu-l))}
+.mc-icon{font-size:26px;margin-bottom:10px;display:block}
+.mc-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mc-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mc-list{list-style:none;margin-top:8px}
+.mc-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mc-list li::before{content:'✓';color:var(--mc,var(--pu));font-weight:700;flex-shrink:0}
+.launch-btn{width:100%;padding:16px;background:var(--pu-d);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(76,29,149,0.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--pu);transform:translateY(-2px)}
+
+/* ══ FICHE PROTOCOLE ══ */
+#s-fiche{background:var(--bg)}
+.fiche-body{max-width:800px;margin:0 auto;padding:24px 20px 48px;animation:fadeUp 0.4s ease}
+.fiche-header{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:20px;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.fiche-title{font-size:20px;font-weight:800;color:var(--pu-d)}
+.fiche-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.fiche-nav{display:flex;gap:8px;flex-wrap:wrap}
+.fiche-nav-btn{padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:var(--white);font-size:11px;font-weight:700;cursor:pointer;color:var(--text2);font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.18s}
+.fiche-nav-btn:hover{border-color:var(--pu);color:var(--pu)}
+.fiche-nav-btn.active{background:var(--pu-d);border-color:var(--pu-d);color:white}
+
+/* Sections fiche */
+.fiche-section{margin-bottom:20px;display:none}
+.fiche-section.active{display:block}
+.fs-title{font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--pu);font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.fs-title::after{content:'';flex:1;height:1px;background:var(--pu-m)}
+
+/* Step cards dans la fiche */
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-card{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.step-card.critical{border-color:var(--red-m);border-width:2px}
+.step-card.attention{border-color:var(--orange-m);border-width:2px}
+.step-header{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;user-select:none;transition:background 0.15s}
+.step-header:hover{background:var(--bg)}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--pu-d);color:white;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-card.critical .step-num{background:var(--red)}
+.step-card.attention .step-num{background:var(--orange)}
+.step-title-row{flex:1}
+.step-title{font-size:13px;font-weight:700;color:var(--text)}
+.step-tag{display:inline-flex;align-items:center;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700;border:1px solid;margin-left:6px;vertical-align:middle}
+.tag-sterile{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tag-critical{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.tag-hygiene{background:var(--green-l);border-color:var(--green-m);color:var(--green)}
+.tag-attention{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.step-chevron{font-size:10px;color:var(--text3);transition:transform 0.2s;flex-shrink:0}
+.step-card.open .step-chevron{transform:rotate(180deg)}
+.step-body{display:none;padding:0 16px 14px 54px;font-size:12.5px;color:var(--text2);line-height:1.7}
+.step-card.open .step-body{display:block;animation:fadeUp 0.2s ease}
+.step-why{margin-top:8px;padding:8px 12px;background:var(--pu-l);border-left:3px solid var(--pu);border-radius:0 8px 8px 0;font-size:11.5px;color:var(--pu-d);line-height:1.55}
+.step-rule{margin-top:6px;padding:7px 12px;background:var(--orange-l);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;font-size:11.5px;color:var(--orange);line-height:1.55}
+
+/* Matériel grid */
+.material-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.material-grid{grid-template-columns:1fr}}
+.mat-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);line-height:1.5;box-shadow:var(--shadow)}
+.mat-ico{font-size:16px;flex-shrink:0}
+.mat-item.critical-mat{background:var(--red-l);border-color:var(--red-m)}
+.mat-item.critical-mat .mat-txt{color:#991b1b}
+
+/* Complications summary */
+.compl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:480px){.compl-grid{grid-template-columns:1fr}}
+.compl-card{padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.6}
+.compl-card .cc-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.compl-info{background:var(--green-l);border:1px solid var(--green-m)}
+.compl-info .cc-title{color:var(--green)}
+.compl-warn{background:var(--orange-l);border:1px solid var(--orange-m)}
+.compl-warn .cc-title{color:var(--orange)}
+.compl-danger{background:var(--red-l);border:1px solid var(--red-m)}
+.compl-danger .cc-title{color:var(--red)}
+
+/* ══ QUIZ ══ */
+#s-quiz{background:var(--bg)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;background:var(--pu-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--pu-d)}
+.tb-mode{background:var(--pu-l);color:var(--pu);border:1px solid var(--pu-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--pu),var(--blue));transition:width 0.55s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--pu);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+
+#quiz-body{flex:1;padding:18px;max-width:700px;width:100%;margin:0 auto}
+.ctx-card{background:linear-gradient(135deg,var(--pu-d),var(--pu));border-radius:16px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;animation:fadeUp 0.3s ease;color:white;box-shadow:0 4px 20px rgba(76,29,149,0.28)}
+.ctx-ico-box{font-size:26px;flex-shrink:0;background:rgba(255,255,255,0.12);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:3px}
+.ctx-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.ctx-body{font-size:12.5px;color:rgba(255,255,255,0.85);line-height:1.65;font-family:'Lora',serif;font-style:italic}
+
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--pu-l);border:1px solid var(--pu-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.qcp-dot{width:6px;height:6px;border-radius:50%;background:var(--pu)}
+.qcp-txt{font-size:10px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}
+.q-text strong{color:var(--pu-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all 0.16s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--pu);background:var(--pu-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}
+.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:10px;background:var(--white);border-left:3px solid var(--pu);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--pu-d)}
+.next-btn{width:100%;padding:13px;background:var(--pu-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(76,29,149,0.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--pu)}
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ══ RESULT ══ */
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--pu),var(--blue))}
+.res-grade{font-size:52px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:52px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:14px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:10px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:3px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:14px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:10px}
+.error-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:10px}
+.conseil-item{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:7px;padding-left:4px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--pu-d);color:white;box-shadow:0 2px 10px rgba(76,29,149,0.3)}.rb.p:hover{background:var(--pu)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--pu-m)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">💜</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div>
+    </div>
+    <div class="top-badge">💜 Aiguille de Huber — Chambre implantable</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">💜</div>
+      <div>
+        <div class="w-hero-title">Pose d'aiguille de Huber sur chambre implantable</div>
+        <div class="w-hero-desc">Soin stérile à fort enjeu clinique et pédagogique — maîtrisez chaque étape : matériel stérile, désinfection, ponction perpendiculaire, vérification du reflux, rinçage pulsé, fixation et traçabilité. Utilisé en oncologie, hématologie, nutrition parentérale.</div>
+      </div>
+    </div>
+
+    <div class="critical-alert">
+      <div class="ca-row">
+        <div class="ca-icon">🚨</div>
+        <div>
+          <div class="ca-title">Points critiques — Une erreur sur ces règles = 0 à l'IFSI</div>
+          <ul class="ca-list">
+            <li><strong>Soin STÉRILE</strong> — gants stériles, champ stérile fenestré, matériel stérile. Ce n'est pas un soin propre.</li>
+            <li><strong>Aiguille à biseau tangentiel obligatoire</strong> — une aiguille IM ou IV classique perfore le septum et le carotte (découpe des fragments). Utiliser uniquement une aiguille de Huber ou gripper.</li>
+            <li><strong>Seringues ≥ 10 mL obligatoires</strong> — une seringue de 5 mL ou moins génère une pression excessive qui peut rompre le cathéter.</li>
+            <li><strong>Ponction perpendiculaire jusqu'à la butée</strong> — ni en biais, ni incomplète. La butée garantit que l'aiguille est dans la chambre.</li>
+            <li><strong>Vérification du reflux sanguin obligatoire</strong> — avant toute injection ou perfusion.</li>
+            <li><strong>Rinçage pulsé (push-pause)</strong> — pas un rinçage continu. La technique pulsée crée des turbulences qui éliminent les dépôts sur la paroi interne du cathéter.</li>
+            <li><strong>Masques obligatoires</strong> — infirmier(e) ET patient pendant toute la durée du soin.</li>
+            <li><strong>Charlotte / calot obligatoire pour l'IDE</strong> — les cheveux sont une source de contamination du champ stérile. Charlotte patient si cheveux longs.</li>
+            <li><strong>Surblouse / tablier à usage unique</strong> — obligatoire en HAD et à domicile. Recommandé si patient aplasique, neutropénique, immunodéprimé ou risque d'éclaboussures (chimio).</li>
+            <li><strong>Charlotte / calot obligatoire pour l'IDE</strong> — les cheveux sont une source de contamination du champ stérile. Charlotte patient si cheveux longs.</li>
+            <li><strong>Surblouse / tablier à usage unique</strong> — obligatoire en HAD et à domicile. Recommandé si patient aplasique, neutropénique, immunodéprimé ou risque d'éclaboussures.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">17</div><div class="ws-lbl">Étapes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">7j</div><div class="ws-lbl">Max aiguille</div></div>
+      <div class="ws-item"><div class="ws-val">≥10</div><div class="ws-lbl">mL seringue</div></div>
+    </div>
+
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card" style="--mc:#4c1d95;--mb:#f5f3ff" onclick="selectMode('fiche',this)">
+        <span class="mc-icon">📖</span>
+        <span class="mc-name">Fiche Protocole</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">📋 Référence</div>
+        <div class="mc-desc">Le protocole complet détaillé pas à pas : matériel, étapes avec explications, complications, surveillance. À lire avant l'examen. Pas de questions.</div>
+        <ul class="mc-list" style="--mc:#4c1d95">
+          <li>Protocole complet en 17 étapes</li>
+          <li>Liste matériel détaillée</li>
+          <li>Explication clinique de chaque geste</li>
+          <li>Complications et surveillance</li>
+        </ul>
+      </button>
+      <button class="mode-card sel" style="--mc:#7c3aed;--mb:#ede9fe" onclick="selectMode('learn',this)">
+        <span class="mc-icon">📚</span>
+        <span class="mc-name">Apprentissage</span>
+        <div class="mc-diff" style="background:#ede9fe;border-color:#c4b5fd;color:#7c3aed">⭐ Débutant</div>
+        <div class="mc-desc">Les 17 étapes dans l'ordre, chacune expliquée avec le geste précis et son pourquoi clinique. Question de validation à chaque étape.</div>
+        <ul class="mc-list" style="--mc:#7c3aed">
+          <li>Protocole dans l'ordre</li>
+          <li>Explication + pourquoi clinique</li>
+          <li>Question de validation par étape</li>
+          <li>Pas de chronomètre</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mc-icon">📝</span>
+        <span class="mc-name">Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">Questions directes sur le protocole. Matériel, technique, reflux, rinçage, complications. Comme un examen écrit ou oral IFSI. Chrono 30s.</div>
+        <ul class="mc-list" style="--mc:#d97706">
+          <li>Questions sur tout le protocole</li>
+          <li>Chrono 30 secondes</li>
+          <li>Rapport détaillé à la fin</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#dc2626;--mb:#fef2f2" onclick="selectMode('survival',this)">
+        <span class="mc-icon">💀</span>
+        <span class="mc-name">Survie</span>
+        <div class="mc-diff" style="background:#fef2f2;border-color:#fca5a5;color:#dc2626">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Questions pièges sur les erreurs qui font du mal en pratique : mauvaise aiguille, mauvaise seringue, refus de reflux, extravasation déguisée. 3 vies. Chrono 25s.</div>
+        <ul class="mc-list" style="--mc:#dc2626">
+          <li>Pièges cliniques graves</li>
+          <li>Réponses toutes plausibles</li>
+          <li>3 vies · Chrono 25s</li>
+        </ul>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()"><span>Commencer →</span></button>
+  </div>
+</div>
+
+<!-- ══ FICHE PROTOCOLE ══ -->
+<div class="screen" id="s-fiche">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">📖</div>
+      <div><div class="logo-name">Fiche Protocole — Aiguille de Huber</div><div class="logo-sub">Source : Centre Léon Bérard, SF2H, IFSI — validé 2022-2023</div></div>
+    </div>
+    <button onclick="goWelcome()" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:white;cursor:pointer;font-size:11px;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text2)">← Retour</button>
+  </div>
+  <div class="fiche-body">
+
+    <!-- Navigation onglets -->
+    <div class="fiche-header">
+      <div>
+        <div class="fiche-title">Pose d'aiguille de Huber sur CIP/PAC</div>
+        <div class="fiche-sub">Soin stérile — Prescription médicale requise pour la première pose</div>
+      </div>
+      <div class="fiche-nav">
+        <button class="fiche-nav-btn active" onclick="showSection('s-mat',this)">🧰 Matériel</button>
+        <button class="fiche-nav-btn" onclick="showSection('s-proto',this)">📋 Protocole</button>
+        <button class="fiche-nav-btn" onclick="showSection('s-compl',this)">⚠️ Complications</button>
+        <button class="fiche-nav-btn" onclick="showSection('s-memo',this)">🧠 Mémo rapide</button>
+      </div>
+    </div>
+
+    <!-- MATÉRIEL -->
+    <div class="fiche-section active" id="s-mat">
+      <div class="fs-title">🧰 Matériel stérile et non stérile</div>
+      <!-- EPI IDE -->
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--pu);margin-bottom:8px">👷 Tenue de l'IDE (EPI obligatoires)</div>
+      <div class="material-grid" style="margin-bottom:16px">
+        <div class="mat-item critical-mat"><div class="mat-ico">😷</div><div class="mat-txt"><strong>Masque chirurgical (IDE)</strong> — obligatoire pendant toute la durée du soin. La chambre est un accès veineux central direct.</div></div>
+        <div class="mat-item critical-mat"><div class="mat-ico">🧢</div><div class="mat-txt"><strong>Charlotte / calot (IDE)</strong> — obligatoire. Les cheveux sont une source de contamination bactérienne du champ stérile.</div></div>
+        <div class="mat-item critical-mat"><div class="mat-ico">🥼</div><div class="mat-txt"><strong>Surblouse / tablier à usage unique (IDE)</strong> — obligatoire en HAD et à domicile. Fortement recommandé (SF2H) si patient aplasique, neutropénique ou immunodéprimé. Recommandé si risque d'éclaboussures (chimio).</div></div>
+        <div class="mat-item"><div class="mat-ico">👕</div><div class="mat-txt"><strong>Tenue propre</strong> — blouse professionnelle propre du service.</div></div>
+      </div>
+      <!-- EPI PATIENT -->
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:8px">🧑‍⚕️ Tenue du patient</div>
+      <div class="material-grid" style="margin-bottom:16px">
+        <div class="mat-item critical-mat"><div class="mat-ico">😷</div><div class="mat-txt"><strong>Masque chirurgical (patient)</strong> — obligatoire pendant tout le soin. Si patient non coopérant ou non aplasique : tête tournée du côté opposé à la chambre.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧢</div><div class="mat-txt"><strong>Charlotte (patient)</strong> — si cheveux longs, pour éviter que les cheveux tombent sur le champ stérile.</div></div>
+      </div>
+      <!-- MATÉRIEL STÉRILE ET NON STÉRILE -->
+      <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:8px">🧰 Matériel stérile et non stérile</div>
+      <div class="material-grid">
+        <div class="mat-item critical-mat"><div class="mat-ico">💉</div><div class="mat-txt"><strong>Aiguille de Huber sécurisée (gripper)</strong> — biseau tangentiel obligatoire, longueur adaptée à la corpulence (19G ou 22G). <em>Jamais une aiguille IV/IM classique.</em></div></div>
+        <div class="mat-item critical-mat"><div class="mat-ico">🪤</div><div class="mat-txt"><strong>Seringues ≥ 10 mL</strong> (plusieurs : purge + rinçage). Jamais de seringue &lt; 10 mL sur une CIP — risque de rupture du cathéter par hyperpression.</div></div>
+        <div class="mat-item"><div class="mat-ico">🔗</div><div class="mat-txt"><strong>Prolongateur avec robinet 3 voies</strong> stérile — jamais brancher directement sur l'embase sans prolongateur.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧴</div><div class="mat-txt"><strong>Sérum physiologique NaCl 0,9%</strong> — pour purge du système, vérification de perméabilité et rinçage pulsé final.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧤</div><div class="mat-txt"><strong>Gants stériles</strong> — soin stérile. Gants non stériles insuffisants.</div></div>
+        <div class="mat-item"><div class="mat-ico">🏕️</div><div class="mat-txt"><strong>2 champs stériles</strong> — 1 champ de table (préparation du matériel) + 1 champ fenestré/troué (posé sur le patient après désinfection).</div></div>
+        <div class="mat-item"><div class="mat-ico">🧼</div><div class="mat-txt"><strong>Antiseptique cutané</strong> — chlorhexidine alcoolique 2% (Chloraprep®) ou povidone iodée alcoolique. Même famille sur toute la séquence. Respecter le temps de contact + séchage spontané.</div></div>
+        <div class="mat-item"><div class="mat-ico">🫧</div><div class="mat-txt"><strong>Savon antiseptique + sérum physiologique stérile</strong> — pour la détersion préalable si peau visiblement souillée uniquement.</div></div>
+        <div class="mat-item"><div class="mat-ico">🩹</div><div class="mat-txt"><strong>2 pansements occlusifs transparents semi-perméables</strong> — 1 sur le site de ponction (10×15 cm) + 1 sur la connexion PAC/prolongateur.</div></div>
+        <div class="mat-item"><div class="mat-ico">🗂️</div><div class="mat-txt"><strong>Compresses stériles, bandelettes adhésives stériles</strong>, mousse de soutien (ou compresse pliée), marqueur indélébile (date sur pansement).</div></div>
+        <div class="mat-item"><div class="mat-ico">🧴</div><div class="mat-txt"><strong>Solution hydroalcoolique (SHA)</strong> — frictions multiples à des étapes précises (avant ouverture matériel, avant gants stériles, après retrait des gants, fin de soin).</div></div>
+        <div class="mat-item"><div class="mat-ico">🛡️</div><div class="mat-txt"><strong>Désinfectant de surface</strong> — pour le plan de travail avant d'ouvrir tout matériel.</div></div>
+        <div class="mat-item"><div class="mat-ico">🧤</div><div class="mat-txt"><strong>Gants non stériles à usage unique</strong> — pour la désinfection du plan de travail et la manipulation des déchets. À retirer avant de manipuler le matériel stérile.</div></div>
+        <div class="mat-item"><div class="mat-ico">🗑️</div><div class="mat-txt"><strong>Sac DASRI + container piquants/tranchants</strong> — à portée de main sur le plateau. L'aiguille de Huber va directement dans le container piquants.</div></div>
+        <div class="mat-item"><div class="mat-ico">💊</div><div class="mat-txt"><strong>Patch EMLA ou crème EMLA</strong> — sur prescription médicale, à poser 45-60 min avant le soin pour l'anesthésie locale.</div></div>
+      </div>
+      <div style="background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;padding:12px 14px;font-size:12px;color:#991b1b">
+        ⚠️ <strong>Vérifier systématiquement :</strong> intégrité des emballages stériles, dates de péremption, type d'aiguille (biseau tangentiel obligatoire), diamètre des seringues (≥ 10 mL).
+      </div>
+    </div>
+
+    <!-- PROTOCOLE -->
+    <div class="fiche-section" id="s-proto">
+      <div class="fs-title">📋 Protocole — 17 étapes dans l'ordre</div>
+      <div class="step-list" id="step-list-proto">
+        <!-- Generé par JS -->
+      </div>
+    </div>
+
+    <!-- COMPLICATIONS -->
+    <div class="fiche-section" id="s-compl">
+      <div class="fs-title">⚠️ Complications à connaître</div>
+      <div class="compl-grid">
+        <div class="compl-card compl-danger">
+          <div class="cc-title">🚨 Extravasation</div>
+          <div><strong>Signes :</strong> gonflement, douleur, brûlure, résistance à l'injection, absence de reflux. Peau tendue autour du site.<br><strong>Action :</strong> arrêter immédiatement, ne pas retirer l'aiguille (pour aspirer le produit), appeler le médecin. En cas de chimiothérapie : protocole extravasation spécifique.</div>
+        </div>
+        <div class="compl-card compl-danger">
+          <div class="cc-title">🚨 Absence de reflux</div>
+          <div><strong>Causes :</strong> aiguille pas à la butée, thrombose, retournement de la chambre, fibrine sur l'embout du cathéter.<br><strong>Action :</strong> changer la position du patient (lever le bras, tousser), changer de position de l'aiguille. Si persistance → ne pas utiliser + radiophotographie/médecin.</div>
+        </div>
+        <div class="compl-card compl-warn">
+          <div class="cc-title">⚠️ Infection du site</div>
+          <div><strong>Signes :</strong> rougeur, chaleur, induration, écoulement purulent autour du site, fièvre.<br><strong>Action :</strong> ne pas utiliser la chambre, alerter le médecin, prélèvements bactériologiques. Traçabilité.</div>
+        </div>
+        <div class="compl-card compl-warn">
+          <div class="cc-title">⚠️ Obstruction du cathéter</div>
+          <div><strong>Signes :</strong> résistance à l'injection, absence de reflux sans extravasation.<br><strong>Action :</strong> ne jamais forcer. Tenter un rinçage doux. Si persistance → médecin. Fibrinolytique possible sur prescription.</div>
+        </div>
+        <div class="compl-card compl-info">
+          <div class="cc-title">ℹ️ Douleur à la ponction</div>
+          <div><strong>Prévention :</strong> patch EMLA ou crème EMLA 45-60 min avant le soin selon la demande du patient.<br><strong>Note :</strong> la douleur diminue avec l'habitude. Maintenir fermement la chambre réduit l'inconfort.</div>
+        </div>
+        <div class="compl-card compl-info">
+          <div class="cc-title">ℹ️ Durée d'utilisation de l'aiguille</div>
+          <div><strong>Maximum : 7 jours</strong> (certains protocoles 8 jours).<br>Changer l'aiguille toutes les semaines ou en cas de complication. Pansement refait systématiquement lors du changement d'aiguille.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMO RAPIDE -->
+    <div class="fiche-section" id="s-memo">
+      <div class="fs-title">🧠 Mémo rapide — Ce qu'il faut savoir par cœur</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="background:var(--red-l);border:2px solid var(--red-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#991b1b;line-height:1.7">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--red)">🚨 Règles absolues — erreur = faute grave</div>
+          <div>• Aiguille à <strong>biseau tangentiel uniquement</strong> — jamais une IV/IM classique<br>
+          • <strong>Gants stériles</strong> — soin stérile, pas propre<br>
+          • <strong>Seringues ≥ 10 mL</strong> — risque de rupture cathéter si pression trop élevée<br>
+          • Ponction <strong>perpendiculaire jusqu'à la butée</strong><br>
+          • Vérifier le <strong>reflux sanguin</strong> avant toute utilisation<br>
+          • <strong>Rinçage pulsé</strong> (push-pause) — pas continu<br>
+          • <strong>2 masques</strong> — IDE + patient<br>
+          • <strong>Biseau à l'opposé du cathéter</strong></div>
+        </div>
+        <div style="background:#f5f3ff;border:1px solid #c4b5fd;border-radius:12px;padding:14px 16px;font-size:12.5px;color:#4c1d95;line-height:1.7">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--pu)">📋 Ordre des SHA dans le protocole</div>
+          <div>① Après désinfection du plan de travail<br>
+          ② Après avoir ouvert le matériel<br>
+          ③ Après avoir installé le patient<br>
+          ④ Après la désinfection cutanée (avant les gants stériles)<br>
+          ⑤ Après avoir retiré les gants stériles<br>
+          ⑥ En fin de soin après élimination des déchets</div>
+        </div>
+        <div style="background:var(--green-l);border:1px solid var(--green-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#065f46;line-height:1.7">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--green)">✅ Ordre désinfection cutanée</div>
+          <div>Sur peau <strong>visiblement propre</strong> : antiseptique directement (Chloraprep® 30 sec + séchage spontané)<br>
+          Sur peau <strong>visiblement souillée</strong> : détersion (savon antiseptique) → rinçage eau stérile → séchage → antiseptique<br>
+          <strong>Jamais essuyer l'antiseptique. Séchage spontané obligatoire.</strong></div>
+        </div>
+        <div style="background:var(--orange-l);border:1px solid var(--orange-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#92400e;line-height:1.7">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--orange)">⏱️ Durées à retenir</div>
+          <div>• Aiguille en place : <strong>maximum 7 jours</strong><br>
+          • Pansement : refait à chaque changement d'aiguille (J7)<br>
+          • Rampe de perfusion : tous les 4 jours<br>
+          • Tubulure même hydratation : toutes les 24h<br>
+          • Tubulure perfusion discontinue : à chaque perfusion<br>
+          • Patch EMLA : poser <strong>45-60 min avant</strong> le soin</div>
+        </div>
+        <div style="background:var(--blue-l);border:1px solid var(--blue-m);border-radius:12px;padding:14px 16px;font-size:12.5px;color:#1e3a8a;line-height:1.7">
+          <div style="font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;color:var(--blue)">💡 Traçabilité obligatoire</div>
+          <div>Dossier infirmier : état cutané, présence du reflux, réactions du patient, type et calibre de l'aiguille, date de pose.<br>
+          Carnet de suivi patient : soin réalisé, date, initiales.<br>
+          Date sur le pansement.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">💜</div><span class="tb-logo-text">Huber — CIP/PAC</span></div>
+    <div class="tb-mode" id="tb-mode">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">Étape 1/17</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="quiz-body">
+    <div class="ctx-card" id="ctx-box" style="display:none">
+      <div class="ctx-ico-box" id="ctx-ico">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctx-sub">Étape</div>
+        <div class="ctx-title" id="ctx-title"></div>
+        <div class="ctx-body" id="ctx-body"></div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- ══ RESULT ══ -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">💜</div>
+      <div><div class="logo-name">Rapport — Aiguille de Huber</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--pu)">0s</div><div class="rs-lbl">Tps / Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-score" style="color:var(--pu-d)">0</div><div class="rs-lbl">Score</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Points à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils personnalisés</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DONNÉES PROTOCOLE (partagées fiche + quiz apprentissage)
+   Source : Centre Léon Bérard (MO-552 v4, 2022), SF2H 2012,
+   Réseau AURA 2025, IFSI formateurs
+══════════════════════════════════════════════════════ */
+const PROTOCOL = [
+{num:1,cat:"Information & Préparation initiale",icon:"💬",title:"Informer le patient + proposer l'anesthésie locale",
+ critical:false,attention:true,
+ what:"Avant d'entrer dans la chambre du patient, vérifiez votre tenue : <strong>tenue professionnelle propre + charlotte/calot + masque chirurgical + surblouse/tablier à usage unique</strong> (obligatoire en HAD, recommandé si patient aplasique/immunodéprimé). Présentez-vous et expliquez le soin. Vérifiez l'identité du patient (nom, prénom, date de naissance). Proposez le <strong>patch ou crème EMLA 45 à 60 minutes avant</strong> la pose pour l'anesthésie locale.",
+ why:"La charlotte évite la chute de cheveux sur le champ stérile. La surblouse protège le patient (contamination croisée) et l'IDE (éclaboussures de produits cytotoxiques). L'EMLA réduit la douleur — crucial pour les patients en oncologie souvent anxieux.",
+ rule:"Tenue IDE : tenue propre + charlotte + masque + surblouse. EMLA = 45-60 min avant. Identité vérifiée avant tout soin.",
+ q:"Parmi ces éléments de tenue, lequel est obligatoire pour l'IDE avant toute pose d'aiguille de Huber ?",
+ choices:["Masque seul — le reste est optionnel","Masque + gants non stériles — suffisant si la technique est rigoureuse","Masque + charlotte + surblouse (en HAD ou patient immunodéprimé) + tenue propre","Gants stériles seuls — ils protègent le patient et l'IDE"],
+ correct:2},
+
+{num:2,cat:"Hygiène — Étape 1",icon:"🧴",title:"Désinfecter le plan de travail + préparer le DASRI",
+ critical:false,attention:false,
+ what:"Enfilez des <strong>gants non stériles à usage unique</strong>. Désinfectez le plan de travail avec un produit conforme (norme EN 13697) en respectant le temps de séchage. Retirez les gants non stériles. Mettez en place le sac poubelle DASRI à portée de main. Préparez visuellement le matériel sans l'ouvrir encore.",
+ why:"Le désinfectant de surface peut être irritant — les gants non stériles protègent les mains de l'IDE. Le retrait des gants avant d'ouvrir le matériel stérile évite de contaminer les emballages. Un plan de travail non désinfecté est une source de contamination directe.",
+ rule:"Gants non stériles pour désinfecter le plan → retirer les gants → DASRI en place → ouvrir le matériel stérile.",
+ q:"Que faites-vous avant d'ouvrir le moindre emballage stérile ?",
+ choices:["On peut ouvrir le matériel d'abord, le plan de travail se désinfecte après","Désinfecter le plan de travail, mettre en place le DASRI, puis ouvrir le matériel","Mettre les gants stériles d'abord, puis désinfecter le plan de travail","L'ordre n'a pas d'importance si le matériel reste stérile"],
+ correct:1},
+
+{num:3,cat:"Hygiène — SHA n°1",icon:"🤲",title:"1ère friction SHA + ouverture du matériel",
+ critical:false,attention:false,
+ what:"Effectuez une <strong>friction avec la solution hydro-alcoolique (SHA)</strong>. Ouvrez le set et tous les emballages stériles nécessaires en les déposant aseptiquement sur le champ stérile sans les toucher : aiguille de Huber, prolongateur, seringues, compresses stériles.",
+ why:"La friction SHA réduit la flore transitoire des mains avant de manipuler le matériel stérile. L'ouverture aseptique (tenir le bord externe de l'emballage, déposer le contenu sans le toucher) maintient la stérilité.",
+ rule:"SHA avant toute manipulation du matériel stérile. Ne jamais toucher la partie stérile du matériel avec des mains non stériles.",
+ q:"Comment ouvrez-vous un emballage stérile pour en déposer le contenu sur le champ ?",
+ choices:["Vous l'ouvrez entièrement et saisissez le contenu avec vos gants non stériles pour le poser","Vous pincez l'emballage de l'extérieur et laissez tomber le contenu sur le champ sans le toucher","Vous le posez emballage entier sur le champ puis l'ouvrez avec les gants stériles","Vous utilisez des pinces non stériles pour transférer le contenu"],
+ correct:1},
+
+{num:4,cat:"Masques",icon:"😷",title:"Mettre les masques — IDE ET patient",
+ critical:true,attention:false,
+ what:"Avant d'installer le patient, vérifiez que vous portez bien : <strong>tenue propre + charlotte + masque chirurgical</strong>. Donnez au patient son masque et aidez-le à le mettre. Si le patient a les cheveux longs, proposez-lui également une charlotte pour éviter la chute de cheveux sur le champ stérile. <strong>Les masques IDE + patient sont obligatoires pendant toute la durée du soin.</strong>",
+ why:"La chambre implantable est un accès veineux central direct. La colonisation par des bactéries aéroportées (expulsion buccale, toux) pendant la manipulation peut provoquer une infection de chambre implantable — complication grave nécessitant parfois le retrait chirurgical.",
+ rule:"IDE : masque + charlotte + surblouse (si indiqué). Patient : masque + charlotte si cheveux longs. Pas de soin sans masques posés.",
+ q:"Quel équipement de protection l'IDE doit-elle obligatoirement porter avant de commencer la pose d'aiguille de Huber ?",
+ choices:["Masque chirurgical seul — les autres EPI sont recommandés mais pas obligatoires","Gants stériles + masque — l'essentiel est là","Masque + charlotte + surblouse si indiqué + tenue propre — ensemble complet avant d'entrer dans la chambre","Charlotte + gants stériles — suffit si la technique aseptique est parfaite"],
+ correct:2},
+
+{num:5,cat:"Installation",icon:"🛋️",title:"Installer le patient en décubitus dorsal",
+ critical:false,attention:false,
+ what:"Installez le patient en <strong>décubitus dorsal</strong>, bras le long du corps, tête légèrement tournée du côté opposé à la chambre. Adaptez l'éclairage pour bien visualiser le site. Exposez la zone de la chambre implantable et repérez visuellement et manuellement le contour du boîtier.",
+ why:"Le décubitus dorsal met le site de la chambre en position accessible et réduit le risque de mouvement involontaire pendant la ponction. La palpation préalable de la chambre est indispensable pour adapter la longueur de l'aiguille.",
+ rule:"Décubitus dorsal + repérage manuel de la chambre avant de commencer.",
+ q:"Pourquoi faut-il repérer manuellement la chambre avant la ponction ?",
+ choices:["Pour vérifier qu'elle n'est pas infectée","Pour estimer la profondeur et adapter la longueur de l'aiguille (le tablier doit être en contact avec la peau)","Pour mesurer sa taille et choisir la bonne seringue","Ce repérage est facultatif si le patient connaît bien sa chambre"],
+ correct:1},
+
+{num:6,cat:"Hygiène — SHA n°2",icon:"🤲",title:"2ème friction SHA + préparation du matériel assemblé",
+ critical:false,attention:false,
+ what:"Effectuez une nouvelle <strong>friction SHA</strong>. Assemblez l'aiguille de Huber sur le prolongateur avec le robinet 3 voies. Adaptez une seringue de ≥ 10 mL de NaCl 0,9% sur un robinet. <strong>Purgez entièrement le système</strong> (prolongateur + aiguille) en poussant le NaCl jusqu'à obtenir un filet continu sans bulles d'air. Fermez le robinet mais laissez la seringue en place.",
+ why:"La purge élimine l'air du système. Une bulle d'air injectée par un cathéter central est une embolie gazeuse — potentiellement mortelle. La seringue laissée en place permet le contrôle du reflux immédiatement après la ponction.",
+ rule:"Purge complète avant de piquer. Zéro bulle d'air. Seringue laissée branchée pour vérifier le reflux.",
+ q:"Après la purge du système, que faites-vous de la seringue de NaCl ?",
+ choices:["Vous la retirez — elle gêne lors de la ponction","Vous la laissez branchée fermée — elle servira à vérifier le reflux juste après la ponction","Vous la remplacez par une seringue vide pour aspirar le reflux","Vous la pouvez au besoin — pas de règle précise"],
+ correct:1},
+
+{num:7,cat:"Désinfection cutanée",icon:"🧴",title:"Désinfection cutanée du site",
+ critical:false,attention:true,
+ what:"Sur peau <strong>visiblement propre</strong> : appliquer directement l'antiseptique (Chloraprep® 1 mL ou chlorhexidine alcoolique 2%) avec un mouvement de friction circulaire pendant <strong>30 secondes</strong>. <strong>Laisser sécher spontanément.</strong> Sur peau <strong>visiblement souillée</strong> : détersion avec savon antiseptique → rinçage eau stérile → séchage avec compresses stériles → puis antiseptique.",
+ why:"Un antiseptique posé sur une peau souillée voit son efficacité fortement diminuée. La friction active l'antiseptique. Le séchage spontané est indispensable — l'alcool humide irrite et son efficacité est réduite.",
+ rule:"Séchage spontané obligatoire. Ne jamais souffler, ne jamais essuyer. Respecter le temps de contact (30 secondes).",
+ q:"Vous avez appliqué l'antiseptique. Il n'est pas encore sec et l'équipe vous presse d'aller vite. Vous ?",
+ choices:["Procédez à la ponction — quelques secondes de séchage incomplet sont sans conséquence clinique réelle","Soufflez doucement pour accélérer le séchage","Attendez le séchage spontané complet quoi qu'il arrive — c'est non négociable","Essuyez délicatement avec une compresse stérile sèche pour accélérer"],
+ correct:2},
+
+{num:8,cat:"Hygiène — SHA n°3",icon:"🤲",title:"3ème friction SHA + gants stériles",
+ critical:true,attention:false,
+ what:"Effectuez une <strong>friction SHA</strong>. Enfilez les <strong>gants stériles</strong>. Posez le <strong>champ stérile fenestré</strong> sur le patient autour du site de ponction. Dès ce moment, ne touchez que du matériel stérile avec vos gants.",
+ why:"Les gants stériles sont obligatoires pour un soin stérile. Le champ stérile délimite la zone de travail et protège le site de toute contamination par contact avec le patient ou les draps.",
+ rule:"SHA → gants stériles → champ fenestré. Après cette étape : ne toucher QUE du matériel stérile.",
+ q:"Un collègue vous demande de lui passer un stylo pendant que vous portez vos gants stériles. Vous ?",
+ choices:["Prenez le stylo rapidement car c'est juste un instant","Refusez et signalez que vous êtes en zone stérile — il faut changer de gants si contact non stérile","Prenez le stylo avec le revers du gant pour minimiser la contamination","Posez le stylo sur le champ stérile pour éviter le problème"],
+ correct:1},
+
+{num:9,cat:"Ponction — Technique",icon:"💉",title:"Maintenir la chambre + piquer perpendiculairement",
+ critical:true,attention:false,
+ what:"<strong>Maintenez fermement la chambre entre 2 ou 3 doigts</strong> (pouces et index de la main non dominante) pour la stabiliser et éviter qu'elle bouge ou se retourne. De la main dominante, tenez l'aiguille et <strong>piquez perpendiculairement au centre du septum</strong>, biseau à l'opposé du cathéter, d'un geste ferme et direct, <strong>jusqu'à la butée de l'aiguille</strong>. Ne jamais piquer en biais.",
+ why:"Tenir la chambre est indispensable pour trois raisons : précision de la ponction, prévention du retournement du boîtier (complication grave), et réduction de la douleur. La ponction perpendiculaire jusqu'à la butée garantit que l'aiguille est bien dans la chambre. Un angle oblique risque de traverser le septum latéralement.",
+ rule:"Maintenir la chambre → ponction perpendiculaire → jusqu'à la butée. Biseau à l'opposé du cathéter.",
+ svg:`<svg viewBox="0 0 120 90" width="120" height="90"><ellipse cx="60" cy="65" rx="30" ry="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="38" y="52" width="44" height="22" rx="8" fill="#c4b5fd" stroke="#7c3aed" stroke-width="1.5"/><ellipse cx="60" cy="52" rx="18" ry="10" fill="#7c3aed" opacity="0.25" stroke="#7c3aed" stroke-width="1.5"/><text x="60" y="66" text-anchor="middle" font-size="8" fill="#4c1d95" font-family="sans-serif" font-weight="700">Septum</text><line x1="60" y1="5" x2="60" y2="52" stroke="#374151" stroke-width="4" stroke-linecap="round"/><polygon points="55,48 60,58 65,48" fill="#374151"/><text x="60" y="4" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif" font-weight="700">⊥ perpendiculaire</text><text x="60" y="86" text-anchor="middle" font-size="7" fill="#4c1d95" font-family="sans-serif">jusqu'à la butée</text><circle cx="30" cy="62" r="5" fill="#e8b890" stroke="#c07850" stroke-width="1"/><circle cx="90" cy="62" r="5" fill="#e8b890" stroke="#c07850" stroke-width="1"/><text x="30" y="74" text-anchor="middle" font-size="6" fill="#7c3aed" font-family="sans-serif">Doigt</text><text x="90" y="74" text-anchor="middle" font-size="6" fill="#7c3aed" font-family="sans-serif">Doigt</text></svg>`,
+ q:"Pourquoi faut-il piquer jusqu'à la butée et non s'arrêter avant ?",
+ choices:["Pour réduire la douleur — plus on avance vite, moins ça fait mal","Pour s'assurer que l'aiguille est bien dans la chambre et pas uniquement dans le tissu sous-cutané","Pour que la mousse de soutien se positionne correctement","La butée n'est pas obligatoire, elle est juste indicative"],
+ correct:1},
+
+{num:10,cat:"Vérification — Reflux",icon:"🔴",title:"Vérifier le reflux sanguin — Étape obligatoire",
+ critical:true,attention:false,
+ what:"Ouvrez le robinet du prolongateur. <strong>Aspirez doucement avec la seringue</strong> jusqu'à l'apparition de sang dans le prolongateur. Ce retour sanguin confirme que l'aiguille est bien dans la chambre et que le cathéter est perméable. Effectuez ensuite un <strong>rinçage pulsé</strong> avec le NaCl 0,9% pour éliminer le sang du prolongateur.",
+ why:"Pas de reflux = ne pas utiliser la chambre. Causes possibles d'absence de reflux : aiguille pas à la butée, thrombose partielle, position du patient, fibrine sur l'embout. Si on injecte un médicament sans reflux et que la chambre est mal positionnée ou obstruée → risque d'extravasation.",
+ rule:"Reflux sanguin positif OBLIGATOIRE avant toute injection. Absence de reflux = ne pas utiliser, investiguer.",
+ q:"Vous ne parvenez pas à obtenir de reflux. Quelles sont vos premières actions ?",
+ choices:["Injecter quand même le NaCl pour déboucher et essayer d'obtenir le reflux ensuite","Changer la position du patient (lever les bras, tousser), vérifier que l'aiguille est bien à la butée. Si persistance → alerter le médecin","Retirer immédiatement l'aiguille et la reposer","Injecter avec plus de pression pour passer l'obstruction"],
+ correct:1},
+
+{num:11,cat:"Test de perméabilité",icon:"💧",title:"Rinçage pulsé de vérification",
+ critical:false,attention:true,
+ what:"Injectez <strong>10 mL de NaCl 0,9%</strong> en technique de <strong>rinçage pulsé (push-pause)</strong> : injectez 1-2 mL d'un coup, marquez une pause, injectez à nouveau, etc. Vérifiez l'absence d'extravasation : pas de gonflement autour du site, pas de douleur à l'injection, résistance normale. Ceci confirme la perméabilité du cathéter.",
+ why:"Le rinçage pulsé crée des turbulences à l'intérieur du cathéter qui éliminent les dépôts de fibrine et les résidus médicamenteux sur la paroi interne. Un rinçage continu et lent est moins efficace mécaniquement.",
+ rule:"Rinçage pulsé (push-pause) avec ≥ 10 mL NaCl. Vérifier l'absence de gonflement et de douleur pendant l'injection.",
+ q:"Quelle est la différence entre un rinçage continu et un rinçage pulsé ?",
+ choices:["Aucune différence clinique — les deux font circuler le liquide","Le rinçage pulsé (push-pause) crée des turbulences qui éliminent les dépôts sur la paroi interne du cathéter. Plus efficace qu'un débit continu","Le rinçage pulsé est plus doux et moins risqué pour le cathéter","Le rinçage continu est recommandé pour les cathéters longs, le pulsé pour les courts"],
+ correct:1},
+
+{num:12,cat:"Fixation — Mousse + Bandelettes",icon:"📌",title:"Stabiliser et fixer l'aiguille",
+ critical:false,attention:true,
+ what:"Glissez la <strong>mousse de soutien sous le corps de l'aiguille</strong> (ou une compresse pliée selon la morphologie du patient) pour la stabiliser et éviter la pression sur la peau. Fixez l'aiguille avec des <strong>bandelettes adhésives stériles</strong> en X ou en papillon autour du corps de l'aiguille pour l'immobiliser.",
+ why:"Sans support sous l'aiguille, le corps de l'aiguille exerce une pression sur la peau, créant un point de pression et un risque d'escarre ou de déplacement par levier. La fixation par bandelettes prévient le déplacement accidentel.",
+ rule:"Mousse de soutien sous le corps de l'aiguille. Bandelettes avant le pansement occlusif.",
+ q:"Pourquoi place-t-on une mousse de soutien sous le corps de l'aiguille ?",
+ choices:["Pour absorber les éventuels saignements au site de ponction","Pour éviter la pression de l'aiguille sur la peau et prévenir l'escarre ou le levier","Pour immobiliser complètement l'aiguille sans bandelettes","Pour couvrir l'aiguille et éviter sa contamination"],
+ correct:1},
+
+{num:13,cat:"Pansement",icon:"🩹",title:"Pansement occlusif transparent",
+ critical:false,attention:true,
+ what:"Posez un <strong>pansement occlusif transparent semi-perméable</strong> (type Tegaderm™, Opsite™ 10×15 cm) sur l'ensemble du site (aiguille + bandelettes). Posez un second pansement occlusif sur la <strong>connexion PAC/prolongateur</strong> (type Opsite™/Cicplaie™). Ce second pansement protège la connexion entre l'aiguille et le prolongateur.",
+ why:"Le pansement transparent permet la surveillance quotidienne visuelle du site sans retrait. Le pansement occlusif protège de la contamination bactérienne. La connexion PAC/prolongateur est une porte d'entrée bactérienne critique.",
+ rule:"2 pansements : 1 sur le site + 1 sur la connexion PAC/prolongateur. Transparents pour surveillance visuelle.",
+ q:"Pourquoi faut-il un second pansement occlusif sur la connexion PAC/prolongateur ?",
+ choices:["Pour immobiliser le prolongateur et éviter sa déconnexion accidentelle","Pour protéger la connexion de la contamination bactérienne — c'est une porte d'entrée critique pour les infections de CCI","Pour masquer la connexion et rassurer le patient","C'est facultatif, un seul pansement sur le site est suffisant"],
+ correct:1},
+
+{num:14,cat:"Gants + Finition",icon:"🤲",title:"Retirer les gants + boucle de sécurité + date",
+ critical:false,attention:false,
+ what:"Retirez les gants stériles. Réalisez une <strong>boucle de sécurité avec le prolongateur</strong> et fixez-la au pansement ou à la tenue du patient pour éviter toute traction accidentelle sur l'aiguille. Inscrivez la <strong>date de pose sur le pansement</strong> au marqueur indélébile.",
+ why:"La boucle de sécurité est un filoche de protection mécanique : si le prolongateur est tiré accidentellement, la boucle absorbe la traction avant qu'elle n'atteigne l'aiguille dans la chambre. La date sur le pansement permet de planifier le changement (J7).",
+ rule:"Boucle de sécurité obligatoire. Date sur le pansement. Changement de l'aiguille tous les 7 jours.",
+ q:"À quoi sert la boucle de sécurité réalisée sur le prolongateur ?",
+ choices:["À identifier visuellement le circuit de perfusion parmi plusieurs lignes","À absorber une éventuelle traction accidentelle sur le prolongateur avant qu'elle ne déplace l'aiguille","À stériliser l'extrémité du prolongateur quand il n'est pas utilisé","C'est une technique optionnelle selon les habitudes du service"],
+ correct:1},
+
+{num:15,cat:"Hygiène — SHA n°4",icon:"🤲",title:"4ème friction SHA + réinstallation du patient",
+ critical:false,attention:false,
+ what:"Effectuez une <strong>friction SHA</strong>. Réinstallez confortablement le patient. Vérifiez que le prolongateur n'exerce pas de traction sur l'aiguille. Expliquez au patient les signes à surveiller et à signaler : douleur au site, sensation de brûlure pendant la perfusion, gonflement, fièvre.",
+ why:"L'éducation du patient est un élément essentiel de la prévention des complications. Un patient informé signale plus tôt une extravasation ou une infection, réduisant le risque de conséquences graves.",
+ rule:"SHA + éducation du patient sur les signes d'alerte avant de quitter la chambre.",
+ q:"Vous avez terminé la pose et vous apprêtez à quitter la chambre. Qu'expliquez-vous au patient avant de partir ?",
+ choices:["Rien de particulier — s'il y a un problème les alarmes se déclencheront","Les signes à signaler immédiatement : douleur au site, sensation de brûlure à l'injection, gonflement, rougeur, fièvre","Uniquement comment appeler en cas d'urgence","Que tout va bien et qu'il ne doit pas s'inquiéter si ça fait un peu mal"],
+ correct:1},
+
+{num:16,cat:"Élimination des déchets",icon:"🗑️",title:"Éliminer les déchets + 5ème SHA",
+ critical:false,attention:false,
+ what:"Éliminez tous les déchets selon le tri en vigueur : <strong>aiguilles + matériel piquant/tranchant → container DASRI jaune</strong>, déchets contaminés → sac DASRI. Réaliser une <strong>friction SHA</strong>.",
+ why:"L'élimination des aiguilles dans le container DASRI immédiatement après usage prévient les AES. Aucun recapuchonnage. Le SHA après élimination des déchets protège l'IDE après contact avec les emballages potentiellement contaminés.",
+ rule:"Aiguille de Huber → container DASRI immédiatement. Jamais recapuchonnée. SHA après élimination.",
+ q:"Où éliminez-vous l'aiguille de Huber après un changement de dispositif ?",
+ choices:["Dans la poubelle de chambre bien emballée","Dans le sac DASRI avec les compresses utilisées","Dans le container DASRI pour objets piquants/tranchants directement, sans recapuchonner","Dans le container DASRI après avoir recapuchonné pour sécuriser"],
+ correct:2},
+
+{num:17,cat:"Traçabilité",icon:"📝",title:"Tracer le soin dans le dossier + carnet de suivi",
+ critical:false,attention:false,
+ what:"Tracez dans le <strong>dossier infirmier</strong> : état cutané au moment du soin, présence et qualité du reflux sanguin, réactions du patient, type et calibre de l'aiguille utilisée, date de pose, votre nom et signature. Tracez également dans le <strong>carnet de suivi patient</strong> : date du soin, type d'aiguille, initiales.",
+ why:"La traçabilité double (dossier + carnet patient) est une recommandation spécifique aux chambres implantables. Le carnet accompagne le patient et permet à tout soignant de connaître la date de la dernière intervention, même en dehors de l'établissement.",
+ rule:"Tracer dans le dossier ET dans le carnet de suivi patient. Date + type d'aiguille + reflux + état cutané + signature.",
+ q:"Pourquoi tracter dans le carnet patient ET dans le dossier infirmier ?",
+ choices:["Uniquement pour des raisons administratives de double archivage","Le carnet accompagne le patient en dehors de l'établissement et permet à tout soignant de connaître la dernière date d'intervention sur la chambre","Les deux servent la même chose, un seul suffit en pratique","Le carnet est obligatoire, le dossier infirmier est optionnel pour ce soin"],
+ correct:1},
+];
+
+/* ══════════════════════════════════════════════════
+   FICHE PROTOCOLE — Générer les step cards
+══════════════════════════════════════════════════ */
+function buildFicheProtocol(){
+  const container=document.getElementById('step-list-proto');
+  container.innerHTML='';
+
+  // Insérer bandeau "Avant d'entrer dans la chambre"
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,var(--pu-d),var(--pu));border-radius:12px;padding:14px 16px;margin-bottom:14px;color:white';
+  intro.innerHTML=`<div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:6px">⚡ Avant d'entrer dans la chambre du patient</div>
+    <div style="font-size:12.5px;line-height:1.7;color:rgba(255,255,255,0.92)">
+    <strong>Vérifier la prescription médicale.</strong> Installer la tenue IDE complète : tenue propre + charlotte/calot + masque chirurgical + surblouse/tablier (obligatoire en HAD, recommandé si aplasie/immunodépression).<br>
+    Vérifier la disponibilité du <strong>patch EMLA posé 45-60 min avant</strong> si le patient l'a demandé.<br>
+    Préparer mentalement le protocole — la CIP est un accès veineux central, ce soin est stérile.
+    </div>`;
+  container.appendChild(intro);
+
+  // Groupes d'étapes avec séparateurs
+  const groups=[
+    {label:'🧹 Phase 1 — Préparation de l\'environnement (étapes 1-3)', steps:[1,2,3], color:'var(--teal)'},
+    {label:'🛡️ Phase 2 — Protection du patient et tenue (étapes 4-5)', steps:[4,5], color:'var(--blue)'},
+    {label:'🧤 Phase 3 — Préparation aseptique du matériel (étapes 6-8)', steps:[6,7,8], color:'var(--pu)'},
+    {label:'💉 Phase 4 — Ponction et vérifications (étapes 9-11)', steps:[9,10,11], color:'var(--red)'},
+    {label:'🩹 Phase 5 — Fixation et finition (étapes 12-15)', steps:[12,13,14,15], color:'var(--green)'},
+    {label:'📋 Phase 6 — Fin de soin et traçabilité (étapes 16-17)', steps:[16,17], color:'var(--orange)'},
+  ];
+
+  groups.forEach(group=>{
+    // Titre de groupe
+    const gTitle=document.createElement('div');
+    gTitle.style.cssText=`font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:${group.color};margin:18px 0 10px;padding-left:4px;border-left:3px solid ${group.color};padding-left:10px`;
+    gTitle.textContent=group.label;
+    container.appendChild(gTitle);
+
+    group.steps.forEach(num=>{
+      const step=PROTOCOL.find(s=>s.num===num);
+      if(!step)return;
+
+      const cls=step.critical?'critical':step.attention?'attention':'';
+      let tags='';
+      if(step.critical) tags+='<span class="step-tag tag-critical">⚠ CRITIQUE</span>';
+      if(num>=8&&num<=14) tags+='<span class="step-tag tag-sterile">🧤 Stérile</span>';
+      if(step.attention&&!step.critical) tags+='<span class="step-tag tag-attention">⚡ Attention</span>';
+
+      // Déterminer le type de SHA si étape hygiène
+      let shaIndicator='';
+      if(step.title.includes('SHA')) shaIndicator='<span style="display:inline-flex;align-items:center;gap:4px;background:#ecfdf5;border:1px solid #6ee7b7;border-radius:20px;padding:1px 8px;font-size:9px;font-weight:700;color:#059669;margin-left:6px">🤲 Friction SHA</span>';
+
+      const div=document.createElement('div');
+      div.className=`step-card ${cls}`;
+      div.innerHTML=`
+        <div class="step-header" onclick="toggleStep(this)">
+          <div class="step-num">${step.num}</div>
+          <div class="step-title-row">
+            <span class="step-title">${step.icon} ${step.title}${shaIndicator}</span>${tags}
+          </div>
+          <div class="step-chevron">▼</div>
+        </div>
+        <div class="step-body">
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;font-family:'Lora',serif">🎯 Geste précis</div>
+          <div style="margin-bottom:12px;line-height:1.75">${step.what}</div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div style="background:#f5f3ff;border-left:3px solid var(--pu);border-radius:0 8px 8px 0;padding:10px 12px">
+              <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--pu);margin-bottom:5px">🧠 Pourquoi ce geste ?</div>
+              <div style="font-size:12px;color:var(--pu-d);line-height:1.6">${step.why}</div>
+            </div>
+            <div style="background:var(--orange-l);border-left:3px solid var(--orange);border-radius:0 8px 8px 0;padding:10px 12px">
+              <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--orange);margin-bottom:5px">📌 Règle à retenir</div>
+              <div style="font-size:12px;color:var(--amber);line-height:1.6">${step.rule}</div>
+            </div>
+          </div>
+
+          ${step.critical?'<div style="background:var(--red-l);border:1.5px solid var(--red-m);border-radius:8px;padding:9px 12px;font-size:12px;color:#991b1b;line-height:1.55"><strong>🚨 Erreur critique :</strong> '+getFicheErreur(step.num)+'</div>':''}
+          ${getFicheConseil(step.num)?'<div style="background:var(--blue-l);border:1.5px solid var(--blue-m);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--blue-d);line-height:1.55;margin-top:8px"><strong>💡 Conseil pratique :</strong> '+getFicheConseil(step.num)+'</div>':''}
+        </div>`;
+      container.appendChild(div);
+    });
+  });
+
+  // Ouvrir toutes les étapes par défaut
+  document.querySelectorAll('.step-card').forEach(card=>{
+    card.classList.add('open');
+  });
+}
+
+function getFicheErreur(num){
+  const erreurs={
+    4:"Commencer le soin sans masque — la bouche expulse des bactéries aéroportées qui peuvent contaminer directement le site de ponction d'un accès veineux central.",
+    8:"Toucher un objet non stérile après avoir mis les gants stériles (téléphone, stylo, table...) — les gants doivent être changés immédiatement.",
+    9:"Piquer en biais ou s'arrêter avant la butée — l'aiguille reste dans le septum ou le sous-cutané, donnant une fausse impression d'être dans la chambre. Le reflux sera absent.",
+    10:"Injecter sans reflux sanguin confirmé — risque d'extravasation du médicament dans les tissus, pouvant provoquer une nécrose (surtout avec les cytotoxiques).",
+  };
+  return erreurs[num]||"Ne pas respecter cette étape compromet la stérilité ou la sécurité du soin.";
+}
+
+function getFicheConseil(num){
+  const conseils={
+    1:"Si le patient a peur de la ponction, prenez le temps d'expliquer : une chambre bien maintenue fait moins mal qu'une prise de sang classique.",
+    2:"Avant d'ouvrir le moindre emballage : plan de travail désinfecté + DASRI en place. Cet ordre évite de contaminer le matériel stérile.",
+    3:"Mémorisez l'ordre des SHA du protocole : avant ouverture du matériel → avant gants stériles → après retrait des gants → fin de soin. 4 frictions minimum.",
+    5:"Palpez bien la chambre avant la ponction pour évaluer sa profondeur. Adaptez la longueur de l'aiguille à la corpulence — le tablier doit être en contact avec la peau.",
+    6:"Laissez la seringue de NaCl branchée après la purge — elle servira immédiatement à vérifier le reflux après la ponction.",
+    7:"Sur peau propre : antiseptique direct + 30 sec + séchage spontané. Mnémotechnique : 'je désinfecte, j'attends, je ne touche plus'.",
+    9:"Mnémotechnique pour la ponction : 'ferme, perpendiculaire, biseau à l'opposé du cathéter, jusqu'à la butée'. 4 éléments, dans cet ordre.",
+    10:"Si pas de reflux : tester les changements de position (bras levé, demander de tousser). Ces manœuvres peuvent débloquer une fibrine sur l'embout du cathéter.",
+    11:"Le rinçage pulsé se fait en push-pause : injecter 2 mL, pause, 2 mL, pause... Les turbulences créées 'frottent' les parois internes du cathéter.",
+    14:"La boucle de sécurité est souvent oubliée mais fondamentale : si le prolongateur est tiré accidentellement, la boucle se tend avant que l'aiguille ne bouge.",
+    17:"Double traçabilité : dossier infirmier (détail complet) + carnet de suivi patient (date + type aiguille). Le carnet voyageur avec le patient en dehors de l'établissement.",
+  };
+  return conseils[num]||'';
+}
+function toggleStep(header){
+  const card=header.parentElement;
+  card.classList.toggle('open');
+}
+function showSection(id,btn){
+  document.querySelectorAll('.fiche-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.fiche-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ══════════════════════════════════════════════════
+   MODE EXAMEN — Questions directes
+══════════════════════════════════════════════════ */
+const Q_EXAM = [
+{cat:"Matériel — Aiguille",q:"Quelle est la caractéristique indispensable d'une aiguille pour ponctionner une chambre implantable ?",
+ choices:["Biseau classique (biseauté à 45°) de grand diamètre pour un bon débit","Biseau tangentiel (non traumatique) pour éviter le 'carrotage' du septum","Aiguille intramusculaire 21G reconditionnée","Biseau tangentiel uniquement pour la chimio, biseau classique pour les autres"],
+ correct:1,exp_ok:"Le biseau tangentiel est indispensable. Un biseau classique découpe des fragments du septum en silicone ('carrotage') qui peuvent migrer dans la circulation ou détériorer la chambre irrémédiablement.",exp_err:"Jamais une aiguille IV ou IM classique sur une chambre implantable. Le biseau tangentiel est obligatoire quelle que soit l'indication.",rule:"<strong>Biseau tangentiel (Huber/gripper) = obligatoire. Toujours.</strong>",xp:15},
+
+{cat:"Matériel — Seringues",q:"Pourquoi les seringues utilisées sur une chambre implantable doivent-elles être ≥ 10 mL ?",
+ choices:["Pour avoir un volume suffisant pour le rinçage","Pour réduire la pression exercée dans le cathéter — une petite seringue génère une pression élevée qui peut rompre le cathéter","Pour respecter les exigences esthétiques du dispositif","Uniquement pour la chimio, pas pour le NaCl"],
+ correct:1,exp_ok:"Une seringue de petite taille (5 mL) génère une pression interne très élevée avec le moindre geste. Cette pression peut rompre le cathéter intraveineux. Une seringue ≥ 10 mL dilue mécaniquement la pression.",exp_err:"La règle ≥ 10 mL s'applique à TOUTES les injections sur CIP, y compris le NaCl.",rule:"<strong>Seringues ≥ 10 mL. Toujours. Même pour le NaCl.</strong>",xp:12},
+
+{cat:"Technique",q:"Dans quel sens positionne-t-on le biseau de l'aiguille de Huber lors de la ponction ?",
+ choices:["Face à la peau (vers le bas)","Vers le haut (comme une IV classique)","À l'opposé du cathéter sortant de la chambre","Dans le sens du flux de perfusion"],
+ correct:2,exp_ok:"Le biseau est orienté à l'opposé du cathéter. Cette orientation réduit le risque de traumatisme sur le septum et optimise le flux dans la chambre.",exp_err:"L'orientation du biseau est une règle technique précise du protocole CLB — biseau opposé au cathéter.",rule:"<strong>Biseau à l'opposé du cathéter.</strong>",xp:10},
+
+{cat:"Technique",q:"Jusqu'où doit-on enfoncer l'aiguille de Huber ?",
+ choices:["Jusqu'à sentir la résistance du septum","À moitié — pour ne pas perforer le fond de la chambre","Jusqu'à la butée de l'aiguille — pas plus, pas moins","Jusqu'à l'apparition du reflux sanguin"],
+ correct:2,exp_ok:"Jusqu'à la butée : cela garantit que l'aiguille est entièrement dans la chambre. S'arrêter avant la butée laisse l'aiguille dans le septum ou le tissu sous-cutané.",exp_err:"On ne s'arrête pas à la résistance (c'est le septum) ni au reflux. La butée est l'indicateur de positionnement correct.",rule:"<strong>Ponction jusqu'à la butée. Toujours.</strong>",xp:12},
+
+{cat:"EPI — Tenue IDE",q:"Quelle est la tenue complète obligatoire pour l'IDE lors de la pose d'une aiguille de Huber ?",
+ choices:["Masque + gants stériles — suffisant pour un soin stérile","Masque + gants stériles + surblouse uniquement","Tenue propre + charlotte + masque + surblouse (si indiqué) + gants stériles","Masque + tablier uniquement — la charlotte est facultative"],
+ correct:2,exp_ok:"Tenue complète IDE : tenue professionnelle propre + charlotte/calot (obligatoire, cheveux = source de contamination) + masque chirurgical + surblouse/tablier à usage unique (obligatoire en HAD, recommandé si patient aplasique ou immunodéprimé) + gants stériles lors de la pose.",exp_err:"La charlotte est obligatoire, pas optionnelle. Elle prévient la chute de cheveux sur le champ stérile. La surblouse est obligatoire en HAD et au domicile.",rule:"<strong>IDE : tenue propre + charlotte + masque + surblouse (si indiqué) + gants stériles.</strong>",xp:15},
+
+{cat:"Stérilité",q:"Quel type de gants utilise-t-on pour la pose d'une aiguille de Huber ?",
+ choices:["Gants propres non stériles — la peau est désinfectée donc le risque est limité","Gants propres avec solution alcoolique","Gants stériles — c'est un soin stérile","Pas de gants si la technique est irréprochable"],
+ correct:2,exp_ok:"La pose d'aiguille de Huber est un soin stérile. Gants stériles obligatoires, sans exception.",exp_err:"Ce soin n'est pas propre, il est stérile. Les gants propres ne suffisent pas.",rule:"<strong>Soin stérile = gants stériles obligatoires.</strong>",xp:12},
+
+{cat:"Masques",q:"Les masques sont-ils obligatoires pendant la pose d'une aiguille de Huber ?",
+ choices:["Uniquement pour l'IDE — le patient n'a pas à en porter","Oui, pour l'IDE ET le patient pendant tout le soin","Non — l'antisepsie cutanée suffit comme protection","Uniquement pour les patients immunodéprimés"],
+ correct:1,exp_ok:"2 masques obligatoires : IDE + patient. La chambre est un accès veineux central — les bactéries aéroportées peuvent coloniser le site lors des manipulations.",exp_err:"Le patient doit aussi porter un masque. Son expiration peut contaminer le site de ponction.",rule:"<strong>IDE + patient = 2 masques. Obligatoires pendant tout le soin.</strong>",xp:10},
+
+{cat:"Reflux sanguin",q:"Que signifie l'absence de reflux sanguin après la ponction ?",
+ choices:["Que la chambre est en bonne position — le reflux n'est pas toujours présent","Que l'injection peut être tentée prudemment pour tester la perméabilité","Qu'il ne faut pas utiliser la chambre avant investigation (position aiguille, thrombose, obstruction)","Que la chambre est thrombosée et doit être signalée au chirurgien immédiatement"],
+ correct:2,exp_ok:"Absence de reflux = ne pas utiliser. Tenter un repositionnement (bras levé, toux), vérifier la position de l'aiguille, changer la position du patient. Si persistance → médecin.",exp_err:"Injecter sans reflux expose à un risque d'extravasation. Jamais d'injection sans reflux confirmé.",rule:"<strong>Pas de reflux = pas d'injection. Investiguer.</strong>",xp:15},
+
+{cat:"Rinçage pulsé",q:"En quoi consiste la technique de rinçage pulsé (push-pause) ?",
+ choices:["Un rinçage continu à débit rapide — plus efficace qu'un débit lent","Un rinçage en alternant injections brèves et pauses courtes, créant des turbulences qui nettoient les parois du cathéter","Un rinçage avec héparine en push unique","Un rinçage de 2 mL suffit si le reflux était bon"],
+ correct:1,exp_ok:"Le rinçage pulsé crée des turbulences mécaniques à l'intérieur du cathéter qui éliminent les dépôts de fibrine et de résidus. Un débit continu est laminaire et moins efficace.",exp_err:"Le volume de rinçage recommandé est 10 mL. La technique pulsée est précisément recommandée pour son efficacité mécanique.",rule:"<strong>Rinçage pulsé = push-pause avec ≥ 10 mL NaCl. Plus efficace que le continu.</strong>",xp:12},
+
+{cat:"Durée aiguille",q:"Quelle est la durée maximale de maintien d'une aiguille de Huber en place ?",
+ choices:["3 jours — risque infectieux élevé au-delà","5 jours","7 jours (certains protocoles 8 jours)","14 jours si le pansement est intact et sans signe local"],
+ correct:2,exp_ok:"7 jours maximum pour l'aiguille en place (Centre Léon Bérard, réseau AURA). Le pansement est refait à chaque changement d'aiguille.",exp_err:"14 jours serait dangereux — le risque infectieux augmente considérablement au-delà de 7 jours.",rule:"<strong>Aiguille de Huber : maximum 7 jours.</strong>",xp:10},
+
+{cat:"Pansement",q:"Combien de pansements sont posés lors de la fixation de l'aiguille de Huber ?",
+ choices:["1 seul — sur le site de ponction","2 — un sur le site de ponction, un sur la connexion PAC/prolongateur","3 — site, connexion et autour du prolongateur","1 suffisant si le premier est de grande taille"],
+ correct:1,exp_ok:"2 pansements occlusifs : 1 sur le site de ponction (aiguille) et 1 sur la connexion PAC/prolongateur. La connexion est une porte d'entrée critique.",exp_err:"Oublier le pansement sur la connexion est une erreur fréquente. Les deux sont obligatoires.",rule:"<strong>2 pansements : site + connexion PAC/prolongateur.</strong>",xp:10},
+
+{cat:"Boucle de sécurité",q:"À quoi sert la boucle de sécurité réalisée sur le prolongateur ?",
+ choices:["À identifier le circuit de perfusion parmi plusieurs lignes","À absorber une traction accidentelle avant qu'elle ne déplace l'aiguille dans la chambre","À stériliser l'extrémité quand non utilisée","C'est optionnel selon les préférences du service"],
+ correct:1,exp_ok:"La boucle de sécurité est un mécanisme mécanique de protection. Si quelqu'un tire accidentellement sur le prolongateur, la boucle se tend d'abord, absorbant la traction avant que l'aiguille ne soit déplacée.",exp_err:"La boucle de sécurité n'est pas optionnelle. Elle fait partie du protocole.",rule:"<strong>Boucle de sécurité = protection mécanique contre la traction accidentelle.</strong>",xp:10},
+
+{cat:"Désinfection",q:"Sur une peau visiblement propre, comment réalisez-vous la désinfection cutanée avant ponction de la CIP ?",
+ choices:["Savon antiseptique → rinçage → séchage → antiseptique","Antiseptique directement (Chloraprep® ou chlorhexidine alcoolique 2%), friction 30 secondes, séchage spontané","Alcool 70° en friction circulaire","3 passages d'alcool iodé, séchage entre chaque"],
+ correct:1,exp_ok:"Sur peau propre : antiseptique directement avec friction 30 secondes + séchage spontané. La détersion préalable n'est nécessaire qu'en cas de peau visiblement souillée.",exp_err:"L'étape détersion-rinçage n'est requise que sur peau souillée. Sur peau propre, elle est inutile et fait perdre du temps.",rule:"<strong>Peau propre = antiseptique direct + 30 sec + séchage spontané.</strong>",xp:12},
+
+{cat:"Traçabilité",q:"Où doit-on tracer la pose d'une aiguille de Huber ?",
+ choices:["Uniquement dans le dossier infirmier informatisé","Dans le dossier infirmier ET dans le carnet de suivi patient","Dans le carnet patient uniquement — le dossier n'est pas requis pour ce soin","Dans le dossier médical, pas infirmier"],
+ correct:1,exp_ok:"Double traçabilité obligatoire : dossier infirmier (état cutané, reflux, type aiguille, date) ET carnet de suivi patient (le carnet accompagne le patient hors de l'établissement).",exp_err:"Un seul des deux ne suffit pas. La double traçabilité est spécifique aux CIP.",rule:"<strong>Dossier infirmier + carnet de suivi patient. Les deux obligatoires.</strong>",xp:10},
+
+{cat:"Extravasation",q:"Pendant une perfusion sur chambre implantable, le patient signale une douleur et vous constatez un gonflement autour du site. Que faites-vous en premier ?",
+ choices:["Augmenter le débit pour 'chasser' le liquide infiltré","Arrêter immédiatement la perfusion mais maintenir l'aiguille en place pour aspirer, puis appeler le médecin","Retirer l'aiguille immédiatement et comprimer","Ralentir le débit de moitié et surveiller 30 minutes"],
+ correct:1,exp_ok:"Extravasation : STOP perfusion immédiatement + conserver l'aiguille en place pour aspirer le produit (3-5 mL) avant toute intervention. Appel médecin. En cas de chimiothérapie : protocole extravasation spécifique d'urgence.",exp_err:"Retirer l'aiguille en premier empêche d'aspirer le produit infiltré. Augmenter le débit aggraverait l'extravasation.",rule:"<strong>Extravasation : STOP + conserver aiguille + aspirer + médecin. Ne pas retirer d'abord.</strong>",xp:15},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE SURVIE — Questions pièges
+══════════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+{cat:"Piège — EPI",
+ q:"Vous arrivez dans la chambre du patient et réalisez que vous avez oublié votre charlotte. Le patient est prêt et vous avez déjà préparé le matériel. Vous ?",
+ choices:["Démarrez le soin — la charlotte est recommandée mais pas obligatoire, l'essentiel est le masque et les gants stériles","Attachez vos cheveux avec un élastique — cela remplace la charlotte","Retournez chercher une charlotte — elle est obligatoire pour éviter la contamination du champ stérile par des cheveux","Demandez au patient de tourner la tête pour éviter que vos cheveux tombent sur le site"],
+ correct:2,exp_ok:"La charlotte est obligatoire pour la pose d'aiguille de Huber. Les cheveux (même propres) sont une source de contamination bactérienne du champ stérile. Un élastique ne remplace pas une charlotte car les cheveux restent exposés et peuvent tomber. Retourner en chercher une prend 30 secondes et évite un risque infectieux réel sur un accès veineux central.",exp_err:"L'élastique ne retient pas les cheveux courts ou les mèches. La charlotte est l'EPI dédié à cet usage, irremplaçable.",rule:"<strong>Charlotte obligatoire. Pas de remplacement par un élastique. Retourner en chercher une.</strong>",xp:20},
+
+{cat:"Piège — EPI",
+ q:"Vous arrivez dans la chambre et réalisez que vous avez oublié votre charlotte. Le patient est prêt, le matériel est préparé. Vous ?",
+ choices:["Démarrez le soin — la charlotte est recommandée mais pas indispensable si le masque est bien porté","Attachez vos cheveux avec un élastique — cela remplace la charlotte","Retournez chercher une charlotte — elle est obligatoire pour éviter la contamination du champ stérile","Demandez au patient de tourner la tête pour éviter que vos cheveux tombent sur le site"],
+ correct:2,exp_ok:"La charlotte est obligatoire lors de la pose d'aiguille de Huber. Les cheveux sont une source de contamination bactérienne du champ stérile, même propres. Un élastique ne remplace pas une charlotte. Retourner en chercher une prend 30 secondes et protège un accès veineux central.",exp_err:"Un élastique ne retient pas les cheveux courts ni les mèches. La charlotte est l'EPI spécifique, irremplaçable pour cet usage.",rule:"<strong>Charlotte = obligatoire. Pas de remplacement par un élastique.</strong>",xp:20},
+
+{cat:"Piège — Aiguille",
+ q:"L'équipe a oublié de commander des aiguilles de Huber. Vous avez une urgence. Un collègue dit 'prend une aiguille 21G classique, c'est la même chose'. Vous ?",
+ choices:["Utilisez l'aiguille 21G — en urgence, la règle peut s'adapter","Utilisez l'aiguille 21G mais aspirez délicatement pour éviter le carrotage","Refusez catégoriquement — une aiguille à biseau classique carotte le septum, crée des fragments qui migrent dans la circulation et détériore la chambre irrémédiablement","Utilisez l'aiguille 21G uniquement pour un prélèvement sanguin, pas pour une injection"],
+ correct:2,exp_ok:"Jamais d'aiguille à biseau classique sur une chambre implantable. Le biseau classique découpe des carrottes de silicone qui migrent dans le cathéter et la circulation. La chambre est définitivement détériorée. Il n'existe aucune urgence qui justifie ce geste.",exp_err:"L'urgence ne justifie pas une technique qui détruit le dispositif. La chambre implantable est posée chirurgicalement et irremplaçable à court terme.",rule:"<strong>Biseau classique = carrotage du septum = destruction de la chambre. Jamais, même en urgence.</strong>",xp:25},
+
+{cat:"Piège — Seringue",
+ q:"Vous n'avez que des seringues de 5 mL. Vous en connectez deux en série pour avoir 10 mL. Est-ce acceptable ?",
+ choices:["Oui — 2 × 5 mL = 10 mL, le volume est équivalent","Non — la pression exercée par une seringue de 5 mL reste élevée même avec deux connectées en série","Oui si vous injectez très lentement pour compenser","Oui uniquement pour le rinçage, pas pour les médicaments"],
+ correct:1,exp_ok:"La pression dépend du diamètre du piston, pas du volume total. Une seringue de 5 mL génère une pression beaucoup plus élevée qu'une de 10 mL pour la même force exercée. Deux seringues de 5 mL connectées ne changent pas ce paramètre.",exp_err:"Ce n'est pas une question de volume mais de pression par unité de surface du piston. La règle ≥ 10 mL est liée à la mécanique des seringues.",rule:"<strong>Une seringue ≥ 10 mL par ses dimensions physiques. Pas deux petites seringues connectées.</strong>",xp:25},
+
+{cat:"Piège — Reflux",
+ q:"Vous obtenez un reflux sanguin faible — quelques gouttes de sang à l'aspiration. Votre collègue dit 'c'est suffisant, la chambre est en place'. Vous ?",
+ choices:["Acceptez — un reflux même faible confirme la position","Injectez doucement pour voir si ça passe","Ne pas utiliser la chambre — un reflux insuffisant ou douteux nécessite une investigation avant toute injection","Essayez deux fois encore puis utilisez si le reflux reste faible"],
+ correct:2,exp_ok:"Le reflux doit être franc et visible dans le prolongateur. Un reflux faible ou douteux peut indiquer une obstruction partielle, une fibrine sur l'embout, ou une malposition de l'aiguille. Utiliser la chambre avec un reflux douteux expose à l'extravasation.",exp_err:"'Quelques gouttes' n'est pas un reflux valide. La chambre doit être investiguée avant utilisation.",rule:"<strong>Reflux douteux = ne pas utiliser + investigation.</strong>",xp:20},
+
+{cat:"Piège — Rinçage",
+ q:"Après la chimiothérapie, vous rincez la chambre avec 5 mL de NaCl en débit continu. Un médecin passe et valide votre soin. Est-ce correct ?",
+ choices:["Oui — le médecin a validé, vous êtes couvert","Oui si le reflux était bon et que le patient ne se plaint pas","Non — le rinçage doit être pulsé (push-pause) avec ≥ 10 mL. Un rinçage continu de 5 mL est insuffisant","Oui uniquement après la chimio — le volume de rinçage augmente après autres produits"],
+ correct:2,exp_ok:"La validation du médecin ne change pas les recommandations techniques. Le rinçage doit être pulsé (push-pause) avec ≥ 10 mL (ou 2×10 mL après produits visqueux comme la chimio). 5 mL continu est insuffisant.",exp_err:"La responsabilité infirmière sur les techniques de soin est indépendante de la validation médicale. Un médecin peut valider un soin sans avoir vu tous les détails techniques.",rule:"<strong>Rinçage pulsé ≥ 10 mL. 5 mL continu est insuffisant même validé.</strong>",xp:20},
+
+{cat:"Piège — Stérilité",
+ q:"Vous êtes en gants stériles et votre téléphone professionnel sonne. Vous décrochez rapidement avec un gant stérile. Ensuite vous continuez le soin. C'est ?",
+ choices:["Acceptable si vous n'avez touché que l'écran tactile","Acceptable si vous utilisez ensuite un gel antiseptique sur le gant","Inacceptable — tout contact avec un objet non stérile impose le changement de gants stériles","Acceptable car le téléphone professionnel est désinfecté quotidiennement"],
+ correct:2,exp_ok:"Tout contact avec un objet non stérile (téléphone, table, vêtement...) contamine les gants stériles irrémédiablement. Il faut retirer les gants stériles, effectuer une SHA, et reprendre avec une nouvelle paire.",exp_err:"Un gel antiseptique sur un gant stérile contaminé ne restaure pas la stérilité. La stérilité d'un gant est binaire : stérile ou non stérile.",rule:"<strong>Contact non stérile = gants stériles retirés + SHA + nouvelle paire. Sans exception.</strong>",xp:20},
+
+{cat:"Piège — Masque patient",
+ q:"Le patient dit qu'il a du mal à respirer avec le masque à cause de son cancer. Il vous demande de le poser sans masque 'juste pour cette fois'. Vous ?",
+ choices:["Acceptez — sa qualité de vie prime et son immunodépression est déjà une protection","Posez le masque sous son menton — compromis raisonnable","Expliquez l'enjeu infectieux et proposez un masque plus léger (type chirurgical fin), mais maintenez le masque — la chambre est un accès veineux central direct","Acceptez uniquement pour le prélèvement, pas pour la perfusion de chimio"],
+ correct:2,exp_ok:"Le masque est obligatoire pour protéger le site de ponction — le patient immunodéprimé est précisément celui qui risque le plus une infection de chambre implantable grave. Proposer un masque plus léger est un compromis raisonnable, mais le retirer totalement n'est pas acceptable.",exp_err:"L'immunodépression augmente le risque infectieux, elle ne le réduit pas. Le masque protège le site, pas seulement l'IDE.",rule:"<strong>Patient immunodéprimé = ENCORE PLUS impératif de porter le masque.</strong>",xp:20},
+
+{cat:"Piège — Durée",
+ q:"L'aiguille est en place depuis 6 jours. La prochaine chimio est dans 2 jours. Votre chef dit 'laisse-la, on la changera après la chimio dans 2 jours'. Vous ?",
+ choices:["Acceptez — 8 jours c'est parfois toléré dans certains protocoles","Acceptez uniquement si le site est parfait et le patient asymptomatique","Changez l'aiguille maintenant — à J6 le changement est déjà prévu, attendre J8 dépasse la limite recommandée de 7 jours","Attendez et renforcez la surveillance quotidienne"],
+ correct:2,exp_ok:"À J6, le changement est prévu dans 24h selon le protocole des 7 jours. Attendre J8 pour la chimio dépasse la recommandation. Il faut changer maintenant et reposer une aiguille propre pour la chimio.",exp_err:"L'ordre hiérarchique ne prime pas sur une recommandation de sécurité. La limite de 7 jours est basée sur le risque infectieux documenté.",rule:"<strong>J6 = prévoir le changement pour J7. Ne pas attendre J8 pour convenance organisationnelle.</strong>",xp:20},
+
+{cat:"Piège — Extravasation",
+ q:"Pendant la chimio, le patient se plaint d'une légère brûlure mais vous ne voyez aucun gonflement. Vous continuez en surveillant de près. C'est ?",
+ choices:["Correct — sans gonflement visible, la brûlure peut être une réaction locale bénigne à la chimio","Correct si vous ralentissez le débit de moitié","Incorrect — toute douleur ou brûlure pendant la chimio doit entraîner l'arrêt immédiat et le signalement au médecin. L'extravasation peut être indolore initialement mais une brûlure est un signe d'alerte sérieux","Correct — attendre le gonflement pour confirmer l'extravasation avant d'agir"],
+ correct:2,exp_ok:"La brûlure pendant une chimio est un signe d'alerte de première intention pour l'extravasation. On arrête, on n'attend pas le gonflement. En oncologie, une extravasation de cytotoxique non traitée rapidement peut provoquer une nécrose tissulaire grave et irréversible.",exp_err:"Attendre le gonflement fait perdre un temps précieux. Avec les cytotoxiques, l'extravasation doit être gérée dans les premières minutes.",rule:"<strong>Brûlure pendant chimio = STOP + médecin. Ne pas attendre le gonflement.</strong>",xp:25},
+
+{cat:"Piège — Rinçage héparine",
+ q:"Pour rincer la chambre en fin de soin, votre collègue vous donne une seringue d'héparine. Vous l'utilisez. Est-ce systématiquement correct ?",
+ choices:["Oui — l'héparine est le standard pour maintenir la perméabilité des chambres","Oui si le patient n'est pas sous anticoagulants","Pas nécessairement — le rinçage au sérum physiologique (NaCl 0,9%) en technique pulsée est généralement suffisant. L'héparine de verrou n'est pas systématique et dépend du protocole institutionnel","Oui uniquement entre deux chimios, pas pour le dernier rinçage"],
+ correct:2,exp_ok:"Les dernières recommandations (SF2H) montrent que le rinçage pulsé avec NaCl 0,9% seul est aussi efficace que l'héparine pour maintenir la perméabilité dans la plupart des cas. L'héparine de verrou est une décision institutionnelle ou médicale, pas un automatisme.",exp_err:"L'héparine n'est pas anodine : risque de TIH (thrombopénie induite à l'héparine), interactions médicamenteuses. Elle ne s'utilise pas systématiquement.",rule:"<strong>Rinçage NaCl pulsé = généralement suffisant. Héparine de verrou = protocole institutionnel, pas systématique.</strong>",xp:20},
+
+{cat:"Piège — Abandon de chambre",
+ q:"Une chambre non utilisée depuis 6 semaines. Vous souhaitez la reutiliser. Le reflux est absent. Votre chef dit 'injectez du NaCl avec une petite seringue de 5 mL en force pour déboucher'. Vous ?",
+ choices:["Obéissez — votre chef est responsable","Tentez avec 5 mL puis signalez si ça ne passe pas","Refusez — une seringue < 10 mL est contre-indiquée et forcer peut rompre le cathéter ou déclencher une embolie. Signalez l'absence de reflux au médecin","Essayez une seringue de 10 mL à la place"],
+ correct:2,exp_ok:"Forcer sur une chambre sans reflux est dangereux : risque de rupture du cathéter par hyperpression et d'embolie. La désobstruction est une décision médicale qui peut nécessiter un fibrinolytique (Urokinase, sur prescription). Une seringue < 10 mL est formellement contre-indiquée.",exp_err:"L'ordre d'un chef ne vous protège pas d'une faute technique. La rupture de cathéter est un accident grave que vous auriez dû prévenir.",rule:"<strong>Chambre sans reflux = ne pas forcer + médecin + éventuel fibrinolytique sur prescription.</strong>",xp:25},
+];
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn',questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0,lives=3;
+let timerInterval=null,timeLeft=30,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  if(mode==='fiche'){
+    buildFicheProtocol();
+    showScreen('s-fiche');
+    showSection('s-mat',document.querySelector('.fiche-nav-btn'));
+    return;
+  }
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;
+  if(mode==='learn'){
+    questions=[...PROTOCOL];
+    document.getElementById('tb-mode').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='exam'){
+    questions=[...Q_EXAM].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='📝 Examen';
+    document.getElementById('lives-pill').style.display='none';
+  } else {
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  }
+  showScreen('s-quiz');loadQ();
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi];answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn').classList.remove('show');
+  if(mode==='learn')loadStep(q);
+  else loadStdQ(q);
+  startTimer();
+}
+
+function loadStep(step){
+  const total=questions.length;
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon;
+  document.getElementById('ctx-sub').textContent=`Étape ${step.num} sur ${total}`;
+  document.getElementById('ctx-title').textContent=step.title;
+  document.getElementById('ctx-body').innerHTML=`${step.what}<br><span style="display:block;margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);font-style:normal">⚠️ ${step.why}</span>`;
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${total}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg?`<div class="q-illus">${step.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=`<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:8px">✅ Question de validation :</span>${step.q}`;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step);ch.appendChild(b);
+  });
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};catScores[step.cat].t++;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===total-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${total}`;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return;answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=8*(streak>=3?2:1);xp+=e;catScores[step.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>Règle :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`Bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>Règle :</strong> ${step.rule}`);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function loadStdQ(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML='';
+  document.getElementById('q-text').innerHTML=q.q;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q);ch.appendChild(b);
+  });
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  document.getElementById('next-btn').textContent='Suivant →';
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+    if(mode==='learn')showExp('ok','✅','Bonne réponse !',q.exp_ok,q.rule);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),correct:q.choices[q.correct]});
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}
+    if(mode==='learn')showExp('err','❌','Erreur',q.exp_err,q.rule);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='exam')dur=30;
+  else if(mode==='survival')dur=25;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--pu)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=8){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        updateUI();document.getElementById('next-btn').classList.add('show');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:62px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={learn:'📚 Apprentissage — 17 étapes dans l\'ordre',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#f5f3ff',tc:'#7c3aed',brd:'#c4b5fd'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'}
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+  const bd=document.getElementById('bd-items');bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,5).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--text3)">→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+  const cons=[];
+  if(mode==='learn'&&note>=16)cons.push("📝 Protocole bien assimilé. Passez au mode Examen pour tester sans aide.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Excellent ! Le mode Survie vous attend — des pièges cliniques graves conçus pour tromper les experts.");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise experte de la chambre implantable. Vous êtes prêt(e) pour l'IFSI et la pratique clinique.");
+  if(note<10)cons.push("📖 Commencez par la Fiche Protocole pour lire toutes les étapes, puis repassez en Apprentissage.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'au 18/20. Concentrez-vous sur les règles absolues : biseau tangentiel, seringues ≥ 10 mL, reflux obligatoire, rinçage pulsé.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=0.6)return;
+    if(cat.includes('Aiguille')||cat.includes('biseau'))cons.push("💉 Mémoriser : aiguille à biseau tangentiel UNIQUEMENT. Jamais une IV/IM classique.");
+    if(cat.includes('Seringue')||cat.includes('mL'))cons.push("🪤 Seringues ≥ 10 mL sans exception. La pression, pas le volume.");
+    if(cat.includes('Reflux')||cat.includes('reflux'))cons.push("🔴 Reflux sanguin = condition sine qua non avant toute injection. Pas de reflux = pas d'injection.");
+    if(cat.includes('Rinçage')||cat.includes('pulsé'))cons.push("💧 Rinçage pulsé (push-pause) ≥ 10 mL. Pas continu.");
+    if(cat.includes('Stéril')||cat.includes('Masque'))cons.push("🧤 Soin stérile = gants stériles + masques IDE et patient + champ stérile fenestré.");
+  });
+  if(!cons.length)cons.push("🎯 Excellent niveau sur tous les axes. Vous maîtrisez ce protocole critique.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

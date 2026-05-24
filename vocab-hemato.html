@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Vocabulaire Hématologie</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --crim:#be123c;--crim-d:#881337;--crim-l:#fff1f2;--crim-m:#fda4af;--crim-b:#ffe4e6;
+  --blue:#1d4ed8;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --purple:#7c3aed;--purple-l:#f5f3ff;--purple-m:#c4b5fd;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,.08),0 2px 8px rgba(15,23,42,.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);flex-shrink:0}
+.logo-row{display:flex;align-items:center;gap:9px}
+.logo-box{width:34px;height:34px;background:var(--crim-d);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:800;color:var(--crim-d)}
+.logo-sub{font-size:10px;color:var(--text3)}
+.top-badge{background:var(--crim-l);color:var(--crim);border:1px solid var(--crim-m);border-radius:20px;padding:4px 11px;font-size:11px;font-weight:700}
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:24px 18px 48px;animation:fadeUp .4s ease}
+.w-hero{margin-bottom:20px;padding:20px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px}
+.w-hero-icon{font-size:40px;flex-shrink:0}
+.w-hero-title{font-size:20px;font-weight:800;color:var(--crim-d);margin-bottom:4px}
+.w-hero-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:20px;font-weight:800;color:var(--crim-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.notice-box{background:var(--crim-b);border:1px solid var(--crim-m);border-radius:10px;padding:10px 14px;margin-bottom:18px;display:flex;align-items:flex-start;gap:9px}
+.notice-box span{font-size:15px;flex-shrink:0}
+.notice-box p{font-size:11px;color:#881337;line-height:1.6}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px;margin-bottom:20px}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:14px;padding:18px 14px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--crim));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mode-card:hover,.mode-card.sel{border-color:var(--mc,var(--crim));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{background:var(--mb,var(--crim-l))}
+.mc-icon{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:800;color:var(--text);display:block;margin-bottom:4px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--text2);line-height:1.55}
+.launch-btn{width:100%;padding:15px;background:var(--crim-d);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(136,19,55,.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--crim);transform:translateY(-2px)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow);flex-shrink:0}
+.tb-logo{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tb-logo-box{width:26px;height:26px;background:var(--crim-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tb-logo-text{font-size:12px;font-weight:800;color:var(--crim-d)}
+.tb-mode{background:var(--crim-l);color:var(--crim);border:1px solid var(--crim-m);border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--crim-d),var(--crim));transition:width .5s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.timer-wrap{position:relative;width:38px;height:38px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--crim);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+.quiz-body{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.term-card{background:linear-gradient(135deg,var(--crim-d),#9f1239);border-radius:15px;padding:20px;margin-bottom:14px;color:white;box-shadow:0 4px 18px rgba(136,19,55,.28);animation:fadeUp .3s ease}
+.tc-label{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:4px}
+.tc-term{font-size:22px;font-weight:800;margin-bottom:6px;letter-spacing:-.01em}
+.tc-cat{display:inline-flex;align-items:center;background:rgba(255,255,255,.15);border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;color:rgba(255,255,255,.85)}
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:15px;padding:18px 20px;margin-bottom:12px;box-shadow:var(--shadow);animation:fadeUp .3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.q-cat-pill{display:flex;align-items:center;gap:5px;background:var(--crim-l);border:1px solid var(--crim-m);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcp-dot{width:5px;height:5px;border-radius:50%;background:var(--crim)}
+.qcp-txt{font-size:9px;font-weight:700;color:var(--crim);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-text{font-family:'Lora',serif;font-size:16px;line-height:1.65;color:var(--text)}
+.q-text strong{color:var(--crim-d);font-style:italic}
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--crim);background:var(--crim-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all .2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake .4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.c-tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+.exp-box{display:none;border-radius:13px;padding:14px 16px;margin-bottom:12px;animation:fadeUp .3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:7px;margin-bottom:8px}
+.exp-ico{font-size:17px}
+.exp-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:12.5px;color:var(--text2);line-height:1.7}
+.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:9px;background:var(--white);border-left:3px solid var(--crim);border-radius:0 8px 8px 0;padding:8px 12px;font-size:11.5px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--crim-d)}
+.next-btn{width:100%;padding:12px;background:var(--crim-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(136,19,55,.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--crim)}
+.quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp .9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+.frappe-input-wrap{margin-bottom:12px}
+.frappe-input{width:100%;padding:14px 16px;font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;border:2px solid var(--border2);border-radius:11px;background:var(--white);color:var(--text);outline:none;transition:border-color .2s}
+.frappe-input:focus{border-color:var(--crim)}
+.frappe-input.ok{border-color:var(--green);background:var(--green-l)}
+.frappe-input.err{border-color:var(--red);background:var(--red-l);animation:shake .4s ease}
+.frappe-hint{font-size:11px;color:var(--text3);margin-top:6px}
+.frappe-hint span{color:var(--crim);font-weight:700}
+.frappe-submit{width:100%;padding:12px;background:var(--crim-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.frappe-submit:hover{background:var(--crim)}
+.construct-zone{background:var(--white);border:2px dashed var(--border2);border-radius:13px;padding:16px;margin-bottom:14px;min-height:62px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;transition:border-color .2s}
+.construct-zone.has-content{border-color:var(--crim);border-style:solid}
+.construct-zone.correct{border-color:var(--green);border-style:solid;background:var(--green-l)}
+.construct-zone.wrong{border-color:var(--red);border-style:solid;background:var(--red-l);animation:shake .4s ease}
+.cz-placeholder{color:var(--text3);font-size:12px;font-style:italic}
+.cz-piece{background:var(--crim-d);color:white;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:800;cursor:pointer;transition:all .15s;border:none;font-family:'Plus Jakarta Sans',sans-serif}
+.cz-piece:hover{background:var(--crim);transform:scale(.97)}
+.pieces-bank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.piece-btn{background:var(--white);border:2px solid var(--border2);border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;color:var(--text)}
+.piece-btn:hover:not(:disabled){border-color:var(--crim);background:var(--crim-l);color:var(--crim-d)}
+.piece-btn.used{opacity:.25;cursor:not-allowed}
+.construct-submit{width:100%;padding:12px;background:var(--crim-d);border:none;border-radius:10px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s;margin-bottom:12px}
+.construct-submit:hover{background:var(--crim)}
+.construct-submit:disabled{opacity:.5;cursor:not-allowed}
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:20px 18px 44px;animation:fadeUp .5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:18px;padding:26px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--crim-d),var(--crim))}
+.res-grade{font-size:50px;margin-bottom:7px;display:block}
+.res-score{font-size:48px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:12px;color:var(--text2);margin-bottom:13px}
+.res-mention{display:inline-flex;align-items:center;gap:6px;border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:9px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:2px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--shadow)}
+.bd-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.bd-item{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:90px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:11px;font-weight:800;width:28px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.errors-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:9px}
+.error-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:13px;padding:14px;margin-bottom:13px}
+.conseils-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:9px}
+.conseil-item{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:6px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all .2s}
+.rb.p{background:var(--crim-d);color:white;box-shadow:0 2px 10px rgba(136,19,55,.3)}.rb.p:hover{background:var(--crim)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--crim-m)}
+</style>
+</head>
+<body>
+
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🩸</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Vocabulaire médical</div></div>
+    </div>
+    <div class="top-badge">🩸 Hématologie</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🩸</div>
+      <div>
+        <div class="w-hero-title">Vocabulaire — Hématologie</div>
+        <div class="w-hero-desc">70 termes couvrant toute l'hématologie clinique : lignées sanguines, NFS et valeurs normales, anémies, hémostase, coagulation, hémopathies malignes, anticoagulants, transfusion et maladies constitutionnelles. Indispensable pour vos stages et examens IFSI.</div>
+      </div>
+    </div>
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">70</div><div class="ws-lbl">Termes</div></div>
+      <div class="ws-item"><div class="ws-val">4</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">11</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+    <div class="notice-box">
+      <span>ℹ️</span>
+      <p><strong>Contenu validé — Recommandations HAS/SFH/SFAR 2024.</strong> Ce module est basé sur les référentiels officiels en vigueur. Il ne remplace pas les protocoles institutionnels de votre établissement de stage. En cas de doute clinique, référez-vous toujours à votre encadrant.</p>
+    </div>
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#be123c;--mb:#fff1f2" onclick="selectMode('qcm',this)">
+        <span class="mc-icon">🧠</span><span class="mc-name">QCM</span>
+        <div class="mc-diff" style="background:#fff1f2;border-color:#fda4af;color:#be123c">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">4 propositions, définition → terme ou terme → définition. Chrono 20s. Explication après chaque réponse.</div>
+      </button>
+      <button class="mode-card" style="--mc:#059669;--mb:#ecfdf5" onclick="selectMode('frappe',this)">
+        <span class="mc-icon">⌨️</span><span class="mc-name">Mode Frappe</span>
+        <div class="mc-diff" style="background:#ecfdf5;border-color:#6ee7b7;color:#059669">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Lisez la définition et tapez le terme de mémoire. Tolérance orthographique intelligente. Chrono 25s.</div>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('construction',this)">
+        <span class="mc-icon">🔩</span><span class="mc-name">Construction</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐ Visuel</div>
+        <div class="mc-desc">Assemblez préfixes, racines et suffixes pour former le terme hématologique. Apprenez la logique des mots.</div>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('examen',this)">
+        <span class="mc-icon">📋</span><span class="mc-name">Mode Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐⭐ Chrono</div>
+        <div class="mc-desc">70 termes en conditions d'examen. Chrono 15s strict, aucune aide, rapport détaillé à la fin.</div>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🩸</div><span class="tb-logo-text">Hémato</span></div>
+    <div class="tb-mode" id="tb-mode">QCM</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">1/70</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">20</div>
+      </div>
+    </div>
+  </div>
+  <div class="quiz-body" id="quiz-body"></div>
+  <div class="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🩸</div>
+      <div><div class="logo-name">Rapport — Vocabulaire Hématologie</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--crim)">0s</div><div class="rs-lbl">Tps/Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-correct" style="color:var(--green)">0</div><div class="rs-lbl">Corrects</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Termes à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <div style="grid-column:1/-1;text-align:center;font-size:10px;color:var(--text3);padding:2px 0 6px">Contenu basé sur recommandations HAS/SFH/SFAR 2024 — NurseSimPro</div>
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TERMES = [
+// ── LIGNÉES SANGUINES ET HÉMATOPOÏÈSE (8) ──
+{id:`hematopoiese`,t:`Hématopoïèse`,cat:`Hématopoïèse`,
+ def:`Processus de formation et de différenciation de toutes les cellules sanguines à partir de cellules souches hématopoïétiques pluripotentes localisées dans la moelle osseuse rouge. Produit environ 200 milliards de cellules par jour chez l'adulte.`,
+ ex:`La chimiothérapie myéloablative détruit l'hématopoïèse. La greffe de moelle osseuse (allogreffe) vise à restaurer une hématopoïèse normale à partir des cellules souches du donneur.`,
+ mnemo:`hémato- (sang) + -poïèse (fabrication) = fabrication du sang dans la moelle`},
+{id:`erythrocyte`,t:`Érythrocyte (globule rouge)`,cat:`Hématopoïèse`,
+ def:`Cellule anucléée en forme de disque biconcave, contenant l'hémoglobine. Durée de vie : 120 jours. Valeurs normales : H 4,5–6,0 T/L / F 4,0–5,5 T/L. Produit par érythropoïèse sous stimulation de l'EPO (érythropoïétine).`,
+ ex:`NFS : globules rouges diminués dans les anémies, augmentés dans la polyglobulie. VGM (volume moyen) permet d'orienter le type d'anémie.`,
+ mnemo:`érythro- (rouge) + -cyte (cellule) = cellule rouge = globule rouge`},
+{id:`leucocyte`,t:`Leucocyte (globule blanc)`,cat:`Hématopoïèse`,
+ def:`Cellule nucléée du sang impliquée dans la défense immunitaire. Valeurs normales totales : 4–10 G/L. Comprend les polynucléaires (neutrophiles, éosinophiles, basophiles), les lymphocytes et les monocytes.`,
+ ex:`Hyperleucocytose > 10 G/L : évoque infection, inflammation, leucémie. Leucopénie < 4 G/L : évoque aplasie, chimiothérapie, infection virale.`,
+ mnemo:`leuco- (blanc) + -cyte (cellule) = globule blanc, cellule de défense`},
+{id:`plaquette`,t:`Plaquette (thrombocyte)`,cat:`Hématopoïèse`,
+ def:`Petit fragment cellulaire anucléé issu des mégacaryocytes. Rôle clé dans l'hémostase primaire (agrégation plaquettaire). Valeurs normales : 150–400 G/L. Durée de vie : 7–10 jours.`,
+ ex:`Thrombopénie < 150 G/L : risque hémorragique. < 50 G/L : risque hémorragique spontané. < 20 G/L : risque hémorragique grave. Thrombocytose > 400 G/L : évoque réactionnel ou thrombocytémie essentielle.`,
+ mnemo:`thrombo- (caillot) + -cyte (cellule) = cellule qui forme les caillots`},
+{id:`hemoglobine`,t:`Hémoglobine`,cat:`Hématopoïèse`,
+ def:`Protéine intra-érythrocytaire constituée de 4 chaînes polypeptidiques portant chacune un groupement hème (fer ferreux + porphyrine). Transporte l'O2 et le CO2. Valeurs normales : H 13–17 g/dL / F 12–16 g/dL.`,
+ ex:`Hb < 13 g/dL (H) ou < 12 g/dL (F) = anémie (OMS). Seuil transfusionnel usuel : Hb < 7 g/dL (sujet sain), < 8 g/dL (coronarien ou IC chronique).`,
+ mnemo:`hémoglobine = protéine rouge qui transporte l'O2 dans les globules rouges`},
+{id:`reticulocyte`,t:`Réticulocyte`,cat:`Hématopoïèse`,
+ def:`Globule rouge immature encore porteur de résidus d'ARN ribosomique, pendant 1–2 jours avant la maturation finale. Marqueur de l'activité érythropoïétique médullaire. Valeurs normales : 25–100 G/L (0,5–2% des GR).`,
+ ex:`Anémie avec réticulocytes augmentés (> 120 G/L) = anémie régénérative (hémorragie, hémolyse). Réticulocytes normaux ou bas = anémie arégénérative (carence, aplasie, insuffisance rénale).`,
+ mnemo:`réticulo- (filet, réseau visible à la coloration) = GR jeune encore actif`},
+{id:`neutrophile`,t:`Polynucléaire neutrophile`,cat:`Hématopoïèse`,
+ def:`Principal globule blanc circulant (50–70% des leucocytes), première ligne de défense contre les bactéries. Durée de vie sanguine : 6–12h. Valeurs normales : 1,8–7,5 G/L. Phagocytose et destruction des bactéries.`,
+ ex:`Neutropénie profonde < 0,5 G/L (aplasie) : risque infectieux majeur (sepsis à bactéries et champignons). Précautions d'isolement protecteur. Attention à la fièvre (moindre signe = urgence).`,
+ mnemo:`neutro- (ni acide ni basique, coloration neutre) + phile (qui aime) = le phagocyte neutre`},
+{id:`lymphocyte`,t:`Lymphocyte`,cat:`Hématopoïèse`,
+ def:`Cellule de l'immunité adaptative. Lymphocytes B (immunité humorale, production d'anticorps) et T (immunité cellulaire, cytotoxicité). Valeurs normales : 1,5–4,0 G/L (20–40% des leucocytes).`,
+ ex:`Lymphopénie sévère : déficit immunitaire (VIH/SIDA, corticothérapie). Lymphocytose : infections virales (MNI, CMV), leucémie lymphoïde chronique (LLC).`,
+ mnemo:`lympho- (eau claire, lymphe) + -cyte (cellule) = cellule de l'immunité adaptative`},
+// ── NFS ET VALEURS NORMALES (5) ──
+{id:`nfs`,t:`NFS (Numération Formule Sanguine)`,cat:`NFS & Valeurs`,
+ def:`Examen biologique de référence analysant les trois lignées cellulaires sanguines : GR (avec Hb, Ht, VGM, CCMH, TCMH, réticulocytes), GB (avec formule leucocytaire différentielle) et plaquettes. Tube EDTA (violet/mauve).`,
+ ex:`Délai : résultats en 1–2h en urgence. Interprétation systématique : GR → Hb → VGM (microcytaire < 80, normocytaire 80–100, macrocytaire > 100 fL) → réticulocytes → GB → formule → plaquettes.`,
+ mnemo:`NFS = numération = compter les cellules + formule = les classer`},
+{id:`vgm`,t:`VGM (Volume Globulaire Moyen)`,cat:`NFS & Valeurs`,
+ def:`Volume moyen des globules rouges exprimé en femtolitres (fL). Normale : 80–100 fL. Oriente le type d'anémie : microcytaire (< 80 fL), normocytaire (80–100 fL), macrocytaire (> 100 fL).`,
+ ex:`VGM < 80 = microcytose → carence en fer, thalassémie, inflammation. VGM > 100 = macrocytose → carence en B12/folates, hypothyroïdie, alcoolisme, médicaments (hydroxyurée, méthotrexate).`,
+ mnemo:`VGM = taille des GR : micro (petit) / normo (normal) / macro (grand)`},
+{id:`ccmh`,t:`CCMH (Concentration Corpusculaire Moyenne en Hémoglobine)`,cat:`NFS & Valeurs`,
+ def:`Concentration d'hémoglobine dans les globules rouges. Normale : 32–36 g/dL. Diminuée dans l'anémie ferriprive (hypochromie). Augmentée dans la sphérocytose héréditaire. Terme associé : hypochromie (CCMH < 32).`,
+ ex:`Anémie microcytaire hypochrome : VGM bas + CCMH basse = carence martiale ou thalassémie. La CCMH oriente vers la cause de la microcytose.`,
+ mnemo:`CCMH = concentration d'Hb dans les GR : hypo (peu) / normo / hyper`},
+{id:`formule_leuco`,t:`Formule leucocytaire`,cat:`NFS & Valeurs`,
+ def:`Répartition différentielle des leucocytes en pourcentage et valeurs absolues. Neutrophiles 50–70%, Lymphocytes 20–40%, Monocytes 2–10%, Éosinophiles 1–5%, Basophiles < 1%. Toujours interpréter en valeurs absolues (pas en %).`,
+ ex:`Neutrophilie > 7,5 G/L : infection bactérienne, inflammation, corticoïdes. Éosinophilie > 0,5 G/L : allergie, parasitose, médicaments. Monocytose > 1 G/L : tuberculose, endocardite, leucémie myélomonocytaire.`,
+ mnemo:`Formule leuco = qui est qui parmi les GB : N, L, M, E, B`},
+{id:`frottis`,t:`Frottis sanguin`,cat:`NFS & Valeurs`,
+ def:`Examen microscopique direct du sang sur lame après coloration de May-Grünwald-Giemsa (MGG). Analyse la morphologie des cellules (forme des GR, aspect des leucocytes, plaquettes). Indiqué en cas d'anomalie à la NFS automatisée.`,
+ ex:`Frottis : drépanocytes (falciformation), schizocytes (microangiopathie), blastes circulants (leucémie), corps de Howell-Jolly (asplénie), cellules de Sézary (lymphome T).`,
+ mnemo:`Frottis = photo microscopique du sang = voir les anomalies de forme`},
+// ── ANÉMIES (8) ──
+{id:`anemie`,t:`Anémie`,cat:`Anémies`,
+ def:`Diminution du taux d'hémoglobine en dessous des valeurs normales définies par l'OMS : Hb < 13 g/dL chez l'homme adulte et < 12 g/dL chez la femme adulte. Symptômes : fatigue, dyspnée d'effort, tachycardie, pâleur conjonctivale.`,
+ ex:`Seuil transfusionnel HAS : Hb < 7 g/dL (sujet sans comorbidité cardiovasculaire), < 8 g/dL (coronarien ou insuffisance cardiaque chronique), < 10 g/dL (syndrome coronarien aigu). Toujours chercher la cause.`,
+ mnemo:`an- (sans) + -émie (sang) = manque d'hémoglobine dans le sang`},
+{id:`anemie_fer`,t:`Anémie ferriprive`,cat:`Anémies`,
+ def:`Anémie par carence en fer, la plus fréquente dans le monde. Profil : microcytaire (VGM < 80 fL), hypochrome (CCMH < 32 g/dL), ferritine basse (< 15 µg/L), saturation de la transferrine basse. Causes : saignement chronique, carence d'apport, malabsorption.`,
+ ex:`Traitement : fer oral (sulfate ferreux) à distance des repas pendant 3–6 mois. Surveillance : réticulocytes à J7-J10, puis NFS à 1 mois. Fer IV si intolérance orale, malabsorption ou urgence.`,
+ mnemo:`Ferriprive = privé de fer → GR petits et pâles = micro + hypochrome`},
+{id:`anemie_b12`,t:`Anémie par carence en vitamine B12`,cat:`Anémies`,
+ def:`Anémie macrocytaire arégénérative par déficit en vitamine B12 (cobalamine). Cause principale en France : maladie de Biermer (gastrite auto-immune, anticorps anti-facteur intrinsèque). Autres causes : végétalisme strict, gastrectomie, malabsorption.`,
+ ex:`Signes associés : glossite atrophique, troubles neurologiques (syndrome de sclérose combinée de la moelle). Traitement Biermer : vitamine B12 IM à vie (cyanocobalamine). Dosage B12 sérique avant traitement.`,
+ mnemo:`B12 = macrocytose + glossite + neurologie = carence cofacteur synthèse ADN`},
+{id:`anemie_folates`,t:`Anémie par carence en folates`,cat:`Anémies`,
+ def:`Anémie macrocytaire arégénérative par carence en acide folique (vitamine B9). Causes : malnutrition, alcoolisme, grossesse (besoins augmentés), malabsorption (maladie coeliaque), médicaments (méthotrexate, triméthoprime).`,
+ ex:`Supplémentation folates en péri-conception (4 semaines avant à 8 semaines après) : 0,4 mg/j pour prévenir les malformations du tube neural (spina bifida). Dosage folates érythrocytaires (plus fiable que sérique).`,
+ mnemo:`Folates = B9 = grossesse + alcoolisme + GR gros sans nerfs (≠ B12)`},
+{id:`anemie_hemo`,t:`Anémie hémolytique`,cat:`Anémies`,
+ def:`Anémie par destruction prématurée des globules rouges (durée de vie < 120 jours). Profil régénératif (réticulocytes > 120 G/L). Signes : ictère (bilirubine libre augmentée), splénomégalie, LDH augmentées, haptoglobine effondrée.`,
+ ex:`Causes : corpusculaires (drépanocytose, thalassémie, sphérocytose, déficit G6PD) ou extra-corpusculaires (AHAI, MAT, paludisme, médicaments).`,
+ mnemo:`hémo- (sang) + -lyse (destruction) = destruction des GR avant leur temps`},
+{id:`aplasie`,t:`Aplasie médullaire`,cat:`Anémies`,
+ def:`Insuffisance de production des trois lignées sanguines par atteinte des cellules souches hématopoïétiques. Pancytopénie périphérique : anémie + neutropénie + thrombopénie. Causes : auto-immune (idiopathique), toxique (chimiothérapie, médicaments), constitutionnelle (Fanconi).`,
+ ex:`Aplasie sévère : PNN < 0,5 G/L + plaquettes < 20 G/L + réticulocytes < 20 G/L. Urgence : isolement protecteur strict, transfusions irradiées et déleucocytées, antifongiques prophylactiques.`,
+ mnemo:`a- (sans) + -plasie (formation) = moelle qui ne fabrique plus rien`},
+{id:`thalassemie`,t:`Thalassémie`,cat:`Anémies`,
+ def:`Hémoglobinopathie héréditaire autosomique récessive par déficit de synthèse des chaînes de globine (α ou β). Anémie microcytaire hypochrome avec ferritine normale ou élevée (différencie de la carence en fer). Fréquente autour du bassin méditerranéen.`,
+ ex:`Trait thalassémique (hétérozygote) : microcytose isolée asymptomatique. Thalassémie majeure homozygote β : anémie sévère nécessitant transfusions régulières et chélation du fer.`,
+ mnemo:`thalasso- (mer Méditerranée) + -émie = maladie du sang des peuples méditerranéens`},
+{id:`drepano`,t:`Drépanocytose`,cat:`Anémies`,
+ def:`Hémoglobinopathie autosomique récessive (HbS homozygote SS) par mutation du gène β-globine. Falciformation des GR en hypoxie → occlusions vasculaires et hémolyse chronique. Première maladie génétique en France.`,
+ ex:`Crise vaso-occlusive (CVO) : douleurs osseuses intenses, fièvre. Traitement urgence : hydratation IV, antalgiques (palier adapté à l'EVA), O2 si SpO2 < 95%, réchauffement. Prévention : hydroxyurée, vaccination, pénicilline V.`,
+ mnemo:`drépanocyte = drepanon (faucille en grec) = GR en forme de faucille`},
+// ── HÉMOSTASE ET COAGULATION (8) ──
+{id:`hemostase_prim`,t:`Hémostase primaire`,cat:`Hémostase`,
+ def:`Première étape de l'arrêt d'un saignement : adhésion des plaquettes à la brèche vasculaire (via le facteur Willebrand), puis activation et agrégation plaquettaire formant le clou plaquettaire (thrombus blanc). Évaluée par le temps de saignement (TS) et le taux de plaquettes.`,
+ ex:`Déficit d'hémostase primaire : purpura pétéchial, saignements muqueux (épistaxis, gingivorragie), hémorragies immédiates après coupure. Causes : thrombopénie, maladie de Willebrand, médicaments antiplaquettaires.`,
+ mnemo:`Hémostase primaire = plaquettes + paroi vasculaire = bouchon rapide`},
+{id:`coagulation`,t:`Coagulation (hémostase secondaire)`,cat:`Hémostase`,
+ def:`Cascade enzymatique aboutissant à la formation de la fibrine stabilisant le clou plaquettaire. Deux voies : extrinsèque (facteur tissulaire → facteur VII → Xa) et intrinsèque (XII → XI → IX → VIII → Xa). Voie commune : Xa + V → thrombine → fibrinogène → fibrine.`,
+ ex:`Exploration : TP/INR (voie extrinsèque et commune), TCA (voie intrinsèque et commune), fibrinogène. Bilan préopératoire obligatoire.`,
+ mnemo:`Coagulation = cascade = dominos → fibrine = filet solidifiant le bouchon`},
+{id:`tp`,t:`TP (Taux de Prothrombine)`,cat:`Hémostase`,
+ def:`Temps de coagulation par voie extrinsèque exprimé en pourcentage de la normale. Valeur normale : 70–100% (INR < 1,2). Explore les facteurs II, V, VII et X. Prolongé dans les insuffisances hépatiques, carences en vitamine K, traitement AVK.`,
+ ex:`TP < 50% : risque hémorragique chirurgical. Surveillance AVK : objectif INR 2–3 pour FANV, EP/TVP. Attention : le TP et l'INR mesurent la même chose, mais l'INR est standardisé entre laboratoires.`,
+ mnemo:`TP = % de coagulation par voie externe = baisse avec AVK et insuffisance hépatique`},
+{id:`tca`,t:`TCA (Temps de Céphaline Activée)`,cat:`Hémostase`,
+ def:`Temps de coagulation par voie intrinsèque, exprimé en secondes. Résultat en rapport TCA patient/TCA témoin. Normal ≤ 1,2. Explore les facteurs XII, XI, IX, VIII, X, V, II. Prolongé sous héparine non fractionnée (HNF), hémophilie A et B, déficit en facteurs.`,
+ ex:`Surveillance HNF (héparine non fractionnée) : objectif TCA ratio 2–3 (traitement curatif). Mesure toutes les 6h initialement. L'héparinémie anti-Xa est préférée pour les HBPM (pas de surveillance TCA).`,
+ mnemo:`TCA = temps de coagulation voie interne = allongé sous héparine et dans l'hémophilie`},
+{id:`fibrinogene`,t:`Fibrinogène`,cat:`Hémostase`,
+ def:`Protéine plasmatique (facteur I) synthétisée par le foie, précurseur de la fibrine. Valeur normale : 2–4 g/L. Réactif de phase aiguë (augmenté dans l'inflammation). Diminué dans la CIVD, insuffisance hépatique, afibrinogénémie congénitale.`,
+ ex:`CIVD : fibrinogène < 1,5 g/L + TP bas + TCA allongé + plaquettes basses + D-dimères élevés = consommation massive des facteurs de coagulation. Urgence thérapeutique.`,
+ mnemo:`Fibrinogène = le ciment liquide qui se transforme en filet de fibrine solide`},
+{id:`civd`,t:`CIVD (Coagulation Intravasculaire Disséminée)`,cat:`Hémostase`,
+ def:`Syndrome de coagulopathie de consommation caractérisé par une activation systémique incontrôlée de la coagulation, entraînant thromboses microvasculaires et saignements simultanés. Score ISTH : plaquettes + TP allongé + fibrinogène bas + D-dimères élevés.`,
+ ex:`Causes déclenchantes : sepsis grave (principale cause), obstétrique (HELLP, hématome rétroplacentaire), traumatisme sévère, leucémie aiguë M3, cancer. Traitement : traiter la cause + PFC + plaquettes selon le tableau clinique.`,
+ mnemo:`CIVD = le système de coagulation s'emballe et se détruit lui-même = thrombose ET saignement`},
+{id:`willebrand`,t:`Maladie de Willebrand`,cat:`Hémostase`,
+ def:`Maladie hémorragique constitutionnelle la plus fréquente (1% de la population). Déficit quantitatif (type 1 et 3) ou qualitatif (type 2) du facteur Willebrand (vWF). Transmission autosomique dominante (types 1 et 2). Saignements cutanéo-muqueux.`,
+ ex:`Signes : épistaxis récidivantes, gingivorragie, ménorragies, saignement prolongé après extraction dentaire. TS allongé, TCA allongé (type 2B et 3). Traitement : desmopressine (DDAVP) ou concentrés de vWF.`,
+ mnemo:`Willebrand = protéine de la colle plaquettaire → déficit = saignements muqueux`},
+{id:`hemophilie`,t:`Hémophilie`,cat:`Hémostase`,
+ def:`Maladie hémorragique constitutionnelle liée à l'X par déficit en facteur VIII (hémophilie A, la plus fréquente) ou facteur IX (hémophilie B). Transmission récessive liée à l'X : les garçons sont atteints, les filles sont conductrices. Sévère si activité < 1%.`,
+ ex:`Signes : hémarthroses (genou, coude, cheville), hématomes profonds. TCA allongé, TP normal. Traitement : facteur VIII ou IX recombinant à la demande ou en prophylaxie. Port d'une carte de soins.`,
+ mnemo:`Hémophilie A = facteur VIII / B = IX = liée au chromosome X = garçons atteints`},
+// ── ANTICOAGULANTS (7) ──
+{id:`heparine`,t:`Héparine Non Fractionnée (HNF)`,cat:`Anticoagulants`,
+ def:`Anticoagulant par potentialisation de l'antithrombine III (AT III), inhibant la thrombine et le facteur Xa. Voie IV ou SC. Demi-vie courte (1–2h IV). Surveillance par TCA (ratio 2–3). Antidote : sulfate de protamine. Risque TIH.`,
+ ex:`Utilisée en insuffisance rénale sévère (DFG < 30 mL/min) car non excrétée par le rein contrairement aux HBPM. Surveiller les plaquettes de J4 à J14 pour dépister une TIH.`,
+ mnemo:`HNF = héparine classique IV = action rapide + surveillance TCA + antidote protamine`},
+{id:`hbpm`,t:`HBPM (Héparine de Bas Poids Moléculaire)`,cat:`Anticoagulants`,
+ def:`Anticoagulant inhibant principalement le facteur Xa. Administration SC, une ou deux injections par jour. Dose prophylaxie : énoxaparine 4000 UI/j. Dose curative : énoxaparine 100 UI/kg x2/j (ou 150 UI/kg x1/j). Pas de surveillance du TCA.`,
+ ex:`Surveillance plaquettes pour TIH de J4 à J14. Contre-indiquée si DFG < 30 mL/min (accumulation) → utiliser HNF. Injection SC : seringue préremplie, pli cutané maintenu, rotation des sites.`,
+ mnemo:`HBPM = héparine SC plus simple que HNF, anti-Xa, pas de TCA, CI si IR sévère`},
+{id:`avk`,t:`AVK (Anti-Vitamine K)`,cat:`Anticoagulants`,
+ def:`Anticoagulants oraux inhibant la synthèse des facteurs vitamino-K dépendants (II, VII, IX, X, protéines C et S). Délai d'action : 2–3 jours. Durée d'action longue. Surveillance obligatoire par INR. Cible INR 2–3 (FA, TVP/EP). Antidote : vitamine K + PPSB.`,
+ ex:`Nombreuses interactions médicamenteuses et alimentaires (aliments riches en vitamine K : choux, épinards, persil). INR instable : éducation du patient. Surdosage asymptomatique > 5 : arrêt + vitamine K orale.`,
+ mnemo:`AVK = warfarine/acénocoumarol = surveillance INR obligatoire + interactions +++ + antidote vitamine K`},
+{id:`aod`,t:`AOD (Anticoagulants Oraux Directs)`,cat:`Anticoagulants`,
+ def:`Inhibiteurs directs du facteur Xa (rivaroxaban, apixaban, edoxaban) ou de la thrombine (dabigatran). Pas de surveillance biologique systématique en routine. Dose fixe. Indiqués en FA non valvulaire, TVP/EP. Préférés aux AVK (recommandations ESC 2023) sauf prothèse valvulaire mécanique.`,
+ ex:`Points IDE : ne jamais oublier une dose de dabigatran sans avis médical (courte demi-vie). Antidotes : idarucizumab (dabigatran), andexanet alfa (anti-Xa). CI si DFG < 15 mL/min selon le médicament.`,
+ mnemo:`AOD = nouveaux anticoagulants oraux, dose fixe, pas d'INR, antidotes disponibles`},
+{id:`tih`,t:`Thrombopénie Induite à l'Héparine (TIH)`,cat:`Anticoagulants`,
+ def:`Complication immunologique grave de l'héparine (HNF > HBPM) avec formation d'anticorps anti-héparine/PF4. Survient entre J4 et J14. Paradoxale : thrombopénie (< 50% du taux initial) + risque thromboembolique majeur (artériel et veineux).`,
+ ex:`Conduite IDE : surveillance NFS et plaquettes de J4 à J14. Chute plaquettes > 50% → arrêt immédiat héparine → appel médecin. Bilan TIH (anticorps anti-PF4). Relais par anticoagulant non héparinique (fondaparinux, argatroban).`,
+ mnemo:`TIH = J4-J14, plaquettes chutent de plus de 50% MAIS risque de CAILLOTS = paradoxe`},
+{id:`thrombolyse_hemato`,t:`Thrombolyse (fibrinolyse)`,cat:`Anticoagulants`,
+ def:`Traitement dissolvant les thrombus formés par activation du plasminogène en plasmine. Agents : altéplase (rt-PA), ténectéplase. Indications : EP grave avec choc ou instabilité hémodynamique, AVC ischémique (< 4h30), IDM STEMI sans accès à la coronarographie.`,
+ ex:`Contre-indications absolues : AVC hémorragique, chirurgie récente < 10 jours, hémorragie active. Surveillance IDE post-thrombolyse : signes hémorragiques, TA toutes les 15 min, état neurologique.`,
+ mnemo:`Thrombolyse = dissoudre le caillot = urgence vitale, nombreuses contre-indications`},
+{id:`antiplaquettaire`,t:`Antiplaquettaires`,cat:`Anticoagulants`,
+ def:`Médicaments inhibant l'agrégation plaquettaire. Aspirine (inhibition COX-1 irréversible, 75–100 mg/j), clopidogrel/ticagrélor/prasugrel (inhibition récepteur P2Y12). Indiqués après syndrome coronarien aigu, stent coronaire, AVC ischémique/AIT.`,
+ ex:`Double antiplaquettaire (DAPT) : aspirine + inhibiteur P2Y12, pendant 12 mois après SCA ou stent actif. Risque hémorragique à surveiller. Ne pas arrêter brutalement (risque de thrombose de stent).`,
+ mnemo:`Anti-plaquettaires = aspirine + clopidogrel = prévention des caillots artériels (≠ anticoagulants = veines)`},
+// ── HÉMOPATHIES MALIGNES (8) ──
+{id:`lam`,t:`Leucémie Aiguë Myéloïde (LAM)`,cat:`Hémopathies malignes`,
+ def:`Prolifération clonale maligne de précurseurs myéloïdes bloqués à un stade de différenciation (blastes ≥ 20% dans la moelle). Touche surtout l'adulte > 60 ans. Présentation : anémie, infections (neutropénie), saignements (thrombopénie), douleurs osseuses.`,
+ ex:`LAM3 (promyélocytaire) = urgence absolue : risque de CIVD fulminante. Traitement : acide tout-trans rétinoïque (ATRA) + arsenic. NFS : blastes circulants, pancytopénie. Isolement protecteur strict.`,
+ mnemo:`LAM = blastes myéloïdes > 20% moelle = adulte âgé + infections + saignements`},
+{id:`lal`,t:`Leucémie Aiguë Lymphoïde (LAL)`,cat:`Hémopathies malignes`,
+ def:`Prolifération clonale de précurseurs lymphoïdes (lymphoblastes B ou T). Première leucémie aiguë de l'enfant (80%). Chez l'adulte : mauvais pronostic. Blastes dans le sang et la moelle. Infiltration possible du SNC (méningite leucémique).`,
+ ex:`LAL de l'enfant : 90% de guérison avec chimiothérapie intensive. LAL B avec chromosome Philadelphie (BCR-ABL) : nécessite imatinib + chimio. Ponction lombaire diagnostique et prophylactique (méningite leucémique).`,
+ mnemo:`LAL = lymphoblastes = enfant (surtout) = bon pronostic chez l'enfant`},
+{id:`llc`,t:`Leucémie Lymphoïde Chronique (LLC)`,cat:`Hémopathies malignes`,
+ def:`Hémopathie la plus fréquente en Occident (sujet > 65 ans). Prolifération clonale de lymphocytes B matures monomorphes d'aspect normal. Découverte souvent fortuite sur NFS (hyperlymphocytose > 5 G/L). Évolution lente dans 80% des cas.`,
+ ex:`Stades de Binet : A (< 3 aires), B (≥ 3 aires), C (anémie ou thrombopénie). Stades A et B asymptomatiques : abstention thérapeutique. Stade C ou symptômes : chimio-immunothérapie (FCR, ibrutinib).`,
+ mnemo:`LLC = lymphocytes B trop nombreux, sujet âgé, souvent asymptomatique longtemps`},
+{id:`lmc`,t:`Leucémie Myéloïde Chronique (LMC)`,cat:`Hémopathies malignes`,
+ def:`Syndrome myéloprolifératif chronique caractérisé par la translocation t(9;22) = chromosome Philadelphie produisant l'oncoprotéine BCR-ABL (tyrosine kinase constitutivement active). Hyperleucocytose avec myélémie. Touche l'adulte de 40–60 ans.`,
+ ex:`Traitement révolutionnaire : imatinib (Glivec) et inhibiteurs de tyrosine kinase → réponse moléculaire complète dans 80% des cas. Ancienne maladie mortelle, maintenant chronique sous traitement.`,
+ mnemo:`LMC = chromosome Philadelphie t(9;22) = BCR-ABL = imatinib = succès thérapeutique`},
+{id:`lymphome_hodgkin`,t:`Lymphome de Hodgkin`,cat:`Hémopathies malignes`,
+ def:`Lymphome B caractérisé histologiquement par la présence de cellules de Reed-Sternberg (grandes cellules binucléées). Touche l'adulte jeune (20–40 ans) avec distribution bimodale. Présentation : adénopathies cervicales indolores, signes B (fièvre, sueurs nocturnes, amaigrissement > 10%).`,
+ ex:`Lymphome hodgkinien très chimio-sensible : taux de guérison > 85%. Traitement : ABVD (adriamycine, bléomycine, vinblastine, dacarbazine). Bilan : scanner corps entier + TEP-scan.`,
+ mnemo:`Hodgkin = Reed-Sternberg + adulte jeune + cou + guérison possible à 85%`},
+{id:`lymphome_nhd`,t:`Lymphomes non hodgkiniens (LNH)`,cat:`Hémopathies malignes`,
+ def:`Groupe hétérogène de lymphomes B ou T sans cellule de Reed-Sternberg. Les plus fréquents : lymphome diffus à grandes cellules B (LDGCB, agressif), lymphome folliculaire (indolent). Présentation variable : adénopathies, splénomégalie, atteinte extra-ganglionnaire.`,
+ ex:`LDGCB : traitement R-CHOP (rituximab + cyclophosphamide + adriamycine + vincristine + prednisone). Rituximab (anti-CD20) : surveillance réactivation VHB, infections opportunistes.`,
+ mnemo:`LNH = tous les lymphomes sans cellule de Reed-Sternberg = groupe hétérogène B ou T`},
+{id:`myelome`,t:`Myélome Multiple (maladie de Kahler)`,cat:`Hémopathies malignes`,
+ def:`Hémopathie maligne plasmocytaire avec infiltration médullaire par des plasmocytes monoclonaux produisant une immunoglobuline monoclonale (pic M). Triade : douleurs osseuses + insuffisance rénale + infections récidivantes.`,
+ ex:`Complications : fractures pathologiques (vertèbres ++), hypercalcémie, insuffisance rénale (chaînes légères), infections. Diagnostic : électrophorèse des protéines sériques + myélogramme (≥ 10% de plasmocytes).`,
+ mnemo:`Myélome = plasmocytes fous + pic M + os fragiles + reins + infections`},
+{id:`polyglobulie`,t:`Polyglobulie de Vaquez (PV)`,cat:`Hémopathies malignes`,
+ def:`Syndrome myéloprolifératif par mutation JAK2 V617F (présente dans > 95% des cas) entraînant une prolifération autonome de la lignée érythrocytaire. Hb > 16,5 g/dL (H) ou > 16 g/dL (F) + hématocrite élevé. Risque thrombotique majeur.`,
+ ex:`Complications : thromboses artérielles et veineuses (AVC, IDM, Budd-Chiari). Traitement : saignées (hématocrite cible < 45%), aspirine 100 mg/j, hydroxyurée si haut risque. Recherche JAK2 V617F.`,
+ mnemo:`Polyglobulie Vaquez = JAK2 + trop de GR + risque de caillots + saignées`},
+// ── TRANSFUSION (6) ──
+{id:`cgr`,t:`CGR (Culot Globulaire Rouge)`,cat:`Transfusion`,
+ def:`Produit sanguin labile (PSL) contenant les globules rouges d'un don de sang. Volume : 200–350 mL. Conservation : +2°C à +6°C jusqu'à 42 jours. Déleucocytés systématiquement en France depuis 1998. Compatibilité ABO + Rhésus obligatoire.`,
+ ex:`Indications : anémie mal tolérée ou Hb < 7 g/dL (< 8 si coronarien/IC). Un CGR augmente l'Hb d'environ 1 g/dL. Durée max de transfusion : 4h par poche.`,
+ mnemo:`CGR = globules rouges concentrés = brique standard de la transfusion`},
+{id:`pfc`,t:`PFC (Plasma Frais Congelé)`,cat:`Transfusion`,
+ def:`Produit sanguin labile contenant tous les facteurs de coagulation. Conservation congelée à −30°C, durée de vie 1 an. Indications : hémorragie grave avec coagulopathie (CIVD, surdosage AVK avec hémorragie grave, déficit multiple en facteurs). Volume : 200–300 mL.`,
+ ex:`Compatibilité ABO requise. Décongélation 20–30 min à 37°C. Transfusion immédiate après décongélation. 1 PFC augmente modestement le TP. Pas indiqué pour corriger seul un INR élevé sans hémorragie.`,
+ mnemo:`PFC = tout le plasma = tous les facteurs de coagulation = CIVD ou hémorragie grave`},
+{id:`cp`,t:`Concentré Plaquettaire (CP)`,cat:`Transfusion`,
+ def:`Produit sanguin labile contenant les plaquettes. Conservation à +22°C sous agitation pendant 5 jours. Deux types : concentré de plaquettes standard (CPS) et d'aphérèse (CPA, d'un seul donneur). 1 CPA ou 1 pool de CPS augmente les plaquettes d'environ 30–50 G/L.`,
+ ex:`Indications : thrombopénie < 20 G/L (prophylactique) ou < 50 G/L avec saignement ou geste invasif. Compatibilité ABO préférable. Utilisation rapide après délivrance (à température ambiante).`,
+ mnemo:`CP = plaquettes concentrées = 5 jours de conservation + agitation constante`},
+{id:`incompatibilite_abo`,t:`Incompatibilité ABO transfusionnelle`,cat:`Transfusion`,
+ def:`Accident transfusionnel grave par transfusion d'un groupe incompatible. Réaction hémolytique intravasculaire aiguë par anticorps naturels anti-A et/ou anti-B : hémolyse massive, CIVD, insuffisance rénale aiguë, choc, décès possible. Première cause d'accident transfusionnel grave en France.`,
+ ex:`Prévention : CUPT (Contrôle Ultime Pré-Transfusionnel) obligatoire, 3 étapes : vérification identité + concordance groupe + Beth-Vincent. En cas de réaction : arrêt immédiat + NaCl 0,9% + médecin + conserver poche + hémovigilance.`,
+ mnemo:`Incompatibilité ABO = erreur d'identité = hémolyse aiguë = mort possible = CUPT obligatoire`},
+{id:`rai_hemato`,t:`RAI (Recherche d'Agglutinines Irrégulières)`,cat:`Transfusion`,
+ def:`Dépistage d'anticorps irréguliers acquis (anti-érythrocytaires non ABO) dans le sérum du patient. Obligatoire avant toute transfusion. Valide 72 heures. Positive : anticorps détecté → nécessite phénotypage et sélection d'unités compatibles.`,
+ ex:`RAI positive : contacter l'EFS pour un CGR phénotypé compatible. Délai de transfusion allongé. Causes de RAI positive : transfusion antérieure, grossesse, allo-immunisation.`,
+ mnemo:`RAI = vérification des anticorps anti-GR avant transfusion = valide 72h`},
+{id:`hemovigi`,t:`Hémovigilance`,cat:`Transfusion`,
+ def:`Ensemble de procédures de surveillance organisées de la chaîne transfusionnelle, de la collecte jusqu'au suivi du receveur. Déclaration obligatoire de tout incident transfusionnel à l'ANSM et à l'EFS. Grade 1 (mineur) à 4 (décès).`,
+ ex:`Déclaration infirmière : formulaire de déclaration d'effet indésirable receveur (EIR) dans les 8h pour les grades 3–4, dans les 48h pour les grades 1–2. Conserver la poche et la tubulure pour analyse.`,
+ mnemo:`Hémovigilance = veiller (vigilance) sur le sang (hémo) = sécurité transfusionnelle`},
+// ── MARQUEURS BIOLOGIQUES (4) ──
+{id:`ferritine`,t:`Ferritine`,cat:`Marqueurs biologiques`,
+ def:`Protéine de stockage du fer intracellulaire. Reflet des réserves en fer. Valeurs normales : H 30–300 µg/L / F 15–150 µg/L. Basse (< 15 µg/L) = carence martiale certaine. Élevée = surcharge en fer (hémochromatose), inflammation (réactif de phase aiguë), cytolyse hépatique.`,
+ ex:`Ferritine normale ou haute ne signifie pas absence de carence en fer en cas d'inflammation (syndrome inflammatoire peut masquer une ferritine basse). Associer à la CRP pour interprétation correcte.`,
+ mnemo:`Ferritine = coffre-fort du fer = basse → carence, haute → surcharge ou inflammation`},
+{id:`epo`,t:`EPO (Érythropoïétine)`,cat:`Marqueurs biologiques`,
+ def:`Hormone glycoprotéique produite par les cellules péritubulaires rénales en réponse à l'hypoxie. Stimule l'érythropoïèse en augmentant la prolifération et la différenciation des précurseurs érythroïdes. Diminuée dans l'insuffisance rénale chronique (anémie de l'IRC).`,
+ ex:`EPO recombinante (darbopoïétine, érythropoïétine) : traitement de l'anémie de l'IRC, anémie chimio-induite. Dopage sportif détecté par le passeport biologique.`,
+ mnemo:`EPO = signal de la moelle pour fabriquer des GR = manque si les reins sont malades`},
+{id:`ldh`,t:`LDH (Lactate Déshydrogénase)`,cat:`Marqueurs biologiques`,
+ def:`Enzyme intracellulaire ubiquitaire libérée lors de la lyse cellulaire. Marqueur non spécifique d'hémolyse, de nécrose tissulaire, de prolifération tumorale. Élevée dans : anémies hémolytiques, lymphomes, leucémies, IDM, embolie pulmonaire.`,
+ ex:`LDH élevée + bilirubine libre augmentée + haptoglobine effondrée = triade biologique de l'hémolyse. LDH très élevée dans les lymphomes agressifs = facteur pronostique péjoratif.`,
+ mnemo:`LDH = enzyme qui fuit des cellules mortes = marqueur universel de destruction cellulaire`},
+{id:`haptoglobine`,t:`Haptoglobine`,cat:`Marqueurs biologiques`,
+ def:`Protéine plasmatique se liant à l'hémoglobine libre libérée lors de l'hémolyse, pour l'éliminer. Valeurs normales : 0,5–2,0 g/L. Effondrée (< 0,1 g/L) en cas d'hémolyse (consommation par les complexes Hb-haptoglobine). Augmentée dans l'inflammation.`,
+ ex:`Haptoglobine basse + LDH haute + bilirubine libre haute = hémolyse certaine. Haptoglobine normale n'exclut pas une hémolyse modérée ou une inflammation associée.`,
+ mnemo:`Haptoglobine = éponge à Hb libre = s'effondre quand les GR se cassent`},
+// ── RACINES HÉMATOLOGIQUES (6) ──
+{id:`hemato_rac`,t:`Hémato- / Hémo-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque désignant le sang. Racine fondamentale de toute la discipline hématologique.`,
+ ex:`Hématologie, hémoglobine, hémostase, hémorragie, hématurie, hématome, hématologue.`,
+ mnemo:`haima = sang en grec = racine de tout ce qui touche au sang`},
+{id:`cyto_rac`,t:`-Cyte / Cyto-`,cat:`Racines`,
+ def:`Suffixe ou préfixe d'origine grecque désignant la cellule. Utilisé pour nommer toutes les cellules sanguines et les atteintes cellulaires.`,
+ ex:`Érythrocyte (rouge), leucocyte (blanc), thrombocyte (plaquette), lymphocyte, monocyte, granulocyte. Cytopénie (diminution des cellules).`,
+ mnemo:`kytos = cellule creuse en grec → -cyte = toutes les cellules du sang`},
+{id:`penie_rac`,t:`-Pénie`,cat:`Racines`,
+ def:`Suffixe d'origine grecque signifiant manque, déficit. Indique la diminution pathologique d'une lignée cellulaire sanguine.`,
+ ex:`Thrombopénie (plaquettes basses), neutropénie (neutrophiles bas), leucopénie (globules blancs bas), érythropénie, pancytopénie (toutes les lignées basses).`,
+ mnemo:`penia = pauvreté, manque en grec → -pénie = une cellule qui manque`},
+{id:`poiese_rac`,t:`-Poïèse`,cat:`Racines`,
+ def:`Suffixe d'origine grecque désignant la fabrication, la production. Utilisé pour désigner les processus de formation des cellules sanguines.`,
+ ex:`Hématopoïèse (toutes les cellules), érythropoïèse (GR), leucopoïèse (GB), thrombopoïèse (plaquettes), myélopoïèse (lignée myéloïde).`,
+ mnemo:`poiein = faire, fabriquer en grec → -poïèse = usine de fabrication cellulaire`},
+{id:`lyse_rac`,t:`-Lyse / Lytic-`,cat:`Racines`,
+ def:`Suffixe ou adjectif d'origine grecque signifiant destruction, dissolution. Désigne la destruction pathologique de cellules ou de structures biologiques.`,
+ ex:`Hémolyse (destruction des GR), fibrinolyse (dissolution de la fibrine), thrombolyse (dissolution du thrombus), cytolyse, bactériolyse.`,
+ mnemo:`lysis = dissolution en grec → -lyse = destruction ou dissolution`},
+{id:`thrombose_rac`,t:`Thrombo-`,cat:`Racines`,
+ def:`Préfixe d'origine grecque désignant le caillot sanguin ou les plaquettes. Utilisé dans les termes relatifs à la coagulation et aux complications thromboemboliques.`,
+ ex:`Thrombose, thrombocyte (plaquette), thrombolyse, thrombopénie, thromboembolie, thrombophlébite.`,
+ mnemo:`thrombos = caillot en grec = tout ce qui touche aux caillots sanguins`},
+];
+
+const CONSTRUCTION_Q = [
+{term:`Hémostase`,def:`Ensemble des mécanismes d'arrêt d'un saignement.`,
+ pieces:[`hémo-`,`pneumo-`,`-stase`,`-lyse`,`-poïèse`],correct:[`hémo-`,`-stase`],
+ meaning:`hémo- (sang) + -stase (arrêt) = arrêt du saignement`},
+{term:`Hémolyse`,def:`Destruction prématurée des globules rouges.`,
+ pieces:[`hémo-`,`thrombo-`,`-lyse`,`-stase`,`-poïèse`],correct:[`hémo-`,`-lyse`],
+ meaning:`hémo- (sang) + -lyse (destruction) = destruction des globules rouges`},
+{term:`Thrombolyse`,def:`Traitement dissolvant un caillot sanguin par activation du plasminogène.`,
+ pieces:[`thrombo-`,`hémo-`,`-lyse`,`-stase`,`-pénie`],correct:[`thrombo-`,`-lyse`],
+ meaning:`thrombo- (caillot) + -lyse (dissolution) = dissolution du caillot`},
+{term:`Thrombopénie`,def:`Diminution pathologique du nombre de plaquettes en dessous de 150 G/L.`,
+ pieces:[`thrombo-`,`hémo-`,`-pénie`,`-lyse`,`-cyte`],correct:[`thrombo-`,`-pénie`],
+ meaning:`thrombo- (plaquette) + -pénie (manque) = manque de plaquettes`},
+{term:`Leucopénie`,def:`Diminution des globules blancs en dessous de 4 G/L.`,
+ pieces:[`leuco-`,`érythro-`,`-pénie`,`-cyte`,`-poïèse`],correct:[`leuco-`,`-pénie`],
+ meaning:`leuco- (blanc) + -pénie (manque) = manque de globules blancs`},
+{term:`Érythrocyte`,def:`Globule rouge, cellule anucléée portant l'hémoglobine.`,
+ pieces:[`érythro-`,`leuco-`,`thrombo-`,`-cyte`,`-pénie`],correct:[`érythro-`,`-cyte`],
+ meaning:`érythro- (rouge) + -cyte (cellule) = cellule rouge`},
+{term:`Hématopoïèse`,def:`Processus de fabrication de toutes les cellules sanguines dans la moelle.`,
+ pieces:[`hémato-`,`thrombo-`,`-poïèse`,`-lyse`,`-stase`],correct:[`hémato-`,`-poïèse`],
+ meaning:`hémato- (sang) + -poïèse (fabrication) = fabrication du sang`},
+{term:`Érythropoïèse`,def:`Production des globules rouges dans la moelle osseuse sous stimulation de l'EPO.`,
+ pieces:[`érythro-`,`leuco-`,`-poïèse`,`-lyse`,`-cyte`],correct:[`érythro-`,`-poïèse`],
+ meaning:`érythro- (rouge) + -poïèse (fabrication) = fabrication des globules rouges`},
+{term:`Pancytopénie`,def:`Diminution simultanée des trois lignées sanguines (GR, GB, plaquettes).`,
+ pieces:[`pan-`,`hémo-`,`-cytopénie`,`-lyse`,`-poïèse`],correct:[`pan-`,`-cytopénie`],
+ meaning:`pan- (tout) + -cytopénie (manque de cellules) = manque de toutes les cellules sanguines`},
+{term:`Fibrinolyse`,def:`Dissolution naturelle ou thérapeutique de la fibrine constituant le caillot.`,
+ pieces:[`fibrino-`,`thrombo-`,`-lyse`,`-stase`,`-pénie`],correct:[`fibrino-`,`-lyse`],
+ meaning:`fibrino- (fibrine) + -lyse (dissolution) = dissolution de la fibrine du caillot`},
+{term:`Leucocyte`,def:`Globule blanc, cellule nucléée impliquée dans la défense immunitaire.`,
+ pieces:[`leuco-`,`érythro-`,`thrombo-`,`-cyte`,`-pénie`],correct:[`leuco-`,`-cyte`],
+ meaning:`leuco- (blanc) + -cyte (cellule) = cellule blanche`},
+{term:`Thrombocyte`,def:`Plaquette sanguine, fragment cellulaire impliqué dans l'hémostase primaire.`,
+ pieces:[`thrombo-`,`leuco-`,`érythro-`,`-cyte`,`-lyse`],correct:[`thrombo-`,`-cyte`],
+ meaning:`thrombo- (caillot) + -cyte (cellule) = cellule qui forme les caillots`},
+];
+
+let mode=`qcm`,questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0;
+let timerInterval=null,timeLeft=20,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+let placed=[];
+
+function selectMode(m,btn){document.querySelectorAll(`.mode-card`).forEach(b=>b.classList.remove(`sel`));btn.classList.add(`sel`);mode=m;}
+function showScreen(id){document.querySelectorAll(`.screen`).forEach(s=>s.classList.remove(`active`));document.getElementById(id).classList.add(`active`);}
+function goWelcome(){clearInterval(timerInterval);showScreen(`s-welcome`);}
+function restart(){launch();}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;totalTime=0;answered=false;catScores={};errors=[];score=100;qi=0;
+  const labels={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Examen`};
+  document.getElementById(`tb-mode`).textContent=labels[mode];
+  if(mode===`qcm`) questions=buildQCM([...TERMES].sort(()=>Math.random()-.5));
+  else if(mode===`frappe`) questions=[...TERMES].sort(()=>Math.random()-.5);
+  else if(mode===`construction`) questions=[...CONSTRUCTION_Q].sort(()=>Math.random()-.5);
+  else questions=buildQCM([...TERMES].sort(()=>Math.random()-.5),true);
+  showScreen(`s-quiz`);loadQ();
+}
+
+function buildQCM(pool,isExam=false){
+  return pool.map(t=>{
+    const flip=Math.random()>.5;
+    const same=TERMES.filter(x=>x.id!==t.id&&x.cat===t.cat);
+    const diff=TERMES.filter(x=>x.id!==t.id&&x.cat!==t.cat);
+    const p3=[...same,...diff].sort(()=>Math.random()-.5).slice(0,3);
+    const choices=[];const ci=Math.floor(Math.random()*4);
+    for(let i=0;i<4;i++){if(i===ci)choices.push(flip?t.t:t.def.substring(0,90)+`…`);else{const d=p3.shift();choices.push(d?(flip?d.t:d.def.substring(0,90)+`…`):`—`);}}
+    return{term:t.t,cat:t.cat,def:t.def,q:flip?`Quel terme correspond à cette définition ?`:`Quelle est la définition de <strong>${t.t}</strong> ?`,questionText:flip?t.def.substring(0,140):null,choices,correct:ci,exp_ok:t.def,mnemo:t.mnemo,xp:isExam?8:10};
+  });
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  answered=false;
+  document.getElementById(`tb-pf`).style.width=(qi/questions.length*100)+`%`;
+  document.getElementById(`tb-ql`).textContent=`${qi+1}/${questions.length}`;
+  if(mode===`qcm`||mode===`examen`)loadQCM();
+  else if(mode===`frappe`)loadFrappe();
+  else loadConstruction();
+  startTimer();
+}
+function nextQ(){qi++;loadQ();}
+
+function loadQCM(){
+  const q=questions[qi];if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  let html=q.questionText
+    ?`<div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.6">${q.questionText}</div><div class="tc-cat">🩸 ${q.cat}</div></div>`
+    :`<div class="term-card"><div class="tc-label">Terme médical</div><div class="tc-term">${q.term}</div><div class="tc-cat">🩸 ${q.cat}</div></div>`;
+  html+=`<div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${q.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">${q.q}</div></div>
+  <div class="choices" id="choices"></div>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  document.getElementById(`quiz-body`).innerHTML=html;
+  const ch=document.getElementById(`choices`);
+  [`A`,`B`,`C`,`D`].forEach((l,i)=>{const b=document.createElement(`button`);b.className=`choice`;b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;b.onclick=()=>answerQCM(i,b,q);ch.appendChild(b);});
+}
+
+function answerQCM(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===q.correct){b.classList.add(`correct`);b.innerHTML+=`<span class="c-tag c">✓</span>`;}else if(i===idx&&!ok){b.classList.add(`wrong`);b.innerHTML+=`<span class="c-tag w">✗</span>`;}});
+  if(ok){correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);if(mode!==`examen`)showExp(`ok`,`✅`,`Correct !`,q.exp_ok,q.mnemo);}
+  else{wrong++;streak=0;score=Math.max(0,score-8);errors.push({term:q.term,def:q.exp_ok.substring(0,80)});if(mode!==`examen`)showExp(`err`,`❌`,`Erreur`,`La bonne réponse : <strong>${q.choices[q.correct]}</strong><br><br>${q.exp_ok.substring(0,120)}`,q.mnemo);}
+  updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadFrappe(){
+  const t=questions[qi];if(!catScores[t.cat])catScores[t.cat]={c:0,t:0};catScores[t.cat].t++;
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition — Quel est ce terme ?</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${t.def}</div><div class="tc-cat">🩸 ${t.cat}</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">${t.cat}</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Tapez le terme médical correspondant :</div></div>
+  <div class="frappe-input-wrap"><input class="frappe-input" id="frappe-inp" type="text" placeholder="Votre réponse…" autocomplete="off" autocorrect="off" spellcheck="false"/><div class="frappe-hint">Indice : <span>${t.mnemo}</span></div></div>
+  <button class="frappe-submit" onclick="checkFrappe()">Valider ↵</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+  const inp=document.getElementById(`frappe-inp`);inp.focus();inp.addEventListener(`keydown`,e=>{if(e.key===`Enter`)checkFrappe();});
+}
+
+function levenshtein(a,b){
+  const m=a.length,n=b.length;
+  const d=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i===0?j:j===0?i:0));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=a[i-1]===b[j-1]?d[i-1][j-1]:1+Math.min(d[i-1][j],d[i][j-1],d[i-1][j-1]);
+  return d[m][n];
+}
+
+function checkFrappe(){
+  if(answered)return;const t=questions[qi];const inp=document.getElementById(`frappe-inp`);const val=inp.value.trim();if(!val)return;
+  answered=true;clearInterval(timerInterval);
+  const norm=s=>s.toLowerCase().normalize(`NFD`).replace(/[\u0300-\u036f]/g,``).replace(/[^a-z0-9\s]/g,``).trim();
+  const exp=norm(t.t.split(`(`)[0].trim());const got=norm(val);
+  const dist=levenshtein(exp,got);const tol=exp.length<=5?1:exp.length<=10?2:3;const ok=dist<=tol;
+  if(ok){inp.classList.add(`ok`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=12*(streak>=3?2:1);xp+=e;catScores[t.cat].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`Correct${dist>0?` (tolérance orthographique)`:``}!`,t.def.substring(0,120),t.mnemo);}
+  else{inp.classList.add(`err`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`❌`,`La réponse était : ${t.t}`,t.def.substring(0,120),t.mnemo);}
+  document.querySelector(`.frappe-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function loadConstruction(){
+  placed=[];const q=questions[qi];
+  if(!catScores[`Construction`])catScores[`Construction`]={c:0,t:0};catScores[`Construction`].t++;
+  const sh=[...q.pieces].sort(()=>Math.random()-.5);
+  document.getElementById(`quiz-body`).innerHTML=`
+  <div class="term-card"><div class="tc-label">Définition</div><div class="tc-term" style="font-size:14px;font-family:'Lora',serif;font-style:italic;font-weight:400;line-height:1.65">${q.def}</div><div class="tc-cat">🩸 Construction</div></div>
+  <div class="q-card"><div class="q-top"><div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt">Construction</span></div><span class="q-num">Q${qi+1}</span></div><div class="q-text">Assemblez les éléments pour former le terme hématologique :</div></div>
+  <div class="construct-zone" id="cz"><span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span></div>
+  <div class="pieces-bank" id="pieces-bank">${sh.map((p,i)=>`<button class="piece-btn" id="pb-${i}" onclick="addPiece('${p}',${i})">${p}</button>`).join(``)}</div>
+  <button class="construct-submit" id="c-submit" onclick="checkConstruction()" disabled>Valider</button>
+  <div class="exp-box" id="exp-box"><div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div><div class="exp-body" id="exp-body"></div><div class="exp-rule" id="exp-rule"></div></div>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">${qi===questions.length-1?`Voir le rapport →`:`Suivant →`}</button>`;
+}
+
+function addPiece(p,idx){
+  if(answered)return;if(placed.includes(p))return;placed.push(p);
+  const cz=document.getElementById(`cz`);const ph=document.getElementById(`cz-ph`);if(ph)ph.remove();
+  cz.classList.add(`has-content`);
+  const s=document.createElement(`button`);s.className=`cz-piece placed`;s.textContent=p;s.onclick=()=>removePiece(p,idx,s);cz.appendChild(s);
+  const btn=document.getElementById(`pb-${idx}`);btn.classList.add(`used`);btn.disabled=true;
+  document.getElementById(`c-submit`).disabled=false;
+}
+function removePiece(p,idx,el){
+  if(answered)return;placed=placed.filter(x=>x!==p);el.remove();
+  const btn=document.getElementById(`pb-${idx}`);if(btn){btn.classList.remove(`used`);btn.disabled=false;}
+  const cz=document.getElementById(`cz`);
+  if(placed.length===0){cz.classList.remove(`has-content`);cz.innerHTML=`<span class="cz-placeholder" id="cz-ph">Cliquez sur les éléments ci-dessous dans le bon ordre…</span>`;document.getElementById(`c-submit`).disabled=true;}
+}
+function checkConstruction(){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const q=questions[qi];const cz=document.getElementById(`cz`);
+  const ok=placed.length===q.correct.length&&placed.every((p,i)=>p===q.correct[i]);
+  if(ok){cz.classList.add(`correct`);correct++;streak++;if(streak>bestStreak)bestStreak=streak;const e=15*(streak>=3?2:1);xp+=e;catScores[`Construction`].c++;floatXP(e,streak>=3);showExp(`ok`,`✅`,`${q.term} — correct !`,q.meaning,``);}
+  else{cz.classList.add(`wrong`);wrong++;streak=0;score=Math.max(0,score-10);errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`❌`,`La réponse : ${q.correct.join(` + `)}`,`${q.term} = ${q.meaning}`,``);}
+  document.getElementById(`c-submit`).style.display=`none`;updateUI();document.getElementById(`next-btn`).classList.add(`show`);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  const dur={qcm:20,frappe:25,examen:15,construction:30}[mode]||0;
+  if(!dur){document.getElementById(`tw`).style.display=`none`;timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById(`tw`).style.display=`block`;
+  const arc=document.getElementById(`t-arc`),num=document.getElementById(`t-num`);
+  arc.style.stroke=`var(--crim)`;num.className=`t-num`;arc.style.strokeDashoffset=`0`;
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);num.textContent=timeLeft;
+    if(timeLeft<=6){num.classList.add(`warn`);arc.style.stroke=`var(--red)`;}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-8);
+        if(mode===`qcm`||mode===`examen`)document.querySelectorAll(`.choice`).forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add(`missed`);});
+        else if(mode===`frappe`){const t=questions[qi];errors.push({term:t.t,def:t.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`Le terme était : <strong>${t.t}</strong>`,t.mnemo);}
+        else if(mode===`construction`){const q=questions[qi];errors.push({term:q.term,def:q.def.substring(0,80)});showExp(`err`,`⏱`,`Temps écoulé`,`La réponse : ${q.correct.join(` + `)} → ${q.term}`,``);}
+        updateUI();const nb=document.getElementById(`next-btn`);if(nb)nb.classList.add(`show`);
+      }
+    }
+  },1000);
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById(`exp-box`);if(!eb)return;
+  eb.classList.add(`show`,type);document.getElementById(`exp-ico`).textContent=ico;
+  const et=document.getElementById(`exp-ttl`);et.textContent=title;et.className=`exp-title `+type;
+  document.getElementById(`exp-body`).innerHTML=body;
+  const er=document.getElementById(`exp-rule`);
+  if(rule&&rule.trim()){er.style.display=`block`;er.innerHTML=`<strong>Étymologie :</strong> `+rule;}
+  else er.style.display=`none`;
+}
+function updateUI(){
+  document.getElementById(`streak-n`).textContent=streak;document.getElementById(`xp-n`).textContent=xp;
+  document.getElementById(`sc`).textContent=correct;document.getElementById(`sw`).textContent=wrong;
+  document.getElementById(`score-n`).textContent=score;
+  document.getElementById(`streak-pill`).classList.toggle(`hot`,streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement(`div`);el.className=`xp-float`;
+  el.textContent=(d?`⚡×2 +`:`+`)+n+` XP`;el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;const note=Math.max(0,Math.round((correct/total)*20));
+  const ml={qcm:`🧠 QCM`,frappe:`⌨️ Mode Frappe`,construction:`🔩 Construction`,examen:`📋 Mode Examen`};
+  const grades=[
+    {min:18,g:`🏆`,m:`Excellent — Vocabulaire maîtrisé`,bc:`#ecfdf5`,tc:`#059669`,brd:`#6ee7b7`},
+    {min:14,g:`✅`,m:`Bien — Bonne maîtrise`,bc:`#fff1f2`,tc:`#be123c`,brd:`#fda4af`},
+    {min:10,g:`⚠️`,m:`Passable — À consolider`,bc:`#fffbeb`,tc:`#d97706`,brd:`#fde68a`},
+    {min:0,g:`❌`,m:`Insuffisant — À retravailler`,bc:`#fef2f2`,tc:`#dc2626`,brd:`#fca5a5`},
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById(`rg`).textContent=gd.g;
+  document.getElementById(`rs`).textContent=`${note}/20`;document.getElementById(`rs`).style.color=gd.tc;
+  document.getElementById(`rsub`).textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById(`rm`);rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:28px;padding:6px 16px;font-size:12px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById(`rmode`).textContent=ml[mode];
+  document.getElementById(`rs-xp`).textContent=xp;document.getElementById(`rs-streak`).textContent=bestStreak;
+  document.getElementById(`rs-time`).textContent=total?Math.round(totalTime/total)+`s`:`0s`;
+  document.getElementById(`rs-correct`).textContent=correct;
+  const bd=document.getElementById(`bd-items`);bd.innerHTML=``;
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?`#059669`:p>=50?`#d97706`:`#dc2626`;
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById(`errors-box`);
+  if(errors.length){eb.style.display=`block`;document.getElementById(`errors-list`).innerHTML=errors.slice(0,6).map(e=>`<div class="error-item"><span>❌</span><div><strong style="color:var(--text)">${e.term}</strong><br>${e.def}${e.def.length>=80?`...`:``}</div></div>`).join(``);}
+  else eb.style.display=`none`;
+  const cons=[];
+  if(mode===`qcm`&&note>=16)cons.push(`⌨️ Excellent ! Essayez le Mode Frappe pour mémoriser sans choix multiples.`);
+  if(mode===`frappe`&&note>=16)cons.push(`📋 Parfait. Le Mode Examen avec 15 secondes est votre prochain défi.`);
+  if(mode===`construction`&&note>=10)cons.push(`🔩 Hémo-/leuco-/thrombo- + -cyte/-pénie/-lyse/-poïèse = vous décodez tout le vocabulaire hématologique.`);
+  if(mode===`examen`&&note>=16)cons.push(`🏆 Niveau expert en hématologie. Passez au module suivant.`);
+  if(note<10)cons.push(`📚 Commencez par les catégories Hématopoïèse et NFS avant les pathologies complexes.`);
+  if(note>=10&&note<16)cons.push(`🔄 Recommencez jusqu'au 16/20 puis passez au mode suivant.`);
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat===`Anémies`)cons.push(`🩺 Anémie OMS : Hb < 13 g/dL (H) ou < 12 g/dL (F). Seuil transfusionnel : < 7 g/dL (sujet sain). VGM oriente le type : micro < 80, normo 80–100, macro > 100 fL.`);
+    if(cat===`Hémostase`)cons.push(`🔬 TP/INR = voie extrinsèque (AVK). TCA = voie intrinsèque (héparine, hémophilie). Fibrinogène bas + D-dimères élevés + TP bas + plaquettes basses = CIVD.`);
+    if(cat===`Anticoagulants`)cons.push(`💊 HNF → surveillance TCA. HBPM → anti-Xa, CI si DFG < 30. AVK → INR cible 2–3. TIH : plaquettes J4–J14, chute > 50% = arrêt immédiat.`);
+    if(cat===`Hémopathies malignes`)cons.push(`🔴 LMC = chromosome Philadelphie t(9;22) = imatinib. Myélome = pic M + os + rein. Hodgkin = Reed-Sternberg + adulte jeune + guérison 85%.`);
+    if(cat===`Transfusion`)cons.push(`🩸 Seuil transfusionnel : Hb < 7 g/dL. RAI valide 72h. CUPT obligatoire. Durée max 4h par poche. Hémovigilance = déclaration obligatoire de tout incident.`);
+  });
+  if(!cons.length)cons.push(`🎯 Maîtrise complète. Excellent travail sur ce module difficile.`);
+  document.getElementById(`conseils-list`).innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join(``);
+  showScreen(`s-result`);
+}
+document.addEventListener(`keydown`,e=>{if(e.key===`Enter`){const nb=document.getElementById(`next-btn`);if(nb&&nb.classList.contains(`show`))nextQ();}});
+</script>
+<script>
+function resizeWix(){window.parent.postMessage({type:`height`,value:document.body.scrollHeight},`*`);}
+window.addEventListener(`load`,resizeWix);
+window.addEventListener(`resize`,resizeWix);
+new MutationObserver(resizeWix).observe(document.body,{childList:true,subtree:true});
+</script>
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Constantes & Scope</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Serif+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--card:#1c2128;--card2:#262c36;
+  --bl:#2563eb;--bll:#1e3a5f;--blm:#60a5fa;
+  --tl:#0891b2;--tll:#083344;--tlm:#38bdf8;
+  --gr:#059669;--grl:#052e16;--grm:#34d399;
+  --rd:#dc2626;--rdl:#450a0a;--rdm:#f87171;
+  --or:#d97706;--orl:#451a03;--orm:#fcd34d;
+  --pu:#7c3aed;--pul:#2e1065;--pum:#a78bfa;
+  --pi:#db2777;--pil:#4a0520;--pim:#f9a8d4;
+  --te:#0e7490;--tel:#083344;--tem:#67e8f9;
+  --text:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --bd:#30363d;--bd2:#21262d;
+  --sh:0 4px 24px rgba(0,0,0,.4);--shm:0 8px 40px rgba(0,0,0,.6);
+}
+html,body{min-height:100vh;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+/* HDR */
+.hdr{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hl{display:flex;align-items:center;gap:10px}
+.hico{width:34px;height:34px;background:linear-gradient(135deg,var(--bl),var(--tl));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;box-shadow:0 2px 10px rgba(37,99,235,.4)}
+.hn{font-size:14px;font-weight:700;color:var(--text)}.hs{font-size:10px;color:var(--t2)}
+.hbadge{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:700}
+/* WELCOME */
+.wb{max-width:820px;margin:0 auto;padding:24px 18px 50px;animation:up .4s ease}
+.hero{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bd);border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:var(--sh);display:flex;gap:16px;align-items:center}
+.hero-ico{font-size:42px;flex-shrink:0}
+.ht{font-family:'DM Serif Display',serif;font-size:20px;color:var(--blm);margin-bottom:4px}
+.hd{font-size:12.5px;color:var(--t2);line-height:1.65}
+/* constante cards welcome */
+.csts-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+@media(max-width:540px){.csts-grid{grid-template-columns:1fr 1fr}}
+.cst-mini{background:var(--card2);border:1px solid var(--bd);border-radius:11px;padding:10px;text-align:center;transition:border-color .2s}
+.cst-mini:hover{border-color:var(--blm)}
+.cst-ico{font-size:20px;margin-bottom:4px}
+.cst-name{font-size:10.5px;font-weight:700;color:var(--text);margin-bottom:2px}
+.cst-norm{font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--t2)}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stc{background:var(--card2);border:1px solid var(--bd);border-radius:11px;padding:12px;text-align:center}
+.stv{font-size:19px;font-weight:800;margin-bottom:2px}.stl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+/* modes */
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:540px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--card);border:1.5px solid var(--bd);border-radius:14px;padding:17px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--mc,var(--bl));opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--bl));box-shadow:0 0 0 1px var(--mc,var(--bl)),var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc-ico{font-size:24px;margin-bottom:8px;display:block}.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'→';color:var(--mc,var(--bl));font-weight:700;flex-shrink:0}
+.launch{width:100%;padding:15px;background:linear-gradient(135deg,var(--bl),var(--tl));border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 4px 20px rgba(37,99,235,.4)}
+.launch:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(37,99,235,.6)}
+/* FICHE */
+.fb{max-width:860px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 20px;margin-bottom:15px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'DM Serif Display',serif;color:var(--blm)}
+.fsub{font-size:10.5px;color:var(--t2);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 11px;border:1px solid var(--bd);border-radius:20px;background:transparent;font-size:10px;font-weight:600;cursor:pointer;color:var(--t2);font-family:'Outfit',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--bl);color:var(--blm)}.ftab.on{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--tlm);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--tll)}
+/* constante table */
+.ctbl{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:14px}
+.ctbl th{background:var(--bll);color:var(--blm);padding:8px 11px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;border-bottom:2px solid var(--bl)}
+.ctbl td{padding:9px 11px;border-bottom:1px solid var(--bd);color:var(--t2)}
+.ctbl tr:hover td{background:var(--card2)}
+.ctbl .ok{color:var(--grm);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.ctbl .alerte{color:var(--rdm);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px}
+.ctbl .warn{color:var(--orm);font-weight:700;font-family:'JetBrains Mono',monospace;font-size:11px}
+.ctbl .name{color:var(--text);font-weight:700;font-size:12.5px}
+/* scope body diagram */
+.body-diag{background:var(--card2);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:14px}
+.elec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+@media(max-width:480px){.elec-grid{grid-template-columns:1fr}}
+.elec-card{background:var(--card);border-radius:11px;padding:12px 13px;border-left:4px solid;box-shadow:var(--sh)}
+.elec-name{font-size:11px;font-weight:800;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.elec-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.elec-pos{font-size:11.5px;color:var(--t2);line-height:1.6}
+.elec-why{font-size:10.5px;color:var(--t3);margin-top:4px;font-style:italic}
+/* constante cards fiche */
+.cst-card{background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:10px;box-shadow:var(--sh)}
+.cst-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cst-ico2{font-size:24px}
+.cst-title{font-size:14px;font-weight:800;color:var(--text)}
+.cst-sub{font-size:10px;color:var(--t2)}
+.cst-body{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:460px){.cst-body{grid-template-columns:1fr}}
+.cst-info{background:var(--card);border-radius:8px;padding:9px 11px;font-size:11.5px;color:var(--t2);line-height:1.55}
+.cst-info .label{font-size:9px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:3px}
+.cst-info .val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+/* alarmes scope */
+.alarm-list{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.alarm{background:var(--card);border-radius:10px;padding:10px 13px;display:flex;align-items:flex-start;gap:10px;border-left:3px solid}
+.alarm-ico{font-size:18px;flex-shrink:0}
+.alarm-name{font-size:11.5px;font-weight:700;margin-bottom:2px}
+.alarm-desc{font-size:11px;color:var(--t2);line-height:1.5}
+/* steps */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px;color:var(--blm)}
+.sc2{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:7px}
+.sc2.crit{border-color:var(--rdm);border-left:3px solid var(--rdm)}
+.sc2.att{border-color:var(--orm);border-left:3px solid var(--orm)}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--card2)}
+.sn2{width:24px;height:24px;border-radius:6px;background:var(--bll);border:1px solid var(--bl);color:var(--blm);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.sc2.crit .sn2{background:var(--rdl);border-color:var(--rd);color:var(--rdm)}
+.sc2.att .sn2{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.si2{flex:1}.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--rdl);border-color:var(--rdm);color:var(--rdm)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--orm)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pum)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc2.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc2.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--pum);line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--or);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--orm);line-height:1.6}
+.serr{background:var(--rdl);border:1px solid var(--rdm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--rdm);line-height:1.55;margin-top:6px}
+.scons{background:var(--bll);border:1px solid var(--bl);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--blm);line-height:1.55;margin-top:6px}
+/* Memo */
+.memo{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.8;margin-bottom:10px}
+.mh{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.mn{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--blm)}
+/* QUIZ */
+#stb{background:var(--card);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-b{width:26px;height:26px;background:linear-gradient(135deg,var(--bl),var(--tl));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-t{font-size:12px;font-weight:700;color:var(--blm)}
+.tbm{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bl),var(--tl));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.pst{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.pst.hot{background:var(--orl);border-color:var(--or);color:var(--orm);animation:blink 1s infinite}
+.plv{background:var(--rdl);border-color:var(--rd);color:var(--rdm)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bd);stroke-width:3.5}
+.tia{fill:none;stroke:var(--bl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--rdm)}
+#qb{flex:1;padding:16px;max-width:700px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--bll),var(--tel));border:1px solid var(--bl);border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.06);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:2px;opacity:.7}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px;color:var(--text)}
+.ctx-body{font-size:12px;color:var(--t2);line-height:1.65;font-family:'DM Serif Display',serif;font-style:italic}
+.qcard{background:var(--card);border:1px solid var(--bd);border-radius:15px;padding:18px 20px;margin-bottom:11px;animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--bll);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--blm)}
+.qct{font-size:9.5px;font-weight:700;color:var(--blm);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.qtext{font-family:'DM Serif Display',serif;font-size:16px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--blm)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card2);border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'Outfit',sans-serif;line-height:1.5;transition:all .15s}
+.ch:hover:not(:disabled){border-color:var(--bl);background:var(--bll);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg3);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);font-family:'JetBrains Mono',monospace;transition:all .2s}
+.ch.ok2{background:var(--grl);border-color:var(--grm)}.ch.ok2 .cl{background:var(--gr);border-color:var(--gr);color:white}
+.ch.ko{background:var(--rdl);border-color:var(--rdm);animation:shake .4s ease}.ch.ko .cl{background:var(--rd);border-color:var(--rd);color:white}
+.ch.mis{background:var(--grl);border-color:var(--grm);opacity:.6}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--grl);color:var(--grm);border-color:var(--gr)}.ctag-ko{background:var(--rdl);color:var(--rdm);border-color:var(--rd)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--grl);border-color:var(--grm)}.expb.ko{background:var(--rdl);border-color:var(--rdm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--grm)}.exptt.ko{color:var(--rdm)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--bg3);border-left:3px solid var(--bl);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--blm)}
+.nxt{width:100%;padding:12px;background:linear-gradient(135deg,var(--bl),var(--tl));border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 12px rgba(37,99,235,.35)}
+.nxt.on{display:block}.nxt:hover{box-shadow:0 4px 20px rgba(37,99,235,.5)}
+#qft{background:var(--card);border-top:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fs2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fs2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--orm);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'JetBrains Mono',monospace}
+/* RÉSULTAT */
+.rb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.rh{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:26px;text-align:center;margin-bottom:12px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.rh::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--tl),var(--gr))}
+.rg{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rs{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'DM Serif Display',serif}
+.rsb{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rmen{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--card);border:1px solid var(--bd);border-radius:11px;padding:13px;text-align:center}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bkd{background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:12px}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:12px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd3{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errb{background:var(--rdl);border:1px solid var(--rdm);border-radius:13px;padding:14px;margin-bottom:12px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rdm);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsb{background:var(--bll);border:1px solid var(--bl);border-radius:13px;padding:14px;margin-bottom:12px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blm);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rbtn{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.rbp{background:linear-gradient(135deg,var(--bl),var(--tl));color:white;box-shadow:0 2px 12px rgba(37,99,235,.35)}.rbp:hover{box-shadow:0 4px 20px rgba(37,99,235,.5)}
+.rbs{background:var(--card);border:1.5px solid var(--bd);color:var(--text)}.rbs:hover{border-color:var(--bl)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:4px}
+</style>
+</head>
+<body>
+<!-- WELCOME -->
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📊</div><div><div class="hn">NurseSimPro</div><div class="hs">Formation infirmière premium</div></div></div>
+    <div class="hbadge">📊 Constantes &amp; Scope</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">📊</div>
+      <div>
+        <div class="ht">Prise de constantes complètes &amp; Scope</div>
+        <div class="hd">Maîtrisez les 9 paramètres vitaux, leurs normes, les seuils d'alerte, les techniques de mesure, le positionnement des électrodes du scope (3 et 5 dérivations), la gestion des alarmes et la surveillance continue. Sources : Réussis ton IFSI 2023 · CHUV · fiches-ide.fr · efurgences.net · Art. R.4311-5 CSP · HAS 2022.</div>
+      </div>
+    </div>
+    <div class="csts-grid">
+      <div class="cst-mini"><div class="cst-ico">❤️</div><div class="cst-name">FC</div><div class="cst-norm">60-100 bpm</div></div>
+      <div class="cst-mini"><div class="cst-ico">💉</div><div class="cst-name">TA</div><div class="cst-norm">120/80 mmHg</div></div>
+      <div class="cst-mini"><div class="cst-ico">🫁</div><div class="cst-name">FR</div><div class="cst-norm">12-20 /min</div></div>
+      <div class="cst-mini"><div class="cst-ico">🌡️</div><div class="cst-name">Température</div><div class="cst-norm">36,5-37,5°C</div></div>
+      <div class="cst-mini"><div class="cst-ico">🩸</div><div class="cst-name">SpO₂</div><div class="cst-norm">≥ 95%</div></div>
+      <div class="cst-mini"><div class="cst-ico">🍬</div><div class="cst-name">Glycémie</div><div class="cst-norm">0,7-1,1 g/L</div></div>
+      <div class="cst-mini"><div class="cst-ico">💧</div><div class="cst-name">Diurèse</div><div class="cst-norm">1-2 L/24h</div></div>
+      <div class="cst-mini"><div class="cst-ico">🧠</div><div class="cst-name">Douleur / Glasgow</div><div class="cst-norm">EVA · GCS 15</div></div>
+    </div>
+    <div class="stats">
+      <div class="stc"><div class="stv" style="color:var(--blm)">16</div><div class="stl">Étapes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--tlm)">9</div><div class="stl">Paramètres</div></div>
+      <div class="stc"><div class="stv" style="color:var(--orm)">3+5</div><div class="stl">Électrodes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--pum)">4</div><div class="stl">Modes</div></div>
+    </div>
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#2563eb" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Référence</span>
+        <div class="mc-badge" style="background:var(--bll);border-color:var(--bl);color:var(--blm)">📋 RÉFÉRENCE</div>
+        <div class="mc-desc">Toutes les normes, tous les seuils, techniques de mesure, scope 3 et 5 électrodes, Glasgow, EVA, diurèse, poids.</div>
+        <ul class="mc-ul" style="--mc:#2563eb"><li>9 paramètres avec normes et alertes</li><li>Électrodes scope 3 et 5 dérivations</li><li>Glasgow + EVA</li><li>Alarmes et conduites</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#0891b2" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:var(--tll);border-color:var(--tl);color:var(--tlm)">⭐ DÉBUTANT</div>
+        <div class="mc-desc">16 étapes complètes dans l'ordre. Question de validation à chaque étape. Pas de chrono.</div>
+        <ul class="mc-ul" style="--mc:#0891b2"><li>Protocole complet dans l'ordre</li><li>Toutes les constantes</li><li>Question de validation</li></ul>
+      </button>
+      <button class="mc" style="--mc:#d97706" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-badge" style="background:var(--orl);border-color:var(--or);color:var(--orm)">⭐⭐ INTERMÉDIAIRE</div>
+        <div class="mc-desc">15 questions : normes, seuils d'alerte, techniques, électrodes scope, Glasgow, EVA. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#d97706"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#7c3aed" onclick="setMode('survival',this)">
+        <span class="mc-ico">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-badge" style="background:var(--pul);border-color:var(--pu);color:var(--pum)">⭐⭐⭐ EXPERT</div>
+        <div class="mc-desc">10 pièges : électrodes inversées, alarme silencée, SpO₂ sur vernis, TA sur bras perfusé... 3 vies, 25s.</div>
+        <ul class="mc-ul" style="--mc:#7c3aed"><li>10 pièges cliniques graves</li><li>3 vies · Chrono 25s</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+<!-- FICHE -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📖</div><div><div class="hn">Fiche Référence — Constantes &amp; Scope</div><div class="hs">Réussis ton IFSI 2023 · CHUV · fiches-ide.fr · efurgences.net · Art. R.4311-5</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Constantes &amp; Surveillance continue</div><div class="fsub">Rôle propre infirmier — Art. R.4311-5 CSP</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('fn',this)">📊 Normes</button>
+        <button class="ftab" onclick="showFTab('fsc',this)">🔌 Scope</button>
+        <button class="ftab" onclick="showFTab('fpr',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('fal',this)">🚨 Alarmes</button>
+        <button class="ftab" onclick="showFTab('fme',this)">🧠 Mémo</button>
+      </div>
+    </div>
+
+    <!-- NORMES -->
+    <div class="fsec on" id="fn">
+      <div class="fst">📊 Tableau des normes et seuils d'alerte</div>
+      <table class="ctbl">
+        <tr><th>Paramètre</th><th>Normale adulte</th><th>⚠️ Seuil d'alerte</th><th>🚨 Urgence critique</th></tr>
+        <tr>
+          <td class="name">❤️ FC (fréquence cardiaque)</td>
+          <td class="ok">60 – 100 bpm</td>
+          <td class="warn">Tachy &gt;100 · Brady &lt;60</td>
+          <td class="alerte">&gt;150 ou &lt;40 bpm</td>
+        </tr>
+        <tr>
+          <td class="name">💉 TA systolique</td>
+          <td class="ok">100 – 140 mmHg</td>
+          <td class="warn">&gt;140 ou &lt;90 mmHg</td>
+          <td class="alerte">&gt;180 ou &lt;70 mmHg</td>
+        </tr>
+        <tr>
+          <td class="name">💉 TA diastolique</td>
+          <td class="ok">60 – 90 mmHg</td>
+          <td class="warn">&gt;90 ou &lt;50 mmHg</td>
+          <td class="alerte">&gt;120 ou &lt;40 mmHg</td>
+        </tr>
+        <tr>
+          <td class="name">🫁 FR (fréquence respiratoire)</td>
+          <td class="ok">12 – 20 /min</td>
+          <td class="warn">Tachy &gt;20 · Brady &lt;12</td>
+          <td class="alerte">&gt;30 ou &lt;8 /min</td>
+        </tr>
+        <tr>
+          <td class="name">🌡️ Température</td>
+          <td class="ok">36,5 – 37,5 °C</td>
+          <td class="warn">Fièvre &gt;38°C · Hypo &lt;36°C</td>
+          <td class="alerte">&gt;40°C ou &lt;35°C</td>
+        </tr>
+        <tr>
+          <td class="name">🩸 SpO₂</td>
+          <td class="ok">98 – 100 %</td>
+          <td class="warn">&lt;95% (95-97% : surveiller)</td>
+          <td class="alerte">≤90% = urgence absolue</td>
+        </tr>
+        <tr>
+          <td class="name">🍬 Glycémie capillaire</td>
+          <td class="ok">0,7 – 1,1 g/L (à jeun)<br><span style="font-size:10px;color:var(--t3)">3,9 – 6,1 mmol/L</span></td>
+          <td class="warn">Hypo &lt;0,7 · Hyper &gt;2,0 g/L</td>
+          <td class="alerte">&lt;0,5 g/L ou &gt;4,0 g/L</td>
+        </tr>
+        <tr>
+          <td class="name">💧 Diurèse</td>
+          <td class="ok">1 000 – 1 500 mL/24h<br><span style="font-size:10px;color:var(--t3)">&gt;0,5 mL/kg/h</span></td>
+          <td class="warn">Oligurie &lt;500 mL/24h</td>
+          <td class="alerte">Anurie &lt;100 mL/24h</td>
+        </tr>
+        <tr>
+          <td class="name">🧠 Score de Glasgow (GCS)</td>
+          <td class="ok">15/15</td>
+          <td class="warn">≤13 : surveillance accrue</td>
+          <td class="alerte">≤8 : intubation à discuter</td>
+        </tr>
+        <tr>
+          <td class="name">😣 Douleur (EVA/EN)</td>
+          <td class="ok">0 – 3 : légère</td>
+          <td class="warn">4 – 6 : modérée → traiter</td>
+          <td class="alerte">≥7 : intense → traitement urgent</td>
+        </tr>
+      </table>
+      <!-- Détail constantes -->
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">❤️</div><div><div class="cst-title">Fréquence Cardiaque (FC)</div><div class="cst-sub">Mesure au pouls radial (2e et 3e doigts) · 60 secondes · ou via scope/saturomètre</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Normale</div><div class="val" style="color:var(--grm)">60 – 100 bpm</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">Bradycardie critique</div><div class="val" style="color:var(--rdm)">&lt; 40 bpm</div></div>
+          <div class="cst-info" style="grid-column:span 2"><div class="label" style="color:var(--blm)">Technique</div>Poser 2 doigts sur le pouls radial (face antérieure du poignet). Compter 60 sec (ou 30 sec × 2 si rythme régulier). Observer aussi le rythme (régulier/irrégulier) et l'amplitude (fort, filant). Ne jamais utiliser le pouce (pouls propre du soignant). La FR se mesure juste après, main restée sur le poignet pour ne pas modifier la respiration.</div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">💉</div><div><div class="cst-title">Pression Artérielle (TA)</div><div class="cst-sub">Brassard adapté à la circonférence du bras · Mesure après 5 min de repos · Au bras</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Normale</div><div class="val" style="color:var(--grm)">120/80 mmHg</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">HTA stade 2</div><div class="val" style="color:var(--rdm)">≥ 160/100</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--orm)">Brassard</div>Taille adaptée : couvre 2/3 du bras. Bord inférieur à 2-3 cm du pli du coude. Bras au niveau du cœur.</div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">Contre-indications</div>Bras avec FAV, perfusion, lymphœdème, hémiplégie, mastectomie → mesurer côté opposé ou à la cuisse.</div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">🫁</div><div><div class="cst-title">Fréquence Respiratoire (FR)</div><div class="cst-sub">Mesure à l'insu du patient — "grande oubliée" des constantes et 1er signe de dégradation</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Normale</div><div class="val" style="color:var(--grm)">12 – 20 /min</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">Tachypnée urgente</div><div class="val" style="color:var(--rdm)">&gt; 30 /min</div></div>
+          <div class="cst-info" style="grid-column:span 2"><div class="label" style="color:var(--blm)">Technique + signes de détresse</div>Garder la main sur le poignet après la FC. Compter les mouvements thoraciques pendant 60 sec. Observer aussi : tirage intercostal (creusement entre les côtes), battement des ailes du nez, cyanose, position de la tripode (patient penché en avant).</div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">🌡️</div><div><div class="cst-title">Température</div><div class="cst-sub">Voies : tympanique ± 0,5°C · axillaire (corriger +0,5°C) · rectale (référence) · buccale</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Normale</div><div class="val" style="color:var(--grm)">36,5 – 37,5 °C</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--orm)">Fièvre</div><div class="val" style="color:var(--orm)">≥ 38,0 °C</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--orm)">Hyperthermie</div><div class="val" style="color:var(--rdm)">≥ 40,0 °C</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--blm)">Hypothermie</div><div class="val" style="color:var(--blm)">≤ 35,0 °C</div></div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">🩸</div><div><div class="cst-title">SpO₂ — Saturation en oxygène</div><div class="cst-sub">Oxymètre de pouls · Doigt (non verni), lobe de l'oreille, orteil</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Normale</div><div class="val" style="color:var(--grm)">98 – 100 %</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">Urgence absolue</div><div class="val" style="color:var(--rdm)">≤ 90 %</div></div>
+          <div class="cst-info" style="grid-column:span 2"><div class="label" style="color:var(--rdm)">Pièges qui faussent la mesure</div>Vernis à ongles (fausse valeur ou absence de signal) · Ongles en gel/acrylique · Doigts froids ou vasoconstriction · Mouvement du patient · Nail art · Hypoperfusion périphérique · Intoxication au CO (fausse valeur haute). Solution : changer de doigt, utiliser le lobe de l'oreille, réchauffer.</div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">🍬</div><div><div class="cst-title">Glycémie capillaire</div><div class="cst-sub">Lecteur de glycémie (anciennement "Dextro") · Bout du doigt · Bandelette réactive</div></div></div>
+        <div class="cst-body">
+          <div class="cst-info"><div class="label" style="color:var(--grm)">À jeun</div><div class="val" style="color:var(--grm)">0,70 – 1,10 g/L</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--grm)">Postprandiale</div><div class="val" style="color:var(--grm)">&lt; 1,40 g/L (2h)</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--rdm)">Hypoglycémie</div><div class="val" style="color:var(--rdm)">&lt; 0,70 g/L</div></div>
+          <div class="cst-info"><div class="label" style="color:var(--orm)">Hyperglycémie</div><div class="val" style="color:var(--orm)">&gt; 2,00 g/L</div></div>
+        </div>
+      </div>
+      <div class="cst-card">
+        <div class="cst-hdr"><div class="cst-ico2">🧠</div><div><div class="cst-title">Score de Glasgow (GCS)</div><div class="cst-sub">Évaluation de la conscience · 3 composantes · Score sur 15</div></div></div>
+        <table class="ctbl" style="margin-bottom:8px">
+          <tr><th>Composante</th><th>Réponse</th><th>Score</th></tr>
+          <tr><td style="color:var(--blm)"><strong>Y — Ouverture des yeux</strong></td><td>Spontanée / À la voix / À la douleur / Aucune</td><td class="ok">4 / 3 / 2 / 1</td></tr>
+          <tr><td style="color:var(--pum)"><strong>V — Réponse verbale</strong></td><td>Orientée / Confuse / Mots inappropriés / Sons / Aucune</td><td class="ok">5 / 4 / 3 / 2 / 1</td></tr>
+          <tr><td style="color:var(--grm)"><strong>M — Réponse motrice</strong></td><td>Obéit / Localise / Retrait / Flexion / Extension / Aucune</td><td class="ok">6 / 5 / 4 / 3 / 2 / 1</td></tr>
+        </table>
+        <div style="font-size:11.5px;color:var(--t2);background:var(--rdl);border:1px solid var(--rdm);border-radius:7px;padding:8px 11px">🚨 GCS ≤ 8 : protection des voies aériennes compromise → discuter intubation. GCS &lt; 13 : surveillance renforcée, signaler médecin.</div>
+      </div>
+    </div>
+
+    <!-- SCOPE -->
+    <div class="fsec" id="fsc">
+      <div class="fst">🔌 Scope — Positionnement des électrodes</div>
+      <div style="background:var(--bll);border:1px solid var(--bl);border-radius:12px;padding:13px 15px;margin-bottom:14px;font-size:12px;color:var(--t2);line-height:1.7">
+        <strong style="color:var(--blm)">Préparation de la peau :</strong> Rasage si nécessaire. Dégraissage avec une compresse alcoolique (puis laisser sécher). Abrasion légère si mauvais signal. Peau sèche et propre = signal de qualité. Changer les électrodes toutes les 24-48h (perte d'adhérence et de conductivité).
+      </div>
+      <!-- 3 électrodes -->
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--grm);margin-bottom:10px">🔵 SYSTÈME 3 ÉLECTRODES — Surveillance du rythme (DI, DII, DIII)</div>
+      <div class="body-diag">
+        <div style="text-align:center;margin-bottom:12px">
+          <svg viewBox="0 0 260 200" width="260" height="200" style="max-width:100%">
+            <!-- corps stylisé -->
+            <ellipse cx="130" cy="60" rx="30" ry="36" fill="#2c3144" stroke="#374151" stroke-width="1.5"/>
+            <line x1="130" y1="96" x2="130" y2="160" stroke="#374151" stroke-width="10" stroke-linecap="round"/>
+            <line x1="130" y1="105" x2="80" y2="140" stroke="#374151" stroke-width="8" stroke-linecap="round"/>
+            <line x1="130" y1="105" x2="180" y2="140" stroke="#374151" stroke-width="8" stroke-linecap="round"/>
+            <line x1="130" y1="160" x2="110" y2="195" stroke="#374151" stroke-width="8" stroke-linecap="round"/>
+            <line x1="130" y1="160" x2="150" y2="195" stroke="#374151" stroke-width="8" stroke-linecap="round"/>
+            <!-- électrode Rouge — sous-claviculaire droite -->
+            <circle cx="100" cy="100" r="10" fill="#ef4444" stroke="#fca5a5" stroke-width="2" filter="drop-shadow(0 0 4px #ef4444)"/>
+            <text x="100" y="104" text-anchor="middle" font-size="10" fill="white" font-weight="800" font-family="sans-serif">R</text>
+            <text x="62" y="98" text-anchor="middle" font-size="9.5" fill="#fca5a5" font-family="sans-serif" font-weight="700">Rouge</text>
+            <text x="62" y="109" text-anchor="middle" font-size="8.5" fill="#8b949e" font-family="sans-serif">Sous-clav. D</text>
+            <!-- électrode Jaune — sous-claviculaire gauche -->
+            <circle cx="160" cy="100" r="10" fill="#eab308" stroke="#fde68a" stroke-width="2" filter="drop-shadow(0 0 4px #eab308)"/>
+            <text x="160" y="104" text-anchor="middle" font-size="10" fill="white" font-weight="800" font-family="sans-serif">J</text>
+            <text x="198" y="98" text-anchor="middle" font-size="9.5" fill="#fde68a" font-family="sans-serif" font-weight="700">Jaune</text>
+            <text x="198" y="109" text-anchor="middle" font-size="8.5" fill="#8b949e" font-family="sans-serif">Sous-clav. G</text>
+            <!-- électrode Vert/Noir — rebord costal gauche -->
+            <circle cx="145" cy="155" r="10" fill="#10b981" stroke="#34d399" stroke-width="2" filter="drop-shadow(0 0 4px #10b981)"/>
+            <text x="145" y="159" text-anchor="middle" font-size="10" fill="white" font-weight="800" font-family="sans-serif">V</text>
+            <text x="188" y="153" text-anchor="middle" font-size="9.5" fill="#34d399" font-family="sans-serif" font-weight="700">Vert/Noir</text>
+            <text x="188" y="164" text-anchor="middle" font-size="8.5" fill="#8b949e" font-family="sans-serif">Rebord costal G</text>
+          </svg>
+        </div>
+        <div class="elec-grid">
+          <div class="elec-card" style="border-color:#ef4444">
+            <div class="elec-name"><div class="elec-dot" style="background:#ef4444;color:#ef4444">●</div>Rouge (R / RA)</div>
+            <div class="elec-pos"><strong>Sous la clavicule droite</strong>, dans le 1er espace intercostal, à distance de la ligne médiane (éviter le sternum). Sur la face antérieure du thorax, côté droit.</div>
+            <div class="elec-why">Équivalent du bras droit (Right Arm) en monitoring</div>
+          </div>
+          <div class="elec-card" style="border-color:#eab308">
+            <div class="elec-name"><div class="elec-dot" style="background:#eab308;color:#eab308">●</div>Jaune (J / LA)</div>
+            <div class="elec-pos"><strong>Sous la clavicule gauche</strong>, dans le 1er espace intercostal, symétrique du rouge. Sur la face antérieure du thorax, côté gauche.</div>
+            <div class="elec-why">Équivalent du bras gauche (Left Arm) en monitoring</div>
+          </div>
+          <div class="elec-card" style="border-color:#10b981;grid-column:span 2">
+            <div class="elec-name"><div class="elec-dot" style="background:#10b981;color:#10b981">●</div>Vert ou Noir (V / LL)</div>
+            <div class="elec-pos"><strong>Rebord costal inférieur gauche</strong> (6e-7e espace intercostal gauche, sur la côte la plus basse palpable à gauche). Électrode de "terre" ou électrode de jambe gauche.</div>
+            <div class="elec-why">Électrode de référence. Permet les dérivations DI, DII, DIII, aVR, aVL, aVF. La dérivation DII (rouge–vert) est la meilleure pour surveiller les arythmies.</div>
+          </div>
+        </div>
+        <div style="background:var(--bll);border:1px solid var(--bl);border-radius:9px;padding:10px 13px;font-size:11.5px;color:var(--t2);line-height:1.65;margin-top:8px">
+          💡 <strong style="color:var(--blm)">Dérivation de surveillance recommandée :</strong> sélectionner la dérivation <strong>DII</strong> (= entre Rouge et Vert) sur le scope : meilleure amplitude des ondes P → dépistage optimal des arythmies. Ou CS5 (dérivation modifiée) si suspicion d'ischémie.
+        </div>
+      </div>
+      <!-- 5 électrodes -->
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--pum);margin-bottom:10px">🔴 SYSTÈME 5 ÉLECTRODES — + une dérivation précordiale (DI–DIII + aVR/L/F + V)</div>
+      <div class="body-diag">
+        <div class="elec-grid">
+          <div class="elec-card" style="border-color:#ef4444">
+            <div class="elec-name"><div class="elec-dot" style="background:#ef4444;color:#ef4444">●</div>Rouge (RA / R)</div>
+            <div class="elec-pos"><strong>Sous la clavicule droite</strong>, espace intercostal droit, loin du sternum.</div>
+          </div>
+          <div class="elec-card" style="border-color:#eab308">
+            <div class="elec-name"><div class="elec-dot" style="background:#eab308;color:#eab308">●</div>Jaune (LA / J)</div>
+            <div class="elec-pos"><strong>Sous la clavicule gauche</strong>, espace intercostal gauche, symétrique.</div>
+          </div>
+          <div class="elec-card" style="border-color:#1e40af">
+            <div class="elec-name"><div class="elec-dot" style="background:#1e40af;color:#60a5fa">●</div>Noir (RL / N) — Neutre</div>
+            <div class="elec-pos"><strong>Sous la clavicule droite basse</strong> ou 6e-7e espace intercostal droit. Électrode de terre / neutre.</div>
+          </div>
+          <div class="elec-card" style="border-color:#10b981">
+            <div class="elec-name"><div class="elec-dot" style="background:#10b981;color:#10b981">●</div>Vert (LL / V)</div>
+            <div class="elec-pos"><strong>Rebord costal inférieur gauche</strong> (6e-7e espace intercostal gauche). Comme le vert du système 3 électrodes.</div>
+          </div>
+          <div class="elec-card" style="border-color:#a855f7;grid-column:span 2">
+            <div class="elec-name"><div class="elec-dot" style="background:#a855f7;color:#a855f7">●</div>Blanc (V / précordiale) — 5e électrode</div>
+            <div class="elec-pos"><strong>Position variable selon l'indication :</strong><br>
+            • <strong>V1</strong> (le plus courant) : 4e espace intercostal droit, bord droit du sternum → bonne surveillance du rythme.<br>
+            • <strong>V5</strong> : 5e espace intercostal, ligne axillaire antérieure → meilleure sensibilité pour l'ischémie du ventricule gauche (sus-décalage ST).<br>
+            • En USIC : V1 souvent préféré. En réanimation : V5 souvent préféré pour la surveillance de l'ischémie.</div>
+            <div class="elec-why">La 5e électrode permet de surveiller une dérivation précordiale en plus des dérivations frontales. Recommandation : utiliser V5 si suspicion d'ischémie myocardique (meilleure sensibilité) ; V1 pour la surveillance du rythme.</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--rdl);border:1px solid var(--rdm);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--rdm);line-height:1.7;margin-top:8px">
+        🚨 <strong>Erreurs à ne jamais faire :</strong><br>
+        • Inverser Rouge et Jaune = inversion DI → trace ECG miroir → fausse interprétation d'infarctus<br>
+        • Placer les électrodes sur des masses musculaires → artefacts myogramme constants<br>
+        • Silencer l'alarme FC sans en identifier la cause<br>
+        • Faire confiance à un tracé plat sans vérifier cliniquement le patient (électrode décollée ≠ arrêt cardiaque)
+      </div>
+    </div>
+
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="fpr">
+      <div class="fst">📋 Protocole — 16 étapes</div>
+      <div id="proto-const"></div>
+    </div>
+
+    <!-- ALARMES -->
+    <div class="fsec" id="fal">
+      <div class="fst">🚨 Alarmes scope — Identification et conduite</div>
+      <div class="alarm-list">
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">❤️</div><div><div class="alarm-name" style="color:var(--rdm)">TACHYCARDIE / BRADYCARDIE SÉVÈRE</div><div class="alarm-desc">Vérifier d'abord le patient cliniquement (conscient, pouls palpé, TA). Pas d'artefact ? → Alerter le médecin immédiatement. Brady &lt;40 : préparer atropine. Tachy &gt;150 : préparer scope 12 dérivations pour ECG diagnostique.</div></div></div>
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">💔</div><div><div class="alarm-name" style="color:var(--rdm)">TRACÉ PLAT — ASYSTOLIE</div><div class="alarm-desc">⚠️ Ne jamais débuter un MCE sur un tracé plat sans vérifier cliniquement. <strong>Règle impérative :</strong> regarder le patient (réactions ? mouvement ?) + palper le pouls carotidien + vérifier les électrodes. Tracé plat = électrode décollée dans 90% des cas. Si absence de pouls confirmée → appeler à l'aide + MCE.</div></div></div>
+        <div class="alarm" style="border-color:var(--orm)"><div class="alarm-ico">🫁</div><div><div class="alarm-name" style="color:var(--orm)">DÉSATURATION SpO₂</div><div class="alarm-desc">Vérifier la sonde (vernis ? froid ? mouvement ?). Repositionner sur autre doigt ou lobe de l'oreille. Si vraie désaturation : position demi-assise, O₂ si prescrit, appel médecin si SpO₂ ≤ 90%.</div></div></div>
+        <div class="alarm" style="border-color:var(--orm)"><div class="alarm-ico">💉</div><div><div class="alarm-name" style="color:var(--orm)">HYPER/HYPOTENSION</div><div class="alarm-desc">Vérifier le brassard (bonne taille, bon positionnement). Mesurer manuellement pour confirmer. Hypotension : patient allongé, bilan urgences, appel médecin. Hypertension : confirmation, signes de gravité (céphalées, troubles visuels), médecin.</div></div></div>
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">📡</div><div><div class="alarm-name" style="color:var(--rdm)">DÉCONNEXION / ARTEFACTS</div><div class="alarm-desc">Vérifier toutes les électrodes (décollées, câbles débranches, peau transpirée). Repositionner + dégraisser la peau. Limiter les mouvements. Ne jamais couper l'alarme sans investiguer la cause. Toujours évaluer le patient cliniquement.</div></div></div>
+      </div>
+      <div style="background:var(--rdl);border:1.5px solid var(--rdm);border-radius:11px;padding:13px 15px;font-size:12px;color:var(--rdm);line-height:1.7">
+        🚨 <strong>Règle absolue :</strong> "On soigne le patient, pas le scope." Toute alarme = vérifier le patient EN PREMIER (conscience, pouls, respiration), ENSUITE l'appareil. Un tracé plat = suspect d'abord électrode décollée. Un tracé cardiaque normal sur un patient inconscient = dissociation électromécanique (DEA) → appel immédiat.
+      </div>
+    </div>
+
+    <!-- MÉMO -->
+    <div class="fsec" id="fme">
+      <div class="fst">🧠 Mémo rapide</div>
+      <div class="memo" style="background:var(--card2);border:1px solid var(--bd);color:var(--t2)">
+        <div class="mh" style="color:var(--blm)">📊 Normes adulte — Récapitulatif</div>
+        FC : <span class="mn">60-100 bpm</span> · TA : <span class="mn">120/80 mmHg</span> · FR : <span class="mn">12-20/min</span><br>
+        Temp : <span class="mn">36,5-37,5°C</span> · SpO₂ : <span class="mn">≥95%</span> · Glycémie : <span class="mn">0,7-1,1 g/L</span><br>
+        Diurèse : <span class="mn">1-1,5 L/24h</span> · Glasgow max : <span class="mn">15/15</span>
+      </div>
+      <div class="memo" style="background:var(--rdl);border:1px solid var(--rdm);color:var(--rdm)">
+        <div class="mh" style="color:var(--rdm)">🚨 Seuils d'urgence absolue</div>
+        FC &lt;40 ou &gt;150 · TA sys &lt;70 ou &gt;180 · FR &lt;8 ou &gt;30 · Temp &lt;35°C ou &gt;40°C<br>
+        SpO₂ ≤ 90% · Glycémie &lt; 0,50 g/L · Diurèse &lt; 100 mL/24h (anurie) · GCS ≤ 8
+      </div>
+      <div class="memo" style="background:var(--bll);border:1px solid var(--bl);color:var(--t2)">
+        <div class="mh" style="color:var(--blm)">🔌 Électrodes scope 3 dérivations</div>
+        <strong style="color:var(--rdm)">Rouge</strong> : sous-claviculaire droite (espace intercostal droit)<br>
+        <strong style="color:#eab308">Jaune</strong> : sous-claviculaire gauche (espace intercostal gauche)<br>
+        <strong style="color:var(--grm)">Vert/Noir</strong> : rebord costal inférieur gauche (6e-7e EIC)<br>
+        → Sélectionner <strong>DII</strong> pour la surveillance du rythme
+      </div>
+      <div class="memo" style="background:var(--pul);border:1px solid var(--pum);color:var(--pum)">
+        <div class="mh" style="color:var(--pum)">🔌 5e électrode — Dérivation précordiale</div>
+        <strong>V1</strong> (4e EIC droit, bord droit sternum) → surveillance du rythme<br>
+        <strong>V5</strong> (5e EIC, ligne axillaire ant. gauche) → surveillance ischémie VG<br>
+        Pièges : inverser R et J = ECG miroir · électrodes sur muscles = artefacts<br>
+        Tracé plat ≠ asystolie → vérifier le patient PUIS les électrodes
+      </div>
+      <div class="memo" style="background:var(--orl);border:1px solid var(--orm);color:var(--orm)">
+        <div class="mh" style="color:var(--orm)">⚠️ Pièges des constantes</div>
+        SpO₂ : vernis · froid · mouvement → changer de site<br>
+        TA : brassard inadapté · bras perfusé · hémiplégie/FAV → bras opposé<br>
+        Température axillaire : ajouter +0,5°C pour estimer la centrale<br>
+        FR : toujours mesurer à l'insu du patient (modifie sa respiration)<br>
+        GCS : évaluer les 3 composantes Y-V-M séparément
+      </div>
+    </div>
+  </div>
+</div>
+<!-- QUIZ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-b">📊</div><span class="tbl-t">Constantes</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw"><div class="tbql" id="tbql">1/16</div><div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div></div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">📊</div>
+      <div style="flex:1"><div class="ctx-sub" id="ctxsb">Étape</div><div class="ctx-title" id="ctxtl"></div><div class="ctx-body" id="ctxbd"></div></div>
+    </div>
+    <div class="qcard">
+      <div class="qtop"><div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div><span class="qnum" id="qnum">1</span></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fs2">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="fs2">❌ <strong id="sw2">0</strong> erreurs</div>
+    <div class="fs2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+<!-- RÉSULTAT -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hl"><div class="hico">📊</div><div><div class="hn">Rapport — Constantes &amp; Scope</div></div></div></div>
+  <div class="rb">
+    <div class="rh">
+      <span class="rg" id="rg">🎓</span>
+      <div class="rs" id="rs">--/20</div>
+      <div class="rsb" id="rsb">--</div>
+      <div class="rmen" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--orm)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--orm)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--blm)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--tlm)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errb" id="errb" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsb"><div class="cnst">💡 Conseils personnalisés</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rbtn rbs" onclick="showScr('sw')">← Menu</button>
+      <button class="rbtn rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Sources : Réussis ton IFSI 2023 · CHUV · fiches-ide.fr ·
+   efurgences.net · Art. R.4311-5 CSP · HAS 2022 · clemedicine.com */
+const ST=[
+{n:1,cat:"Cadre légal & Indications",ico:"📋",crit:false,att:false,
+ title:"Cadre légal et indications de la prise de constantes",
+ what:"La surveillance des paramètres vitaux relève du <strong>rôle propre infirmier</strong> (Art. R.4311-5 CSP) : 'appréciation des principaux paramètres servant à la surveillance : température, pulsations, pression artérielle, rythme respiratoire, taux de saturation en oxygène, volume de la diurèse, poids, mensurations, réflexes pupillaires, évaluation de la douleur…'. Les constantes sont mesurées lors de l'admission, selon les prescriptions, ou à chaque modification clinique du patient.",
+ why:"Les constantes sont la base de toute surveillance clinique. Un chiffre isolé ne dit rien — c'est la tendance et le contexte qui donnent l'alerte. La FR est le premier paramètre à se dégrader avant un arrêt cardiaque.",
+ rule:"Prise de constantes = rôle propre infirmier (Art. R.4311-5). Toujours contextualiser au patient — pas de chiffre isolé.",
+ q:"La surveillance des paramètres vitaux (TA, FC, FR, température...) relève de ?",
+ ch:["Rôle prescrit — prescription médicale obligatoire","Rôle propre infirmier (Art. R.4311-5) — pas de prescription requise pour cette surveillance","Délégation aide-soignante uniquement","Rôle médical uniquement"],
+ ok:1},
+{n:2,cat:"SHA & Préparation",ico:"🤲",crit:false,att:false,
+ title:"SHA, préparer le matériel et informer le patient",
+ what:"Effectuez une <strong>friction SHA</strong>. Préparez le matériel (tensiomètre avec brassard adapté, thermomètre, saturomètre, lecteur de glycémie, feuille de surveillance). Informez le patient du soin. Le patient doit être au repos depuis au moins <strong>5 minutes</strong> avant la mesure de la TA. Fermez les fenêtres si prise de température (courant d'air fausse la tympanique).",
+ why:"Un patient qui vient de marcher ou d'être stressé a une TA et une FC artificiellement élevées. Le repos de 5 minutes est indispensable pour une mesure TA fiable.",
+ rule:"SHA avant les constantes. Patient au repos ≥5 min avant la TA. Informer le patient.",
+ q:"Avant de mesurer la TA, le patient doit être au repos pendant ?",
+ ch:["30 secondes suffisent si le patient semble calme","1 minute minimum","Au moins 5 minutes en position assise ou allongée","10 minutes uniquement si patient hypertendu connu"],
+ ok:2},
+{n:3,cat:"Fréquence Cardiaque",ico:"❤️",crit:false,att:true,
+ title:"Mesurer la fréquence cardiaque (FC) au pouls radial",
+ what:"Posez 2e et 3e doigts (index et majeur) sur le <strong>pouls radial</strong> (face antérieure du poignet, côté latéral). <strong>Ne jamais utiliser le pouce</strong> (le soignant palpe son propre pouls artériel). Compter pendant <strong>60 secondes</strong> si rythme irrégulier, 30 secondes × 2 si rythme régulier. Notez : fréquence (bpm), rythme (régulier/irrégulier), amplitude (bien frappé, filant, bondissant).",
+ why:"Le pouce a son propre pouls artériel puissant qui peut être confondu avec le pouls du patient. Les 60 secondes sont indispensables pour détecter une arythmie sporadique (fibrillation auriculaire, extrasystoles irrégulières).",
+ rule:"Ne jamais utiliser le pouce. 60 sec si rythme irrégulier. Noter FC + rythme + amplitude. Normale : 60-100 bpm.",
+ q:"Vous comptez le pouls radial d'un patient pendant 30 secondes et obtenez 38 battements. Quelle est la FC ?",
+ ch:["38 bpm — valeur directe","76 bpm — multiplier par 2 car 30 secondes × 2","19 bpm — diviser par 2","Recommencer sur 60 secondes obligatoirement car chiffre impair"],
+ ok:1},
+{n:4,cat:"Fréquence Respiratoire",ico:"🫁",crit:true,att:false,
+ title:"Mesurer la FR — À l'insu du patient",
+ what:"Gardez la main sur le poignet du patient <strong>après la mesure du pouls</strong> (il croit que vous comptez encore le pouls). Observez les mouvements thoraciques pendant <strong>60 secondes</strong>. <strong>Jamais</strong> dire au patient ce qu'on fait : il modifierait volontairement sa respiration. Observer aussi : tirage intercostal, battement des ailes du nez, cyanose, polypnée, dyspnée, signes de lutte respiratoire.",
+ why:"La FR est le paramètre le plus souvent négligé en pratique et pourtant le premier à se dégrader avant un arrêt cardiaque. Un patient conscient modifie automatiquement sa respiration si on lui dit qu'on la mesure.",
+ rule:"FR : 12-20/min. Mesurer à l'insu du patient, main sur le poignet. 60 secondes. Observer les signes de détresse respiratoire. FR >30/min = urgence.",
+ q:"Pourquoi garde-t-on la main sur le poignet du patient pour mesurer la FR ?",
+ ch:["Pour vérifier le pouls en même temps","Pour que le patient croit qu'on compte encore le pouls et ne modifie pas sa respiration volontairement","Pour stabiliser le bras du patient pendant la mesure","Pour estimer la température du patient"],
+ ok:1},
+{n:5,cat:"Pression Artérielle",ico:"💉",crit:true,att:false,
+ title:"Mesurer la TA — Brassard adapté et précautions",
+ what:"Choisissez un <strong>brassard adapté</strong> à la circonférence du bras (doit couvrir 2/3 du bras). Placez le bord inférieur à <strong>2-3 cm du pli du coude</strong>. Bras au niveau du cœur. Mesurer les deux bras à l'admission (noter la différence si >10 mmHg). <strong>Contre-indications au bras :</strong> FAV (fistule artério-veineuse), perfusion IV, lymphœdème, mastectomie, hémiplégie → mesurer au <strong>bras opposé ou à la cuisse</strong>.",
+ why:"Un brassard trop petit donne une valeur artificiellement élevée (fausse HTA). Un brassard trop grand donne une valeur artificiellement basse. Mesurer sur un bras perfusé ou avec FAV = risque de thrombose de la fistule ou perturbation de la perfusion.",
+ rule:"Brassard couvrant 2/3 du bras. Bord inf à 2-3 cm du coude. Bras au niveau du cœur. FAV/perf/lymphœdème/mastectomie = bras opposé.",
+ q:"Votre patient hémodialysé a une FAV au bras gauche et une perfusion au bras droit. Où mesurez-vous la TA ?",
+ ch:["Bras droit — la FAV est à gauche","Bras gauche — la perfusion peut fausser","À la cuisse — les deux bras sont inutilisables","N'importe quel bras si on est rapide"],
+ ok:2},
+{n:6,cat:"Température",ico:"🌡️",crit:false,att:true,
+ title:"Mesurer la température — Voies et corrections",
+ what:"<strong>Voies de mesure :</strong><br>• <strong>Tympanique</strong> : rapide, ±0,5°C d'imprécision possible. Tirer légèrement l'oreille vers l'arrière pour redresser le conduit. La valeur doit être considérée comme une approximation.<br>• <strong>Axillaire</strong> : bien tolérée mais sous-estime la température centrale de ~0,5°C. <strong>Ajouter +0,5°C</strong> pour estimer la température centrale.<br>• <strong>Rectale</strong> : référence pour la température centrale (+0,5°C vs buccale). Utile chez nourrisson.<br>• <strong>Buccale</strong> : eviter si patient sous O₂ ou agité.",
+ why:"Chaque voie a un écart par rapport à la température centrale. L'oublier peut conduire à sous-estimer une fièvre ou une hypothermie. Température rectale = référence en pédiatrie et en cas de doute.",
+ rule:"Axillaire : ajouter +0,5°C pour estimer la centrale. Tympanique : ±0,5°C imprécision. Normale : 36,5-37,5°C. Fièvre ≥38°C. Hyperthermie ≥40°C. Hypothermie ≤35°C.",
+ q:"Un patient a une température axillaire à 37,8°C. Quelle est la température centrale estimée ?",
+ ch:["37,8°C — la mesure axillaire est directement la température centrale","38,3°C — température axillaire + 0,5°C","37,3°C — on soustrait 0,5°C pour la mesure axillaire","On ne peut pas estimer sans mesure rectale"],
+ ok:1},
+{n:7,cat:"SpO₂",ico:"🩸",crit:true,att:false,
+ title:"Mesurer la SpO₂ — Pièges qui faussent la mesure",
+ what:"Placez le saturomètre sur le <strong>bout d'un doigt propre</strong> (index ou majeur de préférence). Attendre la stabilisation du signal (3-5 secondes). <strong>Pièges qui faussent la mesure :</strong> vernis à ongles (fausse valeur ou absence de signal), ongles en gel/acrylique, doigts froids ou vasoconstriction, mouvements du patient, intoxication au CO (valeur faussement haute à 100%), hypoperfusion périphérique. En cas de doute : mesurer au lobe de l'oreille ou à l'orteil.",
+ why:"Un vernis à ongles sombre absorbe la lumière émise par le capteur et fausse complètement la mesure. L'intoxication au CO est un piège majeur : la SpO₂ peut afficher 100% alors que le patient est en intoxication grave (l'oxyhémoglobine et la carboxyhémoglobine sont indistinguibles pour l'oxymètre).",
+ rule:"SpO₂ normale ≥98%. Préoccupant <95%. Urgence absolue ≤90%. Vernis/froid/mouvement = changer de site. CO = piège (valeur faussement haute).",
+ q:"Votre patient a une SpO₂ à 100% mais vous suspectez une intoxication au monoxyde de carbone (CO). Cette valeur est-elle rassurante ?",
+ ch:["Oui — 100% est la valeur parfaite, pas d'inquiétude","Non — l'oxymètre de pouls ne distingue pas l'oxyhémoglobine de la carboxyhémoglobine. La SpO₂ peut être faussement normale à 100% en cas d'intoxication au CO","Non seulement si le patient est symptomatique","Oui si la FR est normale"],
+ ok:1},
+{n:8,cat:"Glycémie capillaire",ico:"🍬",crit:true,att:false,
+ title:"Mesurer la glycémie capillaire",
+ what:"Lavez les mains du patient à l'eau et au savon (traces de sucre sur les doigts = valeur faussement haute). Séchez complètement. Piquez sur la <strong>pulpe du bout du doigt</strong> (côté latéral, moins douloureux que le centre). Éliminez la première goutte de sang (peut être diluée par les liquides interstitiels). Déposez la deuxième goutte sur la bandelette. Attendez le résultat (3-10 sec). Comprimer légèrement.",
+ why:"La première goutte est souvent diluée par la pression exercée et peut contenir des liquides interstitiels, faussant la valeur. Les mains sucrées (sucre alimentaire) donnent une glycémie faussement élevée.",
+ rule:"Mains lavées et séchées. Éliminer la 1ère goutte. 2e goutte sur la bandelette. Normale à jeun : 0,7-1,1 g/L. Hypo <0,7 g/L = traiter.",
+ q:"Vous mesurez la glycémie d'un patient diabétique. Il vient de manger une pomme. Que faites-vous avant la mesure ?",
+ ch:["Mesurez directement — la glycémie s'adapte à ce qu'il vient de manger","Demandez-lui de se laver les mains à l'eau et savon et de bien les sécher avant la mesure — traces de sucre = valeur faussement élevée","Attendez 2 heures que le sucre se dégrade sur les doigts","Utilisez un autre doigt que celui qu'il a utilisé pour manger"],
+ ok:1},
+{n:9,cat:"Diurèse",ico:"💧",crit:false,att:true,
+ title:"Surveiller la diurèse",
+ what:"La diurèse est mesurée sur <strong>24 heures</strong> (ou par heure en réanimation). Normale adulte : <strong>1 000 à 1 500 mL/24h</strong> (minimum 500 mL/24h = 0,5 mL/kg/h). Observer aussi : couleur (jaune clair normal, orange/brun = déshydratation ou rhabdomyolyse), odeur, aspect (trouble = possible infection urinaire), présence de sang. <strong>Oligurie</strong> &lt;500 mL/24h · <strong>Anurie</strong> &lt;100 mL/24h → alerter le médecin.",
+ why:"La diurèse reflète la perfusion rénale et l'état d'hydratation. Une anurie brutale peut signaler une insuffisance rénale aiguë, une déshydratation sévère, ou une obstruction urinaire. En réanimation, la diurèse horaire est un marqueur de la perfusion tissulaire.",
+ rule:"Normale : 1-1,5 L/24h · 0,5 mL/kg/h. Oligurie <500 mL/24h. Anurie <100 mL/24h = urgence. Observer couleur + aspect.",
+ q:"Vous mesurez une diurèse de 200 mL en 24h chez un patient de 70 kg (sans sonde urinaire). C'est ?",
+ ch:["Normal si le patient ne boit pas beaucoup","Oligurie limite — à surveiller","Anurie (<100 mL/24h) non, mais c'est une oligurie sévère (200 mL << 500 mL mini) → alerter le médecin immédiatement","Normal pour un patient hospitalisé"],
+ ok:2},
+{n:10,cat:"Glasgow",ico:"🧠",crit:true,att:false,
+ title:"Évaluer le Score de Glasgow (GCS)",
+ what:"Le GCS évalue la conscience sur 3 composantes :<br>• <strong>Y (yeux)</strong> : 4=spontané / 3=à la voix / 2=à la douleur / 1=aucune<br>• <strong>V (verbal)</strong> : 5=orienté / 4=confus / 3=mots inappropriés / 2=sons / 1=aucun<br>• <strong>M (moteur)</strong> : 6=obéit ordres / 5=localise douleur / 4=retrait / 3=flexion stéréotypée / 2=extension / 1=aucune<br>Score max = <strong>15/15</strong> (normal) · Score ≤8 = protection des VAS compromise → discuter intubation.",
+ why:"GCS ≤8 correspond à un patient qui ne peut plus protéger ses voies aériennes supérieures. Cela guide la décision d'intubation. GCS <13 = surveillance rapprochée et appel médecin.",
+ rule:"GCS 15 = normal. GCS ≤13 = surveillance rapprochée + médecin. GCS ≤8 = VAS compromises → intubation à discuter. Score = Y + V + M.",
+ q:"Un patient ouvre les yeux à la voix (Y3), dit des mots inappropriés (V3), et localise la douleur (M5). Quel est son score de Glasgow ?",
+ ch:["GCS 9 (3+3+3)","GCS 11 (3+3+5)","GCS 13 (4+4+5)","GCS 8 (3+2+3)"],
+ ok:1},
+{n:11,cat:"Évaluation douleur",ico:"😣",crit:false,att:true,
+ title:"Évaluer la douleur — EVA, EN, FLACC",
+ what:"<strong>Évaluation de la douleur = constante à part entière</strong> (Art. R.4311-5).<br>• <strong>EVA</strong> (Échelle Visuelle Analogique) : réglette 0-10 cm, côté patient sans chiffres. 0=aucune douleur, 10=douleur insupportable.<br>• <strong>EN</strong> (Échelle Numérique) : patient donne un chiffre de 0 à 10.<br>• <strong>FLACC</strong> : pour patient non-communicant (enfant, troubles cognitifs) — Face, Legs, Activity, Cry, Consolability.<br>Douleur légère 0-3 · Modérée 4-6 (traiter) · Intense ≥7 (traitement urgent).",
+ why:"La douleur est insuffisamment évaluée et traitée en France. L'évaluation systématique à chaque prise de constantes permet de ne pas passer à côté d'une douleur intense. La douleur peut aussi signaler une complication (ischémie, infection...).",
+ rule:"EVA/EN : 0-3 légère · 4-6 modérée → traitement à évaluer · ≥7 intense → traitement urgent. FLACC pour non-communicants.",
+ q:"Un patient donne une EN (Échelle Numérique) à 7/10 pour sa douleur. Quelle est la priorité ?",
+ ch:["Surveiller l'évolution et refaire la mesure dans 2 heures","Douleur intense (≥7) : traitement antalgique urgent à évaluer avec le médecin et administration selon la prescription","Rassurer le patient — le chiffre 7 est subjectif","Noter sans traitement — la douleur post-opératoire est normale"],
+ ok:1},
+{n:12,cat:"Scope — Mise en place",ico:"🔌",crit:true,att:false,
+ title:"Mettre en place le scope — Préparation de la peau et électrodes",
+ what:"<strong>Préparation de la peau :</strong> raser si nécessaire, dégraisser avec une compresse alcoolique (laisser sécher), abrasion légère si signal de mauvaise qualité. Les électrodes adhésives se changent toutes les 24-48h.<br><br><strong>Placement 3 électrodes :</strong><br>• <strong>Rouge</strong> : sous la clavicule droite (1er EIC, loin du sternum)<br>• <strong>Jaune</strong> : sous la clavicule gauche (symétrique)<br>• <strong>Vert/Noir</strong> : rebord costal inférieur gauche (6e-7e EIC)<br><br>Éviter les zones musculaires (artefacts myogramme). Sélectionner la dérivation <strong>DII</strong> pour la surveillance du rythme.",
+ why:"La peau non dégraissée crée une résistance électrique élevée → signal de mauvaise qualité → artefacts → fausses alarmes. Les zones musculaires génèrent des parasites myogramme qui rendent le tracé illisible.",
+ rule:"Dégraisser la peau + laisser sécher. Éviter les zones musculaires. Rouge sous-clav D · Jaune sous-clav G · Vert/Noir rebord costal G. Sélectionner DII.",
+ q:"Où placez-vous l'électrode rouge (R) lors de la mise en place d'un monitoring à 3 dérivations ?",
+ ch:["Au centre du thorax, sur le sternum","Sous la clavicule droite, dans le 1er espace intercostal, à distance de la ligne médiane","Au niveau de V1 : 4e espace intercostal droit, bord droit du sternum","Sur l'épaule droite, sur la masse musculaire du deltoïde"],
+ ok:1},
+{n:13,cat:"Scope — 5 électrodes",ico:"🔌",crit:true,att:false,
+ title:"Scope 5 électrodes — Positionnement de la 5e électrode",
+ what:"Le système 5 électrodes ajoute une <strong>5e électrode précordiale (blanche)</strong> aux 4 positions de base :<br>• Rouge (RA) : sous-claviculaire droite<br>• Jaune (LA) : sous-claviculaire gauche<br>• Noir (RL) : neutre, sous-claviculaire droite basse<br>• Vert (LL) : rebord costal inférieur gauche<br>• <strong>Blanc (V) : position précordiale</strong><br>  → V1 (4e EIC droit, bord droit sternum) : surveillance du rythme<br>  → V5 (5e EIC, ligne axillaire ant. gauche) : surveillance de l'ischémie VG",
+ why:"V5 est la dérivation précordiale avec la meilleure sensibilité pour détecter l'ischémie du ventricule gauche (sus-décalage du segment ST). V1 est meilleur pour la surveillance du rythme (onde P visible). Le choix dépend de l'objectif clinique.",
+ rule:"V1 : 4e EIC droit, bord droit sternum → rythme. V5 : 5e EIC, ligne axillaire ant G → ischémie VG. Inverser R et J = ECG miroir → fausse interprétation.",
+ q:"Vous scopez un patient en post-infarctus pour surveiller l'ischémie myocardique (segment ST). Quelle position choisissez-vous pour la 5e électrode précordiale ?",
+ ch:["V1 (4e EIC droit, bord droit du sternum) — meilleure pour l'ischémie","V5 (5e EIC, ligne axillaire antérieure gauche) — meilleure sensibilité pour l'ischémie du ventricule gauche","V3 — position intermédiaire la plus polyvalente","N'importe quelle position — le scope calcule automatiquement les ischémies"],
+ ok:1},
+{n:14,cat:"Scope — Alarmes",ico:"🚨",crit:true,att:false,
+ title:"Régler et gérer les alarmes du scope",
+ what:"<strong>Réglage des alarmes :</strong> adapter au patient (un patient tachycarde à 120 en permanence → alarme à 130, pas à 100). Alarmes FC, SpO₂, TA, FR. Ne jamais désactiver les alarmes sonores. <strong>Face à une alarme :</strong><br>① Regarder le patient (conscient ? respire ? )<br>② Palper le pouls carotidien (si tracé plat)<br>③ Vérifier le tracé (électrode décollée ?)<br>④ <strong>Ne jamais débuter un MCE sur un tracé plat sans confirmer cliniquement l'absence de pouls</strong>",
+ why:"Un tracé plat est dans 90% des cas dû à une électrode décollée, pas à une asystolie. Débuter un MCE sur un patient conscient avec une électrode décollée est une faute grave. La dissociation électromécanique (activité électrique présente, pouls absent) ne peut être diagnostiquée que cliniquement.",
+ rule:"Toute alarme = vérifier le PATIENT d'abord, PUIS l'appareil. Tracé plat ≠ asystolie → palper le pouls carotidien. Alarmes adaptées au patient. Jamais silencer sans identifier la cause.",
+ q:"Le scope affiche un tracé plat et l'alarme sonne. Votre patient était conscient il y a 2 minutes. Quelle est votre 1ère action ?",
+ ch:["Débuter le MCE immédiatement — tracé plat = arrêt cardiaque","Vérifier le patient : conscient ? Palper le pouls carotidien. Vérifier les électrodes. Tracé plat = le plus souvent une électrode décollée","Appuyer sur SILENCE ALARME pour avoir le temps d'évaluer","Appeler le médecin en urgence avant de toucher le patient"],
+ ok:1},
+{n:15,cat:"Poids & Diurèse",ico:"⚖️",crit:false,att:false,
+ title:"Mesurer le poids et surveiller la balance hydrique",
+ what:"<strong>Poids :</strong> mesurer à heure fixe, sur le même pèse-personne, à jeun, en sous-vêtements (même tenue chaque fois). Calculer l'IMC = poids(kg) / taille²(m). <strong>Balance hydrique</strong> (en réanimation / insuffisance cardiaque / insuffisance rénale) : entrées (perfusions, boissons, alimentation) – sorties (diurèse, drains, vomissements, transpiration). Bilan = E – S. Bilan positif = rétention hydrique. <strong>Prise ou perte de 1 kg = variation de 1 L de liquide</strong>.",
+ why:"La pesée quotidienne est l'un des indicateurs les plus fiables de la rétention hydrique chez un patient insuffisant cardiaque ou rénal. Une prise de 2 kg en 48h doit alerter sur une décompensation en cours.",
+ rule:"Poids à heure fixe, même conditions. Balance hydrique = Entrées – Sorties. 1 kg = 1 L. Prise de 2 kg en 48h = alarme insuffisance cardiaque.",
+ q:"Chez un patient insuffisant cardiaque, vous constatez une prise de poids de 2,5 kg en 48 heures. Cela signifie ?",
+ ch:["Le patient mange bien — signe positif","Rétention hydrique d'environ 2,5 L — alerte de décompensation cardiaque à signaler au médecin","Variation normale entre deux pesées","Erreur de mesure probable"],
+ ok:1},
+{n:16,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Tracer les constantes et signaler les anomalies",
+ what:"Documentez toutes les constantes mesurées dans la <strong>feuille de surveillance</strong> ou le dossier informatisé : date, heure, valeurs, votre nom et signature. Si une valeur est anormale : noter la conduite adoptée (signalement médecin, mesure effectuée, position du patient...). <strong>Régler les alarmes du scope</strong> selon les paramètres du patient et vérifier qu'elles sont fonctionnelles à chaque prise de poste.",
+ why:"La traçabilité assure la continuité des soins (le médecin voit l'évolution de toutes les constantes dans le temps) et protège le soignant juridiquement. Des alarmes non réglées ou silencées constituent une faute grave.",
+ rule:"Tracer toutes les constantes avec heure + valeur + signature. Valeur anormale = noter la conduite. Alarmes scope réglées et actives à chaque prise de poste.",
+ q:"Vous relevez une SpO₂ à 91% chez votre patient et vous signalez immédiatement le médecin. Que notez-vous dans le dossier ?",
+ ch:["Uniquement la valeur SpO₂ 91%","La valeur (SpO₂ 91%), l'heure, les mesures prises (repositionnement, O₂ si prescrit), le signalement médecin et les consignes reçues, votre signature","Rien pour ne pas alerter inutilement","Uniquement les consignes du médecin"],
+ ok:1},
+];
+const QE=[
+{cat:"Normes FC",q:"Valeur normale de la fréquence cardiaque chez l'adulte au repos ?",ch:["40-80 bpm","60-100 bpm","80-120 bpm","50-90 bpm"],ok:1,ek:"FC normale adulte au repos : 60-100 bpm. Bradycardie <60 bpm. Tachycardie >100 bpm.",ee:"60-100 bpm est la référence universelle.",r:"<strong>FC normale : 60-100 bpm.</strong>",xp:8},
+{cat:"Normes TA",q:"Valeur de référence d'une TA normale chez l'adulte ?",ch:["100/60 mmHg","120/80 mmHg","140/90 mmHg","110/70 mmHg"],ok:1,ek:"TA normale : 120/80 mmHg. HTA dès ≥140/90 mmHg. Hypotension <90 mmHg systolique.",ee:"120/80 = référence. 140/90 = seuil HTA.",r:"<strong>TA normale : 120/80 mmHg.</strong>",xp:8},
+{cat:"SpO₂ urgence",q:"À partir de quelle valeur de SpO₂ parle-t-on d'urgence absolue ?",ch:["<98%","<95%","≤90%","<85%"],ok:2,ek:"SpO₂ ≤90% = urgence absolue = hypoxémie sévère. 95-97% = seuil préoccupant à surveiller. ≥98% = normal.",ee:"≤90% est le seuil critique reconnu universellement.",r:"<strong>SpO₂ ≤90% = urgence absolue.</strong>",xp:12},
+{cat:"Électrodes scope",q:"Où place-t-on l'électrode rouge dans un monitoring 3 dérivations ?",ch:["Sur le sternum, centre du thorax","Sous la clavicule droite, dans l'espace intercostal, loin du sternum","Au niveau de V1 : 4e espace intercostal droit","Sur l'épaule droite, masse musculaire"],ok:1,ek:"Rouge (R/RA) : sous-claviculaire droite, 1er EIC, distance du sternum. Éviter les masses musculaires (artefacts).",ee:"Le sternum et les muscles génèrent des artefacts.",r:"<strong>Rouge : sous-claviculaire droite, EIC, loin du sternum.</strong>",xp:15},
+{cat:"Électrodes scope",q:"Où place-t-on l'électrode verte/noire dans un monitoring 3 dérivations ?",ch:["Sous la clavicule gauche, symétrique du rouge","Sous la clavicule droite basse","Rebord costal inférieur gauche (6e-7e espace intercostal gauche)","Au centre du thorax, sur l'appendice xiphoïde"],ok:2,ek:"Vert/Noir (LL) : rebord costal inférieur gauche, 6e-7e EIC. Électrode de référence permettant les dérivations DI, DII, DIII.",ee:"La position symétrique du rouge est l'électrode jaune.",r:"<strong>Vert/Noir : rebord costal inférieur gauche (6e-7e EIC).</strong>",xp:15},
+{cat:"Scope — dérivation",q:"Quelle dérivation sélectionner sur le scope pour optimiser la surveillance du rythme cardiaque ?",ch:["DI — entre rouge et jaune","DII — entre rouge et vert — meilleure amplitude des ondes P","DIII — entre jaune et vert","V5 — meilleure pour les arythmies"],ok:1,ek:"DII (rouge–vert) donne la meilleure amplitude des ondes P → dépistage optimal des arythmies (FA, blocs, ESV...).",ee:"DII est la référence pour la surveillance du rythme.",r:"<strong>Sélectionner DII sur le scope pour la surveillance du rythme.</strong>",xp:12},
+{cat:"Scope — 5 électrodes",q:"Pour surveiller l'ischémie myocardique en surveillance continue, quelle position choisit-on pour la 5e électrode précordiale ?",ch:["V1 : 4e EIC droit, bord droit du sternum","V5 : 5e EIC, ligne axillaire antérieure gauche — meilleure sensibilité ischémie VG","V2 : 4e EIC gauche, bord gauche sternum","V6 : ligne axillaire moyenne"],ok:1,ek:"V5 : meilleure sensibilité pour l'ischémie du ventricule gauche (sus-décalage ST de l'IVA). V1 = meilleur pour la surveillance du rythme.",ee:"V1 est pour le rythme. V5 est pour l'ischémie.",r:"<strong>Ischémie : V5. Rythme : V1.</strong>",xp:15},
+{cat:"Tracé plat scope",q:"Le scope affiche un tracé plat. Votre 1ère action est ?",ch:["Débuter le MCE immédiatement","Appuyer sur SILENCE","Vérifier cliniquement le patient (conscient ? pouls carotidien ?) avant tout geste — tracé plat = souvent électrode décollée","Appeler le médecin sans toucher le patient"],ok:2,ek:"Tracé plat = 90% du temps une électrode décollée. La règle absolue : vérifier le patient d'abord (conscient ? pouls ?). Ne jamais débuter MCE sur tracé plat sans confirmation clinique.",ee:"MCE immédiat sur un patient conscient = grave erreur.",r:"<strong>Tracé plat : vérifier le patient CLINIQUEMENT avant tout geste.</strong>",xp:15},
+{cat:"SpO₂ pièges",q:"Quel élément peut fausser la mesure de la SpO₂ en donnant une valeur artificiellement haute (faussement rassurante) ?",ch:["Doigts froids","Vernis à ongles sombre","Intoxication au monoxyde de carbone (CO)","Mouvement du patient"],ok:2,ek:"L'oxymètre de pouls ne distingue pas l'oxyhémoglobine (HbO₂) de la carboxyhémoglobine (HbCO). En cas d'intoxication au CO, la SpO₂ peut afficher 100% alors que le patient est empoisonné.",ee:"Le CO est le piège de la SpO₂ — valeur haute = faussement rassurante.",r:"<strong>CO = SpO₂ faussement haute. Oxymètre ne distingue pas HbO₂ et HbCO.</strong>",xp:15},
+{cat:"TA contre-indications",q:"Un patient a une FAV au bras gauche et une perfusion au bras droit. Où mesurez-vous la TA ?",ch:["Bras droit — la perfusion est moins grave","Bras gauche — malgré la FAV","À la cuisse (ou bras opposé à la FAV si la perf est ablatable)","N'importe quel bras si on est rapide"],ok:2,ek:"FAV (fistule artério-veineuse) = contre-indication absolue à la TA ipsilatérale. Mesure sur la FAV risque une thrombose de la fistule. Perfusion = contre-indication aussi. Deux bras inutilisables → cuisse.",ee:"FAV = contre-indication absolue à la mesure ipsilatérale.",r:"<strong>FAV + perfusion sur les deux bras → mesurer à la cuisse.</strong>",xp:12},
+{cat:"Glycémie",q:"Valeur normale de la glycémie capillaire à jeun ?",ch:["0,3 – 0,5 g/L","0,7 – 1,1 g/L","1,2 – 1,8 g/L","0,5 – 0,8 g/L"],ok:1,ek:"Glycémie normale à jeun : 0,70 – 1,10 g/L (3,9-6,1 mmol/L). Hypoglycémie <0,70 g/L. Hyperglycémie >1,26 g/L (à jeun, seuil diagnostic diabète).",ee:"0,7-1,1 g/L = normale à jeun.",r:"<strong>Glycémie à jeun normale : 0,7-1,1 g/L.</strong>",xp:10},
+{cat:"Glasgow",q:"Un patient GCS 8 (Y2+V2+M4). Quelle est la conduite prioritaire ?",ch:["Surveillance toutes les 2 heures suffit","Alerter le médecin — GCS ≤8 = voies aériennes compromises, intubation à discuter","Réhydrater et réévaluer dans 1h","Rassurer le patient — GCS 8 peut être normal"],ok:1,ek:"GCS ≤8 = protection des voies aériennes supérieures compromise → intubation à discuter avec le médecin immédiatement. GCS <13 = surveillance rapprochée.",ee:"GCS 8 est un seuil critique d'urgence neurologique.",r:"<strong>GCS ≤8 = VAS compromises → médecin + intubation à discuter.</strong>",xp:12},
+{cat:"Température",q:"Température axillaire à 37,3°C. Température centrale estimée ?",ch:["37,3°C — la valeur axillaire est directe","37,8°C — température axillaire + 0,5°C","36,8°C — on soustrait 0,5°C","On ne peut estimer sans mesure rectale"],ok:1,ek:"La voie axillaire sous-estime la température centrale d'environ 0,5°C. Il faut ajouter +0,5°C pour estimer la température centrale.",ee:"Axillaire sous-estime → ajouter 0,5°C.",r:"<strong>Température centrale estimée = axillaire + 0,5°C.</strong>",xp:10},
+{cat:"FR mesure",q:"Pourquoi mesure-t-on la FR en gardant la main sur le poignet du patient ?",ch:["Pour mesurer simultanément le pouls et la FR","Pour que le patient croie qu'on mesure encore le pouls et ne modifie pas sa respiration","Pour stabiliser le bras du patient","Pour estimer la température par la chaleur du poignet"],ok:1,ek:"Si le patient sait qu'on mesure sa FR, il modifie involontairement son rythme respiratoire. La main sur le poignet maintient l'illusion qu'on compte encore le pouls.",ee:"Le patient contrôle automatiquement sa respiration quand il sait qu'on la observe.",r:"<strong>Main sur poignet = mesurer la FR à l'insu du patient.</strong>",xp:10},
+{cat:"Diurèse",q:"Valeur minimale de la diurèse considérée comme normale sur 24h chez l'adulte ?",ch:["200 mL/24h","300 mL/24h","500 mL/24h — en dessous = oligurie","1 000 mL/24h"],ok:2,ek:"Diurèse minimale normale : 500 mL/24h (= 0,5 mL/kg/h pour un patient de 70 kg). En dessous = oligurie. Anurie = <100 mL/24h.",ee:"500 mL/24h est le seuil minimum. 1-1,5 L/24h est la normale confortable.",r:"<strong>Diurèse minimum : 500 mL/24h. < 500 = oligurie. < 100 = anurie.</strong>",xp:10},
+];
+const QS=[
+{cat:"Piège — Tracé plat MCE",q:"L'alarme sonne, tracé plat sur le scope. Un collègue commence le MCE immédiatement. Vous ?",ch:["L'aidez immédiatement — tracé plat = arrêt cardiaque","L'arrêtez — vérifier d'abord cliniquement le patient (conscient ? pouls carotidien ?) avant tout MCE. Tracé plat = 90% du temps une électrode décollée","L'aidez si le patient était à risque cardiaque","Attendez 30 secondes pour voir si le tracé revient"],ok:1,ek:"Tracé plat ≠ asystolie automatiquement. Électrode décollée = tracé plat dans la grande majorité des cas. MCE sur un patient conscient = fractures de côtes inutiles et grave erreur. Toujours évaluer le patient cliniquement.",ee:"'Tracé plat = MCE immédiat' est l'erreur la plus grave liée au monitoring.",r:"<strong>Tracé plat = vérifier le patient cliniquement AVANT tout MCE.</strong>",xp:25},
+{cat:"Piège — CO et SpO₂",q:"Patient intoxiqué au CO retrouvé dans un garage fermé. Sa SpO₂ affiche 99%. C'est rassurant ?",ch:["Oui — 99% est une valeur parfaite","Oui si la FR est normale","Non — en cas d'intoxication au CO, la SpO₂ est faussement haute. L'oxymètre ne distingue pas HbO₂ de HbCO. Ce patient nécessite O₂ haute concentration immédiatement et dosage de la HbCO","Non seulement s'il est symptomatique"],ok:2,ek:"L'oxymètre standard mesure l'absorbance de la lumière rouge et infrarouge par le sang. HbO₂ et HbCO ont des profils d'absorption similaires → le capteur les confond. SpO₂ = normal alors que le patient est empoisonné au CO.",ee:"SpO₂ normale en cas d'intoxication CO = faux sentiment de sécurité dangereux.",r:"<strong>CO = SpO₂ faussement rassurante. Toujours contexualiser cliniquement.</strong>",xp:25},
+{cat:"Piège — Électrodes inversées",q:"Vous inversez l'électrode rouge et l'électrode jaune lors de la pose du scope. Conséquence ?",ch:["Aucune — le scope recalcule automatiquement","L'alarme sonne pour signaler l'erreur","La dérivation DI est inversée (ECG miroir) — peut simuler un infarctus latéral ou masquer une ischémie vraie","Le patient ressent une décharge électrique"],ok:2,ek:"Inverser R et J inverse la dérivation DI. Sur le tracé, les ondes sont miroir : onde P négative en DI, QRS négatif → peut simuler un infarctus latéral ou masquer une véritable ischémie.",ee:"L'inversion R/J ne déclenche pas d'alarme mais fausse l'interprétation.",r:"<strong>Inverser R et J = ECG miroir = risque d'erreur diagnostique grave.</strong>",xp:20},
+{cat:"Piège — Brassard inadapté",q:"Votre patient obèse a une TA à 165/95 avec le petit brassard standard. Avec un brassard large adapté, elle serait probablement ?",ch:["Identique — la taille du brassard n'influence pas","Plus élevée — le gros brassard est moins précis","Plus basse — un brassard trop petit surestime la TA (fausse HTA)","Impossible à mesurer avec un grand brassard"],ok:2,ek:"Un brassard trop petit pour la circonférence du bras comprime insuffisamment les artères → nécessite une pression plus grande pour couper le flux → valeur surestimée (fausse HTA). Réduire des traitements antihypertenseurs sur cette base serait dangereux.",ee:"Petit brassard → surestimation TA (fausse HTA). Grand brassard → sous-estimation.",r:"<strong>Brassard trop petit = TA surestimée (fausse HTA). Adapter la taille.</strong>",xp:20},
+{cat:"Piège — Alarme silencée",q:"Le scope d'un patient sonne fréquemment (tachycardie à 108 persistante). Votre collègue 'silente' définitivement l'alarme FC. C'est ?",ch:["Acceptable — l'alarme intempestive nuit à tous les patients","Acceptable si on surveille le scope visiblement","Inacceptable — silencer définitivement une alarme est une faute grave. Il faut régler les seuils d'alarme au niveau du patient (ex : alarme à 125 bpm si tachy basale à 108) et pas désactiver","Acceptable pour les alarmes sonores si une alarme visuelle reste active"],ok:2,ek:"Adapter les seuils d'alarme ≠ désactiver les alarmes. Si le patient a une tachycardie basale à 108, régler l'alarme à 125-130 (pas à 100). Désactiver définitivement = ne plus voir une accélération de 108 à 160 bpm.",ee:"Adapter ≠ désactiver. Le but des alarmes est précisément de détecter les changements.",r:"<strong>Ne jamais désactiver une alarme. Adapter les seuils au patient.</strong>",xp:20},
+{cat:"Piège — FR négligée",q:"Un patient ne présente pas de douleur, TA normale, FC normale. Vous ne mesurez pas la FR car 'le patient va bien'. C'est ?",ch:["Acceptable — les 5 constantes ne sont pas toujours toutes nécessaires","Acceptable si la SpO₂ est normale","Incorrect — la FR est le premier paramètre à se dégrader avant un arrêt cardiaque. Une FR élevée (>25) avec des constantes normales peut annoncer une détérioration imminente","Acceptable si le patient ne se plaint pas de dyspnée"],ok:2,ek:"La FR est la 'grande oubliée' des constantes. Elle précède la dégradation des autres paramètres. Une tachypnée isolée à 28/min avec TA et FC normales doit alerter.",ee:"La FR 'oubliée' est une erreur clinique documentée.",r:"<strong>La FR est le 1er paramètre à se dégrader. Toujours la mesurer.</strong>",xp:20},
+{cat:"Piège — Glycémie mains sucrées",q:"Un patient vient de manger une orange. Vous mesurez sa glycémie sans lui demander de se laver les mains. Elle affiche 3,2 g/L. Vous ?",ch:["Alertez immédiatement le médecin — hyperglycémie sévère","Demandez-lui de se laver et sécher les mains puis recommencez la mesure — les traces de jus de fruit sur les doigts faussent la valeur vers le haut","Administrez de l'insuline selon le protocole de correction","Recommencez sur un autre doigt sans lui laver les mains"],ok:1,ek:"Les traces de sucre sur les doigts peuvent fausser la mesure glycémique (valeur artificiellement élevée). Toujours laver et sécher les mains avant la glycémie capillaire.",ee:"Un autre doigt sans lavage peut avoir les mêmes traces de sucre.",r:"<strong>Mains lavées et séchées AVANT la glycémie capillaire. Toujours.</strong>",xp:20},
+{cat:"Piège — TA bras FAV",q:"Un patient dialysé vous dit 'la FAV est au bras gauche, mesurez la TA à droite'. Mais à droite il a une perfusion de NaCl en cours. Vous ?",ch:["Mesurez à droite malgré la perfusion — c'est mieux que sur la FAV","Mesurez à gauche sur la FAV rapidement","Cherchez une alternative : mesurer à la cuisse, ou arrêter brièvement la perfusion si possible, ou aviser le médecin","Estimez la TA cliniquement sans mesure"],ok:2,ek:"FAV = contre-indication absolue à la TA ipsilatérale (thrombose possible). Perfusion en cours = mesure faussée + risque de reflux. Les deux bras sont inutilisables → mesurer à la cuisse.",ee:"Aucun des deux bras n'est utilisable dans ce cas.",r:"<strong>FAV + perfusion = les deux bras inutilisables → cuisse ou avis médical.</strong>",xp:20},
+{cat:"Piège — Électrodes muscles",q:"Votre collègue place les électrodes du scope sur les pectoraux (masses musculaires) pour 'mieux tenir'. Conséquence ?",ch:["Aucune — les pectoraux conduisent bien l'électricité","Meilleure qualité du signal — les muscles sont plus conducteurs","Artefacts myogramme constants — les muscles génèrent des parasites électriques qui rendent le tracé illisible et déclenchent de fausses alarmes","Le scope ne fonctionne pas sur les muscles"],ok:2,ek:"Les masses musculaires génèrent des potentiels électriques (myogramme) capturés par les électrodes. Ces parasites se superposent au tracé ECG → tracé illisible + fausses alarmes intempestives. Toujours placer sur zones osseuses ou graisseuses.",ee:"Les muscles = source de parasites = jamais utiliser pour les électrodes.",r:"<strong>Électrodes sur masses musculaires = artefacts myogramme = tracé illisible.</strong>",xp:15},
+{cat:"Piège — Glasgow 8",q:"Un patient en post-op a un GCS à 8 (Y2-V2-M4). Votre collègue dit 'il est juste somnolent, c'est normal après une anesthésie'. Vous ?",ch:["Êtes d'accord — GCS 8 post-op est classique","Attendez 2 heures et réévaluez","Signalez immédiatement au médecin — GCS ≤8 signifie que le patient ne peut plus protéger ses voies aériennes, ce qui nécessite une évaluation urgente indépendamment du contexte post-opératoire","N'agissez que si la SpO₂ baisse"],ok:2,ek:"GCS ≤8 = protection des VAS compromise = urgence. Même en post-opératoire, cette valeur doit être signalée immédiatement. Le contexte 'anesthésie récente' n'exclut pas d'autres causes (hématome, œdème cérébral, surdosage morphinique...).",ee:"'Normal après anesthésie' ne suffit pas à justifier un GCS ≤8 sans évaluation médicale.",r:"<strong>GCS ≤8 = urgence quelle que soit la cause. Signaler immédiatement.</strong>",xp:25},
+];
+const PHASES=[
+  {l:'📋 Phase 1 — Préparation (1-2)',steps:[1,2],c:'#2563eb'},
+  {l:'❤️ Phase 2 — FC, FR, TA (3-5)',steps:[3,4,5],c:'#dc2626'},
+  {l:'🌡️ Phase 3 — Température, SpO₂, Glycémie (6-8)',steps:[6,7,8],c:'#d97706'},
+  {l:'💧 Phase 4 — Diurèse, Glasgow, Douleur (9-11)',steps:[9,10,11],c:'#059669'},
+  {l:'🔌 Phase 5 — Scope et alarmes (12-14)',steps:[12,13,14],c:'#7c3aed'},
+  {l:'📝 Phase 6 — Poids, bilan, traçabilité (15-16)',steps:[15,16],c:'#0891b2'},
+];
+const SERR={
+  4:"Mesurer la FR en disant au patient ce qu'on fait — il modifie involontairement sa respiration.",
+  7:"Accepter une SpO₂ à 100% sans contexte — en cas de suspicion d'intoxication CO, l'oxymètre ne fait pas la distinction.",
+  12:"Placer les électrodes sur les masses musculaires — artefacts myogramme constants.",
+  13:"Inverser les électrodes rouge et jaune — ECG miroir qui peut simuler un infarctus ou masquer une ischémie.",
+  14:"Débuter un MCE sur un tracé plat sans vérifier cliniquement le patient — 90% des tracés plats sont des électrodes décollées.",
+};
+const SCONS={
+  3:"Astuce clinique : toujours noter le rythme (régulier/irrégulier) ET l'amplitude en plus de la fréquence. Un pouls filant avec FC normale est déjà un signe de gravité (choc).",
+  5:"Mémo brassard : trop petit → TA surestimée (fausse HTA). Trop grand → TA sous-estimée. 2/3 du bras = règle d'or.",
+  7:"En cas de doute sur la SpO₂ (vernis, froid, signal faible) : toujours changer de site (lobe de l'oreille > doigt) et contextualiser avec la clinique.",
+  10:"Moyen mnémotechnique GCS : 'YVM' = Yeux-Verbal-Moteur. Max = 4+5+6 = 15. Score minimum = 3 (jamais 0).",
+  12:"Pour les artefacts myogramme : déplacer les électrodes vers des zones peu musculaires (plat du thorax, zones osseuses). Si possible, abrasion légère de la peau.",
+  14:"Règle d'or du scope : 'On soigne le patient, pas l'écran.' Toujours aller au lit du patient avant de réagir à une alarme.",
+};
+function buildFicheProto(){
+  const c=document.getElementById('proto-const');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,var(--bll),var(--tll));border:1px solid var(--bl);border-radius:11px;padding:13px 15px;margin-bottom:15px;font-size:12px;line-height:1.75;color:var(--t2)';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:5px">📊 Avant toute prise de constantes</div><strong style="color:var(--text)">SHA + matériel adapté + patient au repos ≥5 min.</strong><br>Rappels : FR à l\'insu · brassard 2/3 du bras · SpO₂ ≠ CO · GCS ≤8 = urgence · tracé plat = vérifier le patient d\'abord.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');pd.className='ph';pd.style.borderColor=ph.c;pd.style.color=ph.c;pd.textContent=ph.l;c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':'';
+      let tags='';if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      const d=document.createElement('div');d.className=`sc2 ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sn2">${n}</div><div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div>
+        <div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c"><div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div><div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div></div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-const .sc2').forEach(x=>x.classList.add('open'));
+}
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='fpr')buildFicheProto();
+}
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+function setMode(m,btn){document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');mode=m;}
+function launch(){
+  if(mode==='fiche'){buildFicheProto();showScr('sf');showFTab('fn',document.querySelector('.ftab'));return;}
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else if(mode==='exam'){qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  else{qs=[...QS].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='💀 Survie';document.getElementById('livp').style.display='flex';document.getElementById('livn').textContent=3;}
+  showScr('sq');loadQ();
+}
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  document.getElementById('tbpf').style.width=(qi/qs.length*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q);else loadStd(q);startTimer();
+}
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.35);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'Outfit',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStep(i,b,s);c.appendChild(b);});
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStd(i,b,q);c.appendChild(b);});
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});if(mode==='survival'){lives--;document.getElementById('livn').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+function nextQ(){qi++;loadQ();}
+function startTimer(){
+  clearInterval(tiv);let dur=mode==='exam'?30:mode==='survival'?25:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--bl)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;arc.style.strokeDashoffset=((dur-tleft)/dur*220);num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--rd)';}
+    if(tleft<=0){clearInterval(tiv);if(!ans){ans=true;wrng++;score=Math.max(0,score-15);
+      document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+      updateUI();document.getElementById('nxt').classList.add('on');}}
+  },1000);
+}
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;document.getElementById('xpn').textContent=xp;
+  document.getElementById('sc').textContent=corr;document.getElementById('sw2').textContent=wrng;
+  document.getElementById('scn').textContent=score;document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+function showResult(){
+  clearInterval(tiv);const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:'📚 Apprentissage — 16 étapes',exam:'📝 Examen — Questions constantes & scope',survival:'💀 Survie — Questions pièges'};
+  const gd=[{m:18,g:'🏆',t:'Excellent',bc:'#1e3a5f',tc:'#60a5fa',bd:'#2563eb'},{m:14,g:'✅',t:'Bien',bc:'#1e3a5f',tc:'#60a5fa',bd:'#2563eb'},{m:10,g:'⚠️',t:'Passable — À consolider',bc:'#451a03',tc:'#fcd34d',bd:'#d97706'},{m:0,g:'❌',t:'Insuffisant',bc:'#450a0a',tc:'#f87171',bd:'#dc2626'}].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];document.getElementById('rxp').textContent=xp;document.getElementById('rstr').textContent=bstr;document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';bd.innerHTML+=`<div class="bki"><div class="bd3" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;});
+  const eb=document.getElementById('errb');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole bien assimilé. Passez au mode Examen puis au mode Survie pour les pièges scope et constantes.");
+  if(mode==='exam'&&note>=16)cs.push("💀 Excellent ! Le mode Survie vous attend — tracé plat scope, CO et SpO₂, électrodes inversées...");
+  if(mode==='survival'&&note>=18)cs.push("🏆 Maîtrise experte. Constantes et scope maîtrisés.");
+  if(note<10)cs.push("📖 Commencez par la Fiche Référence (tableau des normes + onglet Scope) puis repassez en Apprentissage.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : rouge sous-clav D · jaune sous-clav G · vert rebord costal G · DII pour rythme · tracé plat = vérifier patient.");
+  Object.entries(cats).forEach(([cat,s])=>{if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Électrodes')||cat.includes('scope'))cs.push("🔌 Électrodes scope : Rouge sous-clav D · Jaune sous-clav G · Vert rebord costal G. V5 = ischémie. V1 = rythme. Inverser R/J = ECG miroir.");
+    if(cat.includes('Tracé'))cs.push("💔 Tracé plat = vérifier le patient CLINIQUEMENT (conscient ? pouls ?) avant tout geste. 90% des tracés plats = électrodes décollées.");
+    if(cat.includes('SpO₂'))cs.push("🩸 SpO₂ : vernis/froid/CO = pièges. CO = valeur faussement haute. Seuil urgence ≤90%.");
+    if(cat.includes('Glasgow'))cs.push("🧠 GCS ≤8 = VAS compromises = urgence. Y+V+M. Max 15. Min 3.");
+    if(cat.includes('TA'))cs.push("💉 TA : brassard 2/3 du bras. FAV/perf/lymphœdème = contre-indications. Trop petit → TA surestimée.");
+    if(cat.includes('FR'))cs.push("🫁 FR : mesurer à l'insu (main sur poignet). 1ère constante à se dégrader avant un ACR.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. Constantes et scope maîtrisés.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+function restart(){launch();}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>

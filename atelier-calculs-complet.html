@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>L'Atelier des Calculs · L'École des Infirmiers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --navy: #0a1929;
+    --navy-soft: #1e3a5f;
+    --navy-light: #e8eef5;
+    --white: #ffffff;
+    --cream: #faf8f3;
+    --gold: #c8a85b;
+    --gold-light: #f5e6b8;
+    --red: #c83b3b;
+    --green: #2d7a4f;
+    --green-light: #d4f1e0;
+    --grey: #6b7280;
+    --grey-light: #d1d5db;
+    --grey-50: #f9fafb;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+  
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--navy);
+    min-height: 100vh;
+    padding: 20px 16px 60px;
+    line-height: 1.5;
+  }
+  
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  
+  /* ─── HEADER ─────────────────────────────── */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--grey-light);
+  }
+  .brand {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--navy);
+    padding: 6px 14px;
+    border: 1px solid var(--navy);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 400;
+  }
+  .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--grey);
+    font-size: 17px;
+    margin-top: 8px;
+  }
+  
+  /* ─── PROGRESSION DASHBOARD ──────────────── */
+  .dashboard {
+    background: var(--white);
+    border: 1px solid var(--grey-light);
+    border-radius: 4px;
+    padding: 24px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  .stat {
+    text-align: center;
+    padding: 0 8px;
+  }
+  .stat + .stat {
+    border-left: 1px solid var(--grey-light);
+  }
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--grey);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--navy);
+  }
+  .stat-value small {
+    font-size: 14px;
+    color: var(--grey);
+  }
+  
+  /* ─── BADGES ─────────────────────────────── */
+  .badges-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+  .badge {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    background: var(--grey-light);
+    color: var(--grey);
+    border: 2px solid var(--grey-light);
+    transition: all 0.3s;
+    cursor: help;
+  }
+  .badge.unlocked {
+    background: var(--gold-light);
+    color: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 2px 8px rgba(200, 168, 91, 0.3);
+  }
+  
+  /* ─── DISCLAIMER ─────────────────────────── */
+  .disclaimer {
+    background: #fef9e7;
+    border: 1px solid var(--gold);
+    border-left: 4px solid var(--gold);
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    font-size: 12px;
+    color: #78350f;
+    line-height: 1.6;
+    border-radius: 2px;
+  }
+  .disclaimer strong {
+    color: #78350f;
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  
+  /* ─── SECTION TITLE ──────────────────────── */
+  .section-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--navy);
+    margin: 32px 0 16px;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .section-title em {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--grey);
+    font-weight: 400;
+  }
+  
+  /* ─── CAS LIST ──────────────────────────── */
+  .cas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  
+  .cas-card {
+    background: var(--white);
+    border: 1px solid var(--grey-light);
+    border-radius: 4px;
+    padding: 18px 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .cas-card:hover {
+    border-color: var(--navy);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 25, 41, 0.08);
+  }
+  .cas-card.completed {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+  .cas-card.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--grey-50);
+  }
+  .cas-card.locked:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--grey-light);
+  }
+  
+  .cas-number {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--gold);
+    line-height: 1;
+    flex-shrink: 0;
+    width: 50px;
+    text-align: center;
+  }
+  .cas-info {
+    flex: 1;
+  }
+  .cas-title {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--navy);
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+  .cas-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--grey);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .cas-status {
+    font-size: 22px;
+    color: var(--grey-light);
+  }
+  .cas-card.completed .cas-status { color: var(--green); }
+  .cas-card.locked .cas-status { color: var(--gold); }
+  
+  /* ─── EXERCICE — Section intégrée (pas un overlay) ─── */
+  .exercice-overlay {
+    display: none;
+    width: 100%;
+    margin: 24px 0;
+  }
+  .exercice-overlay.show {
+    display: block;
+  }
+  
+  /* Quand un exercice est ouvert, on cache le reste */
+  body.exercice-open .header,
+  body.exercice-open .disclaimer,
+  body.exercice-open .dashboard,
+  body.exercice-open .section-title,
+  body.exercice-open .cas-list,
+  body.exercice-open .premium-section,
+  body.exercice-open .footer {
+    display: none;
+  }
+  
+  .exercice-modal {
+    background: var(--white);
+    border-radius: 6px;
+    width: 100%;
+    overflow: visible;
+    border: 1px solid var(--grey-light);
+  }
+  
+  .btn-back {
+    background: var(--white);
+    border: 1.5px solid var(--navy);
+    color: var(--navy);
+    padding: 10px 18px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    transition: all 0.15s;
+  }
+  .btn-back:hover {
+    background: var(--navy);
+    color: var(--white);
+  }
+  
+  .exercice-header {
+    background: var(--navy);
+    color: var(--white);
+    padding: 22px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .exercice-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+  .exercice-title-num {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .exercice-close {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.3);
+    color: var(--white);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    transition: all 0.2s;
+  }
+  .exercice-close:hover {
+    background: rgba(255,255,255,0.1);
+  }
+  
+  .exercice-body {
+    padding: 28px;
+  }
+  
+  /* ─── ÉNONCÉ ─────────────────────────────── */
+  .enonce {
+    background: var(--cream);
+    border-left: 4px solid var(--navy);
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+  .enonce-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .enonce-text {
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--navy);
+  }
+  .enonce-text strong {
+    color: var(--navy);
+    background: var(--gold-light);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .enonce-prescription {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: var(--white);
+    border: 1px dashed var(--gold);
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: var(--navy);
+  }
+  .enonce-prescription strong {
+    background: none;
+    padding: 0;
+    color: var(--gold);
+  }
+  
+  /* ─── QUESTION ───────────────────────────── */
+  .question-block {
+    margin-bottom: 20px;
+  }
+  .question-block label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  .question-block .question-text {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--navy);
+    margin-bottom: 10px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .input-with-unit {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0;
+  }
+  .input-with-unit input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--grey-light);
+    border-right: none;
+    border-radius: 2px 0 0 2px;
+    font-family: var(--sans);
+    font-size: 16px;
+    color: var(--navy);
+    background: var(--white);
+    transition: all 0.15s;
+  }
+  .input-with-unit input:focus {
+    outline: none;
+    border-color: var(--navy);
+    background: var(--cream);
+  }
+  .input-with-unit .unit {
+    padding: 12px 18px;
+    background: var(--navy-light);
+    border: 1.5px solid var(--grey-light);
+    border-radius: 0 2px 2px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    display: flex;
+    align-items: center;
+  }
+  
+  /* ─── BUTTON ─────────────────────────────── */
+  .btn-verify {
+    width: 100%;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 16px 24px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 8px;
+    transition: all 0.15s;
+  }
+  .btn-verify:hover {
+    background: var(--navy-soft);
+    transform: translateY(-1px);
+  }
+  .btn-verify:disabled {
+    background: var(--grey-light);
+    color: var(--grey);
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  /* ─── RÉSULTAT VÉRIFICATION ──────────────── */
+  .verdict {
+    display: none;
+    margin-top: 24px;
+    padding: 20px 24px;
+    border-radius: 4px;
+    border-left: 4px solid;
+  }
+  .verdict.show { display: block; }
+  
+  .verdict.success {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+  .verdict.failure {
+    background: #fef2f2;
+    border-color: var(--red);
+  }
+  
+  .verdict-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  .verdict.success .verdict-icon { color: var(--green); }
+  .verdict.failure .verdict-icon { color: var(--red); }
+  
+  .verdict-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--navy);
+  }
+  .verdict-detail {
+    font-size: 13px;
+    color: var(--grey);
+    margin-bottom: 16px;
+  }
+  
+  .correction {
+    background: var(--white);
+    padding: 18px 20px;
+    border-radius: 2px;
+    margin-top: 14px;
+    border: 1px solid var(--grey-light);
+  }
+  .correction-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--grey-light);
+  }
+  .correction-step {
+    margin-bottom: 10px;
+    padding-left: 28px;
+    position: relative;
+    font-size: 14px;
+    color: var(--navy);
+    line-height: 1.6;
+  }
+  .correction-step-num {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    background: var(--gold);
+    color: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .correction-tip {
+    background: var(--cream);
+    padding: 12px 16px;
+    margin-top: 14px;
+    border-radius: 2px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--navy);
+    line-height: 1.5;
+    border-left: 3px solid var(--gold);
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .btn-retry, .btn-next {
+    flex: 1;
+    padding: 13px 20px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    border: none;
+    transition: all 0.15s;
+  }
+  .btn-retry {
+    background: var(--white);
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+  }
+  .btn-retry:hover { background: var(--navy-light); }
+  .btn-next {
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-next:hover { background: var(--navy-soft); }
+  
+  /* ─── PREMIUM TEASER ─────────────────────── */
+  .premium-section {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+    color: var(--white);
+    padding: 32px 28px;
+    border-radius: 4px;
+    margin-top: 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .premium-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(200, 168, 91, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .premium-label {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 5px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .premium-title {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+    line-height: 1.15;
+    position: relative;
+    z-index: 1;
+  }
+  .premium-title em {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .premium-desc {
+    font-family: var(--serif);
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 15px;
+    margin-bottom: 20px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    z-index: 1;
+  }
+  .premium-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+  }
+  .premium-feature {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .premium-feature::before {
+    content: '✦';
+    color: var(--gold);
+    font-size: 14px;
+  }
+  .premium-price {
+    font-family: var(--serif);
+    font-size: 42px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 1;
+  }
+  .premium-price small {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+  }
+  .btn-premium {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 14px 32px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    margin-top: 14px;
+    transition: all 0.15s;
+    position: relative;
+    z-index: 1;
+  }
+  .btn-premium:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+  
+  /* ─── FOOTER ─────────────────────────────── */
+  .footer {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--grey-light);
+    text-align: center;
+    font-size: 11px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+  .footer-disclaimer {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #7f1d1d;
+    padding: 14px 18px;
+    border-radius: 2px;
+    font-size: 11px;
+    margin-bottom: 16px;
+    text-align: left;
+    line-height: 1.6;
+  }
+  .footer-disclaimer strong {
+    color: #991b1b;
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+  
+  /* ─── BADGE ANIMATION ────────────────────── */
+  @keyframes badgePop {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .badge-popup {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy);
+    color: var(--white);
+    padding: 18px 28px;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    gap: 14px;
+  }
+  .badge-popup.show {
+    display: flex;
+    animation: badgePop 0.5s ease-out;
+  }
+  .badge-popup-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .badge-popup-title {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .badge-popup-name {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+  }
+  
+  /* ─── RESPONSIVE ─────────────────────────── */
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 40px; }
+    h1 { font-size: 32px; }
+    .dashboard { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
+    .stat + .stat { border-left: none; border-top: 1px solid var(--grey-light); padding-top: 16px; }
+    .premium-features { grid-template-columns: 1fr; }
+    .exercice-modal { margin: 0; border-radius: 4px; }
+    .exercice-body, .exercice-header { padding: 20px 18px; }
+    .cas-card { padding: 14px 16px; }
+    .cas-title { font-size: 16px; }
+    .cas-number { font-size: 22px; width: 38px; }
+    .section-title { 
+      flex-direction: column; 
+      align-items: flex-start; 
+      gap: 4px; 
+      font-size: 20px;
+    }
+    .cas-meta {
+      flex-wrap: wrap;
+      gap: 6px 12px;
+    }
+  }
+  
+  /* ─── PETITS ÉCRANS (iPhone SE, vieux Android) ─── */
+  @media (max-width: 400px) {
+    body { padding: 12px 8px 30px; }
+    .container { max-width: 100%; }
+    h1 { font-size: 26px; letter-spacing: -1px; }
+    .tagline { font-size: 14px; }
+    .brand { font-size: 9px; padding: 5px 12px; }
+    .header { margin-bottom: 20px; padding-bottom: 16px; }
+    
+    .dashboard { padding: 14px; gap: 12px; }
+    .stat-value { font-size: 28px; }
+    .stat-label { font-size: 9px; letter-spacing: 1.5px; }
+    
+    .disclaimer { padding: 12px 14px; font-size: 11px; }
+    
+    .section-title { 
+      font-size: 18px; 
+      margin: 24px 0 12px;
+    }
+    .section-title em { font-size: 12px; }
+    
+    .cas-card { 
+      padding: 12px 14px; 
+      gap: 10px;
+    }
+    .cas-number { font-size: 20px; width: 32px; }
+    .cas-title { font-size: 15px; line-height: 1.3; margin-bottom: 6px; }
+    .cas-meta { 
+      font-size: 10px; 
+      gap: 4px 10px;
+      letter-spacing: 0.3px;
+    }
+    .cas-status { font-size: 18px; }
+    
+    .exercice-header { padding: 16px 14px; }
+    .exercice-title { font-size: 17px; line-height: 1.3; }
+    .exercice-body { padding: 16px 14px; }
+    .enonce { padding: 14px 16px; }
+    .enonce-text { font-size: 14px; line-height: 1.6; }
+    .enonce-prescription { font-size: 12px; padding: 10px 12px; }
+    .question-block .question-text { font-size: 13px; }
+    .input-with-unit input { padding: 10px 12px; font-size: 14px; }
+    .input-with-unit .unit { padding: 10px 12px; font-size: 12px; }
+    .btn-verify { padding: 13px 18px; font-size: 11px; letter-spacing: 1.8px; }
+    
+    .verdict { padding: 16px 18px; }
+    .verdict-title { font-size: 18px; }
+    .correction { padding: 14px 16px; }
+    .correction-step { font-size: 13px; padding-left: 24px; }
+    .correction-tip { font-size: 13px; padding: 10px 14px; }
+    
+    .footer { font-size: 10px; margin-top: 28px; }
+    .footer-disclaimer { padding: 12px 14px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="brand">L'École des Infirmiers</div>
+    <h1>L'<em>Atelier</em> des Calculs</h1>
+    <div class="tagline">« Entraîne-toi aux calculs de doses comme en partiel »</div>
+  </header>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <strong>⚠ Outil pédagogique d'entraînement</strong>
+    Cet atelier est conçu <strong>exclusivement</strong> pour l'apprentissage des étudiant·e·s en soins infirmiers. Les cas présentés sont fictifs. <strong>Cet outil ne doit JAMAIS être utilisé pour le calcul de doses sur un patient réel.</strong> En service, applique toujours la règle des 5B et réfère-toi à la prescription médicale.
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+    <div class="stat">
+      <div class="stat-label">Progression</div>
+      <div class="stat-value"><span id="stat-done">0</span><small>/25</small></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Score moyen</div>
+      <div class="stat-value"><span id="stat-score">—</span><small>%</small></div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Badges</div>
+      <div class="badges-row">
+        <div class="badge" id="badge-1" title="Premier pas — 1 cas réussi">🩺</div>
+        <div class="badge" id="badge-2" title="Apprenti·e — 3 cas réussis">📚</div>
+        <div class="badge" id="badge-3" title="Confirmé·e — 10 cas réussis">⭐</div>
+        <div class="badge" id="badge-4" title="Expert·e — 20 cas réussis">🏆</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAS — Niveau introduction -->
+  <h2 class="section-title">Pour commencer <em>· 3 cas pour découvrir la méthode</em></h2>
+  
+  <div class="cas-list">
+    <div class="cas-card" data-cas="1" onclick="openCas(1)">
+      <div class="cas-number">01</div>
+      <div class="cas-info">
+        <div class="cas-title">Perfusion simple de NaCl</div>
+        <div class="cas-meta">
+          <span>🟢 Débutant</span>
+          <span>Médecine</span>
+          <span>Perfusion</span>
+        </div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    
+    <div class="cas-card" data-cas="2" onclick="openCas(2)">
+      <div class="cas-number">02</div>
+      <div class="cas-info">
+        <div class="cas-title">SAP Insuline en endocrinologie</div>
+        <div class="cas-meta">
+          <span>🟡 Intermédiaire</span>
+          <span>Endocrinologie</span>
+          <span>SAP</span>
+        </div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    
+    <div class="cas-card" data-cas="3" onclick="openCas(3)">
+      <div class="cas-number">03</div>
+      <div class="cas-info">
+        <div class="cas-title">Lidocaïne pour anesthésie locale</div>
+        <div class="cas-meta">
+          <span>🟢 Débutant</span>
+          <span>Bloc opératoire</span>
+          <span>Pourcentage</span>
+        </div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+  <!-- ─── Thème 1 PERFUSIONS ─── -->
+  <h2 class="section-title">Perfusions <em>· 5 cas</em></h2>
+  <div class="cas-list">
+    <div class="cas-card" data-cas="4" onclick="openCas(4)">
+      <div class="cas-number">04</div>
+      <div class="cas-info">
+        <div class="cas-title">Perfusion avec ajout de KCl</div>
+        <div class="cas-meta"><span>🟡 Intermédiaire</span><span>Médecine</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="5" onclick="openCas(5)">
+      <div class="cas-number">05</div>
+      <div class="cas-info">
+        <div class="cas-title">Augmentin 1g en perfusion courte</div>
+        <div class="cas-meta"><span>🟡 Intermédiaire</span><span>Pneumologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="6" onclick="openCas(6)">
+      <div class="cas-number">06</div>
+      <div class="cas-info">
+        <div class="cas-title">Paracétamol perfusion pédiatrique</div>
+        <div class="cas-meta"><span>🟡 Intermédiaire</span><span>Pédiatrie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="7" onclick="openCas(7)">
+      <div class="cas-number">07</div>
+      <div class="cas-info">
+        <div class="cas-title">Ceftriaxone en pédiatrie</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Pédiatrie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="8" onclick="openCas(8)">
+      <div class="cas-number">08</div>
+      <div class="cas-info">
+        <div class="cas-title">Furosémide en bolus dilué</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Cardiologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+  <!-- ─── Thème 2 SAP / PSE ─── -->
+  <h2 class="section-title">SAP / PSE <em>· 6 cas</em></h2>
+  <div class="cas-list">
+    <div class="cas-card" data-cas="9" onclick="openCas(9)">
+      <div class="cas-number">09</div>
+      <div class="cas-info">
+        <div class="cas-title">SAP Héparine sur 24h</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Médecine vasculaire</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="10" onclick="openCas(10)">
+      <div class="cas-number">10</div>
+      <div class="cas-info">
+        <div class="cas-title">SAP Morphine titration douleur</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Soins palliatifs</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="11" onclick="openCas(11)">
+      <div class="cas-number">11</div>
+      <div class="cas-info">
+        <div class="cas-title">Noradrénaline en réanimation</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Réanimation</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="12" onclick="openCas(12)">
+      <div class="cas-number">12</div>
+      <div class="cas-info">
+        <div class="cas-title">SAP Insuline avec changement de débit</div>
+        <div class="cas-meta"><span>🟡 Intermédiaire</span><span>Réanimation</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="13" onclick="openCas(13)">
+      <div class="cas-number">13</div>
+      <div class="cas-info">
+        <div class="cas-title">Dobutamine pédiatrique en réanimation</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Réa pédiatrique</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="14" onclick="openCas(14)">
+      <div class="cas-number">14</div>
+      <div class="cas-info">
+        <div class="cas-title">SAP Héparine selon poids</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Médecine vasculaire</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+  <!-- ─── Thème 3 PÉDIATRIE ─── -->
+  <h2 class="section-title">Pédiatrie <em>· 4 cas</em></h2>
+  <div class="cas-list">
+    <div class="cas-card" data-cas="15" onclick="openCas(15)">
+      <div class="cas-number">15</div>
+      <div class="cas-info">
+        <div class="cas-title">Paracétamol per os enfant</div>
+        <div class="cas-meta"><span>🟢 Débutant</span><span>Pédiatrie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="16" onclick="openCas(16)">
+      <div class="cas-number">16</div>
+      <div class="cas-info">
+        <div class="cas-title">Amoxicilline avec dose max</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Pédiatrie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="17" onclick="openCas(17)">
+      <div class="cas-number">17</div>
+      <div class="cas-info">
+        <div class="cas-title">Morphine en néonatalogie</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Néonatalogie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="18" onclick="openCas(18)">
+      <div class="cas-number">18</div>
+      <div class="cas-info">
+        <div class="cas-title">Surface corporelle (Mosteller)</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Oncologie péd.</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+  <!-- ─── Thème 4 POURCENTAGES & CONVERSIONS ─── -->
+  <h2 class="section-title">Pourcentages & Conversions <em>· 3 cas</em></h2>
+  <div class="cas-list">
+    <div class="cas-card" data-cas="19" onclick="openCas(19)">
+      <div class="cas-number">19</div>
+      <div class="cas-info">
+        <div class="cas-title">Glucose 30% en urgence</div>
+        <div class="cas-meta"><span>🟡 Intermédiaire</span><span>Urgences</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="20" onclick="openCas(20)">
+      <div class="cas-number">20</div>
+      <div class="cas-info">
+        <div class="cas-title">Conversions d'unités</div>
+        <div class="cas-meta"><span>🟢 Débutant</span><span>Pharmacologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="21" onclick="openCas(21)">
+      <div class="cas-number">21</div>
+      <div class="cas-info">
+        <div class="cas-title">Digoxine — piège classique</div>
+        <div class="cas-meta"><span>🟠 Avancé</span><span>Cardiologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+  <!-- ─── Thème 5 EXAMEN BLANC ─── -->
+  <h2 class="section-title">Examen blanc <em>· 4 cas chronométrés</em></h2>
+  <div class="cas-list">
+    <div class="cas-card" data-cas="22" onclick="openCas(22)">
+      <div class="cas-number">22</div>
+      <div class="cas-info">
+        <div class="cas-title">Examen 1 — Amiodarone</div>
+        <div class="cas-meta"><span>🔴 Examen</span><span>Cardiologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="23" onclick="openCas(23)">
+      <div class="cas-number">23</div>
+      <div class="cas-info">
+        <div class="cas-title">Examen 2 — Héparine pondérée</div>
+        <div class="cas-meta"><span>🔴 Examen</span><span>Médecine vasc.</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="24" onclick="openCas(24)">
+      <div class="cas-number">24</div>
+      <div class="cas-info">
+        <div class="cas-title">Examen 3 — Pédiatrie complexe</div>
+        <div class="cas-meta"><span>🔴 Examen</span><span>Pédiatrie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+    <div class="cas-card" data-cas="25" onclick="openCas(25)">
+      <div class="cas-number">25</div>
+      <div class="cas-info">
+        <div class="cas-title">Examen 4 — SAP Insuline</div>
+        <div class="cas-meta"><span>🔴 Examen</span><span>Endocrinologie</span></div>
+      </div>
+      <div class="cas-status">→</div>
+    </div>
+  </div>
+
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-disclaimer">
+      <strong>⚠ Cadre légal</strong>
+      L'Atelier des Calculs est un outil pédagogique d'entraînement destiné aux étudiant·e·s en soins infirmiers (IFSI). Les cas sont fictifs et créés à des fins d'apprentissage. <strong>Cet outil n'a pas vocation à être utilisé en pratique clinique sur des patients réels.</strong> L'École des Infirmiers décline toute responsabilité en cas d'usage non conforme à sa destination pédagogique.
+    </div>
+    <strong>L'École des Infirmiers · NurseSimPro</strong><br>
+    Sources : OMéDIT · ANSM · Vidal · Référentiel infirmier 2009<br>
+    Outil pédagogique · Mise à jour 2026
+  </footer>
+
+</div>
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- EXERCICE MODAL                              -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="exercice-overlay" id="exercice-overlay">
+  <button class="btn-back" onclick="closeExercice()">← Retour aux cas</button>
+  <div class="exercice-modal">
+    
+    <div class="exercice-header">
+      <div class="exercice-title">
+        Cas <span class="exercice-title-num" id="exo-num">01</span> · <span id="exo-titre">—</span>
+      </div>
+      <button class="exercice-close" onclick="closeExercice()">×</button>
+    </div>
+    
+    <div class="exercice-body">
+      
+      <div class="enonce">
+        <div class="enonce-label">📋 Situation clinique fictive</div>
+        <div class="enonce-text" id="exo-enonce"></div>
+        <div class="enonce-prescription" id="exo-prescription"></div>
+      </div>
+      
+      <div id="exo-questions"></div>
+      
+      <button class="btn-verify" id="btn-verifier" onclick="verifier()">Vérifier ma réponse</button>
+      
+      <div class="verdict" id="verdict">
+        <div class="verdict-icon" id="verdict-icon">✓</div>
+        <div class="verdict-title" id="verdict-title">Réponse correcte</div>
+        <div class="verdict-detail" id="verdict-detail"></div>
+        
+        <div class="correction">
+          <div class="correction-title">📖 La méthode pas à pas</div>
+          <div id="correction-steps"></div>
+          <div class="correction-tip" id="correction-tip"></div>
+        </div>
+        
+        <div class="actions">
+          <button class="btn-retry" onclick="retry()">Réessayer</button>
+          <button class="btn-next" onclick="closeExercice()">Continuer</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- BADGE POPUP -->
+<div class="badge-popup" id="badge-popup">
+  <div class="badge-popup-icon" id="badge-popup-icon">🩺</div>
+  <div>
+    <div class="badge-popup-title">Badge débloqué</div>
+    <div class="badge-popup-name" id="badge-popup-name"></div>
+  </div>
+</div>
+
+<script>
+  // ═══════════════════════════════════════════
+  // BANQUE COMPLÈTE — 3 gratuits + 22 Premium
+  // Calculs vérifiés mathématiquement (node test)
+  // Sources : OMéDIT, ANSM, Vidal, Référentiel 2009
+  // ═══════════════════════════════════════════
+  const CAS = {
+    // ─── 3 CAS GRATUITS ───────────────────────
+    1: {
+      titre: "Perfusion simple de NaCl",
+      premium: false,
+      theme: "Perfusion",
+      niveau: "Débutant",
+      enonce: "M. Dupont, 65 ans, hospitalisé en service de médecine pour <strong>déshydratation</strong>. Le médecin prescrit une perfusion d'entretien. Tu utilises une <strong>tubulure macro-gouttes (20 gtt/mL)</strong>.",
+      prescription: "📝 <strong>Prescription médicale :</strong>\n500 mL de NaCl 0,9%\nà passer en 8 heures",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Quel est le débit en mL/h ?", unit: "mL/h", reponse: 62.5, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Quel est le débit en gouttes/min ?", unit: "gtt/min", reponse: 20.83, tolerance: 5 }
+      ],
+      correction: [
+        "Volume total = <strong>500 mL</strong>, durée = <strong>8h</strong> (= 480 min)",
+        "Débit mL/h = 500 ÷ 8 = <strong>62,5 mL/h</strong>",
+        "Débit gtt/min = (500 × 20) ÷ 480 = <strong>20,83 gtt/min</strong> (≈ 21 gtt/min)"
+      ],
+      tip: "💡 La méthode L'École : pour une perfusion sans médicament ajouté, débit (mL/h) = Volume ÷ Durée. Aussi simple que ça."
+    },
+    2: {
+      titre: "SAP Insuline en endocrinologie",
+      premium: false,
+      theme: "SAP",
+      niveau: "Intermédiaire",
+      enonce: "Mme Bernard, 58 ans, hospitalisée pour <strong>décompensation diabétique acidocétosique</strong>. Le médecin prescrit une SAP d'insuline rapide selon le <strong>protocole standard du service</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\n50 UI d'Actrapid dans 50 mL de NaCl 0,9%\nDébit prescrit : 4 UI/h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Quelle est la concentration de la seringue en UI/mL ?", unit: "UI/mL", reponse: 1, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "À quel débit programmer le PSE en mL/h ?", unit: "mL/h", reponse: 4, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 50 UI ÷ 50 mL = <strong>1 UI/mL</strong>",
+        "Le PSE délivre des mL/h, pas des UI/h",
+        "Débit PSE = 4 UI/h ÷ 1 UI/mL = <strong>4 mL/h</strong>"
+      ],
+      tip: "💡 La méthode L'École : avec le protocole 50 UI / 50 mL (= 1 UI/mL), le débit mL/h = la dose en UI/h. Repère à retenir absolument."
+    },
+    3: {
+      titre: "Lidocaïne pour anesthésie locale",
+      premium: false,
+      theme: "Pourcentage",
+      niveau: "Débutant",
+      enonce: "M. Lefèvre, 45 ans, doit bénéficier d'une <strong>petite intervention sous anesthésie locale</strong> au bloc opératoire.",
+      prescription: "📝 <strong>Prescription :</strong>\n5 mL de Lidocaïne à 2%",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration de la lidocaïne 2% en mg/mL ?", unit: "mg/mL", reponse: 20, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Combien de mg le patient reçoit au total ?", unit: "mg", reponse: 100, tolerance: 5 }
+      ],
+      correction: [
+        "Règle universelle : <strong>% × 10 = mg/mL</strong>",
+        "Lidocaïne 2% → 2 × 10 = <strong>20 mg/mL</strong>",
+        "Dose totale = 20 mg/mL × 5 mL = <strong>100 mg</strong>"
+      ],
+      tip: "💡 Le réflexe pourcentage : multiplier par 10. Marche pour tous : NaCl 0,9% = 9 mg/mL, G5% = 50 mg/mL, Calcium 10% = 100 mg/mL."
+    },
+
+    // ═══════ THÈME 1 — PERFUSIONS (5 cas Premium) ═══════
+    4: {
+      titre: "Perfusion avec ajout de KCl",
+      premium: true, theme: "Perfusion", niveau: "Intermédiaire",
+      enonce: "Mme Rolland, 72 ans, hypokaliémie modérée. Le médecin prescrit une perfusion avec ajout de chlorure de potassium. <strong>Tubulure macro-gouttes (20 gtt/mL)</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\n500 mL de NaCl 0,9% + 2 g de KCl\nà passer en 6 heures\n\nFlacon disponible : KCl 10% (100 mg/mL)",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Volume de KCl à prélever du flacon ?", unit: "mL", reponse: 20, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume total de la perfusion ?", unit: "mL", reponse: 520, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit à programmer en mL/h ?", unit: "mL/h", reponse: 86.67, tolerance: 5 }
+      ],
+      correction: [
+        "Dose prescrite = 2 g = <strong>2 000 mg</strong> de KCl",
+        "Flacon = 100 mg/mL → volume à prélever = 2 000 ÷ 100 = <strong>20 mL</strong>",
+        "Volume total = solvant + KCl = 500 + 20 = <strong>520 mL</strong>",
+        "Débit = 520 ÷ 6 = <strong>86,67 mL/h</strong>"
+      ],
+      tip: "💡 Attention : ne JAMAIS oublier d'ajouter le volume du médicament au volume du solvant. C'est une erreur classique qui change le débit."
+    },
+    5: {
+      titre: "Augmentin 1g en perfusion courte",
+      premium: true, theme: "Perfusion", niveau: "Intermédiaire",
+      enonce: "M. Petit, 50 ans, hospitalisé pour <strong>pneumopathie</strong>. Antibiothérapie en perfusion courte. <strong>Tubulure macro (20 gtt/mL)</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nAugmentin 1 g reconstitué dans 100 mL\nà passer en 30 minutes",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Débit en mL/h ?", unit: "mL/h", reponse: 200, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Débit en gouttes/min ?", unit: "gtt/min", reponse: 66.67, tolerance: 5 }
+      ],
+      correction: [
+        "Durée = 30 min = <strong>0,5 h</strong>",
+        "Débit mL/h = 100 ÷ 0,5 = <strong>200 mL/h</strong>",
+        "Débit gtt/min = (100 × 20) ÷ 30 = <strong>66,67 gtt/min</strong> (≈ 67 gtt/min)"
+      ],
+      tip: "💡 Pour les perfusions courtes, convertis toujours la durée en heures (30 min = 0,5h). Erreur classique : diviser par 30 au lieu de 0,5."
+    },
+    6: {
+      titre: "Paracétamol en perfusion pédiatrique",
+      premium: true, theme: "Pédiatrie", niveau: "Intermédiaire",
+      enonce: "Enzo, 4 ans, <strong>18 kg</strong>, hospitalisé pour fièvre élevée. Le médecin prescrit une perfusion de paracétamol. <strong>Tubulure micro-gouttes pédiatrique (60 gtt/mL)</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nParacétamol 15 mg/kg dans 100 mL de G5%\nà passer en 15 minutes",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose totale de paracétamol ?", unit: "mg", reponse: 270, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Débit en mL/h ?", unit: "mL/h", reponse: 400, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit en gouttes/min (micro) ?", unit: "gtt/min", reponse: 400, tolerance: 5 }
+      ],
+      correction: [
+        "Dose = 15 × 18 = <strong>270 mg</strong>",
+        "Durée = 15 min = 0,25h → débit = 100 ÷ 0,25 = <strong>400 mL/h</strong>",
+        "Micro-gouttes : 1 mL = 60 gouttes → débit gtt = (100 × 60) ÷ 15 = <strong>400 gtt/min</strong>"
+      ],
+      tip: "💡 En pédiatrie, micro-gouttes (60 gtt/mL) = mL/h. Repère mnémotechnique : avec micro, le débit en gtt/min = le débit en mL/h."
+    },
+    7: {
+      titre: "Ceftriaxone en pédiatrie",
+      premium: true, theme: "Pédiatrie", niveau: "Avancé",
+      enonce: "Sarah, 3 ans, <strong>12 kg</strong>, hospitalisée pour <strong>méningite bactérienne suspectée</strong>. Antibiothérapie probabiliste. Flacon de ceftriaxone reconstitué à 1 g / 10 mL.",
+      prescription: "📝 <strong>Prescription :</strong>\nCeftriaxone 50 mg/kg dans 50 mL de G5%\nà passer en 30 minutes",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose de ceftriaxone ?", unit: "mg", reponse: 600, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume de ceftriaxone à prélever ?", unit: "mL", reponse: 6, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit final en mL/h ?", unit: "mL/h", reponse: 112, tolerance: 5 }
+      ],
+      correction: [
+        "Dose = 50 × 12 = <strong>600 mg</strong>",
+        "Concentration flacon = 1 000 mg / 10 mL = <strong>100 mg/mL</strong>",
+        "Volume à prélever = 600 ÷ 100 = <strong>6 mL</strong>",
+        "Volume total = 50 + 6 = 56 mL → débit = 56 ÷ 0,5 = <strong>112 mL/h</strong>"
+      ],
+      tip: "💡 La méthode des 3 questions : (1) combien de mg au total ? (2) d'où viennent-ils ? (3) combien de mL prélever ? Toujours dans cet ordre."
+    },
+    8: {
+      titre: "Furosémide en bolus dilué",
+      premium: true, theme: "Perfusion", niveau: "Avancé",
+      enonce: "Mme Garcia, 78 ans, hospitalisée pour <strong>OAP (œdème aigu pulmonaire)</strong>. Diurétique de l'anse en perfusion. <strong>Ampoule Lasilix 20 mg / 2 mL</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nFurosémide 80 mg dilué dans 100 mL de NaCl 0,9%\nà passer en 1 heure",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Volume de Lasilix à prélever ?", unit: "mL", reponse: 8, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume total de la perfusion ?", unit: "mL", reponse: 108, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit en mL/h ?", unit: "mL/h", reponse: 108, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration ampoule = 20 mg / 2 mL = <strong>10 mg/mL</strong>",
+        "Volume Lasilix = 80 ÷ 10 = <strong>8 mL</strong>",
+        "Volume total = 100 + 8 = <strong>108 mL</strong>",
+        "Débit = 108 ÷ 1 = <strong>108 mL/h</strong>"
+      ],
+      tip: "💡 Piège classique : oublier le volume de l'ampoule dans le total. Pour 80 mg de Lasilix = 8 mL, ce n'est pas négligeable !"
+    },
+
+    // ═══════ THÈME 2 — SAP / PSE (6 cas Premium) ═══════
+    9: {
+      titre: "SAP Héparine sur 24h",
+      premium: true, theme: "SAP", niveau: "Avancé",
+      enonce: "M. Moreau, 68 ans, hospitalisé pour <strong>embolie pulmonaire</strong>. Anticoagulation curative par héparine non fractionnée en SAP.",
+      prescription: "📝 <strong>Prescription :</strong>\nHéparine 25 000 UI dans 48 mL de NaCl 0,9%\nDébit prescrit : 24 000 UI / 24h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration de la seringue (UI/mL) ?", unit: "UI/mL", reponse: 520.83, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose à passer par heure ?", unit: "UI/h", reponse: 1000, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 1.92, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 25 000 ÷ 48 = <strong>520,83 UI/mL</strong>",
+        "Dose par heure = 24 000 ÷ 24 = <strong>1 000 UI/h</strong>",
+        "Débit PSE = 1 000 ÷ 520,83 = <strong>1,92 mL/h</strong> (≈ 2 mL/h)"
+      ],
+      tip: "💡 Repère service : héparine standard 25 000 UI / 48 mL pour 24h ≈ 2 mL/h. Si tu trouves très différent, vérifie tes calculs."
+    },
+    10: {
+      titre: "SAP Morphine titration douleur",
+      premium: true, theme: "SAP", niveau: "Avancé",
+      enonce: "M. Bertrand, 72 ans, en <strong>soins palliatifs</strong>. Le médecin prescrit une SAP de morphine pour la titration antalgique selon protocole OMéDIT.",
+      prescription: "📝 <strong>Prescription :</strong>\nMorphine 60 mg dans 60 mL de NaCl 0,9%\nDébit prescrit : 60 mg / 24h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration de la seringue (mg/mL) ?", unit: "mg/mL", reponse: 1, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 2.5, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 60 mg ÷ 60 mL = <strong>1 mg/mL</strong>",
+        "Dose par heure = 60 ÷ 24 = 2,5 mg/h",
+        "Débit PSE = 2,5 ÷ 1 = <strong>2,5 mL/h</strong>"
+      ],
+      tip: "💡 Protocole OMéDIT standard : morphine 60 mg / 60 mL = 1 mg/mL. Le débit en mL/h = la dose en mg/h. Très simple à retenir."
+    },
+    11: {
+      titre: "Noradrénaline en réanimation",
+      premium: true, theme: "SAP", niveau: "Avancé",
+      enonce: "M. Dubois, <strong>70 kg</strong>, en <strong>choc septique</strong> en réanimation. Le médecin prescrit une SAP de noradrénaline en perfusion continue selon le poids.",
+      prescription: "📝 <strong>Prescription :</strong>\nNoradrénaline 8 mg dans 40 mL de G5%\nDébit prescrit : 0,1 μg/kg/min",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration en μg/mL ?", unit: "μg/mL", reponse: 200, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose par heure (μg/h) ?", unit: "μg/h", reponse: 420, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 2.1, tolerance: 5 }
+      ],
+      correction: [
+        "Conversion : 8 mg = 8 000 μg",
+        "Concentration = 8 000 ÷ 40 = <strong>200 μg/mL</strong>",
+        "Dose par heure = 0,1 × 70 × 60 = <strong>420 μg/h</strong>",
+        "Débit PSE = 420 ÷ 200 = <strong>2,1 mL/h</strong>"
+      ],
+      tip: "💡 Pour les μg/kg/min → multiplier par le poids ET par 60. Le piège : ne pas faire les deux étapes."
+    },
+    12: {
+      titre: "SAP Insuline avec changement de débit",
+      premium: true, theme: "SAP", niveau: "Intermédiaire",
+      enonce: "Mme Lambert, 65 ans, sous SAP d'insuline en réanimation. Glycémie en hausse, le médecin demande d'augmenter le débit. Seringue actuelle : <strong>50 UI / 50 mL</strong>, déjà en cours depuis 4h.",
+      prescription: "📝 <strong>Prescription :</strong>\nPassage de 4 UI/h à 6 UI/h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Nouveau débit en mL/h ?", unit: "mL/h", reponse: 6, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Combien d'UI reçoit le patient en 1h au nouveau débit ?", unit: "UI", reponse: 6, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration inchangée : 50 UI / 50 mL = <strong>1 UI/mL</strong>",
+        "Nouveau débit = 6 UI/h ÷ 1 UI/mL = <strong>6 mL/h</strong>",
+        "Le patient reçoit donc <strong>6 UI</strong> en 1h"
+      ],
+      tip: "💡 Avec protocole 50 UI / 50 mL, le mL/h = UI/h directement. Changement de débit = changement de mL/h en chiffres identiques."
+    },
+    13: {
+      titre: "Dobutamine pédiatrique en réanimation",
+      premium: true, theme: "Pédiatrie", niveau: "Avancé",
+      enonce: "Léa, 1 an, <strong>8 kg</strong>, en <strong>insuffisance cardiaque aiguë</strong> en réanimation pédiatrique. Le médecin prescrit une SAP de dobutamine.",
+      prescription: "📝 <strong>Prescription :</strong>\nDobutamine 250 mg dans 50 mL de G5%\nDébit prescrit : 5 μg/kg/min",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration en μg/mL ?", unit: "μg/mL", reponse: 5000, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose par heure (μg/h) ?", unit: "μg/h", reponse: 2400, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 0.48, tolerance: 5 }
+      ],
+      correction: [
+        "250 mg = 250 000 μg",
+        "Concentration = 250 000 ÷ 50 = <strong>5 000 μg/mL</strong>",
+        "Dose par heure = 5 × 8 × 60 = <strong>2 400 μg/h</strong>",
+        "Débit PSE = 2 400 ÷ 5 000 = <strong>0,48 mL/h</strong>"
+      ],
+      tip: "💡 En pédiatrie, les débits sont souvent très faibles (< 1 mL/h). Vérifie que ton PSE peut descendre à cette précision (la plupart : 0,1 mL/h minimum)."
+    },
+    14: {
+      titre: "SAP Héparine selon poids",
+      premium: true, theme: "SAP", niveau: "Avancé",
+      enonce: "M. Roux, <strong>75 kg</strong>, hospitalisé pour <strong>thrombose veineuse profonde</strong>. Anticoagulation curative selon le poids.",
+      prescription: "📝 <strong>Prescription :</strong>\nHéparine 25 000 UI dans 48 mL de NaCl 0,9%\nDébit prescrit : 18 UI/kg/h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration de la seringue (UI/mL) ?", unit: "UI/mL", reponse: 520.83, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose à passer par heure ?", unit: "UI/h", reponse: 1350, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 2.59, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 25 000 ÷ 48 = <strong>520,83 UI/mL</strong>",
+        "Dose par heure = 18 × 75 = <strong>1 350 UI/h</strong>",
+        "Débit PSE = 1 350 ÷ 520,83 = <strong>2,59 mL/h</strong>"
+      ],
+      tip: "💡 Pour UI/kg/h, multiplier par le poids (1 fois). Pour μg/kg/min, multiplier par poids ET par 60 (2 fois). Ne pas confondre."
+    },
+
+    // ═══════ THÈME 3 — PÉDIATRIE (4 cas Premium) ═══════
+    15: {
+      titre: "Paracétamol per os enfant",
+      premium: true, theme: "Pédiatrie", niveau: "Débutant",
+      enonce: "Lucas, 5 ans, <strong>15 kg</strong>, vient en consultation pour fièvre. Le médecin prescrit du paracétamol par voie orale. <strong>Sirop disponible : 30 mg/mL</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nParacétamol 15 mg/kg par prise",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose totale par prise ?", unit: "mg", reponse: 225, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume de sirop par prise ?", unit: "mL", reponse: 7.5, tolerance: 5 }
+      ],
+      correction: [
+        "Dose = 15 mg/kg × 15 kg = <strong>225 mg</strong>",
+        "Volume = 225 ÷ 30 = <strong>7,5 mL</strong>"
+      ],
+      tip: "💡 En pédiatrie : applique TOUJOURS la règle des 3 questions. (1) Combien de mg au total ? (2) Concentration ? (3) Combien de mL ?"
+    },
+    16: {
+      titre: "Amoxicilline avec dose max",
+      premium: true, theme: "Pédiatrie", niveau: "Avancé",
+      enonce: "Hugo, 6 ans, <strong>20 kg</strong>, traité pour <strong>angine bactérienne</strong>. <strong>Sirop d'amoxicilline 250 mg / 5 mL</strong>. Dose maximale journalière : 100 mg/kg/j.",
+      prescription: "📝 <strong>Prescription :</strong>\nAmoxicilline 80 mg/kg/jour en 3 prises",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose totale par jour ?", unit: "mg", reponse: 1600, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose par prise ?", unit: "mg", reponse: 533.33, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Volume de sirop par prise ?", unit: "mL", reponse: 10.67, tolerance: 5 }
+      ],
+      correction: [
+        "Dose journalière = 80 × 20 = <strong>1 600 mg</strong>",
+        "Vérification dose max : 100 × 20 = 2 000 mg/j → <strong>1 600 < 2 000, OK</strong>",
+        "Dose par prise = 1 600 ÷ 3 = <strong>533,33 mg</strong>",
+        "Concentration sirop = 250 / 5 = 50 mg/mL",
+        "Volume = 533,33 ÷ 50 = <strong>10,67 mL</strong>"
+      ],
+      tip: "💡 Vérifie TOUJOURS que la dose prescrite ne dépasse pas la dose max recommandée. C'est un réflexe de sécurité IDE."
+    },
+    17: {
+      titre: "Morphine en néonatalogie",
+      premium: true, theme: "Pédiatrie", niveau: "Avancé",
+      enonce: "Bébé Léo, nouveau-né de <strong>3,2 kg</strong>, en post-opératoire d'une <strong>cure chirurgicale</strong>. Antalgie par morphine. Ampoule de 10 mg/mL <strong>diluée à 0,1 mg/mL</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nMorphine 0,05 mg/kg en bolus lent",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose totale à administrer ?", unit: "mg", reponse: 0.16, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume à injecter ?", unit: "mL", reponse: 1.6, tolerance: 5 }
+      ],
+      correction: [
+        "Dose = 0,05 × 3,2 = <strong>0,16 mg</strong>",
+        "Volume = 0,16 ÷ 0,1 = <strong>1,6 mL</strong>"
+      ],
+      tip: "💡 En néonatalogie, les dilutions sont obligatoires pour éviter les erreurs. Utiliser une seringue 1 ou 2 mL pour précision."
+    },
+    18: {
+      titre: "Surface corporelle (Mosteller)",
+      premium: true, theme: "Pédiatrie", niveau: "Avancé",
+      enonce: "Camille, 7 ans, <strong>25 kg</strong>, <strong>120 cm</strong>, en oncologie pédiatrique. Le médecin prescrit une chimiothérapie selon la surface corporelle (formule de Mosteller).",
+      prescription: "📝 <strong>Prescription :</strong>\nMéthotrexate 50 mg/m² IV\nFormule Mosteller : SC = √[(taille × poids) ÷ 3600]",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Surface corporelle (m²) ?", unit: "m²", reponse: 0.91, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose de méthotrexate ?", unit: "mg", reponse: 45.64, tolerance: 5 }
+      ],
+      correction: [
+        "SC = √[(120 × 25) ÷ 3 600] = √[3 000 ÷ 3 600] = √0,833 = <strong>0,91 m²</strong>",
+        "Dose = 50 × 0,91 = <strong>45,64 mg</strong>"
+      ],
+      tip: "💡 La formule de Mosteller est la plus utilisée en pédiatrie. Pense à mémoriser : √[(taille × poids) ÷ 3600]."
+    },
+
+    // ═══════ THÈME 4 — POURCENTAGES & CONVERSIONS (3 cas Premium) ═══════
+    19: {
+      titre: "Glucose 30% en urgence",
+      premium: true, theme: "Pourcentage", niveau: "Intermédiaire",
+      enonce: "Mme Henry, 60 ans, diabétique en <strong>hypoglycémie sévère</strong>. Le SAMU prescrit du sérum glucosé hypertonique.",
+      prescription: "📝 <strong>Prescription :</strong>\n250 mL de G30% IV lente",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration en mg/mL ?", unit: "mg/mL", reponse: 300, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Quantité totale de glucose en g ?", unit: "g", reponse: 75, tolerance: 5 }
+      ],
+      correction: [
+        "Règle : <strong>% × 10 = mg/mL</strong> → 30 × 10 = <strong>300 mg/mL</strong>",
+        "Total = 300 × 250 = 75 000 mg = <strong>75 g</strong>"
+      ],
+      tip: "💡 Le réflexe % × 10 fonctionne pour TOUS les pourcentages. G30% = 300 mg/mL, G50% = 500 mg/mL, etc."
+    },
+    20: {
+      titre: "Conversions d'unités",
+      premium: true, theme: "Conversion", niveau: "Débutant",
+      enonce: "Tu prépares une ampoule de <strong>furosémide</strong> et la prescription est exprimée dans une unité différente de celle indiquée sur l'ampoule.",
+      prescription: "📝 <strong>Sur l'ampoule :</strong>\nFurosémide 0,5 g / 5 mL",
+      questions: [
+        { id: "q1", label: "Question 1", text: "0,5 g équivaut à combien de mg ?", unit: "mg", reponse: 500, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "0,5 g équivaut à combien de μg ?", unit: "μg", reponse: 500000, tolerance: 5 }
+      ],
+      correction: [
+        "1 g = 1 000 mg → 0,5 g = <strong>500 mg</strong>",
+        "1 mg = 1 000 μg → 500 mg = <strong>500 000 μg</strong>"
+      ],
+      tip: "💡 Échelle d'unités : 1 g = 1 000 mg = 1 000 000 μg. Multiplier par 1 000 à chaque palier descendant."
+    },
+    21: {
+      titre: "Digoxine — piège classique",
+      premium: true, theme: "Conversion", niveau: "Avancé",
+      enonce: "M. Vincent, 80 ans, en <strong>fibrillation auriculaire</strong>. Le médecin prescrit de la digoxine en bolus. <strong>Attention : prescription en μg, ampoule en mg !</strong>",
+      prescription: "📝 <strong>Prescription :</strong>\nDigoxine 250 μg IV lente\nAmpoule disponible : 0,5 mg / 2 mL",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose en mg ?", unit: "mg", reponse: 0.25, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Concentration de l'ampoule (mg/mL) ?", unit: "mg/mL", reponse: 0.25, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Volume à prélever ?", unit: "mL", reponse: 1, tolerance: 5 }
+      ],
+      correction: [
+        "250 μg = 250 ÷ 1 000 = <strong>0,25 mg</strong>",
+        "Concentration ampoule = 0,5 ÷ 2 = <strong>0,25 mg/mL</strong>",
+        "Volume = 0,25 ÷ 0,25 = <strong>1 mL</strong>"
+      ],
+      tip: "💡 PIÈGE FRÉQUENT : digoxine prescrite en μg, ampoule en mg. Convertis TOUJOURS dans la même unité avant de calculer."
+    },
+
+    // ═══════ THÈME 5 — EXAMEN BLANC (4 cas Premium) ═══════
+    22: {
+      titre: "Examen blanc 1 — Amiodarone",
+      premium: true, theme: "Examen", niveau: "Avancé",
+      enonce: "M. Caron, 70 ans, en <strong>trouble du rythme grave</strong>. Le médecin prescrit une perfusion d'amiodarone. <strong>Ampoule Cordarone 150 mg / 3 mL</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nAmiodarone 500 mg dans 250 mL de G5%\nà passer en 30 minutes",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Volume d'amiodarone à prélever ?", unit: "mL", reponse: 10, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume total perfusion ?", unit: "mL", reponse: 260, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit en mL/h ?", unit: "mL/h", reponse: 520, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration ampoule = 150 / 3 = <strong>50 mg/mL</strong>",
+        "Volume amiodarone = 500 ÷ 50 = <strong>10 mL</strong>",
+        "Volume total = 250 + 10 = <strong>260 mL</strong>",
+        "Débit = 260 ÷ 0,5 = <strong>520 mL/h</strong>"
+      ],
+      tip: "💡 Amiodarone toujours sur G5% (pas NaCl, risque de précipitation). Bonus de sécurité IDE à retenir."
+    },
+    23: {
+      titre: "Examen blanc 2 — Héparine pondérée",
+      premium: true, theme: "Examen", niveau: "Avancé",
+      enonce: "Mme Olivier, <strong>90 kg</strong>, hospitalisée pour <strong>EP massive</strong>. Anticoagulation à dose maximale selon le poids.",
+      prescription: "📝 <strong>Prescription :</strong>\nHéparine 25 000 UI dans 48 mL de NaCl 0,9%\nDébit prescrit : 500 UI/kg/24h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration de la seringue ?", unit: "UI/mL", reponse: 520.83, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Dose à passer par heure ?", unit: "UI/h", reponse: 1875, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 3.6, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 25 000 ÷ 48 = <strong>520,83 UI/mL</strong>",
+        "Dose 24h = 500 × 90 = 45 000 UI/24h",
+        "Dose 1h = 45 000 ÷ 24 = <strong>1 875 UI/h</strong>",
+        "Débit PSE = 1 875 ÷ 520,83 = <strong>3,6 mL/h</strong>"
+      ],
+      tip: "💡 Pour UI/kg/24h : (dose × poids) ÷ 24 = UI/h. Ensuite UI/h ÷ concentration = mL/h. Toujours dans cet ordre."
+    },
+    24: {
+      titre: "Examen blanc 3 — Pédiatrie complexe",
+      premium: true, theme: "Examen", niveau: "Avancé",
+      enonce: "Maxime, 2 ans, <strong>9 kg</strong>, <strong>infection sévère</strong>. Antibiothérapie en perfusion. <strong>Flacon ceftriaxone 1 g / 10 mL après reconstitution</strong>. <strong>Tubulure micro (60 gtt/mL)</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nCeftriaxone 80 mg/kg dans 50 mL de G5%\nà passer en 20 minutes",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Dose totale ?", unit: "mg", reponse: 720, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Volume à prélever ?", unit: "mL", reponse: 7.2, tolerance: 5 },
+        { id: "q3", label: "Question 3", text: "Débit en mL/h ?", unit: "mL/h", reponse: 171.6, tolerance: 5 }
+      ],
+      correction: [
+        "Dose = 80 × 9 = <strong>720 mg</strong>",
+        "Concentration flacon = 100 mg/mL → volume = 720 ÷ 100 = <strong>7,2 mL</strong>",
+        "Volume total = 50 + 7,2 = 57,2 mL",
+        "Débit = 57,2 ÷ (20/60) = <strong>171,6 mL/h</strong>"
+      ],
+      tip: "💡 Examen blanc : applique la méthode des 3 questions à chaque cas, même sous stress. C'est ce qui te sauvera le jour J."
+    },
+    25: {
+      titre: "Examen blanc 4 — SAP Insuline",
+      premium: true, theme: "Examen", niveau: "Intermédiaire",
+      enonce: "Mme Lefebvre, 55 ans, en <strong>acidocétose diabétique</strong>. SAP d'insuline. <strong>Cette fois protocole avec concentration différente</strong>.",
+      prescription: "📝 <strong>Prescription :</strong>\nInsuline 100 UI dans 100 mL de NaCl 0,9%\nDébit prescrit : 6 UI/h",
+      questions: [
+        { id: "q1", label: "Question 1", text: "Concentration (UI/mL) ?", unit: "UI/mL", reponse: 1, tolerance: 5 },
+        { id: "q2", label: "Question 2", text: "Débit du PSE en mL/h ?", unit: "mL/h", reponse: 6, tolerance: 5 }
+      ],
+      correction: [
+        "Concentration = 100 ÷ 100 = <strong>1 UI/mL</strong>",
+        "Débit = 6 ÷ 1 = <strong>6 mL/h</strong>"
+      ],
+      tip: "💡 Cas piège : la concentration peut sembler différente (100/100 au lieu de 50/50) mais le ratio reste 1 UI/mL. Vérifie toujours en faisant le calcul."
+    }
+  };
+  
+  // ═══════════════════════════════════════════
+  // BADGES
+  // ═══════════════════════════════════════════
+  const BADGES = {
+    1: { icon: "🩺", name: "Premier pas", desc: "1 cas réussi" },
+    2: { icon: "📚", name: "Apprenti·e", desc: "3 cas réussis" },
+    3: { icon: "⭐", name: "Confirmé·e", desc: "10 cas réussis" },
+    4: { icon: "🏆", name: "Expert·e", desc: "20 cas réussis" }
+  };
+  
+  // ═══════════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════════
+  let state = {
+    completed: {},     // { 1: 100, 2: 80, ... }  cas: score%
+    currentCas: null,
+    badges: []
+  };
+  
+  // Charger depuis localStorage si dispo
+  try {
+    const saved = localStorage.getItem('atelier-calculs-state');
+    if (saved) state = JSON.parse(saved);
+  } catch(e) {}
+  
+  function saveState() {
+    try {
+      localStorage.setItem('atelier-calculs-state', JSON.stringify(state));
+    } catch(e) {}
+  }
+  
+  // ═══════════════════════════════════════════
+  // UI UPDATE
+  // ═══════════════════════════════════════════
+  function updateUI() {
+    // Cas marqués complétés
+    document.querySelectorAll('.cas-card').forEach(card => {
+      const id = parseInt(card.dataset.cas);
+      if (state.completed[id]) {
+        card.classList.add('completed');
+        card.querySelector('.cas-status').textContent = '✓';
+      }
+    });
+    
+    // Stats
+    const done = Object.keys(state.completed).length;
+    document.getElementById('stat-done').textContent = done;
+    
+    if (done > 0) {
+      const avg = Object.values(state.completed).reduce((a, b) => a + b, 0) / done;
+      document.getElementById('stat-score').textContent = Math.round(avg);
+    }
+    
+    // Badges
+    state.badges.forEach(b => {
+      const el = document.getElementById('badge-' + b);
+      if (el) el.classList.add('unlocked');
+    });
+  }
+  
+  // ═══════════════════════════════════════════
+  // OPEN EXERCICE
+  // ═══════════════════════════════════════════
+  function openCas(num) {
+    const cas = CAS[num];
+    if (!cas) return;
+    
+    state.currentCas = num;
+    
+    document.getElementById('exo-num').textContent = num.toString().padStart(2, '0');
+    document.getElementById('exo-titre').textContent = cas.titre;
+    document.getElementById('exo-enonce').innerHTML = cas.enonce;
+    document.getElementById('exo-prescription').innerHTML = cas.prescription;
+    
+    // Générer les questions
+    const qContainer = document.getElementById('exo-questions');
+    qContainer.innerHTML = cas.questions.map(q => `
+      <div class="question-block">
+        <label>${q.label}</label>
+        <div class="question-text">${q.text}</div>
+        <div class="input-with-unit">
+          <input type="number" id="ans-${q.id}" step="0.01" placeholder="Ta réponse..." />
+          <div class="unit">${q.unit}</div>
+        </div>
+      </div>
+    `).join('');
+    
+    // Reset verdict
+    document.getElementById('verdict').classList.remove('show');
+    document.getElementById('btn-verifier').style.display = 'block';
+    
+    document.getElementById('exercice-overlay').classList.add('show');
+    document.body.classList.add('exercice-open');
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      window.parent.postMessage({ type: 'scroll-to-top' }, '*');
+    } catch(e) {}
+  }
+  
+  function closeExercice() {
+    document.getElementById('exercice-overlay').classList.remove('show');
+    document.body.classList.remove('exercice-open');
+    updateUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    try {
+      window.parent.postMessage({ type: 'scroll-to-top' }, '*');
+    } catch(e) {}
+  }
+  
+  function retry() {
+    document.getElementById('verdict').classList.remove('show');
+    document.getElementById('btn-verifier').style.display = 'block';
+    CAS[state.currentCas].questions.forEach(q => {
+      document.getElementById('ans-' + q.id).value = '';
+    });
+  }
+  
+  // ═══════════════════════════════════════════
+  // VÉRIFICATION
+  // ═══════════════════════════════════════════
+  function verifier() {
+    const cas = CAS[state.currentCas];
+    let correct = 0;
+    let details = [];
+    
+    cas.questions.forEach(q => {
+      const userAns = parseFloat(document.getElementById('ans-' + q.id).value);
+      if (isNaN(userAns)) {
+        details.push({ q: q, user: null, ok: false });
+        return;
+      }
+      const ecart = Math.abs((userAns - q.reponse) / q.reponse) * 100;
+      const ok = ecart <= q.tolerance;
+      if (ok) correct++;
+      details.push({ q: q, user: userAns, ok: ok, ecart: ecart });
+    });
+    
+    const score = Math.round((correct / cas.questions.length) * 100);
+    const allCorrect = correct === cas.questions.length;
+    
+    // Affichage verdict
+    const verdict = document.getElementById('verdict');
+    verdict.className = 'verdict show ' + (allCorrect ? 'success' : 'failure');
+    document.getElementById('verdict-icon').textContent = allCorrect ? '✓' : '✗';
+    
+    if (allCorrect) {
+      document.getElementById('verdict-title').textContent = 'Bravo, toutes les réponses sont correctes !';
+      document.getElementById('verdict-detail').textContent = 'Tu maîtrises ce type de calcul.';
+    } else {
+      document.getElementById('verdict-title').textContent = correct > 0 
+        ? `${correct} bonne(s) réponse(s) sur ${cas.questions.length}` 
+        : 'Pas encore — essaie à nouveau';
+      const detailText = details.map(d => {
+        if (d.user === null) return `${d.q.label} : réponse manquante`;
+        if (d.ok) return `${d.q.label} : ✓ ${d.user} ${d.q.unit}`;
+        return `${d.q.label} : ta réponse ${d.user} — attendue ${d.q.reponse} ${d.q.unit} (écart ${d.ecart.toFixed(1)}%)`;
+      }).join(' · ');
+      document.getElementById('verdict-detail').textContent = detailText;
+    }
+    
+    // Correction
+    document.getElementById('correction-steps').innerHTML = cas.correction.map((step, i) => `
+      <div class="correction-step">
+        <div class="correction-step-num">${i+1}</div>
+        ${step}
+      </div>
+    `).join('');
+    document.getElementById('correction-tip').innerHTML = cas.tip;
+    
+    // Sauvegarder
+    if (allCorrect) {
+      if (!state.completed[state.currentCas] || state.completed[state.currentCas] < score) {
+        state.completed[state.currentCas] = score;
+      }
+      checkBadges();
+      saveState();
+    }
+    
+    document.getElementById('btn-verifier').style.display = 'none';
+  }
+  
+  // ═══════════════════════════════════════════
+  // BADGES
+  // ═══════════════════════════════════════════
+  function checkBadges() {
+    const done = Object.keys(state.completed).length;
+    
+    if (done >= 1 && !state.badges.includes(1)) {
+      state.badges.push(1);
+      showBadge(1);
+    }
+    if (done >= 3 && !state.badges.includes(2)) {
+      state.badges.push(2);
+      setTimeout(() => showBadge(2), 500);
+    }
+    if (done >= 10 && !state.badges.includes(3)) {
+      state.badges.push(3);
+      setTimeout(() => showBadge(3), 1000);
+    }
+    if (done >= 20 && !state.badges.includes(4)) {
+      state.badges.push(4);
+      setTimeout(() => showBadge(4), 1500);
+    }
+  }
+  
+  function showBadge(id) {
+    const b = BADGES[id];
+    document.getElementById('badge-popup-icon').textContent = b.icon;
+    document.getElementById('badge-popup-name').textContent = b.name;
+    const popup = document.getElementById('badge-popup');
+    popup.classList.add('show');
+    setTimeout(() => popup.classList.remove('show'), 3500);
+  }
+  
+  // ═══════════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════════
+  updateUI();
+</script>
+
+</body>
+</html>

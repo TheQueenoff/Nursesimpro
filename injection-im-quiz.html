@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Injection IM</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&family=Fira+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f8fa;--white:#ffffff;
+  --g:#1a7a3e;--gd:#0d4a24;--gl:#edfbf3;--gm:#6dce9b;
+  --bl:#1755d4;--bld:#0e3a8a;--bll:#eef3ff;--blm:#93b4f7;
+  --rd:#c0392b;--rdl:#fff2f0;--rdm:#f5a49d;
+  --or:#c97b00;--orl:#fffceb;--orm:#f5d066;--oram:#7a4d00;
+  --pu:#6535c8;--pul:#f4f0ff;--pum:#b89ff0;
+  --text:#111827;--t2:#4b5563;--t3:#9ca3af;
+  --bord:#e5e7eb;--bord2:#d1d5db;
+  --sh:0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04);
+  --shm:0 4px 20px rgba(0,0,0,.10);
+}
+html,body{min-height:100vh;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes puls{0%,100%{opacity:1}50%{opacity:.5}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+
+/* ─── HEADER ─── */
+.hdr{background:var(--white);border-bottom:1px solid var(--bord);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hdr-logo{display:flex;align-items:center;gap:9px}
+.hdr-icon{width:34px;height:34px;background:var(--gd);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.hdr-name{font-size:14px;font-weight:700;color:var(--gd)}
+.hdr-sub{font-size:10px;color:var(--t3)}
+.hdr-badge{background:var(--gl);color:var(--g);border:1px solid var(--gm);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:700}
+
+/* ─── WELCOME ─── */
+.wb{max-width:780px;margin:0 auto;padding:26px 18px 50px;animation:up .4s ease}
+.hero{background:var(--white);border:1px solid var(--bord);border-radius:16px;padding:22px;margin-bottom:20px;box-shadow:var(--sh);display:flex;gap:16px;align-items:center}
+.hero-ico{font-size:40px;flex-shrink:0}
+.hero-title{font-family:'DM Serif Display',serif;font-size:20px;color:var(--gd);margin-bottom:4px}
+.hero-desc{font-size:12.5px;color:var(--t2);line-height:1.65}
+
+/* Alert rouge */
+.alert{background:linear-gradient(135deg,#fff5f5,#fef2f2);border:2px solid var(--rdm);border-radius:14px;padding:15px 17px;margin-bottom:20px}
+.alert-row{display:flex;gap:11px;align-items:flex-start}
+.alert-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.alert-title{font-size:12px;font-weight:700;color:var(--rd);margin-bottom:5px}
+.alert-list{list-style:none}
+.alert-list li{font-size:11.5px;color:#7f1d1d;display:flex;gap:6px;align-items:flex-start;line-height:1.55;margin-bottom:3px}
+.alert-list li::before{content:'⚠️';font-size:10px;flex-shrink:0;margin-top:1px}
+
+/* Sites grid */
+.sites5{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:20px}
+@media(max-width:580px){.sites5{grid-template-columns:1fr 1fr}}
+.site-mini{background:var(--white);border:1px solid var(--bord);border-radius:11px;padding:11px 8px;text-align:center}
+.site-mini.ok{border-color:var(--gm);background:var(--gl)}
+.site-mini.caut{border-color:var(--orm);background:var(--orl)}
+.sm-ico{font-size:20px;margin-bottom:4px}
+.sm-name{font-size:10px;font-weight:700;color:var(--text);margin-bottom:2px}
+.sm-vol{font-size:9.5px;color:var(--t3)}
+
+/* Stats bar */
+.stats4{background:var(--white);border:1px solid var(--bord);border-radius:11px;padding:12px;margin-bottom:20px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.si{padding:5px;border-right:1px solid var(--bord)}.si:last-child{border:none}
+.sv{font-size:19px;font-weight:800;color:var(--gd);margin-bottom:1px}
+.sl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+
+/* Mode cards */
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:11px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+@media(max-width:560px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--white);border:2px solid var(--bord);border-radius:14px;padding:18px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--g));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--g));box-shadow:var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc.sel{background:var(--mb,var(--gl))}
+.mc-ico{font-size:24px;margin-bottom:9px;display:block}
+.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'✓';color:var(--mc,var(--g));font-weight:700;flex-shrink:0}
+
+.launch{width:100%;padding:15px;background:var(--gd);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(13,74,36,.35)}
+.launch:hover{background:var(--g);transform:translateY(-2px)}
+
+/* ─── FICHE ─── */
+.fb{max-width:820px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--white);border:1px solid var(--bord);border-radius:14px;padding:16px 20px;margin-bottom:16px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'DM Serif Display',serif;color:var(--gd)}
+.fs{font-size:10.5px;color:var(--t3);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border:1.5px solid var(--bord);border-radius:20px;background:var(--white);font-size:10.5px;font-weight:700;cursor:pointer;color:var(--t2);font-family:'DM Sans',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--g);color:var(--g)}
+.ftab.on{background:var(--gd);border-color:var(--gd);color:white}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--g);font-weight:700;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--gm)}
+
+/* Matériel */
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+@media(max-width:480px){.mg2{grid-template-columns:1fr}}
+.mi{background:var(--white);border:1px solid var(--bord);border-radius:10px;padding:9px 11px;display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--t2);line-height:1.5;box-shadow:var(--sh)}
+.mi-ico{font-size:15px;flex-shrink:0}
+.mi.crit{background:var(--rdl);border-color:var(--rdm)}.mi.crit .mi-txt{color:#7f1d1d}
+.mi.warn{background:var(--orl);border-color:var(--orm)}.mi.warn .mi-txt{color:var(--oram)}
+
+/* Sites détaillés */
+.sdg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:480px){.sdg{grid-template-columns:1fr}}
+.sdc{background:var(--white);border:1px solid var(--bord);border-radius:12px;padding:13px;box-shadow:var(--sh)}
+.sdc.ok{border-color:var(--gm);border-width:2px}
+.sdc.caut{border-color:var(--orm)}
+.sdch{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.sdci{font-size:19px}
+.sdc-nm{font-size:12px;font-weight:700;color:var(--text)}
+.sdc-bg{font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:20px;border:1px solid;margin-top:2px;display:inline-block}
+.bg-g{background:var(--gl);border-color:var(--gm);color:var(--g)}
+.bg-b{background:var(--bll);border-color:var(--blm);color:var(--bl)}
+.bg-o{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.sdc-body{font-size:11px;color:var(--t2);line-height:1.65}
+.sdc-vol{display:inline-flex;gap:4px;background:var(--bg);border-radius:6px;padding:3px 7px;font-size:9.5px;font-weight:700;color:var(--t3);margin-top:5px}
+
+/* Steps */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px}
+.sc{background:var(--white);border:1px solid var(--bord);border-radius:12px;overflow:hidden;box-shadow:var(--sh);margin-bottom:7px}
+.sc.crit{border-color:var(--rdm);border-width:2px}
+.sc.att{border-color:var(--orm);border-width:1.5px}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--bg)}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--gd);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc.crit .sn{background:var(--rd)}
+.sc.att .sn{background:var(--or)}
+.si2{flex:1}
+.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pu)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:#4c1d95;line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--or);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--oram);line-height:1.6}
+.serr{background:var(--rdl);border:1.5px solid var(--rdm);border-radius:7px;padding:7px 11px;font-size:11px;color:#7f1d1d;line-height:1.55;margin-top:6px}
+.snuance{background:var(--pul);border:1px solid var(--pum);border-radius:7px;padding:7px 11px;font-size:11px;color:#4c1d95;line-height:1.55;margin-top:6px}
+.scons{background:var(--bll);border:1px solid var(--blm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--bld);line-height:1.55;margin-top:6px}
+
+/* Complications */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:480px){.cg{grid-template-columns:1fr}}
+.cc{padding:12px 13px;border-radius:11px;font-size:11.5px;line-height:1.65}
+.cc-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.cc-r{background:var(--rdl);border:1px solid var(--rdm)}.cc-r .cc-h{color:var(--rd)}
+.cc-o{background:var(--orl);border:1px solid var(--orm)}.cc-o .cc-h{color:var(--or)}
+.cc-p{background:var(--pul);border:1px solid var(--pum)}.cc-p .cc-h{color:var(--pu)}
+.cc-b{background:var(--bll);border:1px solid var(--blm)}.cc-b .cc-h{color:var(--bl)}
+.cc-r,.cc-o{color:#7f1d1d;color:var(--oram)}.cc-r{color:#7f1d1d}
+
+/* Mémo */
+.memo-block{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.75;margin-bottom:10px}
+.mb-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+
+/* ─── QUIZ ─── */
+#stb{background:var(--white);border-bottom:1px solid var(--bord);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-box{width:26px;height:26px;background:var(--gd);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-txt{font-size:12px;font-weight:700;color:var(--gd)}
+.tbm{background:var(--gl);color:var(--g);border:1px solid var(--gm);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--bord)}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--g),var(--bl));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.pst{background:var(--bll);border-color:var(--blm);color:var(--bl)}
+.pst.hot{background:var(--orl);border-color:var(--orm);color:var(--or);animation:puls 1s infinite}
+.plv{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bord);stroke-width:3.5}
+.tia{fill:none;stroke:var(--g);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--rd)}
+
+#qb{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--gd),var(--g));border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease;color:white;box-shadow:0 4px 18px rgba(13,74,36,.26)}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.12);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:2px}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px}
+.ctx-body{font-size:12px;color:rgba(255,255,255,.82);line-height:1.65;font-family:'DM Serif Display',serif;font-style:italic}
+.qcard{background:var(--white);border:1px solid var(--bord);border-radius:15px;padding:18px 20px;margin-bottom:11px;box-shadow:var(--sh);animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--gm);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--g)}
+.qct{font-size:9.5px;font-weight:700;color:var(--g);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3)}
+.qill{float:right;margin:0 0 9px 13px;border-radius:9px;overflow:hidden;border:1px solid var(--bord);box-shadow:var(--sh)}
+.qtext{font-family:'DM Serif Display',serif;font-size:16.5px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--gd)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--bord);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'DM Sans',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--sh)}
+.ch:hover:not(:disabled){border-color:var(--g);background:var(--gl);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--bord);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);transition:all .2s}
+.ch.ok2{background:var(--gl);border-color:var(--gm)}.ch.ok2 .cl{background:var(--g);border-color:var(--g);color:white}
+.ch.ko{background:var(--rdl);border-color:var(--rdm);animation:shake .4s ease}.ch.ko .cl{background:var(--rd);border-color:var(--rd);color:white}
+.ch.mis{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--gl);color:var(--g);border-color:var(--gm)}
+.ctag-ko{background:var(--rdl);color:var(--rd);border-color:var(--rdm)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--gl);border-color:var(--gm)}.expb.ko{background:var(--rdl);border-color:var(--rdm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--g)}.exptt.ko{color:var(--rd)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--white);border-left:3px solid var(--g);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--gd)}
+.nxt{width:100%;padding:12px;background:var(--gd);border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(13,74,36,.25)}
+.nxt.on{display:block}.nxt:hover{background:var(--g)}
+#qft{background:var(--white);border-top:1px solid var(--bord);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fst2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fst2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--or);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'DM Sans',sans-serif}
+
+/* ─── RÉSULTAT ─── */
+.resb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.resh{background:var(--white);border:1px solid var(--bord);border-radius:18px;padding:26px;text-align:center;margin-bottom:13px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.resh::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--g),var(--bl))}
+.rgrade{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rscore{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'DM Serif Display',serif}
+.rsub{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rmen{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:13px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--white);border:1px solid var(--bord);border-radius:11px;padding:13px;text-align:center;box-shadow:var(--sh)}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.bkd{background:var(--white);border:1px solid var(--bord);border-radius:13px;padding:16px;margin-bottom:13px;box-shadow:var(--sh)}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:13px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bkd2{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errbox{background:var(--rdl);border:1px solid var(--rdm);border-radius:13px;padding:14px;margin-bottom:13px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rd);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsbox{background:var(--bll);border:1px solid var(--blm);border-radius:13px;padding:14px;margin-bottom:13px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--bl);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rb{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.rbp{background:var(--gd);color:white;box-shadow:0 2px 9px rgba(13,74,36,.28)}.rbp:hover{background:var(--g)}
+.rbs{background:var(--white);border:1.5px solid var(--bord);color:var(--text)}.rbs:hover{border-color:var(--gm)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hdr-logo"><div class="hdr-icon">💉</div><div><div class="hdr-name">NurseSimPro</div><div class="hdr-sub">Formation infirmière premium</div></div></div>
+    <div class="hdr-badge">💉 Injection intramusculaire</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">💉</div>
+      <div>
+        <div class="hero-title">Injection intramusculaire (IM)</div>
+        <div class="hero-desc">Maîtrisez les 5 sites, leurs repères anatomiques, les volumes maximaux, la technique à 90°, le test de reflux et ses nuances vaccins, la gestion des complications et des AES. Sources vérifiées : CHUV Lausanne 2023 · OMS · CDC · Santé Publique France · Infirmier.net.</div>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="alert-row">
+        <div class="alert-ico">🚨</div>
+        <div>
+          <div class="alert-title">7 règles absolues — erreur = faute grave</div>
+          <ul class="alert-list">
+            <li><strong>Vaccins immunisants actifs (COVID, grippe…) = deltoïde UNIQUEMENT</strong> — jamais le fessier (OMS, CDC, Santé Publique France).</li>
+            <li><strong>Anticoagulants / hémophilie = contre-indication formelle à l'IM</strong> — vérifier le traitement avant tout soin.</li>
+            <li><strong>Angle 90° perpendiculaire</strong> — jamais 45° (angle sous-cutané).</li>
+            <li><strong>Deltoïde = exactement 5 cm sous l'acromion</strong> — plus bas = lésion nerf axillaire ou SIRVA.</li>
+            <li><strong>Injecter lentement : 1 mL / 10 secondes</strong> — injection rapide = douleur + nécrose tissulaire.</li>
+            <li><strong>Jamais recapuchonner l'aiguille</strong> — DASRI immédiatement après retrait.</li>
+            <li><strong>Surveiller 15-30 min après injection</strong> — choc anaphylactique possible même sans allergie connue.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="mlbl">5 sites d'injection IM</div>
+    <div class="sites5">
+      <div class="site-mini ok"><div class="sm-ico">🦴</div><div class="sm-name">Fessier QSE</div><div class="sm-vol">Max 4-5 mL</div></div>
+      <div class="site-mini ok"><div class="sm-ico">🏃</div><div class="sm-name">Ventroglutéal</div><div class="sm-vol">Max 4-5 mL</div></div>
+      <div class="site-mini"><div class="sm-ico">💪</div><div class="sm-name">Deltoïde</div><div class="sm-vol">Max 2 mL — Vaccins</div></div>
+      <div class="site-mini"><div class="sm-ico">🦵</div><div class="sm-name">Vaste externe</div><div class="sm-vol">Max 4-5 mL</div></div>
+      <div class="site-mini caut"><div class="sm-ico">⚠️</div><div class="sm-name">Droit ant.</div><div class="sm-vol">Éviter adulte</div></div>
+    </div>
+
+    <div class="stats4">
+      <div class="si"><div class="sv">15</div><div class="sl">Étapes</div></div>
+      <div class="si"><div class="sv">4</div><div class="sl">Modes</div></div>
+      <div class="si"><div class="sv">5</div><div class="sl">Sites IM</div></div>
+      <div class="si"><div class="sv">90°</div><div class="sl">Angle</div></div>
+    </div>
+
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#0d4a24;--mb:#edfbf3" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Protocole</span>
+        <div class="mc-badge" style="background:#edfbf3;border-color:#6dce9b;color:#1a7a3e">📋 Référence</div>
+        <div class="mc-desc">Matériel complet, 5 sites avec repères anatomiques, 15 étapes commentées, complications, mémo récapitulatif.</div>
+        <ul class="mc-ul" style="--mc:#0d4a24"><li>5 sites avec repères précis</li><li>15 étapes + erreurs critiques</li><li>Nuances reflux et vaccins</li><li>Complications et AES</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#1a7a3e;--mb:#edfbf3" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:#edfbf3;border-color:#6dce9b;color:#1a7a3e">⭐ Débutant</div>
+        <div class="mc-desc">Les 15 étapes dans l'ordre, chacune expliquée. Question de validation à chaque étape.</div>
+        <ul class="mc-ul" style="--mc:#1a7a3e"><li>Protocole dans l'ordre</li><li>Repères anatomiques détaillés</li><li>Question de validation</li><li>Pas de chrono</li></ul>
+      </button>
+      <button class="mc" style="--mc:#c97b00;--mb:#fffceb" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-badge" style="background:#fffceb;border-color:#f5d066;color:#c97b00">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">15 questions sur le protocole complet. Sites, volumes, angle, reflux, vaccins, contre-indications. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#c97b00"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#6535c8;--mb:#f4f0ff" onclick="setMode('survival',this)">
+        <span class="mc-ico">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-badge" style="background:#f4f0ff;border-color:#b89ff0;color:#6535c8">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Pièges sur vaccin dans le fessier, angle 45°, anticoagulants ignorés, SIRVA, recapuchonnage. 3 vies. Chrono 25s.</div>
+        <ul class="mc-ul" style="--mc:#6535c8"><li>10 pièges cliniques graves</li><li>3 vies · Chrono 25s</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<!-- ══ FICHE ══ -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hdr-logo"><div class="hdr-icon">📖</div><div><div class="hdr-name">Fiche Protocole — Injection IM</div><div class="hdr-sub">CHUV 2023 · OMS · CDC · Santé Publique France · Infirmier.net</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1.5px solid var(--bord);border-radius:20px;background:white;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'DM Sans',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Injection intramusculaire</div><div class="fs">Soin infirmier sur prescription médicale — Art. R.4311-7</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('f-mat',this)">🧰 Matériel</button>
+        <button class="ftab" onclick="showFTab('f-sites',this)">🗺️ Sites IM</button>
+        <button class="ftab" onclick="showFTab('f-proto',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('f-compl',this)">⚠️ Complications</button>
+        <button class="ftab" onclick="showFTab('f-memo',this)">🧠 Mémo</button>
+      </div>
+    </div>
+
+    <!-- MATÉRIEL -->
+    <div class="fsec on" id="f-mat">
+      <div class="fst">🧰 Matériel</div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#0d4a24;margin-bottom:6px;padding:3px 9px;background:#d1fae5;border-radius:5px;display:inline-block">EPI infirmier(e)</div>
+      <div class="mg2" style="margin-bottom:14px">
+        <div class="mi"><div class="mi-ico">😷</div><div class="mi-txt"><strong>Masque chirurgical</strong> — protection contre projections de sang ou d'aiguille.</div></div>
+        <div class="mi"><div class="mi-ico">🧤</div><div class="mi-txt"><strong>Gants non stériles à usage unique</strong> — protection contre le sang. Ce soin n'est pas stérile.</div></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#0369a1;margin-bottom:6px;padding:3px 9px;background:#dbeafe;border-radius:5px;display:inline-block">Matériel d'injection</div>
+      <div class="mg2">
+        <div class="mi"><div class="mi-ico">💉</div><div class="mi-txt"><strong>Seringue adaptée</strong> (1-10 mL selon volume prescrit). Une pour la préparation, une pour l'injection si flacon multidose.</div></div>
+        <div class="mi crit"><div class="mi-ico">🪡</div><div class="mi-txt"><strong>Aiguille IM + aiguille de préparation distincte</strong>. Changer avant injection : l'aiguille de prélèvement est émoussée par le flacon. Verte 21G (0,8×40 mm) standard · Noire 22G (0,7×40 mm) produits visqueux.</div></div>
+        <div class="mi"><div class="mi-ico">🧴</div><div class="mi-txt"><strong>Antiseptique alcoolique</strong> — alcool 70° ou chlorhexidine alcoolique 2%. Pour peau saine (pas muqueuse).</div></div>
+        <div class="mi"><div class="mi-ico">📋</div><div class="mi-txt"><strong>Compresses stériles</strong> — désinfection du site et pression post-injection.</div></div>
+        <div class="mi crit"><div class="mi-ico">🗑️</div><div class="mi-txt"><strong>Container DASRI piquants/tranchants — à portée de main AVANT le soin</strong>. Jamais recapuchonner. L'aiguille va directement dans le container après retrait.</div></div>
+        <div class="mi"><div class="mi-ico">💊</div><div class="mi-txt"><strong>Médicament prescrit</strong> — vérifié (5 B : bon patient, bon médicament, bonne dose, bonne voie, bon moment). Péremption + aspect.</div></div>
+      </div>
+    </div>
+
+    <!-- SITES -->
+    <div class="fsec" id="f-sites">
+      <div class="fst">🗺️ Les 5 sites d'injection IM</div>
+      <div class="sdg">
+        <div class="sdc ok">
+          <div class="sdch"><div class="sdci">🦴</div><div><div class="sdc-nm">Fessier postérieur (QSE)</div><div class="sdc-bg bg-g">Site de référence France</div></div></div>
+          <div class="sdc-body">
+            <strong>Repère :</strong> Diviser la fesse en 4 quadrants. Injecter dans le <strong>quadrant supéro-externe (en haut, côté extérieur)</strong>.<br>
+            <strong>Position :</strong> Décubitus ventral, <strong>orteils pointés vers l'intérieur</strong> (relâche le grand fessier) ou décubitus latéral (genou du dessus fléchi).<br>
+            <strong>Test de reflux :</strong> Recommandé pour ce site (risque IV accidentel plus élevé qu'ailleurs).<br>
+            <strong>⚠️ Vaccins immunisants actifs : INTERDITS ici.</strong> Nerf sciatique dans les quadrants inférieurs.
+          </div>
+          <div class="sdc-vol">📏 Max 4-5 mL</div>
+        </div>
+        <div class="sdc ok">
+          <div class="sdch"><div class="sdci">🏃</div><div><div class="sdc-nm">Ventroglutéal</div><div class="sdc-bg bg-g">Recommandé littérature internationale</div></div></div>
+          <div class="sdc-body">
+            <strong>Repère :</strong> Paume sur le grand trochanter. Index sur l'épine iliaque antérosupérieure (EIAS), majeur vers la crête iliaque. Le triangle formé = zone d'injection.<br>
+            <strong>Avantage :</strong> Moins de tissu adipeux, loin des nerfs et vaisseaux. Site prioritaire selon la littérature internationale.<br>
+            <strong>Inconvénient :</strong> Repérage moins habituel en France.
+          </div>
+          <div class="sdc-vol">📏 Max 4-5 mL</div>
+        </div>
+        <div class="sdc">
+          <div class="sdch"><div class="sdci">💪</div><div><div class="sdc-nm">Deltoïde</div><div class="sdc-bg bg-b">Vaccins · Petits volumes</div></div></div>
+          <div class="sdc-body">
+            <strong>Repère :</strong> <strong>5 cm (3 doigts) sous le bord inférieur de l'acromion</strong>. Former un triangle inversé (base = acromion, sommet vers coude). Injecter au centre.<br>
+            <strong>⚠️ Injection trop basse (&gt;5 cm) = lésion nerf axillaire ou SIRVA</strong> (Shoulder Injury Related to Vaccine Administration).<br>
+            <strong>Vaccins COVID-19, grippe, hépatites : obligatoirement dans ce muscle</strong> (OMS, CDC, SPF).
+          </div>
+          <div class="sdc-vol">📏 Max 2 mL · Vaccin 1 mL</div>
+        </div>
+        <div class="sdc">
+          <div class="sdch"><div class="sdci">🦵</div><div><div class="sdc-nm">Vaste externe de la cuisse</div><div class="sdc-bg bg-g">Référence nourrissons &lt;1 an</div></div></div>
+          <div class="sdc-body">
+            <strong>Repère :</strong> Face latéro-externe de la cuisse. De <strong>1 main au-dessus du genou</strong> à <strong>1 main sous le grand trochanter</strong>. Milieu de cette zone.<br>
+            <strong>Position :</strong> Assis ou décubitus dorsal, cuisse détendue.<br>
+            <strong>Indication :</strong> Site de référence pour les nourrissons (&lt;1 an). Accessible chez le patient obèse.
+          </div>
+          <div class="sdc-vol">📏 Max 4-5 mL</div>
+        </div>
+        <div class="sdc caut">
+          <div class="sdch"><div class="sdci">⚠️</div><div><div class="sdc-nm">Droit antérieur de la cuisse</div><div class="sdc-bg bg-o">À éviter chez l'adulte</div></div></div>
+          <div class="sdc-body">
+            <strong>Repère :</strong> Face antérieure de la cuisse, milieu.<br>
+            <strong>⚠️ À éviter chez l'adulte</strong> — plus douloureux, risque accru de lésion tissulaire.<br>
+            <strong>Usage :</strong> Auto-injection d'urgence (adrénaline auto-injectable) ou autres sites inaccessibles.
+          </div>
+          <div class="sdc-vol">📏 Max 4 mL</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="f-proto">
+      <div class="fst">📋 Protocole — 15 étapes</div>
+      <div id="proto-im-steps"></div>
+    </div>
+
+    <!-- COMPLICATIONS -->
+    <div class="fsec" id="f-compl">
+      <div class="fst">⚠️ Complications</div>
+      <div class="cg">
+        <div class="cc cc-r"><div class="cc-h">🚨 Choc anaphylactique</div>Dans les 15-30 min post-injection. Signes : urticaire, œdème, hypotension, bronchospasme, perte de conscience. <strong>Conduite :</strong> appel 15, adrénaline, décubitus jambes élevées. Chariot d'urgence accessible obligatoire. Surveiller systématiquement 15-30 min après toute injection.</div>
+        <div class="cc cc-o"><div class="cc-h">⚠️ Hématome intramusculaire</div>Principal chez patients sous anticoagulants. <strong>CI IM : anticoagulants et hémophilie.</strong> Signes : gonflement, douleur, ecchymose. Conduite : compression, surveillance, signalement médecin.</div>
+        <div class="cc cc-r"><div class="cc-h">🚨 SIRVA (deltoïde)</div>Injection trop basse dans le deltoïde → bourse sous-acromiale. Signes : douleur intense + limitation épaule dans les 48h. <strong>Prévention : 5 cm exactement sous l'acromion.</strong></div>
+        <div class="cc cc-p"><div class="cc-h">⚠️ Lésion nerveuse</div>Nerf sciatique (fessier hors QSE), nerf axillaire (deltoïde trop bas). Signes : douleur irradiante, paresthésies, faiblesse distale. <strong>Prévention : respecter les repères anatomiques.</strong></div>
+        <div class="cc cc-o"><div class="cc-h">⚠️ Abcès post-injection</div>Asepsie insuffisante ou produit irritant en sous-cutané. Signes : rougeur, chaleur, induration, fièvre. <strong>Prévention :</strong> antisepsie cutanée, rotation des sites, angle 90°.</div>
+        <div class="cc cc-b"><div class="cc-h">ℹ️ AES — Piqûre accidentelle</div>Première cause : recapuchonnage. <strong>Conduite :</strong> rinçage eau + savon 5 min, antisepsie, déclaration dans les 4h. <strong>Prévention : container DASRI à portée de main AVANT le soin, jamais recapuchonner.</strong></div>
+      </div>
+    </div>
+
+    <!-- MÉMO -->
+    <div class="fsec" id="f-memo">
+      <div class="fst">🧠 Mémo rapide</div>
+      <div class="memo-block" style="background:var(--rdl);border:2px solid var(--rdm);color:#7f1d1d">
+        <div class="mb-h" style="color:var(--rd)">🚨 7 règles absolues</div>
+        • <strong>Vaccins immunisants actifs = deltoïde uniquement</strong> (jamais le fessier)<br>
+        • <strong>Anticoagulants / hémophilie = contre-indication IM</strong><br>
+        • <strong>Angle : 90° perpendiculaire</strong> (jamais 45°)<br>
+        • <strong>Deltoïde = 5 cm sous l'acromion</strong> (SIRVA si trop bas)<br>
+        • <strong>Injecter lentement : 1 mL / 10 secondes</strong><br>
+        • <strong>DASRI immédiatement — jamais recapuchonner</strong><br>
+        • <strong>Surveiller 15-30 min après toute injection</strong>
+      </div>
+      <div class="memo-block" style="background:var(--bll);border:1px solid var(--blm);color:var(--bld)">
+        <div class="mb-h" style="color:var(--bl)">🔬 Nuance sur le test de reflux</div>
+        <strong>Fessier postérieur :</strong> aspiration recommandée en IFSI France (risque IV accidentel plus présent).<br>
+        <strong>Vaccins (tous sites) :</strong> aspiration <strong>non recommandée</strong> selon OMS, CDC et Santé Publique France — augmente la douleur sans bénéfice clinique.<br>
+        <strong>Autres sites (deltoïde, ventroglutéal, vaste externe) :</strong> recommandations variables selon les sources — pas de gros vaisseaux dans ces zones.
+      </div>
+      <div class="memo-block" style="background:var(--gl);border:1px solid var(--gm);color:var(--gd)">
+        <div class="mb-h" style="color:var(--g)">📌 Repères mnémotechniques</div>
+        <strong>QSE fessier :</strong> croix mentale sur la fesse → haut + extérieur<br>
+        <strong>Deltoïde :</strong> 3 doigts sous l'acromion → triangle inversé → centre<br>
+        <strong>Vaste externe :</strong> 1 main au-dessus genou + 1 main sous grand trochanter → milieu<br>
+        <strong>Ventroglutéal :</strong> paume sur grand trochanter, index sur EIAS, majeur vers crête iliaque → triangle
+      </div>
+      <div class="memo-block" style="background:var(--orl);border:1px solid var(--orm);color:var(--oram)">
+        <div class="mb-h" style="color:var(--or)">📏 Volumes et calibres</div>
+        Fessier / Ventroglutéal / Vaste externe : <strong>max 4-5 mL</strong><br>
+        Deltoïde : <strong>max 2 mL</strong> (vaccin : 1 mL)<br>
+        Si volume &gt;5 mL : répartir sur plusieurs sites<br>
+        Aiguille verte 21G (0,8×40 mm) · Noire 22G (0,7×40 mm) produits visqueux<br>
+        Patient obèse : aiguille longue (50-70 mm)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-box">💉</div><span class="tbl-txt">Injection IM</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw">
+      <div class="tbql" id="tbql">Étape 1/15</div>
+      <div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div>
+    </div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctxsb">Étape</div>
+        <div class="ctx-title" id="ctxtl"></div>
+        <div class="ctx-body" id="ctxbd"></div>
+      </div>
+    </div>
+    <div class="qcard">
+      <div class="qtop">
+        <div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div>
+        <span class="qnum" id="qnum">1</span>
+      </div>
+      <div id="qill"></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fst2">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="fst2">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="fst2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- ══ RÉSULTAT ══ -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hdr-logo"><div class="hdr-icon">💉</div><div><div class="hdr-name">Rapport — Injection IM</div></div></div></div>
+  <div class="resb">
+    <div class="resh">
+      <span class="rgrade" id="rg">🎓</span>
+      <div class="rscore" id="rs">--/20</div>
+      <div class="rsub" id="rsb">--</div>
+      <div class="rmen" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--or)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--or)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--g)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--gd)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errbox" id="errbox" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsbox"><div class="cnst">💡 Conseils personnalisés</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rb rbs" onclick="showScr('sw')">← Changer de mode</button>
+      <button class="rb rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DONNÉES — 15 étapes
+   Sources vérifiées : CHUV Lausanne 2023, OMS, CDC,
+   Santé Publique France, Infirmier.net, Réussis ton IFSI
+══════════════════════════════════════════════════════ */
+const ST = [
+{n:1,cat:"Prescription & CI",ico:"📋",crit:false,att:true,
+ title:"Vérifier la prescription + contre-indications",
+ what:"L'injection IM est un <strong>soin infirmier sur prescription médicale</strong> (Art. R.4311-7). Vérifiez les <strong>5 B</strong> (bon patient, bon médicament, bonne dose, bonne voie, bon moment). <strong>Cherchez systématiquement</strong> : traitement anticoagulant (AVK, NACO, héparine), antiagrégants, hémophilie → contre-indication formelle à l'IM. Vérifiez les <strong>allergies</strong> au médicament et au latex.",
+ why:"Les anticoagulants et l'hémophilie empêchent l'hémostase intramusculaire — un hématome IM peut être massif, douloureux et s'infecter. Toute injection IM réalisée chez un patient anticoagulé sans signalement engage votre responsabilité infirmière.",
+ rule:"Prescription médicale obligatoire. Anticoagulants / hémophilie = CI IM formelle. Signaler au médecin.",
+ q:"Votre patient est sous rivaroxaban (Xarelto®, anticoagulant NACO). Le médecin a prescrit une injection IM. Que faites-vous ?",
+ ch:["Réaliser l'injection IM — la prescription vous couvre légalement","Contacter le médecin prescripteur : anticoagulant = contre-indication IM formelle. Demander une voie alternative","Faire l'injection en comprimant bien après","Utiliser le vaste externe, moins vascularisé"],
+ ok:1},
+
+{n:2,cat:"Matériel & Préparation",ico:"🧰",crit:false,att:false,
+ title:"Préparer le matériel et le médicament",
+ what:"Désinfectez le plan de travail avec des gants non stériles → retirez-les → SHA. Préparez le plateau : seringue + <strong>aiguille de préparation</strong> pour prélever le médicament, puis une <strong>aiguille IM neuve pour l'injection</strong>. Vérifiez le médicament (nom, dosage, péremption, aspect). Reconstituez si lyophilisé selon les instructions. <strong>Changez d'aiguille avant d'aller au patient.</strong>",
+ why:"L'aiguille de prélèvement s'émousse au contact du caoutchouc du flacon et peut ramener des micro-particules. Une aiguille émoussée est plus douloureuse et traumatisante. La nouvelle aiguille garantit tranchant parfait et stérilité.",
+ rule:"Gants non stériles pour désinfecter le plan → SHA → changer d'aiguille entre préparation et injection.",
+ q:"Vous venez de prélever le médicament avec l'aiguille 21G montée sur la seringue. Avant d'aller au patient, vous ?",
+ ch:["Piqûrez directement avec cette aiguille — elle est stérile et déjà montée","Désinfectez la pointe avec une compresse alcoolique","Changez pour une nouvelle aiguille IM stérile — l'aiguille de prélèvement est émoussée et potentiellement contaminée par des micro-particules du flacon","Rincez l'aiguille avec le médicament"],
+ ok:2},
+
+{n:3,cat:"Choix du site",ico:"🗺️",crit:false,att:true,
+ title:"Choisir le site d'injection adapté",
+ what:"Sélectionnez le site selon : <strong>volume à injecter</strong> (deltoïde ≤ 2 mL, autres ≤ 4-5 mL), <strong>nature du médicament</strong> (irritant → fessier profond), <strong>état local</strong> (éviter zone infectée, indurée, cicatrisée, hématome). Pour les <strong>vaccins immunisants actifs</strong> (COVID, grippe, hépatites…) : <strong>deltoïde obligatoire</strong>. <strong>Alterner les sites</strong> à chaque injection si traitement répété.",
+ why:"Un site inapproprié = absorption insuffisante, nécrose (produit irritant en sous-cutané), ou lésion nerveuse. Le fessier donne une réponse immunitaire insuffisante aux vaccins (tissu adipeux plus épais, vascularisation différente) — c'est pourquoi les vaccins vont dans le deltoïde.",
+ rule:"Vaccins immunisants actifs = deltoïde uniquement. Deltoïde = max 2 mL. Alterner les sites si injections répétées.",
+ svg:`<svg viewBox="0 0 120 76" width="120" height="76"><circle cx="30" cy="30" r="22" fill="#edfbf3" stroke="#6dce9b" stroke-width="1.5"/><text x="30" y="27" text-anchor="middle" font-size="8" fill="#1a7a3e" font-family="sans-serif" font-weight="700">Fessier</text><text x="30" y="37" text-anchor="middle" font-size="8" fill="#1a7a3e" font-family="sans-serif">QSE</text><circle cx="82" cy="18" r="15" fill="#eef3ff" stroke="#93b4f7" stroke-width="1.5"/><text x="82" y="15" text-anchor="middle" font-size="7" fill="#1755d4" font-family="sans-serif" font-weight="700">Deltoïde</text><text x="82" y="24" text-anchor="middle" font-size="7" fill="#1755d4" font-family="sans-serif">≤2 mL</text><circle cx="82" cy="58" r="15" fill="#edfbf3" stroke="#6dce9b" stroke-width="1.5"/><text x="82" y="55" text-anchor="middle" font-size="7" fill="#1a7a3e" font-family="sans-serif" font-weight="700">Vaste ext.</text><text x="82" y="64" text-anchor="middle" font-size="7" fill="#1a7a3e" font-family="sans-serif">cuisse</text></svg>`,
+ q:"Un médecin prescrit un vaccin grippe quadrivalent en IM. Dans quel muscle doit-il être injecté ?",
+ ch:["Quadrant supéro-externe du fessier — site de référence France","Ventroglutéal — moins douloureux","Muscle deltoïde — obligatoire pour les vaccins immunisants actifs selon OMS/CDC/SPF","Vaste externe de la cuisse"],
+ ok:2},
+
+{n:4,cat:"Repère — Fessier QSE",ico:"📍",crit:true,att:false,
+ title:"Repérer le quadrant supéro-externe (QSE) du fessier",
+ what:"Visualisez ou palpez une croix divisant la fesse en 4 quadrants égaux. Le site d'injection = <strong>quadrant supéro-externe (en haut, côté extérieur)</strong>. Pour plus de précision : ligne horizontale au milieu de la fesse + ligne verticale au milieu → injecter dans le quadrant haut-extérieur. Position patient : décubitus ventral <strong>orteils pointés vers l'intérieur</strong> (décontracte le muscle grand fessier) ou décubitus latéral (genou du dessus fléchi).",
+ why:"Le nerf sciatique passe dans les quadrants inférieurs et centraux de la fesse. Une injection hors du QSE expose à sa lésion : douleur irradiante dans la jambe (trajet du nerf), faiblesse distale, troubles de la marche.",
+ rule:"QSE uniquement. Jamais le centre ni les quadrants inférieurs. Orteils vers l'intérieur = muscle fessier relâché.",
+ q:"Quel est le risque d'une injection IM dans le quadrant central ou inférieur de la fesse ?",
+ ch:["Absorption trop rapide du médicament","Injection dans le tissu sous-cutané uniquement","Lésion du nerf sciatique : douleur irradiante, faiblesse distale, troubles de la marche","Formation d'un abcès uniquement"],
+ ok:2},
+
+{n:5,cat:"Repère — Deltoïde",ico:"📍",crit:true,att:false,
+ title:"Repérer le site exact du deltoïde",
+ what:"Palpez l'<strong>acromion</strong> (point osseux saillant de l'épaule). Descendez <strong>exactement 5 cm (3 largeurs de doigts) sous son bord inférieur</strong>. Formez mentalement un triangle inversé : base = ligne de l'acromion, sommet vers le coude. Injectez <strong>au centre de ce triangle</strong>. <strong>Ne jamais injecter en dehors de ce triangle ni en dessous.</strong>",
+ why:"Le nerf axillaire est à 5-7 cm sous l'acromion. En dessous : lésion du nerf axillaire (paralysie du deltoïde) ou injection dans la bourse sous-acromiale (SIRVA). Au-dessus du triangle : on rate le muscle, on reste dans le sous-cutané.",
+ rule:"5 cm sous l'acromion. Triangle inversé. Centre du triangle. Plus bas = nerf axillaire ou SIRVA.",
+ svg:`<svg viewBox="0 0 90 86" width="90" height="86"><ellipse cx="45" cy="70" rx="38" ry="15" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><rect x="28" y="8" width="34" height="11" rx="3" fill="#94a3b8" stroke="#64748b" stroke-width="1.5"/><text x="45" y="17" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="700">Acromion</text><line x1="28" y1="19" x2="62" y2="19" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="4,2"/><line x1="28" y1="36" x2="62" y2="36" stroke="#1a7a3e" stroke-width="1.5" stroke-dasharray="4,2"/><text x="66" y="29" font-size="6.5" fill="#c0392b" font-family="sans-serif" font-weight="700">5 cm</text><line x1="63" y1="19" x2="63" y2="36" stroke="#c0392b" stroke-width="1" stroke-dasharray="2,2"/><polygon points="28,19 62,19 45,36" fill="rgba(26,122,62,.15)" stroke="#1a7a3e" stroke-width="1.5"/><circle cx="45" cy="29" r="4.5" fill="#1a7a3e"/><text x="45" y="55" text-anchor="middle" font-size="7" fill="#1a7a3e" font-family="sans-serif" font-weight="700">Zone correcte ✓</text></svg>`,
+ q:"Qu'est-ce que la SIRVA (Shoulder Injury Related to Vaccine Administration) ?",
+ ch:["Une réaction allergique au vaccin","Une lésion de l'épaule causée par une injection vaccinale trop basse ou dans la bourse sous-acromiale au lieu du muscle deltoïde","Un syndrome grippal post-vaccinal","Une infection au site d'injection"],
+ ok:1},
+
+{n:6,cat:"Installation",ico:"🛋️",crit:false,att:false,
+ title:"Installer le patient selon le site",
+ what:"Position selon le site : <strong>Fessier :</strong> décubitus ventral orteils vers l'intérieur OU décubitus latéral genou fléchi. <strong>Ventroglutéal :</strong> décubitus dorsal ou latéral. <strong>Deltoïde :</strong> assis ou debout, bras le long du corps (muscle détendu). <strong>Vaste externe :</strong> assis ou décubitus dorsal. La <strong>détente musculaire est indispensable</strong> — muscle contracté = injection plus douloureuse et plus risquée.",
+ why:"Un muscle détendu facilite la pénétration de l'aiguille et réduit la douleur. Orteils pointés vers l'intérieur = rotation interne de la hanche = relâchement spécifique du grand fessier.",
+ rule:"Muscle détendu pour chaque site. Deltoïde = bras le long du corps. Fessier = orteils vers l'intérieur.",
+ q:"Pour une injection dans le deltoïde, dans quelle position doit être le bras du patient ?",
+ ch:["Bras levé au-dessus de la tête pour exposer le muscle","Bras croissé devant la poitrine","Bras le long du corps, détendu — le muscle deltoïde doit être relâché","Bras tendu horizontalement"],
+ ok:2},
+
+{n:7,cat:"Hygiène & Gants",ico:"🤲",crit:false,att:false,
+ title:"SHA + Gants non stériles",
+ what:"Effectuez une <strong>friction SHA</strong>. Enfilez des <strong>gants non stériles à usage unique</strong>. Ce soin n'est pas stérile — les gants non stériles sont adaptés. Ils vous protègent du contact avec le sang lors du retrait de l'aiguille (sang artériel ou veineux peut projeter).",
+ why:"Les gants non stériles suffisent car la désinfection cutanée protège le patient. Pas de gants stériles nécessaires pour une injection IM, contrairement à la pose d'une aiguille de Huber ou d'une sonde.",
+ rule:"SHA + gants non stériles. Soin non stérile. Les gants protègent le soignant, pas le patient.",
+ q:"Quel type de gants utilise-t-on pour une injection IM ?",
+ ch:["Gants stériles — tout contact avec une aiguille l'exige","Gants non stériles à usage unique — ce soin n'est pas stérile, les gants protègent le soignant contre le sang","Pas de gants si la technique est rigoureuse","Gants stériles uniquement pour les vaccins"],
+ ok:1},
+
+{n:8,cat:"Désinfection cutanée",ico:"🧴",crit:false,att:false,
+ title:"Désinfecter la zone d'injection",
+ what:"Désinfectez la peau avec une compresse stérile imbibée d'antiseptique alcoolique (alcool 70° ou chlorhexidine alcoolique 2%). Mouvement <strong>circulaire en escargot du centre vers l'extérieur</strong>. <strong>Laisser sécher spontanément avant de piquer</strong> — alcool humide = pique plus + efficacité réduite. Ne pas re-toucher la zone après désinfection.",
+ why:"Le mouvement centrifuge (centre vers extérieur) éloigne les germes du point de ponction. Piquer dans l'alcool humide provoque une douleur supplémentaire et introduit de l'alcool dans le muscle.",
+ rule:"Escargot : centre vers l'extérieur. Séchage spontané avant ponction. Ne pas re-toucher.",
+ q:"Dans quel sens réalise-t-on la désinfection cutanée avant injection IM ?",
+ ch:["Mouvements linéaires rapides","Circulaire de l'extérieur vers le centre","Circulaire du centre vers l'extérieur (escargot) — éloigne les germes du site","Frottement vigoureux dans tous les sens"],
+ ok:2},
+
+{n:9,cat:"Ponction — 90°",ico:"💉",crit:true,att:false,
+ title:"Piquer à 90° lors de l'expiration",
+ what:"Tendez la peau avec la main non dominante (ou pincez si patient très mince). Demandez au patient <strong>d'expirer</strong>. Au moment de l'expiration, introduisez l'aiguille d'un <strong>geste rapide, ferme et décisif à 90° (perpendiculaire)</strong> à la surface cutanée, <strong>jusqu'à la garde</strong>. Ne jamais hésiter — un geste lent est plus douloureux qu'un geste rapide.",
+ why:"90° = l'aiguille traverse peau + tissu sous-cutané pour atteindre le muscle. À 45° (angle SC), l'aiguille reste dans le sous-cutané pour un adulte de corpulence normale. L'expiration relâche le muscle et distrait le patient.",
+ rule:"90° perpendiculaire. Jamais 45° (angle SC). Expiration du patient. Geste rapide et décisif jusqu'à la garde.",
+ svg:`<svg viewBox="0 0 100 76" width="100" height="76"><ellipse cx="50" cy="62" rx="44" ry="14" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><line x1="50" y1="6" x2="50" y2="62" stroke="#1a7a3e" stroke-width="4" stroke-linecap="round"/><polygon points="45,56 50,66 55,56" fill="#1a7a3e"/><text x="50" y="5" text-anchor="middle" font-size="8" fill="#1a7a3e" font-family="sans-serif" font-weight="700">90° ✓</text><rect x="6" y="16" width="22" height="9" rx="3" fill="#fff2f0" stroke="#f5a49d" stroke-width="1"/><text x="17" y="23" text-anchor="middle" font-size="7" fill="#c0392b" font-family="sans-serif" font-weight="700">45° ❌ SC</text><line x1="50" y1="62" x2="22" y2="30" stroke="#c0392b" stroke-width="1.8" stroke-dasharray="4,3" opacity="0.65"/></svg>`,
+ q:"À quel angle introduit-on l'aiguille pour une injection IM ?",
+ ch:["45° — comme pour une injection sous-cutanée mais plus profond","60° — angle intermédiaire entre SC et IM","90° perpendiculaire — atteint le muscle en traversant verticalement peau et sous-cutané","80° légèrement incliné"],
+ ok:2},
+
+{n:10,cat:"Test de reflux",ico:"🔴",crit:true,att:false,
+ title:"Vérifier l'absence de reflux sanguin",
+ what:"Après introduction de l'aiguille, <strong>aspirez légèrement le piston</strong> :<br>• <strong>Pas de sang</strong> → injecter normalement.<br>• <strong>Sang dans la seringue</strong> → retirer l'aiguille complètement, changer d'aiguille, choisir un nouveau site, recommencer.<br><strong>⚠️ Exception importante :</strong> pour les <strong>vaccins</strong>, l'aspiration <strong>n'est pas recommandée</strong> (OMS, CDC, Santé Publique France) — elle augmente la douleur sans bénéfice. Le deltoïde n'a pas de gros vaisseaux à ce niveau.<br>En IFSI France : aspiration encore souvent enseignée pour le fessier postérieur.",
+ why:"L'injection IV accidentelle d'un médicament IM peut provoquer une toxicité systémique grave. Le test de reflux détecte une ponction veineuse accidentelle. Pour les vaccins : la bonne technique anatomique rend le risque IV négligeable au deltoïde.",
+ rule:"Fessier postérieur : aspiration recommandée en IFSI France. Vaccins : pas d'aspiration (OMS/CDC/SPF). Sang = retirer + nouvelle aiguille + nouveau site.",
+ q:"Lors d'une injection IM dans le fessier, vous aspirez et du sang apparaît clairement dans la seringue. Que faites-vous ?",
+ ch:["Injecter quand même lentement — une petite quantité de sang est normale","Retirer légèrement l'aiguille et réaspirer","Retirer complètement l'aiguille, changer d'aiguille, choisir un nouveau site et recommencer","Pousser fermement le piston pour diluer le sang avec le médicament"],
+ ok:2},
+
+{n:11,cat:"Injection lente",ico:"💊",crit:false,att:true,
+ title:"Injecter lentement : 1 mL par 10 secondes",
+ what:"Relâchez la peau (si elle était tendue). Injectez le médicament <strong>lentement et régulièrement : 1 mL par 10 secondes</strong>. Observez le patient et le site pendant toute l'injection. Si le patient signale une douleur intense : ralentir encore. Si gel anesthésiant (Xylocaïne®) prescrit : injecter les premiers mL, attendre quelques secondes puis continuer.",
+ why:"Injection rapide → pression tissulaire élevée → douleur aiguë + risque de déchirement des fibres musculaires + formation d'hématome + nécrose locale si produit irritant. 1 mL/10 secondes permet une diffusion progressive dans le tissu musculaire.",
+ rule:"1 mL / 10 secondes. Jamais injecter en quelques secondes. Observer le patient en continu.",
+ q:"Vous injectez 3 mL dans le fessier et le patient se plaint d'une douleur intense. Que faites-vous ?",
+ ch:["Accélérer pour terminer vite","Ralentir le débit et continuer très doucement en surveillant","Retirer immédiatement — toute douleur signifie complication grave","Injecter le reste dans un autre site"],
+ ok:1},
+
+{n:12,cat:"Retrait & Massage",ico:"⬆️",crit:false,att:true,
+ title:"Attendre 10 secondes → retirer → masser",
+ what:"<strong>Attendez 10 secondes</strong> après la fin de l'injection (le médicament commence à se répartir dans le tissu musculaire). Retirez l'aiguille <strong>d'un geste rapide dans l'axe d'insertion</strong> (90°). Appliquez <strong>immédiatement une légère pression</strong> avec une compresse stérile sèche. Effectuez un <strong>léger massage circulaire</strong> sur le site pour favoriser la diffusion du médicament.",
+ why:"Attendre 10 secondes évite que le médicament remonte le trajet de l'aiguille vers le sous-cutané lors du retrait. Le massage améliore l'absorption et la diffusion dans le tissu musculaire.",
+ rule:"Attendre 10 sec → retrait dans l'axe → compresse → massage léger. (≠ injection SC héparine : pas de massage).",
+ q:"Combien de temps attendez-vous après la fin de l'injection avant de retirer l'aiguille ?",
+ ch:["Retrait immédiat dès la fin","5 secondes","10 secondes — permet la diffusion initiale dans le muscle","30 secondes"],
+ ok:2},
+
+{n:13,cat:"DASRI & AES",ico:"🗑️",crit:true,att:false,
+ title:"DASRI immédiatement — Jamais recapuchonner",
+ what:"<strong>Immédiatement après le retrait de l'aiguille</strong>, jetez l'aiguille montée sur la seringue <strong>directement dans le container DASRI piquants/tranchants, SANS jamais recapuchonner</strong>. Le container doit être positionné à portée de main <strong>avant le début du soin</strong>. Si le container est à 2 mètres : tenez la seringue aiguille exposée (sans la poser) jusqu'au container.",
+ why:"Recapuchonner est la première cause d'AES (accident d'exposition au sang) chez les soignants. Une piqûre accidentelle peut transmettre VIH, VHC, VHB. Un container non accessible avant le soin = risque de recapuchonnage.",
+ rule:"Jamais recapuchonner. DASRI directement après retrait. Container à portée de main AVANT le soin.",
+ q:"Le container DASRI est à 2 mètres. Que faites-vous après avoir retiré l'aiguille ?",
+ ch:["Recapuchonnez à une main pour sécuriser et aller au container","Posez la seringue sur le plateau, allez chercher le container","Tenez la seringue aiguille exposée et marchez jusqu'au container pour l'éliminer directement — jamais poser, jamais recapuchonner","Recapuchonnez à deux mains — technique sûre"],
+ ok:2},
+
+{n:14,cat:"Surveillance post-injection",ico:"👁️",crit:true,att:false,
+ title:"Surveiller le patient 15-30 minutes",
+ what:"Restez accessible et surveillez le patient pendant <strong>15 à 30 minutes</strong> après l'injection. Observez les signes de <strong>choc anaphylactique</strong> : urticaire, prurit, gonflement du visage et de la gorge, stridor, hypotension, malaise, perte de conscience. Vérifiez le site d'injection : absence d'hématome ou de saignement. <strong>Le chariot d'urgence doit être accessible.</strong>",
+ why:"Le choc anaphylactique peut survenir dans les 15-30 minutes après une injection — même chez un patient sans allergie connue. La moitié des décès par anaphylaxie survient dans l'heure suivant l'administration d'un médicament.",
+ rule:"Surveillance 15-30 min obligatoire après toute injection IM. Même sans allergie connue. Chariot d'urgence accessible.",
+ q:"Combien de temps surveillez-vous le patient après une injection IM pour dépister une anaphylaxie ?",
+ ch:["5 minutes — si aucun symptôme, le risque est écarté","15 à 30 minutes minimum — même sans allergie connue","1 heure pour être sûr","Pas de surveillance spécifique si le patient dit qu'il se sent bien"],
+ ok:1},
+
+{n:15,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Tracer dans le dossier patient",
+ what:"Documentez : <strong>heure d'injection, médicament (nom + dosage), site utilisé, tolérance du patient, votre nom et signature.</strong> Pour les <strong>vaccins</strong> : noter le <strong>numéro de lot</strong> est obligatoire (pharmacovigilance). Notez également sur le carnet de santé du patient et la carte de vaccination si vaccinale.",
+ why:"La traçabilité est une obligation légale et protège le patient (double administration évitée) et le soignant (protection juridique). Pour les vaccins, le lot permet le suivi des effets indésirables à l'échelle nationale.",
+ rule:"Tracer : heure + médicament + dosage + site + tolérance + signature. Vaccin : numéro de lot obligatoire.",
+ q:"Pour un vaccin administré en IM, quelle information supplémentaire est obligatoire dans le dossier ?",
+ ch:["Le nom du médecin prescripteur seulement","La température corporelle du patient avant injection","Le numéro de lot du vaccin — obligatoire pour la pharmacovigilance et la traçabilité vaccinale","L'heure exacte au centième de seconde"],
+ ok:2},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE EXAMEN — 15 questions
+══════════════════════════════════════════════════ */
+const QE = [
+{cat:"Cadre légal",q:"L'injection IM relève de ?",ch:["Rôle propre infirmier","Prescription médicale obligatoire (Art. R.4311-7)","Protocole de service sans prescription","Délégation uniquement en urgence"],ok:1,ek:"L'injection IM est un acte sur prescription médicale.",ee:"Ce soin n'est pas en rôle propre.",r:"<strong>Injection IM = prescription médicale. Art. R.4311-7.</strong>",xp:10},
+{cat:"Contre-indications",q:"Quelle situation est une contre-indication formelle à l'injection IM ?",ch:["Diabète de type 2","Traitement anticoagulant (NACO, AVK, héparine) ou hémophilie","Prise d'antihypertenseurs","Allergie alimentaire"],ok:1,ek:"Anticoagulants et hémophilie = contre-indication formelle. Risque d'hématome IM grave.",ee:"Seuls les anticoagulants et l'hémophilie contre-indiquent l'IM.",r:"<strong>Anticoagulants / hémophilie = contre-indication IM formelle.</strong>",xp:12},
+{cat:"Sites — Vaccins",q:"Dans quel muscle DOIT-ON injecter les vaccins immunisants actifs (COVID-19, grippe) ?",ch:["Fessier QSE — site de référence France","Ventroglutéal","Muscle deltoïde — obligatoire selon OMS/CDC/SPF","Vaste externe"],ok:2,ek:"Vaccins immunisants actifs = deltoïde uniquement. Le fessier donne une réponse immunitaire insuffisante.",ee:"Le fessier est contre-indiqué pour les vaccins immunisants actifs.",r:"<strong>Vaccins immunisants actifs = deltoïde UNIQUEMENT.</strong>",xp:15},
+{cat:"Sites — Volume deltoïde",q:"Volume maximum pour le muscle deltoïde ?",ch:["1 mL","2 mL","5 mL","10 mL"],ok:1,ek:"Deltoïde = max 2 mL (1 mL pour la plupart des vaccins). Petit muscle.",ee:"5-10 mL = sites volumineux (fessier, vaste externe).",r:"<strong>Deltoïde : max 2 mL. Autres sites : max 4-5 mL.</strong>",xp:10},
+{cat:"Repère — Deltoïde",q:"Repère anatomique pour l'injection dans le deltoïde ?",ch:["5 cm sous l'acromion, centre d'un triangle inversé","10 cm sous l'acromion, milieu du bras","2 cm sous la clavicule, partie interne","Centre du bras à hauteur du coude"],ok:0,ek:"5 cm (3 doigts) sous l'acromion, centre du triangle inversé. Injection trop basse = SIRVA ou nerf axillaire.",ee:"10 cm est trop bas — nerf axillaire et SIRVA.",r:"<strong>Deltoïde = 5 cm sous l'acromion, triangle inversé.</strong>",xp:12},
+{cat:"Repère — Fessier",q:"Site correct pour l'injection IM dans la fesse ?",ch:["Centre de la fesse","Quadrant inféro-externe","Quadrant supéro-externe (QSE)","Quadrant inféro-interne"],ok:2,ek:"QSE = loin du nerf sciatique. Diviser la fesse en 4 quadrants → injecter en haut à l'extérieur.",ee:"Centre et quadrants inférieurs = proche du nerf sciatique.",r:"<strong>Fessier = quadrant supéro-externe (QSE) uniquement.</strong>",xp:10},
+{cat:"Angle",q:"Angle d'introduction de l'aiguille pour une injection IM ?",ch:["15-30° (IV)","45° (SC)","90° perpendiculaire","60° incliné"],ok:2,ek:"90° = atteint le muscle en traversant peau et sous-cutané verticalement. 45° = sous-cutané.",ee:"45° est l'angle sous-cutané. L'IM exige 90°.",r:"<strong>IM = 90° perpendiculaire. 45° = SC.</strong>",xp:10},
+{cat:"Reflux — Vaccins",q:"Faut-il aspirer avant d'injecter un vaccin dans le deltoïde ?",ch:["Oui — toujours pour toute injection IM","Oui seulement si allergie connue","Non — l'OMS, CDC et SPF déconseillent l'aspiration pour les vaccins (augmente la douleur sans bénéfice)","Non seulement pour le vaste externe"],ok:2,ek:"L'aspiration n'est pas recommandée pour les vaccins. Le deltoïde n'a pas de gros vaisseaux. Elle augmente la douleur sans bénéfice clinique.",ee:"Ancienne pratique. Les recommandations actuelles déconseillent l'aspiration pour les vaccins.",r:"<strong>Vaccins = pas d'aspiration (OMS/CDC/SPF). Fessier non-vaccinal = aspiration recommandée en IFSI France.</strong>",xp:12},
+{cat:"Vitesse injection",q:"Vitesse recommandée pour injecter un médicament IM ?",ch:["Le plus vite possible","1 mL / 5 secondes","1 mL / 10 secondes","1 mL / 30 secondes"],ok:2,ek:"1 mL / 10 secondes. Plus rapide = pression tissulaire élevée, douleur, nécrose.",ee:"Injection rapide = douloureuse et traumatisante.",r:"<strong>Injecter lentement : 1 mL / 10 secondes.</strong>",xp:10},
+{cat:"SIRVA",q:"La SIRVA (Shoulder Injury Related to Vaccine Administration) est causée par ?",ch:["Un vaccin de mauvaise qualité","Une injection trop basse dans le deltoïde ou dans la bourse sous-acromiale au lieu du muscle","Un syndrome grippal post-vaccinal","Une infection au site d'injection"],ok:1,ek:"SIRVA = injection dans la bourse sous-acromiale (trop basse) au lieu du muscle deltoïde. Prévention : 5 cm sous l'acromion.",ee:"SIRVA n'est pas une allergie — c'est une erreur de site.",r:"<strong>SIRVA = injection trop basse deltoïde. 5 cm sous l'acromion = règle impérative.</strong>",xp:12},
+{cat:"Délai retrait",q:"Combien de temps attend-on après la fin de l'injection avant de retirer l'aiguille ?",ch:["Retrait immédiat","5 secondes","10 secondes","30 secondes"],ok:2,ek:"10 secondes permettent au médicament de commencer à se répartir dans le tissu musculaire.",ee:"Retrait immédiat peut faire remonter le médicament vers le sous-cutané.",r:"<strong>Attendre 10 secondes après injection avant retrait de l'aiguille.</strong>",xp:10},
+{cat:"DASRI",q:"Que faites-vous immédiatement après le retrait de l'aiguille du patient ?",ch:["Recapuchonner à une main pour sécuriser","Poser sur le plateau puis aller au container","Jeter directement dans le container DASRI sans recapuchonner","Recapuchonner à deux mains avec précaution"],ok:2,ek:"DASRI directement. Jamais recapuchonner = première cause d'AES.",ee:"Recapuchonner, même à deux mains = risque AES.",r:"<strong>Jamais recapuchonner. DASRI directement après retrait.</strong>",xp:12},
+{cat:"Aiguille de préparation",q:"Pourquoi changer d'aiguille entre la préparation et l'injection ?",ch:["Règle administrative sans impact clinique","L'aiguille de prélèvement s'émousse sur le caoutchouc du flacon et peut ramener des micro-particules — une aiguille neuve est plus tranchante et stérile","Pour vérifier le volume exact","Pour rincer avec le médicament"],ok:1,ek:"Aiguille émoussée = plus douloureuse. Particules du flacon dans le muscle = risque d'irritation.",ee:"C'est une protection clinique, pas administrative.",r:"<strong>Changer d'aiguille entre préparation et injection. Aiguille neuve = tranchante + stérile.</strong>",xp:10},
+{cat:"Surveillance anaphylaxie",q:"Durée de surveillance après une injection IM ?",ch:["5 minutes si pas d'allergie connue","15 à 30 minutes minimum — même sans allergie connue","1 heure pour être sûr","Pas de surveillance si le patient dit qu'il se sent bien"],ok:1,ek:"15-30 min obligatoires. La moitié des chocs anaphylactiques survient chez des patients sans allergie connue.",ee:"5 minutes est insuffisant. L'absence d'allergie connue n'exclut pas l'anaphylaxie.",r:"<strong>Surveillance 15-30 min obligatoire après toute injection IM.</strong>",xp:10},
+{cat:"Massage post-injection",q:"Après l'injection IM, que faites-vous sur le site ?",ch:["Rien — toute friction déplacerait le médicament","Appliquer du froid","Masser légèrement pour favoriser la diffusion du médicament","Pansement compressif serré 10 minutes"],ok:2,ek:"Léger massage = diffusion améliorée et absorption optimisée. (Contrairement à l'SC héparine = pas de massage.)",ee:"L'IM bénéficie d'un massage léger, contrairement à l'héparine sous-cutanée.",r:"<strong>IM : légère pression + massage doux = meilleure diffusion.</strong>",xp:8},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE SURVIE — 10 pièges
+══════════════════════════════════════════════════ */
+const QS = [
+{cat:"Piège — Vaccin fessier",q:"Votre collègue expérimentée injecte le vaccin grippe dans le fessier car 'c'est plus facile'. Vous ?",ch:["Laissez faire — le fessier est le site de référence IM","Intervenez : seulement certains vaccins sont interdits dans le fessier","Intervenez immédiatement — tous les vaccins immunisants actifs (grippe, COVID...) doivent être dans le deltoïde selon OMS/CDC/SPF. Le fessier réduit l'immunogénicité","Laissez faire si c'est le protocole du service"],ok:2,ek:"Vaccins immunisants actifs = deltoïde UNIQUEMENT. L'expérience d'une collègue ne prime pas sur les recommandations.",ee:"'Plus facile' n'est pas une indication. Toutes les recommandations sont claires.",r:"<strong>Tous les vaccins immunisants actifs = deltoïde. Jamais le fessier.</strong>",xp:25},
+{cat:"Piège — Anticoagulant",q:"Votre patient est sous Xarelto®. Le médecin a prescrit une injection IM. Vous faites l'injection car 'c'est prescrit'. C'est ?",ch:["Correct — la prescription vous couvre légalement","Correct si vous comprimez bien après","Incorrect — anticoagulant = CI formelle à l'IM. Signaler au médecin et demander une voie alternative. La prescription ne vous exonère pas si vous réalisez un soin contre-indiqué","Correct si vous utilisez le vaste externe moins vascularisé"],ok:2,ek:"La prescription médicale ne vous protège pas si vous réalisez un soin que vous savez contre-indiqué. Votre responsabilité infirmière est engagée.",ee:"'Le médecin a prescrit' n'efface pas votre devoir de signalement d'une CI.",r:"<strong>CI = signaler au médecin même si prescrit. Votre responsabilité propre est engagée.</strong>",xp:25},
+{cat:"Piège — SIRVA",q:"Vous injectez un vaccin à 8 cm sous l'acromion pour 'éviter la douleur'. Le patient revient J+2 avec douleur intense et limitation de l'épaule. Cause probable ?",ch:["Réaction locale normale — disparaît seul","Injection trop haute dans la bourse sous-acromiale","Injection trop basse hors du muscle deltoïde dans la bourse sous-acromiale — SIRVA","Réaction allergique retardée"],ok:2,ek:"SIRVA = injection trop basse (>5 cm sous l'acromion) dans la bourse sous-acromiale. 5 cm est la règle absolue.",ee:"La douleur intense + limitation en 48h est caractéristique du SIRVA, pas d'une réaction locale normale.",r:"<strong>SIRVA = injection trop basse deltoïde. 5 cm sous l'acromion = règle impérative.</strong>",xp:25},
+{cat:"Piège — Angle 45°",q:"Une infirmière vous montre comment faire une injection IM à 45° 'pour moins traumatiser'. C'est ?",ch:["Correct — 45° est recommandé pour les muscles peu épais","Correct pour patients minces uniquement","Faux — l'angle IM est toujours 90°. À 45° chez un adulte de corpulence normale, l'aiguille reste dans le sous-cutané. On adapte la longueur d'aiguille, pas l'angle","Correct si l'aiguille fait 50 mm"],ok:2,ek:"90° est l'angle de l'IM quel que soit le site ou la corpulence. Pour un patient obèse : on choisit une aiguille plus longue, pas un angle différent.",ee:"L'angle ne s'adapte pas à la corpulence — c'est la longueur de l'aiguille qui change.",r:"<strong>IM = 90° toujours. Adapter la longueur d'aiguille, pas l'angle.</strong>",xp:20},
+{cat:"Piège — Recapuchonnage",q:"Le container DASRI est plein. Votre collègue dit 'recapuchonne et mets dans la poubelle ordinaire'. Vous ?",ch:["Obéissez — situation d'urgence pratique","Recapuchonnez à une main — technique sûre","Refusez — les déchets piquants vont dans un container DASRI homologué. Fermer le container plein et en commander un nouveau immédiatement","Posez l'aiguille dans un bocal en attendant"],ok:2,ek:"Container plein = fermer et commander un nouveau. Jamais la poubelle ordinaire. Jamais recapuchonner.",ee:"Un container plein ne justifie pas le recapuchonnage ni la poubelle ordinaire. Ce sont des fautes graves.",r:"<strong>Container plein → fermer + en commander un. Jamais recapuchonner. Jamais poubelle ordinaire.</strong>",xp:20},
+{cat:"Piège — Aspiration vaccin",q:"Un formateur insiste pour que vous fassiez 'le test de reflux systématiquement avant toute IM'. Pour les vaccins, c'est ?",ch:["Vrai — obligatoire avant toute injection IM quelle que soit la nature","Vrai uniquement pour le fessier","Nuancé — pour les vaccins, l'aspiration n'est plus recommandée par l'OMS, CDC et SPF. Elle augmente la douleur sans bénéfice. Le deltoïde n'a pas de gros vaisseaux à ce niveau","Faux — l'aspiration ne sert à rien pour aucun site"],ok:2,ek:"OMS (2015), CDC et SPF déconseillent l'aspiration avant injection vaccinale. Recommandation ancienne vs actuelle : nuance importante à connaître.",ee:"Il existe une évolution des recommandations. Vaccins = exception documentée.",r:"<strong>Vaccins = pas d'aspiration (OMS/CDC/SPF). Fessier postérieur non-vaccinal = aspiration recommandée IFSI France.</strong>",xp:20},
+{cat:"Piège — Injection rapide",q:"Par manque de temps, vous injectez 3 mL en 3 secondes. Conséquence probable ?",ch:["Aucune — la vitesse n'a pas d'impact prouvé","Douleur intense, pression tissulaire excessive, risque de nécrose et d'hématome local","Absorption trop rapide avec surdosage","Médicament moins absorbé car trop rapide"],ok:1,ek:"3 mL en 3 secondes = 10 fois trop rapide. Pression tissulaire élevée = douleur intense + déchirement des fibres + hématome ou nécrose possible.",ee:"La vitesse d'injection a un impact clinique direct documenté. Pas une préférence esthétique.",r:"<strong>1 mL / 10 secondes. Jamais injecter en quelques secondes.</strong>",xp:20},
+{cat:"Piège — Sang dans la seringue",q:"Vous aspirez et du sang apparaît. Votre collègue dit 'c'est juste un capillaire, continue lentement'. Vous ?",ch:["Continuez — une petite quantité est normale","Continuez très lentement et surveillez","Retirez l'aiguille, changez d'aiguille, choisissez un autre site et recommencez — toute présence de sang impose l'arrêt et une reprise","Injectez puis réaspirez pour vérifier"],ok:2,ek:"Toute présence de sang = arrêt complet + nouvelle aiguille + nouveau site. Distinguer 'capillaire' de 'veine' est impossible cliniquement.",ee:"La règle est absolue : sang = arrêt. 'Capillaire' n'est pas identifiable à l'œil.",r:"<strong>Sang dans la seringue = retirer + nouvelle aiguille + nouveau site. Sans exception.</strong>",xp:25},
+{cat:"Piège — Centre de la fesse",q:"Un étudiant injecte dans le centre de la fesse car 'c'est le milieu, c'est sûr'. C'est ?",ch:["Correct — le centre est loin des nerfs","Correct en décubitus ventral uniquement","Incorrect — le centre de la fesse est proche du nerf sciatique. Le QSE (quadrant supéro-externe) est le seul site sûr","Correct pour les petits volumes uniquement"],ok:2,ek:"Intuitivement 'le centre' semble sûr mais le nerf sciatique passe dans les quadrants inférieurs et centraux. Seul le QSE est anatomiquement sûr.",ee:"C'est une erreur classique des étudiants. Le centre de la fesse n'est pas sûr anatomiquement.",r:"<strong>Fessier = QSE uniquement. Le centre de la fesse = dangereux (nerf sciatique).</strong>",xp:25},
+{cat:"Piège — Surveillance anaphylaxie",q:"Après une injection IM d'antibiotique, le patient dit 'je me sens bien'. Vous partez après 3 minutes. C'est ?",ch:["Acceptable si pas d'allergie connue","Acceptable si une infirmière est dans le couloir","Insuffisant — 15-30 min de surveillance obligatoires. La moitié des chocs anaphylactiques survient chez des patients sans allergie connue","Suffisant si le patient garde la sonnette"],ok:2,ek:"Choc anaphylactique = possible pour toute première administration, même sans allergie connue. 15-30 min est obligatoire.",ee:"'Je me sens bien à 3 minutes' n'exclut pas une réaction retardée. Surveillance obligatoire.",r:"<strong>15-30 min de surveillance après TOUTE injection IM, même sans allergie connue.</strong>",xp:20},
+];
+
+/* ══════════════════════════════════════════════════
+   FICHE — BUILD STEPS
+══════════════════════════════════════════════════ */
+const PHASES = [
+  {l:'📋 Phase 1 — Vérifications et préparation (1-3)', steps:[1,2,3], c:'#0369a1'},
+  {l:'📍 Phase 2 — Repères anatomiques (4-5)', steps:[4,5], c:'#6535c8'},
+  {l:'🧤 Phase 3 — Installation et asepsie (6-8)', steps:[6,7,8], c:'#1a7a3e'},
+  {l:'💉 Phase 4 — Injection (9-12)', steps:[9,10,11,12], c:'#c0392b'},
+  {l:'📝 Phase 5 — Fin de soin (13-15)', steps:[13,14,15], c:'#c97b00'},
+];
+
+const SERR = {
+  1:"Réaliser une injection IM chez un patient sous anticoagulant sans signalement — responsabilité infirmière engagée même si le médecin a prescrit.",
+  4:"Injecter hors du QSE (centre ou quadrant inférieur de la fesse) = lésion possible du nerf sciatique.",
+  5:"Injecter à plus de 5 cm sous l'acromion = lésion nerf axillaire ou SIRVA.",
+  9:"Injecter à 45° au lieu de 90° = l'aiguille reste dans le sous-cutané chez un adulte de corpulence normale.",
+  10:"Injecter malgré la présence de sang dans la seringue = risque d'embolie médicamenteuse intravasculaire.",
+  13:"Recapuchonner l'aiguille = première cause d'AES par piqûre chez les soignants.",
+  14:"Quitter le patient après 3 minutes sans surveillance = risque de ne pas détecter un choc anaphylactique.",
+};
+
+const SCONS = {
+  2:"Moyen pratique : déposez la nouvelle aiguille sur le dessus du plateau AVANT d'aller préparer le médicament, pour ne pas l'oublier.",
+  3:"Pour les injections répétées (antibiotiques prolongés) : noter le site utilisé dans le dossier et alterner systématiquement pour éviter les indurations.",
+  4:"Mnémotechnique QSE : 'haut + extérieur'. Vous pouvez tracer mentalement une croix sur la fesse avec vos yeux avant de choisir le site.",
+  5:"Astuce : palper l'acromion des deux pouces simultanément, puis poser 3 doigts vers le bas — le bord de l'index est le repère inférieur du triangle.",
+  10:"En IFSI France, l'aspiration pour le fessier postérieur est encore souvent attendue dans les évaluations cliniques. Connaître la nuance vaccin vs non-vaccin est indispensable.",
+  12:"Rappel important : le massage post-injection est bénéfique pour l'IM. Mais pour l'injection SC d'héparine, il est contre-indiqué (risque d'hématome). Ne pas confondre les deux.",
+  15:"Pour les vaccins : noter le lot dans le carnet de santé, le dossier informatisé ET sur la fiche de vaccination si disponible.",
+};
+
+function buildFicheProto(){
+  const c=document.getElementById('proto-im-steps');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,#0d4a24,#1a7a3e);border-radius:11px;padding:13px 15px;margin-bottom:15px;color:white;font-size:12px;line-height:1.75';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:5px">⚡ Avant toute injection</div><strong>Vérifier prescription + 5 B + allergies.</strong><br>Vérifier le traitement : anticoagulants / hémophilie = CI IM formelle.<br><strong>Rappels :</strong> vaccins immunisants actifs = deltoïde · 90° · 1 mL/10 sec · DASRI sans recapuchonner.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');
+    pd.className='ph';
+    pd.style.cssText=`color:${ph.c};border-color:${ph.c}`;
+    pd.textContent=ph.l;
+    c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':'';
+      let tags='';
+      if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';
+      if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      if(n===10)tags+='<span class="stag tn">🔬 Nuance vaccin</span>';
+      const d=document.createElement('div');
+      d.className=`sc ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')"><div class="sn">${n}</div><div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div><div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c">
+            <div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div>
+            <div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div>
+          </div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${n===10?`<div class="snuance">🔬 <strong>Nuance :</strong> Fessier postérieur = aspiration recommandée en IFSI France. Vaccins = aspiration non recommandée (OMS/CDC/SPF). Deltoïde/vaste externe/ventroglutéal non-vaccinal = recommandations variables selon sources.</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-im-steps .sc').forEach(x=>x.classList.add('open'));
+}
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+
+function setMode(m,btn){
+  document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  if(mode==='fiche'){buildFicheProto();showScr('sf');showFTab('f-mat',document.querySelector('.ftab'));return;}
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;
+  cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else if(mode==='exam'){qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  else{qs=[...QS].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='💀 Survie';document.getElementById('livp').style.display='flex';document.getElementById('livn').textContent=3;}
+  showScr('sq');loadQ();
+}
+
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  const tot=qs.length;
+  document.getElementById('tbpf').style.width=(qi/tot*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q); else loadStd(q);
+  startTimer();
+}
+
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.5);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`Étape ${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qill').innerHTML=s.svg?`<div class="qill">${s.svg}</div>`:'';
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'DM Sans',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='ch';
+    b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;
+    b.onclick=()=>ansStep(i,b,s);c.appendChild(b);
+  });
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}
+  });
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qill').innerHTML='';
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='ch';
+    b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;
+    b.onclick=()=>ansStd(i,b,q);c.appendChild(b);
+  });
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}
+  });
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});if(mode==='survival'){lives--;document.getElementById('livn').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(tiv);
+  let dur=mode==='exam'?30:mode==='survival'?25:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--g)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;
+    arc.style.strokeDashoffset=((dur-tleft)/dur*220);
+    num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--rd)';}
+    if(tleft<=0){
+      clearInterval(tiv);
+      if(!ans){
+        ans=true;wrng++;score=Math.max(0,score-15);
+        document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+        updateUI();document.getElementById('nxt').classList.add('on');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;
+  document.getElementById('xpn').textContent=xp;
+  document.getElementById('sc').textContent=corr;
+  document.getElementById('sw').textContent=wrng;
+  document.getElementById('scn').textContent=score;
+  document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(tiv);
+  const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:"📚 Apprentissage — 15 étapes",exam:"📝 Examen — Questions protocole",survival:"💀 Survie — Questions pièges"};
+  const gd=[
+    {m:18,g:'🏆',t:'Excellent',bc:'#edfbf3',tc:'#1a7a3e',bd:'#6dce9b'},
+    {m:14,g:'✅',t:'Bien',bc:'#edfbf3',tc:'#1a7a3e',bd:'#6dce9b'},
+    {m:10,g:'⚠️',t:'Passable — À consolider',bc:'#fffceb',tc:'#c97b00',bd:'#f5d066'},
+    {m:0, g:'❌',t:'Insuffisant',bc:'#fff2f0',tc:'#c0392b',bd:'#f5a49d'},
+  ].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];
+  document.getElementById('rxp').textContent=xp;
+  document.getElementById('rstr').textContent=bstr;
+  document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';
+  document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#c97b00':'#c0392b';
+    bd.innerHTML+=`<div class="bki"><div class="bkd2" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById('errbox');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole bien assimilé. Passez au mode Examen pour vous tester sans aide.");
+  if(mode==='exam'&&note>=16)cs.push("💀 Excellent ! Le mode Survie vous attend — vaccin dans le fessier, angle 45°, SIRVA, anticoagulants...");
+  if(mode==='survival'&&note>=18)cs.push("🏆 Maîtrise experte de l'injection IM. Protocole et pièges maîtrisés.");
+  if(note<10)cs.push("📖 Commencez par la Fiche Protocole puis repassez en Apprentissage.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : QSE fessier · 5 cm deltoïde · vaccins = deltoïde · 90° · 1 mL/10s · DASRI sans recapuchonner.");
+  Object.entries(cats).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Vaccin')||cat.includes('Sites'))cs.push("💉 Vaccins immunisants actifs (COVID, grippe...) = deltoïde UNIQUEMENT. Jamais le fessier.");
+    if(cat.includes('Repère')||cat.includes('deltoïde')||cat.includes('SIRVA'))cs.push("📍 Deltoïde = 5 cm sous l'acromion, centre triangle inversé. Plus bas = SIRVA ou nerf axillaire.");
+    if(cat.includes('Angle')||cat.includes('90'))cs.push("📐 IM = 90° toujours. 45° = sous-cutané. Adapter la longueur d'aiguille, pas l'angle.");
+    if(cat.includes('DASRI')||cat.includes('AES'))cs.push("🗑️ Jamais recapuchonner. DASRI directement. Container à portée avant le soin.");
+    if(cat.includes('Reflux')||cat.includes('Aspiration'))cs.push("🔬 Aspiration : recommandée fessier postérieur (IFSI France). Non recommandée pour vaccins (OMS/CDC/SPF).");
+    if(cat.includes('Contre')||cat.includes('CI'))cs.push("⛔ Anticoagulants + hémophilie = CI IM formelle. Vérifier AVANT tout soin.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. Protocole injection IM maîtrisé.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+
+/* ══ NAVIGATION ══ */
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='f-proto')buildFicheProto();
+}
+
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+function restart(){launch();}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>

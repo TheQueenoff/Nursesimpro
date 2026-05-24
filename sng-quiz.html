@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NurseSimPro — Sonde Nasogastrique</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f4f8;--white:#fff;
+  --teal:#0e7490;--teal-d:#164e63;--teal-l:#ecfeff;--teal-m:#a5f3fc;
+  --blue:#1d4ed8;--blue-d:#1e3a8a;--blue-l:#eff6ff;--blue-m:#bfdbfe;
+  --green:#059669;--green-l:#ecfdf5;--green-m:#6ee7b7;
+  --red:#dc2626;--red-l:#fef2f2;--red-m:#fca5a5;
+  --orange:#d97706;--orange-l:#fffbeb;--orange-m:#fde68a;
+  --amber:#b45309;--amber-l:#fffbeb;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --border:#e2e8f0;--border2:#cbd5e1;
+  --shadow:0 1px 3px rgba(15,23,42,0.08),0 2px 8px rgba(15,23,42,0.04);
+  --shadow-md:0 4px 16px rgba(15,23,42,0.1);
+}
+html,body{min-height:100vh;font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%,75%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+@keyframes xpUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes checkIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+
+/* ══ HEADER ══ */
+.top-header{background:var(--white);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:var(--teal-d);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.logo-name{font-size:15px;font-weight:800;color:var(--teal-d)}
+.logo-sub{font-size:11px;color:var(--text3)}
+.top-badge{background:var(--teal-l);color:var(--teal);border:1px solid var(--teal-m);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700}
+
+/* ══ WELCOME ══ */
+#s-welcome{background:var(--bg)}
+.w-body{max-width:760px;margin:0 auto;padding:28px 20px 48px;animation:fadeUp 0.4s ease}
+.w-hero{margin-bottom:22px;padding:22px;background:var(--white);border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:18px}
+.w-hero-icon{font-size:42px;flex-shrink:0}
+.w-hero-title{font-size:22px;font-weight:800;color:var(--teal-d);margin-bottom:5px}
+.w-hero-desc{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* Alerte whoosh test */
+.warning-alert{background:#fff7ed;border:2px solid #fed7aa;border-radius:14px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:flex-start;gap:12px}
+.wa-icon{font-size:22px;flex-shrink:0}
+.wa-title{font-size:13px;font-weight:800;color:var(--amber);margin-bottom:5px}
+.wa-body{font-size:12px;color:#92400e;line-height:1.6}
+
+.w-stats{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:22px;display:grid;grid-template-columns:repeat(3,1fr);text-align:center}
+.ws-item{padding:6px;border-right:1px solid var(--border)}.ws-item:last-child{border:none}
+.ws-val{font-size:22px;font-weight:800;color:var(--teal-d);margin-bottom:2px}
+.ws-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.sec-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:12px}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:560px){.mode-grid{grid-template-columns:1fr}}
+.mode-card{background:var(--white);border:2px solid var(--border);border-radius:16px;padding:20px 16px;cursor:pointer;transition:all 0.2s;text-align:left;position:relative;overflow:hidden}
+.mode-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--teal));border-radius:16px 16px 0 0;opacity:0;transition:opacity 0.2s}
+.mode-card:hover{border-color:var(--mc,var(--teal));box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.mode-card:hover::before,.mode-card.sel::before{opacity:1}
+.mode-card.sel{border-color:var(--mc,var(--teal));background:var(--mb,var(--teal-l))}
+.mc-icon{font-size:26px;margin-bottom:10px;display:block}
+.mc-name{font-size:14px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+.mc-diff{display:inline-flex;align-items:center;border-radius:20px;padding:2px 9px;font-size:10px;font-weight:700;margin-bottom:8px;border:1px solid}
+.mc-desc{font-size:11.5px;color:var(--text2);line-height:1.55}
+.mc-list{list-style:none;margin-top:8px}
+.mc-list li{font-size:11px;color:var(--text2);padding:2px 0;display:flex;align-items:center;gap:5px}
+.mc-list li::before{content:'✓';color:var(--mc,var(--teal));font-weight:700;flex-shrink:0}
+.launch-btn{width:100%;padding:16px;background:var(--teal-d);border:none;border-radius:14px;color:white;font-size:15px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;box-shadow:0 4px 14px rgba(22,78,99,0.35);display:flex;align-items:center;justify-content:center;gap:8px}
+.launch-btn:hover{background:var(--teal);transform:translateY(-2px)}
+
+/* ══ QUIZ ══ */
+#s-quiz{background:var(--bg)}
+#topbar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow)}
+.tb-logo{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.tb-logo-box{width:28px;height:28px;background:var(--teal-d);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.tb-logo-text{font-size:13px;font-weight:800;color:var(--teal-d)}
+.tb-mode{background:var(--teal-l);color:var(--teal);border:1px solid var(--teal-m);border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;flex-shrink:0}
+.tb-prog-wrap{flex:1;position:relative;padding-top:12px}
+.tb-prog-bg{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.tb-prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width 0.55s ease}
+.tb-qlabel{position:absolute;top:0;right:0;font-size:9px;color:var(--text3);font-weight:600}
+.tb-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.tb-pill{display:flex;align-items:center;gap:4px;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;border:1px solid}
+.tp-xp{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange)}
+.tp-streak{background:var(--blue-l);border-color:var(--blue-m);color:var(--blue)}
+.tp-streak.hot{background:var(--orange-l);border-color:var(--orange-m);color:var(--orange);animation:pulse 1s infinite}
+.tp-lives{background:var(--red-l);border-color:var(--red-m);color:var(--red)}
+.timer-wrap{position:relative;width:40px;height:40px;flex-shrink:0}
+.timer-wrap svg{transform:rotate(-90deg)}
+.t-bg{fill:none;stroke:var(--border);stroke-width:3.5}
+.t-arc{fill:none;stroke:var(--teal);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--text)}
+.t-num.warn{color:var(--red)}
+
+#quiz-body{flex:1;padding:18px;max-width:700px;width:100%;margin:0 auto}
+.ctx-card{background:linear-gradient(135deg,var(--teal-d),var(--teal));border-radius:16px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:flex-start;gap:14px;animation:fadeUp 0.3s ease;color:white;box-shadow:0 4px 20px rgba(14,116,144,0.28)}
+.ctx-ico-box{font-size:26px;flex-shrink:0;background:rgba(255,255,255,0.12);width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.6);font-weight:700;margin-bottom:3px}
+.ctx-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.ctx-body{font-size:12.5px;color:rgba(255,255,255,0.85);line-height:1.65;font-family:'Lora',serif;font-style:italic}
+
+.q-card{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:20px 22px;margin-bottom:12px;box-shadow:var(--shadow);animation:slideIn 0.3s ease}
+.q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.q-cat-pill{display:flex;align-items:center;gap:6px;background:var(--teal-l);border:1px solid var(--teal-m);border-radius:20px;padding:3px 10px;flex-shrink:0}
+.qcp-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.qcp-txt{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1px}
+.q-num{font-size:11px;font-weight:600;color:var(--text3)}
+.q-illus{float:right;margin:0 0 10px 14px;border-radius:10px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.q-text{font-family:'Lora',serif;font-size:17px;line-height:1.6;color:var(--text)}
+.q-text strong{color:var(--teal-d);font-style:italic}
+
+.choices{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.choice{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--white);border:1.5px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;color:var(--text);font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;line-height:1.5;transition:all 0.16s;box-shadow:var(--shadow)}
+.choice:hover:not(:disabled){border-color:var(--teal);background:var(--teal-l);transform:translateX(3px)}
+.choice:disabled{cursor:not-allowed;transform:none}
+.c-ltr{width:28px;height:28px;border-radius:8px;background:var(--bg);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:var(--text2);transition:all 0.2s}
+.choice.correct{background:var(--green-l);border-color:var(--green-m)}
+.choice.correct .c-ltr{background:var(--green);border-color:var(--green);color:white}
+.choice.wrong{background:var(--red-l);border-color:var(--red-m);animation:shake 0.4s ease}
+.choice.wrong .c-ltr{background:var(--red);border-color:var(--red);color:white}
+.choice.missed{background:#f0fdf4;border-color:#86efac;opacity:0.65}
+.c-tag{margin-left:auto;font-size:10px;padding:3px 9px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.c-tag.c{background:var(--green-l);color:var(--green);border-color:var(--green-m)}
+.c-tag.w{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
+
+.exp-box{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;animation:fadeUp 0.3s ease;border:1.5px solid}
+.exp-box.show{display:block}
+.exp-box.ok{background:var(--green-l);border-color:var(--green-m)}
+.exp-box.err{background:var(--red-l);border-color:var(--red-m)}
+.exp-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.exp-ico{font-size:18px}
+.exp-title{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+.exp-title.ok{color:var(--green)}.exp-title.err{color:var(--red)}
+.exp-body{font-size:13px;color:var(--text2);line-height:1.75}.exp-body strong{color:var(--text)}
+.exp-rule{margin-top:10px;background:var(--white);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:9px 13px;font-size:12px;color:var(--text2);line-height:1.55;display:none}
+.exp-rule strong{color:var(--teal-d)}
+.next-btn{width:100%;padding:13px;background:var(--teal-d);border:none;border-radius:11px;color:white;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:none;box-shadow:0 2px 8px rgba(22,78,99,0.25)}
+.next-btn.show{display:block}.next-btn:hover{background:var(--teal)}
+#quiz-footer{background:var(--white);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:center;gap:20px;flex-shrink:0;flex-wrap:wrap}
+.foot-stat{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text3)}
+.foot-stat strong{color:var(--text);font-weight:700}
+.xp-float{position:fixed;font-weight:800;color:var(--orange);pointer-events:none;animation:xpUp 0.9s ease forwards;z-index:999;font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ══ RESULT ══ */
+#s-result{background:var(--bg)}
+.res-body{max-width:620px;margin:0 auto;padding:22px 20px 44px;animation:fadeUp 0.5s ease}
+.res-hero{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:28px;text-align:center;margin-bottom:14px;box-shadow:var(--shadow-md);position:relative;overflow:hidden}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+.res-grade{font-size:52px;margin-bottom:8px;display:block;animation:checkIn 0.5s ease 0.3s both}
+.res-score{font-size:52px;font-weight:800;line-height:1;margin-bottom:5px}
+.res-sub{font-size:13px;color:var(--text2);margin-bottom:14px}
+.res-mention{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid}
+.res-mode{margin-top:10px;font-size:11px;color:var(--text3)}
+.res-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.res-stats{grid-template-columns:1fr 1fr}}
+.rs-c{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.rs-val{font-size:22px;font-weight:800;margin-bottom:3px}
+.rs-lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.breakdown{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.bd-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);font-weight:700;margin-bottom:14px}
+.bd-item{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bd-lbl{font-size:12px;flex:1;color:var(--text2);font-weight:500}
+.bd-bar-bg{width:110px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+.bd-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bd-score{font-size:12px;font-weight:800;width:30px;text-align:right}
+.errors-box{background:var(--red-l);border:1px solid var(--red-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.errors-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--red);font-weight:700;margin-bottom:10px}
+.error-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:12.5px;color:var(--text2);line-height:1.55}
+.conseils-box{background:var(--blue-l);border:1px solid var(--blue-m);border-radius:14px;padding:16px;margin-bottom:14px}
+.conseils-title{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-weight:700;margin-bottom:10px}
+.conseil-item{font-size:12.5px;color:var(--text2);line-height:1.6;margin-bottom:7px;padding-left:4px}
+.res-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rb{padding:13px;border:none;border-radius:11px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s}
+.rb.p{background:var(--teal-d);color:white;box-shadow:0 2px 10px rgba(22,78,99,0.3)}.rb.p:hover{background:var(--teal)}
+.rb.s{background:var(--white);border:1.5px solid var(--border);color:var(--text)}.rb.s:hover{border-color:var(--teal-m)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="s-welcome">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🧫</div>
+      <div><div class="logo-name">NurseSimPro</div><div class="logo-sub">Formation infirmière premium</div></div>
+    </div>
+    <div class="top-badge">🧫 Sonde nasogastrique</div>
+  </div>
+  <div class="w-body">
+    <div class="w-hero">
+      <div class="w-hero-icon">🧫</div>
+      <div>
+        <div class="w-hero-title">Pose de sonde nasogastrique</div>
+        <div class="w-hero-desc">Maîtrisez le protocole complet : indication, mesure, technique d'insertion, vérification de position selon les recommandations actuelles, fixation et surveillance. Un soin qui nécessite rigueur et douceur.</div>
+      </div>
+    </div>
+
+    <div class="warning-alert">
+      <div class="wa-icon">⚠️</div>
+      <div>
+        <div class="wa-title">Point critique — Recommandations actuelles (HAS / littérature 2023)</div>
+        <div class="wa-body">Le <strong>whoosh test</strong> (injection d'air + auscultation épigastrique) <strong>ne doit plus être utilisé seul</strong> pour valider la pose initiale. Sa sensibilité et sa spécificité sont insuffisantes — des sons peuvent être entendus même si la sonde est dans les voies respiratoires. La vérification initiale repose sur : <strong>pH du liquide aspiré &lt; 5</strong> ou <strong>radiographie thoracique/abdominale</strong> (gold standard).</div>
+      </div>
+    </div>
+
+    <div class="w-stats">
+      <div class="ws-item"><div class="ws-val">14</div><div class="ws-lbl">Étapes</div></div>
+      <div class="ws-item"><div class="ws-val">3</div><div class="ws-lbl">Modes</div></div>
+      <div class="ws-item"><div class="ws-val">7</div><div class="ws-lbl">Catégories</div></div>
+    </div>
+
+    <div class="sec-lbl">Choisissez votre mode</div>
+    <div class="mode-grid">
+      <button class="mode-card sel" style="--mc:#0e7490;--mb:#ecfeff" onclick="selectMode('learn',this)">
+        <span class="mc-icon">📚</span>
+        <span class="mc-name">Apprentissage</span>
+        <div class="mc-diff" style="background:#ecfeff;border-color:#a5f3fc;color:#0e7490">⭐ Débutant</div>
+        <div class="mc-desc">Les 14 étapes du protocole dans l'ordre. Geste précis, pourquoi clinique, points de vigilance. Tout ce qu'un étudiant doit savoir avant son premier soin.</div>
+        <ul class="mc-list" style="--mc:#0e7490">
+          <li>Protocole complet dans l'ordre</li>
+          <li>Technique d'insertion détaillée</li>
+          <li>Vérifications selon recommandations actuelles</li>
+          <li>Pas de chronomètre</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#d97706;--mb:#fffbeb" onclick="selectMode('exam',this)">
+        <span class="mc-icon">📝</span>
+        <span class="mc-name">Examen</span>
+        <div class="mc-diff" style="background:#fffbeb;border-color:#fde68a;color:#d97706">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">Questions directes sur le protocole appris. Technique, mesure, vérification de position, complications, surveillance. Chrono 30s.</div>
+        <ul class="mc-list" style="--mc:#d97706">
+          <li>Questions sur le protocole complet</li>
+          <li>Chrono 30 secondes</li>
+          <li>Rapport détaillé à la fin</li>
+        </ul>
+      </button>
+      <button class="mode-card" style="--mc:#7c3aed;--mb:#f5f3ff" onclick="selectMode('survival',this)">
+        <span class="mc-icon">💀</span>
+        <span class="mc-name">Survie</span>
+        <div class="mc-diff" style="background:#f5f3ff;border-color:#c4b5fd;color:#7c3aed">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Questions pièges basées sur les erreurs fréquentes en pratique. Whoosh test, contre-indications, pH, complications. 3 vies. Chrono 25s.</div>
+        <ul class="mc-list" style="--mc:#7c3aed">
+          <li>Pièges fréquents en pratique</li>
+          <li>3 vies seulement</li>
+          <li>Chrono 25 secondes</li>
+        </ul>
+      </button>
+    </div>
+    <button class="launch-btn" onclick="launch()"><span>Commencer →</span></button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="screen" id="s-quiz">
+  <div id="topbar">
+    <div class="tb-logo"><div class="tb-logo-box">🧫</div><span class="tb-logo-text">Sonde nasogastrique</span></div>
+    <div class="tb-mode" id="tb-mode">Apprentissage</div>
+    <div class="tb-prog-wrap">
+      <div class="tb-qlabel" id="tb-ql">Étape 1/14</div>
+      <div class="tb-prog-bg"><div class="tb-prog-fill" id="tb-pf" style="width:0%"></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-pill tp-streak" id="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="tb-pill tp-xp">⚡ <span id="xp-n">0</span></div>
+      <div class="tb-pill tp-lives" id="lives-pill" style="display:none">❤️ <span id="lives-n">3</span></div>
+      <div class="timer-wrap" id="tw" style="display:none">
+        <svg width="40" height="40" viewBox="0 0 36 36">
+          <circle class="t-bg" cx="18" cy="18" r="14"/>
+          <circle class="t-arc" id="t-arc" cx="18" cy="18" r="14" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-num" id="t-num">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="quiz-body">
+    <div class="ctx-card" id="ctx-box" style="display:none">
+      <div class="ctx-ico-box" id="ctx-ico">📋</div>
+      <div style="flex:1">
+        <div class="ctx-sub" id="ctx-sub">Étape</div>
+        <div class="ctx-title" id="ctx-title"></div>
+        <div class="ctx-body" id="ctx-body"></div>
+      </div>
+    </div>
+    <div class="q-card">
+      <div class="q-top">
+        <div class="q-cat-pill"><div class="qcp-dot"></div><span class="qcp-txt" id="q-cat">—</span></div>
+        <span class="q-num" id="q-num">1</span>
+      </div>
+      <div id="q-illus"></div>
+      <div class="q-text" id="q-text">Chargement...</div>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-head"><span class="exp-ico" id="exp-ico">✅</span><span class="exp-title" id="exp-ttl">Bonne réponse</span></div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-rule" id="exp-rule"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="quiz-footer">
+    <div class="foot-stat">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="foot-stat">❌ <strong id="sw">0</strong> erreurs</div>
+    <div class="foot-stat">Score : <strong id="score-n">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="top-header">
+    <div class="logo-row">
+      <div class="logo-box">🧫</div>
+      <div><div class="logo-name">Rapport — Sonde nasogastrique</div></div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-hero">
+      <span class="res-grade" id="rg">🎓</span>
+      <div class="res-score" id="rs">--/20</div>
+      <div class="res-sub" id="rsub">--</div>
+      <div class="res-mention" id="rm">--</div>
+      <div class="res-mode" id="rmode"></div>
+    </div>
+    <div class="res-stats">
+      <div class="rs-c"><div class="rs-val" id="rs-xp" style="color:var(--orange)">0</div><div class="rs-lbl">XP</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-streak" style="color:var(--orange)">0</div><div class="rs-lbl">Série max</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-time" style="color:var(--teal)">0s</div><div class="rs-lbl">Tps / Q</div></div>
+      <div class="rs-c"><div class="rs-val" id="rs-score" style="color:var(--teal-d)">0</div><div class="rs-lbl">Score</div></div>
+    </div>
+    <div class="breakdown"><div class="bd-title">Résultats par catégorie</div><div id="bd-items"></div></div>
+    <div class="errors-box" id="errors-box" style="display:none"><div class="errors-title">❌ Points à retravailler</div><div id="errors-list"></div></div>
+    <div class="conseils-box"><div class="conseils-title">💡 Conseils personnalisés</div><div id="conseils-list"></div></div>
+    <div class="res-actions">
+      <button class="rb s" onclick="goWelcome()">← Changer de mode</button>
+      <button class="rb p" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   APPRENTISSAGE — 14 étapes dans l'ordre du protocole
+══════════════════════════════════════════════════ */
+const STEPS = [
+{num:1,cat:"Prescription & Cadre légal",icon:"📋",title:"Vérifier la prescription médicale",
+ what:"La pose de SNG est un <strong>acte infirmier sur prescription médicale</strong> (Art. R.4311-7, décret 2004-802). La prescription doit mentionner l'indication et l'objectif : nutrition entérale, aspiration gastrique, lavage gastrique ou administration de médicaments. Vérifiez également l'identité du patient.",
+ why:"Sans prescription médicale écrite et signée, vous ne pouvez pas poser une SNG. Le changement de sonde relève en revanche du rôle propre (Art. R.4311-5).",
+ rule:"Pose de SNG = prescription médicale obligatoire. Changement de SNG = rôle propre infirmier.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="10" y="5" width="80" height="70" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="10" y="5" width="80" height="18" rx="8" fill="#164e63"/><rect x="10" y="17" width="80" height="6" fill="#164e63"/><text x="50" y="16" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">PRESCRIPTION MÉDICALE</text><rect x="18" y="28" width="64" height="5" rx="2" fill="#e2e8f0"/><rect x="18" y="37" width="50" height="5" rx="2" fill="#a5f3fc"/><rect x="18" y="46" width="58" height="5" rx="2" fill="#e2e8f0"/><rect x="18" y="55" width="40" height="5" rx="2" fill="#a5f3fc"/><rect x="18" y="64" width="30" height="5" rx="2" fill="#e2e8f0"/></svg>`,
+ q:"L'infirmière de nuit change une SNG bouchée sans prescription médicale. C'est ?",
+ choices:["Interdit — toute pose ou changement de SNG nécessite une prescription","Autorisé — c'est dans le rôle propre infirmier (Art. R.4311-5)","Autorisé uniquement si urgence et médecin joignable","Interdit seulement la nuit"],
+ correct:1},
+
+{num:2,cat:"Matériel",icon:"🧰",title:"Préparer le matériel complet",
+ what:"Matériel nécessaire : <strong>sonde nasogastrique adaptée</strong> (nutrition : silicone/polyuréthane CH 8-12 souple, max 30 jours ; aspiration : PVC CH 14-18 semi-rigide, max 3-4 jours), seringue 50 mL embout conique, gants non stériles, lubrifiant hydrosoluble, bandelette pH, verre d'eau + paille, compresses, haricot, sparadrap, marqueur indélébile, stéthoscope.",
+ why:"Choisir le bon type de sonde selon l'indication est crucial. Une sonde PVC (aspiration) laissée plus de 4 jours irrite et ulcère les muqueuses. Une sonde nutrition en silicone est trop souple pour être posée sans mandrin.",
+ rule:"Nutrition : silicone/polyuréthane CH 8-12, max 30 jours. Aspiration : PVC CH 14-18, max 3-4 jours.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="42" width="90" height="34" rx="6" fill="#f0f4f8" stroke="#cbd5e1" stroke-width="1.5"/><rect x="5" y="42" width="90" height="8" rx="4" fill="#cbd5e1"/><path d="M12 20 Q14 18 90 18" fill="none" stroke="#0e7490" stroke-width="4" stroke-linecap="round"/><path d="M12 26 Q14 24 75 24" fill="none" stroke="#a5f3fc" stroke-width="3" stroke-linecap="round" opacity="0.7"/><rect x="35" y="28" width="28" height="22" rx="5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/><text x="49" y="41" text-anchor="middle" font-size="8" fill="#1d4ed8" font-family="sans-serif" font-weight="700">pH</text><rect x="68" y="30" width="22" height="18" rx="4" fill="#ecfdf5" stroke="#059669" stroke-width="1"/><text x="79" y="41" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="700">Lub.</text></svg>`,
+ q:"Vous devez poser une SNG pour nutrition entérale sur 3 semaines. Quel type de sonde choisissez-vous ?",
+ choices:["Sonde PVC CH 18 — plus facile à insérer car semi-rigide","Sonde silicone ou polyuréthane CH 8-12 souple — adaptée à la nutrition longue durée","Sonde PVC CH 12 — compromis idéal","Tube de Faucher — grande lumière pour meilleure nutrition"],
+ correct:1},
+
+{num:3,cat:"Installation du patient",icon:"🛋️",title:"Installer le patient et précautions",
+ what:"Installez le patient en <strong>position semi-assise (45°), tête légèrement penchée en avant, menton rentré vers la poitrine.</strong> Cette position ouvre l'œsophage et facilite le passage. Patient conscient avec troubles de conscience → position latérale de sécurité (PLS) côté gauche. Retirez les prothèses dentaires si présentes. Proposez un mouchoir et placez un haricot à portée.",
+ why:"La tête penchée en avant ferme le larynx et ouvre l'œsophage, réduisant le risque de fausse route dans les voies respiratoires. La PLS protège des vomissements chez le patient somnolent.",
+ rule:"Position : semi-assise 45° + menton rentré. Prothèses dentaires retirées. PLS si troubles de conscience.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="50" width="90" height="24" rx="8" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5"/><ellipse cx="50" cy="44" rx="40" ry="14" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><circle cx="50" cy="28" r="14" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M46 30 Q50 35 54 30" fill="none" stroke="#c07850" stroke-width="1.5"/><path d="M42 26 Q50 22 58 26" fill="none" stroke="#a07860" stroke-width="1" stroke-dasharray="2,1"/><text x="50" y="70" text-anchor="middle" font-size="8" fill="#475569" font-family="sans-serif">45° — menton rentré</text></svg>`,
+ q:"Vous allez poser une SNG à un patient somnolent (Glasgow 11). Quelle position adoptez-vous ?",
+ choices:["Position assise 90° pour mieux visualiser l'oropharynx","Décubitus dorsal strict pour éviter les mouvements","Position latérale de sécurité (PLS) côté gauche de préférence","Semi-assise habituelle — la vigilance ne change rien"],
+ correct:2},
+
+{num:4,cat:"Mesure de la sonde",icon:"📏",title:"Mesurer la longueur à introduire",
+ what:"Mesurez la distance : <strong>narine → oreille → creux épigastrique (estomac)</strong> en longeant la sonde sur le corps du patient. Marquez le repère obtenu avec le marqueur indélébile directement sur la sonde. Cette mesure donne la longueur à introduire pour atteindre l'estomac.",
+ why:"Une sonde trop courte s'arrête dans l'œsophage et expose au risque d'inhalation. Une sonde trop longue se pelotonne dans l'estomac ou progresse dans le duodénum. La mesure précise est indispensable.",
+ rule:"Mesure : narine → oreille → creux épigastrique. Marquer le repère sur la sonde avant insertion.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="25" cy="20" r="12" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><circle cx="25" cy="20" r="4" fill="#c07850" opacity="0.4"/><text x="25" y="10" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif" font-weight="700">Narine</text><circle cx="60" cy="22" r="6" fill="#c07850" opacity="0.4"/><text x="60" y="13" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif" font-weight="700">Oreille</text><circle cx="75" cy="60" r="8" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><text x="75" y="74" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif" font-weight="700">Épigastre</text><path d="M25 20 L60 22 L75 60" fill="none" stroke="#0e7490" stroke-width="2" stroke-dasharray="4,2"/><text x="42" y="46" font-size="9" fill="#dc2626" font-family="sans-serif" font-weight="700">= longueur</text></svg>`,
+ q:"Quelle méthode de mesure utilise-t-on pour une SNG chez l'adulte ?",
+ choices:["Nez → ombilic — mesure standard la plus courante","Nez → oreille → ombilic — méthode NEX","Narine → oreille → creux épigastrique — méthode recommandée","Nez → manubrium sternal × 2"],
+ correct:2},
+
+{num:5,cat:"Technique d'insertion",icon:"💉",title:"Insérer la sonde — Technique précise",
+ what:"SHA (solution hydro-alcoolique) + gants. Lubrifiez les 10-15 premiers centimètres de la sonde avec le lubrifiant hydrosoluble. Introduisez la sonde <strong>horizontalement dans la narine</strong>, en respectant la courbure physiologique. Au passage du carrefour pharyngé (~15 cm), demandez au patient de déglutir sa salive ou de boire quelques gorgées d'eau. <strong>Ne jamais forcer</strong> en cas de résistance. Vérifier que la sonde ne s'enroule pas dans la bouche. Progresser jusqu'au repère marqué.",
+ why:"L'horizontalité évite la remontée dans le nez. La déglutition ferme le larynx et permet le passage dans l'œsophage. Forcer expose à la perforation ou au passage trachéal. Se rouler dans la bouche = sonde dans le pharynx, pas l'estomac.",
+ rule:"Horizontale dans la narine → déglutition au carrefour pharyngé (~15 cm) → jamais forcer → vérifier absence d'enroulement buccal.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><path d="M15 20 Q20 15 30 18 Q40 21 45 30 Q48 38 50 60" fill="none" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/><circle cx="15" cy="20" r="5" fill="#0e7490" opacity="0.3"/><text x="12" y="12" font-size="7" fill="#0e7490" font-family="sans-serif">Narine</text><path d="M30 18 Q35 10 42 8" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2"/><text x="44" y="8" font-size="7" fill="#dc2626" font-family="sans-serif">Trachée !</text><text x="14" y="34" font-size="7" fill="#059669" font-family="sans-serif">15cm :</text><text x="14" y="42" font-size="7" fill="#059669" font-family="sans-serif">déglutir</text><circle cx="50" cy="65" r="10" fill="#ecfeff" stroke="#0e7490" stroke-width="1.5"/><text x="50" y="69" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif" font-weight="700">Estomac</text></svg>`,
+ q:"Au passage du carrefour pharyngé (~15 cm), le patient dit 'ça pique un peu'. Que faites-vous ?",
+ choices:["Forcer rapidement pour passer cette zone inconfortable","Faire déglutir le patient sa salive ou lui faire boire quelques gorgées d'eau, puis progresser doucement","Retirer la sonde immédiatement — toute douleur signifie une fausse route","Injecter du lubrifiant supplémentaire dans la narine"],
+ correct:1},
+
+{num:6,cat:"Vérification de position — Initiale",icon:"🔬",title:"Vérifier la position — Recommandations actuelles",
+ what:"<strong>Vérification initiale obligatoire</strong> selon les recommandations actuelles (HAS / littérature 2023) : <br>① <strong>Aspiration de liquide gastrique + test pH &lt; 5</strong> avec bandelette → confirme position gastrique ✅<br>② Si pas d'aspiration possible ou pH inconclusive → <strong>radiographie thoracique / abdominale</strong> (gold standard) ✅<br>⚠️ Le whoosh test (injection d'air + auscultation) <strong>ne doit plus être utilisé seul</strong> pour la vérification initiale — insuffisamment fiable.",
+ why:"Des sons d'air peuvent être entendus même si la sonde est dans les voies respiratoires (trachée, bronche). Des accidents graves ont été documentés avec le whoosh test seul. Le pH &lt; 5 du liquide aspiré reflète l'acidité gastrique et est fiable pour confirmer la position gastrique.",
+ rule:"Vérification initiale : pH liquide aspiré < 5 OU radiographie. Le whoosh test seul est obsolète pour la vérification initiale.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="5" y="20" width="42" height="52" rx="8" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="26" y="38" text-anchor="middle" font-size="9" fill="#059669" font-family="sans-serif" font-weight="700">pH &lt; 5</text><text x="26" y="50" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif">✅ Gastrique</text><text x="26" y="62" text-anchor="middle" font-size="7" fill="#047857" font-family="sans-serif">ou radio</text><rect x="55" y="20" width="40" height="52" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><text x="75" y="36" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">Whoosh</text><text x="75" y="48" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif">test seul</text><text x="75" y="60" text-anchor="middle" font-size="9" fill="#dc2626" font-family="sans-serif" font-weight="700">❌ OBSOLÈTE</text><text x="50" y="15" text-anchor="middle" font-size="9" fill="#164e63" font-family="sans-serif" font-weight="800">Vérification initiale</text></svg>`,
+ q:"Vous venez de poser une SNG. Quelle méthode utilisez-vous pour confirmer sa bonne position ?",
+ choices:["Injection de 30 mL d'air + auscultation épigastrique (whoosh test)","Aspiration de liquide gastrique + mesure du pH (pH < 5 = position gastrique confirmée) ou radiographie","Immersion de l'extrémité dans un verre d'eau — absence de bulles = estomac","Vérification visuelle que la sonde ne s'enroule pas dans la bouche"],
+ correct:1},
+
+{num:7,cat:"Vérification pH — Pratique",icon:"🧪",title:"Interpréter le pH du liquide aspiré",
+ what:"Aspirez doucement avec la seringue de 50 mL. Si vous obtenez du liquide, déposez une goutte sur la bandelette pH et lisez le résultat : <strong>pH &lt; 5 = position gastrique confirmée ✅</strong>. Si pH entre 5 et 6 : résultat douteux, ne pas utiliser la sonde, contacter le médecin. Si pH > 6 : probable malposition (œsophage, trachée, intestin) → ne pas utiliser, contrôle radiologique.",
+ why:"Le suc gastrique est acide (pH normalement < 3). Un pH > 6 peut indiquer que la sonde est dans les voies respiratoires, l'œsophage ou l'intestin grêle. Un traitement par IPP peut élever le pH gastrique : en cas de doute, une radio reste nécessaire.",
+ rule:"pH < 5 → gastrique ✅. pH 5-6 → douteux → médecin. pH > 6 → malposition probable → radio obligatoire.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="8" y="10" width="84" height="60" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="8" y="10" width="84" height="16" rx="8" fill="#164e63"/><rect x="8" y="20" width="84" height="6" fill="#164e63"/><text x="50" y="20" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="700">Bandelette pH</text><rect x="15" y="32" width="20" height="30" rx="4" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="25" y="44" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif" font-weight="700">pH&lt;5</text><text x="25" y="55" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif">✅</text><rect x="40" y="32" width="20" height="30" rx="4" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/><text x="50" y="44" text-anchor="middle" font-size="7" fill="#d97706" font-family="sans-serif" font-weight="700">pH 5-6</text><text x="50" y="55" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif">⚠️</text><rect x="65" y="32" width="20" height="30" rx="4" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><text x="75" y="44" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif" font-weight="700">pH&gt;6</text><text x="75" y="55" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif">❌</text></svg>`,
+ q:"Vous aspirez et mesurez un pH à 6,5. Que faites-vous ?",
+ choices:["Utiliser la sonde normalement — 6,5 est proche de 6","Renouveler l'aspiration 30 minutes plus tard — le pH peut fluctuer","Ne pas utiliser la sonde, contacter le médecin, réaliser une radiographie de contrôle","Injecter un peu d'air pour tester l'auscultation en complément"],
+ correct:2},
+
+{num:8,cat:"Fixation",icon:"🩹",title:"Fixer la sonde et marquer le repère",
+ what:"Fixez la sonde immédiatement après vérification. Méthode : <strong>préparer la peau (sécher), poser un sparadrap élastique sur le nez en le fendant en deux branches qui s'enroulent autour de la sonde.</strong> Ajoutez une fixation sur la joue en évitant la traction. Marquez au feutre indélébile le repère de la sonde au niveau de la narine. Notez le numéro du repère dans le dossier.",
+ why:"Une sonde mal fixée se déplace lors des mouvements ou de la déglutition. Le repère permet de détecter un déplacement lors de la surveillance quotidienne sans avoir à re-vérifier le pH à chaque fois.",
+ rule:"Fixer immédiatement + marquer le repère au niveau de la narine + noter dans le dossier. Contrôler visuellement ce repère avant chaque utilisation.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="35" cy="30" r="18" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M26 36 Q35 42 44 36" fill="none" stroke="#c07850" stroke-width="1.5"/><rect x="28" y="16" width="14" height="8" rx="3" fill="#fde68a" stroke="#ca8a04" stroke-width="1"/><path d="M35 24 L35 42" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/><path d="M28 28 Q35 24 42 28" fill="none" stroke="#ca8a04" stroke-width="1.5"/><circle cx="35" cy="42" r="3" fill="#dc2626"/><text x="35" y="55" text-anchor="middle" font-size="7" fill="#dc2626" font-family="sans-serif" font-weight="700">Repère ici</text><text x="78" y="35" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif">Noter</text><text x="78" y="44" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif">repère</text><text x="78" y="53" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif">dans</text><text x="78" y="62" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif">dossier</text></svg>`,
+ q:"Comment vérifiez-vous quotidiennement que la sonde n'a pas bougé ?",
+ choices:["En refaisant un test pH chaque matin","En comparant la position du repère indélébile sur la sonde avec la valeur notée au dossier","En ausculant l'épigastre après injection d'air — plus rapide","En vérifiant que le patient ne se plaint pas de douleurs"],
+ correct:1},
+
+{num:9,cat:"Contre-indications",icon:"🚫",title:"Connaître les contre-indications",
+ what:"Contre-indications absolues : <strong>fracture de la base du crâne</strong> (risque de passage intracrânien), <strong>varices œsophagiennes hémorragiques</strong> (risque de rupture), <strong>sténose ou obstruction œsophagienne</strong>, <strong>ingestion caustique récente</strong> (risque de perforation). Contre-indications relatives (nécessitent avis médical) : antécédents chirurgicaux ORL ou digestifs majeurs, épistaxis, troubles de la coagulation.",
+ why:"Une sonde passée chez un patient avec fracture de la base du crâne peut pénétrer dans le cerveau via la lame criblée de l'ethmoïde. C'est un accident rare mais documenté.",
+ rule:"Fracture base du crâne = contre-indication absolue (risque passage intracrânien). Varices oeso., caustique récent, sténose = contre-indications absolues.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="50" cy="40" r="32" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/><text x="50" y="34" text-anchor="middle" font-size="22" fill="#dc2626">🚫</text><text x="50" y="50" text-anchor="middle" font-size="7.5" fill="#dc2626" font-family="sans-serif" font-weight="700">Fracture base crâne</text><text x="50" y="60" text-anchor="middle" font-size="7.5" fill="#dc2626" font-family="sans-serif" font-weight="700">Varices œso · Caustique</text></svg>`,
+ q:"Vous devez poser une SNG chez un patient qui a eu un traumatisme crânien il y a 2h. Le médecin suspecte une fracture de la base du crâne. Que faites-vous ?",
+ choices:["Poser la sonde normalement — la suspicion n'est pas une contre-indication confirmée","Poser la sonde par voie buccale au lieu de nasale","Contacter le médecin et ne pas poser la SNG — fracture base du crâne = contre-indication absolue","Poser une sonde très fine CH 8 pour minimiser le risque"],
+ correct:2},
+
+{num:10,cat:"Surveillance quotidienne",icon:"👁️",title:"Surveiller la sonde au quotidien",
+ what:"Avant chaque utilisation (alimentation, médicaments) et au minimum <strong>une fois par jour</strong> : ① Contrôler visuellement le repère indélébile (position inchangée = sonde en place). ② En cas de suspicion de déplacement : aspiration + pH. ③ Vérifier l'absence de signes d'intolérance locale : épistaxis, ulcération nasale, douleur. ④ Vérifier l'intégrité de la fixation. La radiographie n'est pas nécessaire à chaque contrôle quotidien.",
+ why:"La sonde peut se déplacer lors des vomissements, de la toux, ou si le patient tire dessus. Une alimentation entérale dans une sonde mal positionnée (trachée) peut être mortelle.",
+ rule:"Avant chaque utilisation : vérifier le repère visuel. En cas de doute → pH ou radio. Jamais d'alimentation sans vérification préalable.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="50" cy="38" r="30" fill="#f0f4f8" stroke="#e2e8f0" stroke-width="1.5"/><text x="50" y="42" text-anchor="middle" font-size="24" fill="#0e7490">👁</text><path d="M22 60 L50 38 L78 60" fill="none" stroke="#0e7490" stroke-width="1.5" stroke-dasharray="3,2"/><text x="50" y="73" text-anchor="middle" font-size="8" fill="#475569" font-family="sans-serif">Repère → pH si doute</text></svg>`,
+ q:"Avant de débuter la nutrition entérale du matin, quelle vérification est indispensable ?",
+ choices:["Aucune — si la sonde était en place hier elle l'est toujours","Vérifier visuellement que le repère indélébile est au bon niveau + vérifier la fixation","Refaire un pH systématiquement chaque matin avant chaque utilisation","Ausculter l'épigastre après injection d'air avant chaque alimentation"],
+ correct:1},
+
+{num:11,cat:"Complications immédiates",icon:"⚠️",title:"Reconnaître les complications immédiates",
+ what:"Lors de la pose : <strong>Fausse route trachéale</strong> → toux violente, cyanose, détresse respiratoire = retirer immédiatement. <strong>Enroulement dans le pharynx</strong> → sonde visible dans la bouche = retirer. <strong>Épistaxis</strong> → saignement nasal = compression, changer de narine. <strong>Impossibilité de passage pharyngé</strong> → obstacle ORL ou pose par médecin. <strong>Agitation, apnée, désaturation</strong> → retrait immédiat, appel médecin.",
+ why:"La complication la plus grave est la malposition trachéo-bronchique non détectée — elle peut provoquer un pneumothorax ou une pneumonie d'inhalation si on utilise la sonde.",
+ rule:"Toux + cyanose + détresse respiratoire pendant la pose = retrait immédiat. Ne jamais forcer.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><circle cx="50" cy="40" r="30" fill="#fffbeb" stroke="#fde68a" stroke-width="2"/><text x="50" y="35" text-anchor="middle" font-size="20" fill="#d97706">⚠️</text><text x="50" y="51" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif" font-weight="700">Toux + cyanose</text><text x="50" y="62" text-anchor="middle" font-size="8" fill="#d97706" font-family="sans-serif">=Retrait immédiat</text></svg>`,
+ q:"Pendant la progression de la sonde à 20 cm, le patient présente une toux violente et commence à se cyanoser. Que faites-vous ?",
+ choices:["Passer rapidement la zone de toux car c'est normal au passage pharyngé","Faire avaler de l'eau pour aider la sonde à progresser","Retirer immédiatement la sonde et appeler le médecin — signe de fausse route trachéale","Avancer doucement en attendant que la toux se calme"],
+ correct:2},
+
+{num:12,cat:"Complications secondaires",icon:"🩺",title:"Prévenir les complications secondaires",
+ what:"Complications à surveiller au quotidien : <strong>Obstruction</strong> → rincer la sonde avant et après chaque utilisation avec 20-30 mL d'eau. <strong>Ulcération nasale</strong> → changer le sparadrap, alterner les narines si possible. <strong>Déplacement de sonde</strong> → contrôle repère quotidien. <strong>Reflux / inhalation</strong> → maintenir le patient en position demi-assise pendant l'alimentation et 2h après. <strong>Infection ORL</strong> → soins de nez quotidiens.",
+ why:"L'obstruction est la complication mécanique la plus fréquente et s'évite par un rinçage systématique. La position demi-assise est la protection la plus efficace contre l'inhalation de liquide entéral.",
+ rule:"Rinçage systématique avant et après chaque utilisation. Position demi-assise pendant la nutrition et 2h après.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><path d="M20 40 L80 40" stroke="#0e7490" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="40" r="8" fill="white" stroke="#dc2626" stroke-width="2"/><text x="50" y="44" text-anchor="middle" font-size="10" fill="#dc2626" font-family="sans-serif" font-weight="800">!</text><text x="50" y="18" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">Obstruction</text><path d="M20 60 L36 60" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/><text x="62" y="63" text-anchor="middle" font-size="7" fill="#059669" font-family="sans-serif">Rinçage 20-30 mL</text><rect x="36" y="56" width="22" height="8" rx="3" fill="#e0f2fe" stroke="#0e7490" stroke-width="1"/><text x="47" y="63" text-anchor="middle" font-size="7" fill="#0e7490" font-family="sans-serif">Eau</text><line x1="58" y1="60" x2="80" y2="60" stroke="#0e7490" stroke-width="3" stroke-linecap="round"/></svg>`,
+ q:"Combien de temps le patient doit-il rester en position semi-assise après la fin de l'alimentation entérale ?",
+ choices:["30 minutes — c'est suffisant","1 heure","2 heures minimum","Pas de contrainte si le patient se sent bien"],
+ correct:2},
+
+{num:13,cat:"Durée et changement de sonde",icon:"🔄",title:"Durée de maintien et changement de sonde",
+ what:"Durée maximale selon le type : <strong>Sonde en PVC (aspiration) : 3-4 jours maximum</strong> — le PVC durcit au contact de l'acidité gastrique et ulcère les muqueuses. <strong>Sonde en silicone/polyuréthane (nutrition) : jusqu'à 30 jours</strong> — biocompatible et résistant à l'acidité. Le changement de SNG est un acte du <strong>rôle propre infirmier</strong> (Art. R.4311-5), contrairement à la pose initiale.",
+ why:"Une sonde PVC laissée trop longtemps provoque une nécrose de la muqueuse nasale, un escarre nasal et des ulcérations gastro-œsophagiennes douloureuses et graves.",
+ rule:"PVC : max 3-4 jours. Silicone/polyuréthane : max 30 jours. Changement = rôle propre infirmier.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="8" y="15" width="38" height="50" rx="6" fill="#fef2f2" stroke="#fca5a5" stroke-width="1.5"/><text x="27" y="36" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="700">PVC</text><text x="27" y="48" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif">3-4 jours</text><text x="27" y="59" text-anchor="middle" font-size="8" fill="#dc2626" font-family="sans-serif" font-weight="800">MAX</text><rect x="54" y="15" width="38" height="50" rx="6" fill="#ecfdf5" stroke="#6ee7b7" stroke-width="1.5"/><text x="73" y="34" text-anchor="middle" font-size="7" fill="#059669" font-family="sans-serif" font-weight="700">Silicone/</text><text x="73" y="43" text-anchor="middle" font-size="7" fill="#059669" font-family="sans-serif" font-weight="700">Polyu.</text><text x="73" y="55" text-anchor="middle" font-size="8" fill="#059669" font-family="sans-serif">30 jours</text></svg>`,
+ q:"Vous trouvez une SNG en PVC posée depuis 5 jours. Le patient se plaint d'une gêne nasale. Que faites-vous ?",
+ choices:["La laisser encore 2 jours — c'est la durée recommandée","La changer immédiatement sur votre rôle propre — une SNG PVC ne doit pas dépasser 3-4 jours","Attendre la prescription médicale pour la changer","La changer uniquement si des signes locaux sont visibles"],
+ correct:1},
+
+{num:14,cat:"Traçabilité",icon:"📝",title:"Tracer le soin dans le dossier patient",
+ what:"Documentez obligatoirement dans le dossier : <strong>date et heure de pose, type et calibre de la sonde, narine utilisée, repère en centimètres au niveau de la narine, méthode de vérification de position et résultat (pH ou radio), tolérance du patient, votre nom et signature.</strong> Informez le patient des signes à signaler.",
+ why:"La traçabilité permet à tous les soignants de vérifier la position de la sonde à partir du repère documenté. Elle constitue aussi une protection légale. Un déplacement non détecté parce que le repère initial n'était pas noté peut être fatal.",
+ rule:"Toujours tracer : type de sonde, narine, repère en cm, méthode de vérification + résultat.",
+ svg:`<svg viewBox="0 0 100 80" width="100" height="80"><rect x="12" y="8" width="76" height="64" rx="8" fill="white" stroke="#e2e8f0" stroke-width="1.5"/><rect x="12" y="8" width="76" height="18" rx="8" fill="#164e63"/><rect x="12" y="20" width="76" height="6" fill="#164e63"/><text x="50" y="19" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.9)" font-family="sans-serif" font-weight="700">DOSSIER INFIRMIER</text><rect x="20" y="32" width="60" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="41" width="50" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="50" width="56" height="5" rx="2" fill="#e2e8f0"/><rect x="20" y="59" width="32" height="5" rx="2" fill="#a5f3fc"/></svg>`,
+ q:"Quelles informations sont indispensables dans le dossier après une pose de SNG ?",
+ choices:["Juste 'SNG posée' avec votre nom suffit","Date, heure, type de sonde, calibre, narine, repère en cm, méthode de vérification + résultat, tolérance, signature","Date, heure et signature uniquement","Type de sonde et résultat de la vérification uniquement"],
+ correct:1},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE EXAMEN — Questions directes sur le protocole
+══════════════════════════════════════════════════ */
+const Q_EXAM = [
+{cat:"Cadre légal",q:"La pose initiale d'une SNG est un acte qui relève de ?",
+ choices:["Rôle propre infirmier — autonomie complète","Prescription médicale obligatoire (Art. R.4311-7)","Protocole infirmier suffisant sans médecin","Acte médical délégué uniquement en urgence"],
+ correct:1,exp_ok:"La pose de SNG nécessite une prescription médicale (Art. R.4311-7). Le changement est en rôle propre (Art. R.4311-5).",exp_err:"La pose n'est PAS en rôle propre. Seul le changement l'est.",rule:"<strong>Pose SNG = prescription médicale. Changement = rôle propre.</strong>",xp:10},
+
+{cat:"Matériel",q:"Vous devez poser une SNG d'aspiration gastrique. Quel calibre et quel matériau choisissez-vous ?",
+ choices:["CH 8-12 silicone souple — plus confortable","CH 14-18 PVC semi-rigide — adapté à l'aspiration","CH 8 silicone avec mandrin — le mandrin rigidifie suffisamment","CH 20 polyuréthane — grand calibre pour meilleure aspiration"],
+ correct:1,exp_ok:"Aspiration = sonde PVC semi-rigide CH 14-18, max 3-4 jours. La rigidité permet le drainage efficace.",exp_err:"Les sondes silicone CH 8-12 sont pour la nutrition entérale longue durée.",rule:"<strong>Aspiration = PVC CH 14-18 (max 3-4j). Nutrition = silicone/polyuréthane CH 8-12 (max 30j).</strong>",xp:12},
+
+{cat:"Mesure",q:"La mesure standard pour estimer la longueur d'insertion d'une SNG chez l'adulte est ?",
+ choices:["Nez → ombilic (mesure NEX)","Narine → oreille → creux épigastrique","Bouche → creux épigastrique × 1,5","Nez → manubrium sternal + 10 cm"],
+ correct:1,exp_ok:"La mesure narine → oreille → creux épigastrique donne la longueur pour atteindre l'estomac.",exp_err:"La mesure NEX (nez-oreille-ombilic) est moins précise que la mesure nez-oreille-épigastre.",rule:"<strong>Mesure : narine → oreille → creux épigastrique.</strong>",xp:10},
+
+{cat:"Installation",q:"Quelle position adoptez-vous pour insérer la SNG d'un patient conscient et coopératif ?",
+ choices:["Décubitus dorsal strict pour un meilleur accès","Semi-assise 45°, menton rentré vers la poitrine","Assis à 90°, tête en hyper-extension","Semi-assise 45°, tête en hyper-extension"],
+ correct:1,exp_ok:"Semi-assise 45° + menton rentré ferme le larynx et ouvre l'œsophage. L'hyper-extension ouvrirait le larynx et favoriserait la fausse route.",exp_err:"L'hyper-extension est contre-productive : elle ouvre le larynx. Le menton doit être RENTRÉ.",rule:"<strong>Semi-assise 45° + menton rentré (ferme le larynx).</strong>",xp:12},
+
+{cat:"Technique",q:"À quel moment demandez-vous au patient de déglutir lors de l'insertion ?",
+ choices:["Dès le début, dans la narine","Au passage du carrefour pharyngé, vers 15 cm","Juste avant d'atteindre le repère final","À chaque centimètre pour faciliter la progression"],
+ correct:1,exp_ok:"Au passage du carrefour pharyngé (~15 cm), la déglutition ferme le larynx et ouvre l'œsophage, permettant le passage de la sonde.",exp_err:"La déglutition n'est utile que spécifiquement au passage pharyngé, pas en continu.",rule:"<strong>Déglutition demandée au passage pharyngé (~15 cm).</strong>",xp:10},
+
+{cat:"Vérification initiale",q:"Quelle est la méthode recommandée en 2023 pour vérifier la position initiale d'une SNG ?",
+ choices:["Whoosh test (injection d'air + auscultation épigastrique)","Aspiration de liquide gastrique + pH < 5, ou radiographie","Immersion de l'extrémité externe dans un verre d'eau","Test de buée sur un miroir posé devant l'embout externe"],
+ correct:1,exp_ok:"pH < 5 du liquide aspiré confirme la position gastrique. En cas de doute ou d'impossibilité d'aspiration : radiographie (gold standard). Le whoosh test ne doit plus être utilisé seul.",exp_err:"Le whoosh test est obsolète pour la vérification initiale. Immersion et buée sont des tests archaïques sans valeur scientifique.",rule:"<strong>Vérification initiale : pH &lt; 5 ou radio. Whoosh test seul = obsolète.</strong>",xp:15},
+
+{cat:"Interprétation pH",q:"Vous aspirez du liquide et obtenez un pH de 4. Que faites-vous ?",
+ choices:["Contacter le médecin — pH trop acide, signe de complication","Utiliser la sonde — pH < 5 confirme la position gastrique","Réaspirer pour confirmer — un seul résultat est insuffisant","Réaliser une radiographie de contrôle obligatoire"],
+ correct:1,exp_ok:"pH < 5 = suc gastrique acide = position gastrique confirmée. Vous pouvez utiliser la sonde.",exp_err:"Un pH de 4 est parfaitement normal pour le suc gastrique (pH normal : 1-3). Aucune inquiétude.",rule:"<strong>pH &lt; 5 → position gastrique confirmée → utiliser la sonde.</strong>",xp:12},
+
+{cat:"Contre-indications",q:"Quelle contre-indication absolue empêche toute tentative de pose de SNG par voie nasale ?",
+ choices:["Epistaxis légère","Prothèse dentaire","Fracture de la base du crâne","Rhinite chronique"],
+ correct:2,exp_ok:"Fracture de la base du crâne = contre-indication absolue. La sonde peut passer par la lame criblée de l'ethmoïde et pénétrer dans le cerveau.",exp_err:"L'épistaxis légère et la rhinite sont des précautions, pas des contre-indications absolues. Les prothèses sont retirées avant le soin.",rule:"<strong>Fracture base du crâne = contre-indication absolue pour voie nasale.</strong>",xp:12},
+
+{cat:"Complications",q:"Pendant la pose, le patient se met à tousser violemment et sa saturation chute. Que faites-vous ?",
+ choices:["Faire avaler de l'eau pour faciliter le passage","Maintenir la sonde en place et attendre que la toux cesse","Retirer immédiatement la sonde — signe de fausse route trachéale","Avancer rapidement pour sortir de la zone de toux"],
+ correct:2,exp_ok:"Toux violente + désaturation = fausse route trachéale. Retrait immédiat obligatoire. Ne jamais forcer ni avancer.",exp_err:"Faire avaler de l'eau avec une sonde en position trachéale provoquerait une inhalation massive. Avancer aggraverait la situation.",rule:"<strong>Toux + désaturation = retrait immédiat de la sonde.</strong>",xp:15},
+
+{cat:"Surveillance",q:"Quelle vérification est indispensable avant chaque alimentation entérale par SNG ?",
+ choices:["Aucune — la sonde posée hier est forcément en place","Vérifier visuellement que le repère indélébile est à la bonne position","Réaliser une radio de contrôle avant chaque alimentation","Réinjecter de l'air et ausculter avant chaque repas"],
+ correct:1,exp_ok:"Contrôle visuel du repère avant chaque utilisation. En cas de suspicion de déplacement → pH ou radio. Jamais d'alimentation sans vérification.",exp_err:"La radio n'est pas nécessaire avant chaque alimentation. Le repère visuel suffit en l'absence de signe de déplacement.",rule:"<strong>Avant chaque utilisation : vérifier visuellement le repère.</strong>",xp:10},
+
+{cat:"Durée",q:"Une SNG en PVC d'aspiration peut être maintenue au maximum ?",
+ choices:["7 jours","15 jours","3 à 4 jours","30 jours"],
+ correct:2,exp_ok:"Sonde PVC max 3-4 jours. Le PVC durcit au contact de l'acidité gastrique et peut provoquer des ulcérations muqueuses.",exp_err:"30 jours = sonde nutrition silicone/polyuréthane. Une sonde PVC laissée 15 jours serait dangereuse.",rule:"<strong>PVC = 3-4 jours max. Silicone/polyuréthane = 30 jours max.</strong>",xp:10},
+
+{cat:"Position pendant nutrition",q:"Quelle position le patient doit-il maintenir pendant la nutrition entérale et dans les 2h qui suivent ?",
+ choices:["Décubitus dorsal — plus confortable et sans risque","Position latérale droite — favorise la vidange gastrique","Semi-assise à au moins 30-45° — prévient l'inhalation","Assis au bord du lit — optimise la gravité"],
+ correct:2,exp_ok:"Position semi-assise 30-45° pendant et 2h après la nutrition entérale pour prévenir le reflux gastro-œsophagien et l'inhalation.",exp_err:"Le décubitus dorsal favorise le reflux et l'inhalation de liquide entéral — complication potentiellement mortelle.",rule:"<strong>Nutrition entérale : semi-assise 30-45° pendant + 2h après.</strong>",xp:10},
+
+{cat:"Obstruction",q:"Comment prévenez-vous l'obstruction d'une SNG de nutrition ?",
+ choices:["Laisser couler en continu sans jamais s'arrêter","Rincer avec 20-30 mL d'eau avant et après chaque utilisation","Changer la sonde toutes les 48h","Utiliser uniquement des médicaments liquides"],
+ correct:1,exp_ok:"Rinçage systématique 20-30 mL d'eau avant et après chaque utilisation (alimentation, médicaments). Ce rinçage est la principale prévention de l'obstruction.",exp_err:"Le changement toutes les 48h est excessif. Les médicaments en poudre peuvent effectivement boucher mais le rinçage reste la mesure préventive clé.",rule:"<strong>Rinçage 20-30 mL avant et après chaque utilisation = prévention de l'obstruction.</strong>",xp:10},
+
+{cat:"Traçabilité",q:"Quelle information est indispensable à noter dans le dossier après la pose ?",
+ choices:["Type de sonde uniquement","Date et heure de pose seulement","Type, calibre, narine, repère en cm, méthode de vérification et résultat, signature","Type de sonde et pH mesuré uniquement"],
+ correct:2,exp_ok:"Toutes ces informations sont indispensables. Le repère en cm permet les vérifications ultérieures. La méthode et le résultat de vérification tracent la sécurité du soin.",exp_err:"Tracer uniquement une partie des informations laisse les collègues sans référence pour la surveillance quotidienne.",rule:"<strong>Tracer : type + calibre + narine + repère cm + vérification + résultat + signature.</strong>",xp:10},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE SURVIE — Questions pièges
+══════════════════════════════════════════════════ */
+const Q_SURVIVAL = [
+{cat:"Piège — Whoosh test",
+ q:"Vous venez de poser une SNG. Votre collègue dit : 'Fais le whoosh test, on l'a toujours fait comme ça et ça marche bien'. Vous ?",
+ choices:["Faites le whoosh test — c'est une technique fiable et rapide","Faites le whoosh test en complément du pH — les deux ensemble sont suffisants","Refusez — le whoosh test ne doit plus être utilisé seul pour la vérification initiale ; vous mesurez le pH ou demandez une radio","Faites le whoosh test uniquement car la radio irradie inutilement"],
+ correct:2,exp_ok:"Le whoosh test est obsolète pour la vérification initiale. Des sons d'auscultation peuvent être entendus même si la sonde est dans les voies respiratoires. Des accidents graves sont documentés. La recommandation actuelle : pH < 5 ou radio.",exp_err:"L'habitude professionnelle ne valide pas une technique. Le whoosh test + pH ensemble présentent encore un risque car l'auscultation peut faussement rassurer.",rule:"<strong>Whoosh test seul = obsolète pour vérification initiale. pH < 5 ou radio.</strong>",xp:25},
+
+{cat:"Piège — pH",
+ q:"Vous aspirez et obtenez un pH de 5,5. Votre collègue dit : 'C'est quasiment 5, pose le repère et commence l'alimentation'. Vous ?",
+ choices:["Démarrez l'alimentation — 5,5 est très proche de 5, c'est acceptable","Démarrez en surveillant bien — le seuil de 5 est théorique","Ne démarrez pas — un pH entre 5 et 6 est douteux, il faut contacter le médecin et discuter d'une radio","Réaspirez 5 fois et prenez la moyenne des résultats"],
+ correct:2,exp_ok:"pH 5-6 = zone douteuse. Cela peut correspondre à un estomac peu acide (IPP, hypochlorhydrie) ou à une malposition. Ne jamais démarrer une alimentation entérale sur un pH douteux.",exp_err:"'Très proche de 5' n'est pas une règle clinique. Un patient sous inhibiteurs de la pompe à protons (IPP) peut avoir un pH gastrique de 5-7 même avec la sonde en bonne position — c'est pourquoi la radio reste le gold standard.",rule:"<strong>pH 5-6 = douteux → pas d'alimentation → médecin + radio.</strong>",xp:25},
+
+{cat:"Piège — Position",
+ q:"Une patiente de 85 ans, très fatiguée, refuse de s'asseoir pour la pose. Vous la posez en décubitus dorsal. Le risque principal est ?",
+ choices:["Aucun risque majeur si la technique est correcte","Risque de mauvaise mesure seulement","Risque élevé de fausse route trachéale car la tête n'est pas penchée en avant et le larynx est ouvert","Risque d'obstruction de la sonde pendant la pose"],
+ correct:2,exp_ok:"En décubitus dorsal, la tête est en position neutre ou légèrement en extension, ce qui ouvre le larynx et favorise la fausse route. La position demi-assise + menton rentré est indispensable pour la sécurité.",exp_err:"La fatigue du patient ne justifie pas de compromettre la sécurité. Adapter la position (décubitus semi-incliné à 30-45°) est toujours possible.",rule:"<strong>Décubitus dorsal = larynx ouvert = fausse route favorisée. Semi-assise + menton rentré obligatoire.</strong>",xp:20},
+
+{cat:"Piège — Alimentation sans vérification",
+ q:"Vous arrivez en salle et démarrez la nutrition entérale sans vérifier le repère car l'infirmière de nuit vous a dit 'tout va bien'. Vous commettez ?",
+ choices:["Aucune erreur — la transmission orale de l'infirmière de nuit est fiable","Une légère négligence acceptable en pratique courante","Une erreur grave — toute alimentation entérale nécessite une vérification visuelle du repère avant de commencer","Une erreur acceptable en dehors des premières heures post-pose"],
+ correct:2,exp_ok:"Chaque soignant est responsable de sa vérification avant utilisation. La sonde peut s'être déplacée pendant la nuit (toux, vomissement). Alimenter dans une sonde malpositionné peut être fatal.",exp_err:"La transmission orale n'engage pas votre responsabilité de vérification. 'Tout va bien' de la collègue ne remplace pas votre contrôle avant alimentation.",rule:"<strong>Chaque soignant vérifie le repère avant utilisation. Transmission orale = insuffisante.</strong>",xp:20},
+
+{cat:"Piège — Contre-indication",
+ q:"Le médecin vous demande de poser une SNG chez un patient avec varices oesophagiennes connues mais non hémorragiques. Vous ?",
+ choices:["Posez la sonde — elles ne saignent pas actuellement","Posez avec une sonde très fine pour minimiser le traumatisme","Contacter le médecin pour discuter de la contre-indication et de l'alternative","Posez par voie buccale (sonde orogastrique) sans risque"],
+ correct:2,exp_ok:"Les varices œsophagiennes sont une contre-indication à la SNG même quand elles ne saignent pas. Le passage de la sonde peut déclencher une rupture hémorragique. L'alternative (sonde orogastrique, gastrostomie) est décidée par le médecin.",exp_err:"Le diamètre de la sonde ne change pas le risque traumatique de passage contre les varices. La voie buccale passe aussi par l'œsophage.",rule:"<strong>Varices œsophagiennes = contre-indication SNG. Discuter alternative avec le médecin.</strong>",xp:25},
+
+{cat:"Piège — Durée sonde PVC",
+ q:"Le médecin ne prescrit pas de changement de la SNG PVC posée depuis 5 jours. Le patient ne se plaint de rien. Vous ?",
+ choices:["Attendez la prescription — vous ne changez pas sans ordre médical","Signalez au médecin que la durée limite de 3-4 jours est dépassée et discutez du changement","Changez sur votre rôle propre — le changement de SNG ne nécessite pas de prescription","Laissez encore quelques jours — 5 jours c'est encore raisonnable"],
+ correct:1,exp_ok:"5 jours sur PVC dépasse la limite. Le changement est en rôle propre mais il faut d'abord signaler au médecin pour décider du type de sonde à utiliser désormais (PVC si aspiration courte encore, ou nutrition si indication change). La communication est indispensable.",exp_err:"Changer sans prévenir le médecin serait correct techniquement mais interrompt la communication sur l'indication. Signaler d'abord, changer en concertation.",rule:"<strong>PVC > 3-4j = signaler médecin + changer en concertation. Changement = rôle propre mais communication médicale indispensable.</strong>",xp:20},
+
+{cat:"Piège — Obstruction",
+ q:"La SNG est bouchée. Vous essayez de pousser 50 mL d'eau sous pression avec la seringue pour la déboucher. C'est ?",
+ choices:["Correct — c'est la technique standard de désobstruction","Acceptable si on pousse doucement et progressivement","Dangereux — forcer peut perforer la sonde ou projeter un bouchon alimentaire dans l'estomac sous pression, risque d'inhalation","Acceptable uniquement pour l'eau, pas pour l'alimentation"],
+ correct:2,exp_ok:"Ne jamais forcer sur une sonde bouchée. Essayer une aspiration douce d'abord, puis eau tiède, puis produit enzymatique (selon protocole). Forcer peut perforer la sonde, projeter le contenu et provoquer une inhalation.",exp_err:"'Doucement' ne neutralise pas le risque. Une obstruction = aspiration douce → eau tiède → protocole établissement → si échec : changer la sonde.",rule:"<strong>Sonde bouchée : aspiration douce → eau tiède. Jamais forcer.</strong>",xp:20},
+
+{cat:"Piège — Mesure",
+ q:"Un étudiant utilise la mesure nez → oreille → ombilic pour estimer la longueur de la SNG. L'erreur est ?",
+ choices:["Il n'y a pas d'erreur — cette mesure est équivalente","Il mesure trop court — la sonde s'arrêtera dans l'œsophage","Il mesure trop long — la sonde ira trop loin dans le duodénum voire le jéjunum","La mesure est approximativement la même, l'ombilic ou l'épigastre donnent des résultats similaires"],
+ correct:2,exp_ok:"Nez-oreille-ombilic donne une longueur trop grande. La sonde dépasse l'estomac et se retrouve dans le duodénum ou le jéjunum. La mesure correcte est nez-oreille-creux épigastrique.",exp_err:"L'écart entre épigastre et ombilic représente plusieurs centimètres — la différence n'est pas négligeable pour le positionnement.",rule:"<strong>Mesure correcte = nez → oreille → creux épigastrique. L'ombilic est trop distal.</strong>",xp:20},
+
+{cat:"Piège — Fracture base du crâne",
+ q:"En urgence, un patient traumatisé crânien a besoin d'une SNG. Le scanner n'est pas encore disponible. Votre chef dit 'vas-y, on n'a pas le choix'. Vous ?",
+ choices:["Posez la SNG — l'ordre du chef vous protège médicalement","Posez la SNG par voie buccale pour éviter le risque crânien","Refusez de poser sans information sur l'existence ou non d'une fracture de la base du crâne — discutez avec le médecin d'une voie orogastrique en attendant","Posez la SNG très doucement pour minimiser le risque"],
+ correct:2,exp_ok:"Sans confirmation de l'absence de fracture de la base du crâne, la voie nasale est dangereuse. La sonde orogastrique (par la bouche) est une alternative sûre. L'ordre d'un chef ne vous protège pas d'une faute si vous agissez contre une règle de sécurité connue.",exp_err:"Aucune vitesse ou douceur de geste ne protège contre le passage intracrânien si la lame criblée est fracturée.",rule:"<strong>TCG sans scanner = risque fracture base crâne → préférer voie orogastrique → discuter avec médecin.</strong>",xp:25},
+
+{cat:"Piège — Vomissements pendant nutrition",
+ q:"Votre patient vomit pendant la nutrition entérale. Vous arrêtez la pompe. Que faites-vous ensuite ?",
+ choices:["Remettre la nutrition dès que les vomissements cessent","Vérifier le repère de la sonde + aspirer pour vérifier le pH avant de reprendre","Surélever simplement la tête de lit et reprendre la nutrition 30 min après","Mettre le patient en décubitus dorsal pour l'examiner avant de reprendre"],
+ correct:1,exp_ok:"Les vomissements peuvent déplacer la sonde. Avant toute reprise de la nutrition, vérifier le repère visuel et si doute → aspiratin + pH. Reprendre sans vérification expose au risque d'inhalation.",exp_err:"30 minutes d'attente ne garantissent pas que la sonde est toujours en place. Le décubitus dorsal aggrave le risque d'inhalation.",rule:"<strong>Vomissements = vérifier repère + pH avant de reprendre la nutrition.</strong>",xp:20},
+];
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn',questions=[],qi=0;
+let xp=0,streak=0,bestStreak=0,correct=0,wrong=0,lives=3;
+let timerInterval=null,timeLeft=30,totalTime=0,answered=false;
+let catScores={},errors=[],score=100;
+
+function selectMode(m,btn){
+  document.querySelectorAll('.mode-card').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  xp=0;streak=0;bestStreak=0;correct=0;wrong=0;lives=3;totalTime=0;answered=false;
+  catScores={};errors=[];score=100;qi=0;
+  if(mode==='learn'){
+    questions=[...STEPS];
+    document.getElementById('tb-mode').textContent='📚 Apprentissage';
+    document.getElementById('lives-pill').style.display='none';
+  } else if(mode==='exam'){
+    questions=[...Q_EXAM].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='📝 Examen';
+    document.getElementById('lives-pill').style.display='none';
+  } else {
+    questions=[...Q_SURVIVAL].sort(()=>Math.random()-0.5);
+    document.getElementById('tb-mode').textContent='💀 Survie';
+    document.getElementById('lives-pill').style.display='flex';
+    document.getElementById('lives-n').textContent=3;
+  }
+  showScreen('s-quiz');loadQ();
+}
+
+function loadQ(){
+  if(qi>=questions.length){showResult();return;}
+  const q=questions[qi];answered=false;
+  const total=questions.length;
+  document.getElementById('tb-pf').style.width=(qi/total*100)+'%';
+  document.getElementById('exp-box').classList.remove('show','ok','err');
+  document.getElementById('next-btn').classList.remove('show');
+  if(mode==='learn')loadStep(q);
+  else loadStdQ(q);
+  startTimer();
+}
+
+function loadStep(step){
+  const total=questions.length;
+  document.getElementById('ctx-box').style.display='flex';
+  document.getElementById('ctx-ico').textContent=step.icon;
+  document.getElementById('ctx-sub').textContent=`Étape ${step.num} sur ${total}`;
+  document.getElementById('ctx-title').textContent=step.title;
+  document.getElementById('ctx-body').innerHTML=`${step.what}<br><span style="display:block;margin-top:6px;font-size:11px;color:rgba(255,255,255,0.55);font-style:normal">⚠️ ${step.why}</span>`;
+  document.getElementById('tb-ql').textContent=`Étape ${qi+1}/${total}`;
+  document.getElementById('q-num').textContent=`${qi+1}`;
+  document.getElementById('q-cat').textContent=step.cat;
+  document.getElementById('q-illus').innerHTML=step.svg?`<div class="q-illus">${step.svg}</div>`:'';
+  document.getElementById('q-text').innerHTML=`<span style="display:block;font-size:12px;color:var(--text3);font-family:'Plus Jakarta Sans',sans-serif;font-style:normal;margin-bottom:8px">✅ Question de validation :</span>${step.q}`;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=step.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${step.choices[i]}`;
+    b.onclick=()=>answerStep(i,b,step);ch.appendChild(b);
+  });
+  if(!catScores[step.cat])catScores[step.cat]={c:0,t:0};catScores[step.cat].t++;
+  const nb=document.getElementById('next-btn');
+  nb.textContent=qi===total-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${total}`;
+}
+
+function answerStep(idx,btn,step){
+  if(answered)return;answered=true;
+  const ok=idx===step.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===step.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=8*(streak>=3?2:1);xp+=e;catScores[step.cat].c++;floatXP(e,streak>=3);
+    showExp('ok','✅','Correct !',`<strong>À retenir :</strong> ${step.rule}`);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-10);
+    errors.push({q:step.title,correct:step.choices[step.correct]});
+    showExp('err','❌','Attention',`Bonne réponse : <strong>${step.choices[step.correct]}</strong><br><br><strong>À retenir :</strong> ${step.rule}`);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function loadStdQ(q){
+  document.getElementById('ctx-box').style.display='none';
+  document.getElementById('tb-ql').textContent=`Q${qi+1}/${questions.length}`;
+  document.getElementById('q-num').textContent=`Q${qi+1}`;
+  document.getElementById('q-cat').textContent=q.cat;
+  document.getElementById('q-illus').innerHTML='';
+  document.getElementById('q-text').innerHTML=q.q;
+  const ch=document.getElementById('choices');ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    if(i>=q.choices.length)return;
+    const b=document.createElement('button');b.className='choice';
+    b.innerHTML=`<span class="c-ltr">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>answerQ(i,b,q);ch.appendChild(b);
+  });
+  if(!catScores[q.cat])catScores[q.cat]={c:0,t:0};catScores[q.cat].t++;
+  document.getElementById('next-btn').textContent='Suivant →';
+}
+
+function answerQ(idx,btn,q){
+  if(answered)return;answered=true;clearInterval(timerInterval);
+  const ok=idx===q.correct;
+  document.querySelectorAll('.choice').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.correct){b.classList.add('correct');b.innerHTML+=`<span class="c-tag c">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('wrong');b.innerHTML+=`<span class="c-tag w">✗</span>`;}
+  });
+  if(ok){
+    correct++;streak++;if(streak>bestStreak)bestStreak=streak;
+    const e=(q.xp||10)*(streak>=3?2:1);xp+=e;catScores[q.cat].c++;floatXP(e,streak>=3);
+    if(mode==='learn')showExp('ok','✅','Bonne réponse !',q.exp_ok,q.rule);
+  } else {
+    wrong++;streak=0;score=Math.max(0,score-15);
+    errors.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),correct:q.choices[q.correct]});
+    if(mode==='survival'){lives--;document.getElementById('lives-n').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}
+    if(mode==='learn')showExp('err','❌','Erreur',q.exp_err,q.rule);
+  }
+  updateUI();document.getElementById('next-btn').classList.add('show');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('exp-box');eb.classList.add('show',type);
+  document.getElementById('exp-ico').textContent=ico;
+  const et=document.getElementById('exp-ttl');et.textContent=title;et.className='exp-title '+type;
+  document.getElementById('exp-body').innerHTML=body;
+  const er=document.getElementById('exp-rule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  let dur=0;
+  if(mode==='exam')dur=30;
+  else if(mode==='survival')dur=25;
+  if(!dur){document.getElementById('tw').style.display='none';timerInterval=setInterval(()=>totalTime++,1000);return;}
+  timeLeft=dur;document.getElementById('tw').style.display='block';
+  const arc=document.getElementById('t-arc'),num=document.getElementById('t-num');
+  arc.style.stroke='var(--teal)';num.className='t-num';arc.style.strokeDashoffset='0';
+  timerInterval=setInterval(()=>{
+    timeLeft--;totalTime++;
+    arc.style.strokeDashoffset=((dur-timeLeft)/dur*220);
+    num.textContent=timeLeft;
+    if(timeLeft<=8){num.classList.add('warn');arc.style.stroke='var(--red)';}
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      if(!answered){
+        answered=true;wrong++;score=Math.max(0,score-15);
+        document.querySelectorAll('.choice').forEach((b,i)=>{b.disabled=true;if(i===questions[qi].correct)b.classList.add('missed');});
+        updateUI();document.getElementById('next-btn').classList.add('show');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('streak-n').textContent=streak;
+  document.getElementById('xp-n').textContent=xp;
+  document.getElementById('sc').textContent=correct;
+  document.getElementById('sw').textContent=wrong;
+  document.getElementById('score-n').textContent=score;
+  document.getElementById('streak-pill').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xp-float';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:24px;top:62px;font-size:${d?16:13}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(timerInterval);
+  const total=questions.length;
+  const note=Math.max(0,Math.round((correct/total)*20));
+  const modeLabels={learn:'📚 Apprentissage — 14 étapes dans l\'ordre',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges'};
+  const grades=[
+    {min:18,g:'🏆',m:'Excellent — Protocole maîtrisé',bc:'#ecfdf5',tc:'#059669',brd:'#6ee7b7'},
+    {min:14,g:'✅',m:'Bien — Bonne maîtrise',bc:'#ecfeff',tc:'#0e7490',brd:'#a5f3fc'},
+    {min:10,g:'⚠️',m:'Passable — À consolider',bc:'#fffbeb',tc:'#d97706',brd:'#fde68a'},
+    {min:0, g:'❌',m:'Insuffisant — Révision nécessaire',bc:'#fef2f2',tc:'#dc2626',brd:'#fca5a5'}
+  ];
+  const gd=grades.find(x=>note>=x.min);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsub').textContent=`${total} questions · ${correct} correctes · ${wrong} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.m;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.brd};border-radius:30px;padding:7px 18px;font-size:13px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmode').textContent=modeLabels[mode];
+  document.getElementById('rs-xp').textContent=xp;
+  document.getElementById('rs-streak').textContent=bestStreak;
+  document.getElementById('rs-time').textContent=total?Math.round(totalTime/total)+'s':'0s';
+  document.getElementById('rs-score').textContent=score;
+  const bd=document.getElementById('bd-items');bd.innerHTML='';
+  Object.entries(catScores).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#d97706':'#dc2626';
+    bd.innerHTML+=`<div class="bd-item"><div class="bd-dot" style="background:${c}"></div><div class="bd-lbl">${cat}</div><div class="bd-bar-bg"><div class="bd-bar-fill" style="width:${p}%;background:${c}"></div></div><div class="bd-score" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById('errors-box');
+  if(errors.length){
+    eb.style.display='block';
+    document.getElementById('errors-list').innerHTML=errors.slice(0,5).map(e=>
+      `<div class="error-item"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:2px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--text3)">→ ${e.correct}</div></div></div>`
+    ).join('');
+  } else eb.style.display='none';
+  const cons=[];
+  if(mode==='learn'&&note>=16)cons.push("📝 Bon protocole assimilé. Passez au mode Examen pour vous tester sans aide.");
+  if(mode==='exam'&&note>=16)cons.push("💀 Excellent ! Le mode Survie vous attend — des pièges sur le whoosh test, le pH et les contre-indications.");
+  if(mode==='survival'&&note>=18)cons.push("🏆 Maîtrise experte de la SNG. Passez au prochain protocole NurseSimPro.");
+  if(note<10)cons.push("📚 Recommencez par le mode Apprentissage. Insistez sur les étapes de vérification de position — c'est le point le plus critique.");
+  if(note>=10&&note<18)cons.push("🔄 Recommencez jusqu'au 18/20. Concentrez-vous sur la vérification initiale (pH < 5 ou radio) et les contre-indications absolues.");
+  Object.entries(catScores).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=0.6)return;
+    if(cat.includes('érif')||cat.includes('pH'))cons.push("🔬 Point critique : le whoosh test est obsolète pour la vérification initiale. pH < 5 ou radiographie.");
+    if(cat.includes('ontre'))cons.push("🚫 Mémoriser les contre-indications : fracture base du crâne, varices œsophagiennes, ingestion caustique, sténose.");
+    if(cat.includes('urée')||cat.includes('PVC'))cons.push("📅 Durées : PVC max 3-4 jours. Silicone/polyuréthane max 30 jours.");
+    if(cat.includes('esure'))cons.push("📏 Mesure : narine → oreille → creux épigastrique. Pas l'ombilic.");
+    if(cat.includes('urveil'))cons.push("👁️ Surveiller le repère visuel avant chaque utilisation. Vomissements = re-vérification.");
+  });
+  if(!cons.length)cons.push("🎯 Excellent résultat sur tous les axes. Niveau professionnel atteint sur ce protocole.");
+  document.getElementById('conseils-list').innerHTML=cons.map(c=>`<div class="conseil-item">${c}</div>`).join('');
+  showScreen('s-result');
+}
+
+function restart(){launch();}
+function goWelcome(){showScreen('s-welcome');}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('next-btn').classList.contains('show'))nextQ();});
+</script>
+</body>
+</html>

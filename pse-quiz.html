@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Pousse-Seringue Électrique</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f1117;--bg2:#181b24;--bg3:#1f2330;--card:#242838;--card2:#2c3144;
+  --bl:#3b82f6;--bld:#1d4ed8;--bll:#1e3a5f;--blm:#60a5fa;
+  --tl:#06b6d4;--tll:#083344;--tlm:#22d3ee;
+  --gr:#10b981;--grl:#052e16;--grm:#34d399;
+  --rd:#ef4444;--rdl:#450a0a;--rdm:#f87171;
+  --or:#f59e0b;--orl:#451a03;--orm:#fbbf24;
+  --pu:#8b5cf6;--pul:#2e1065;--pum:#a78bfa;
+  --text:#f1f5f9;--t2:#94a3b8;--t3:#475569;
+  --bd:#2d3748;--bd2:#374151;
+  --sh:0 4px 24px rgba(0,0,0,.4);--shm:0 8px 40px rgba(0,0,0,.6);
+}
+html,body{min-height:100vh;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes glow{0%,100%{box-shadow:0 0 8px var(--gr)}50%{box-shadow:0 0 22px var(--gr),0 0 44px var(--gr)}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+.hdr{background:var(--card);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hl{display:flex;align-items:center;gap:10px}
+.hico{width:36px;height:36px;background:linear-gradient(135deg,var(--bl),var(--tl));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 2px 12px rgba(59,130,246,.4)}
+.hn{font-size:14px;font-weight:700;color:var(--text)}.hs{font-size:10px;color:var(--t2)}
+.hbadge{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:700;letter-spacing:.5px}
+/* WELCOME */
+.wb{max-width:820px;margin:0 auto;padding:26px 18px 56px;animation:up .4s ease}
+.hero{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--bd);border-radius:18px;padding:22px;margin-bottom:20px;box-shadow:var(--sh);display:flex;gap:16px;align-items:center}
+.hero-ico{font-size:42px;flex-shrink:0}
+.ht{font-family:'Playfair Display',serif;font-size:20px;color:var(--blm);margin-bottom:4px}
+.hd{font-size:12.5px;color:var(--t2);line-height:1.65}
+.alert{background:linear-gradient(135deg,#1a0a0a,var(--rdl));border:1.5px solid var(--rdm);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.ar{display:flex;gap:10px;align-items:flex-start}
+.ai{font-size:20px;flex-shrink:0;margin-top:1px}
+.at{font-size:12px;font-weight:700;color:var(--rdm);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.al{list-style:none}
+.al li{font-size:11.5px;color:#fca5a5;display:flex;gap:6px;align-items:flex-start;line-height:1.55;margin-bottom:3px}
+.al li::before{content:'⚠';font-size:10px;flex-shrink:0;margin-top:1px;color:var(--rdm)}
+.formula-box{background:var(--card2);border:1px solid var(--bd2);border-radius:12px;padding:14px 16px;margin-bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.formula-box{grid-template-columns:1fr}}
+.fc{background:var(--card);border-radius:10px;padding:11px 13px;border:1px solid var(--bd)}
+.fc-t{font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:var(--t2);font-weight:700;margin-bottom:6px}
+.fc-f{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--blm);line-height:1.6}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.stc{background:var(--card2);border:1px solid var(--bd);border-radius:11px;padding:12px;text-align:center}
+.stv{font-size:19px;font-weight:800;margin-bottom:2px}.stl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:540px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--card);border:1.5px solid var(--bd);border-radius:14px;padding:17px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--mc,var(--bl));opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--bl));box-shadow:0 0 0 1px var(--mc,var(--bl)),var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc-ico{font-size:24px;margin-bottom:8px;display:block}.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid;font-family:'JetBrains Mono',monospace}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'→';color:var(--mc,var(--bl));font-weight:700;flex-shrink:0}
+.launch{width:100%;padding:15px;background:linear-gradient(135deg,var(--bl),var(--tl));border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;box-shadow:0 4px 20px rgba(59,130,246,.4)}
+.launch:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(59,130,246,.6)}
+/* FICHE */
+.fb{max-width:820px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:15px 20px;margin-bottom:15px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'Playfair Display',serif;color:var(--blm)}
+.fsub{font-size:10.5px;color:var(--t2);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;font-size:10.5px;font-weight:600;cursor:pointer;color:var(--t2);font-family:'Outfit',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--bl);color:var(--blm)}
+.ftab.on{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--tl);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--tll)}
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+@media(max-width:480px){.mg2{grid-template-columns:1fr}}
+.mi{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--t2);line-height:1.5}
+.mi-ico{font-size:15px;flex-shrink:0}
+.mi.crit{background:var(--rdl);border-color:var(--rdm)}.mi.crit .mt{color:var(--rdm)}
+.mi.warn{background:var(--orl);border-color:var(--orm)}.mi.warn .mt{color:var(--orm)}
+.mi.ok{background:var(--grl);border-color:var(--grm)}.mi.ok .mt{color:var(--grm)}
+/* boutons PSE */
+.btn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:480px){.btn-grid{grid-template-columns:1fr 1fr}}
+.btn-card{background:var(--card);border-radius:10px;padding:11px;text-align:center;border:1px solid var(--bd);transition:border-color .2s}
+.btn-ico{font-size:22px;margin-bottom:5px}
+.btn-name{font-size:10.5px;font-weight:700;color:var(--text);margin-bottom:3px}
+.btn-desc{font-size:10px;color:var(--t2);line-height:1.45}
+/* alarmes */
+.alist{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.alarm{background:var(--card);border-radius:10px;padding:10px 13px;display:flex;align-items:flex-start;gap:10px;border-left:3px solid}
+.alarm-ico{font-size:18px;flex-shrink:0}
+.alarm-name{font-size:11.5px;font-weight:700;margin-bottom:2px}
+.alarm-desc{font-size:11px;color:var(--t2);line-height:1.5}
+/* steps */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px}
+.sc2{background:var(--card);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:7px}
+.sc2.crit{border-color:var(--rdm);border-left:3px solid var(--rdm)}
+.sc2.att{border-color:var(--orm);border-left:3px solid var(--orm)}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--card2)}
+.sn2{width:24px;height:24px;border-radius:6px;background:var(--bll);border:1px solid var(--bl);color:var(--blm);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'JetBrains Mono',monospace}
+.sc2.crit .sn2{background:var(--rdl);border-color:var(--rd);color:var(--rdm)}
+.sc2.att .sn2{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.si2{flex:1}.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--rdl);border-color:var(--rdm);color:var(--rdm)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--orm)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pum)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc2.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc2.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--pum);line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--or);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--orm);line-height:1.6}
+.serr{background:var(--rdl);border:1px solid var(--rdm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--rdm);line-height:1.55;margin-top:6px}
+.scons{background:var(--bll);border:1px solid var(--bl);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--blm);line-height:1.55;margin-top:6px}
+/* memo */
+.memo{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.8;margin-bottom:10px}
+.mh{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg3);padding:2px 6px;border-radius:4px;color:var(--blm)}
+/* QUIZ */
+#stb{background:var(--card);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-b{width:26px;height:26px;background:linear-gradient(135deg,var(--bl),var(--tl));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-t{font-size:12px;font-weight:700;color:var(--blm)}
+.tbm{background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--bl),var(--tl));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--or);color:var(--orm)}
+.pst{background:var(--bll);border-color:var(--bl);color:var(--blm)}
+.pst.hot{background:var(--orl);border-color:var(--or);color:var(--orm);animation:blink 1s infinite}
+.plv{background:var(--rdl);border-color:var(--rd);color:var(--rdm)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bd2);stroke-width:3.5}
+.tia{fill:none;stroke:var(--bl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--rdm)}
+#qb{flex:1;padding:16px;max-width:700px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--bld),var(--bll));border:1px solid var(--bl);border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease;box-shadow:0 0 30px rgba(59,130,246,.15)}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.08);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:2px;opacity:.7}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px;color:var(--text)}
+.ctx-body{font-size:12px;color:var(--t2);line-height:1.65;font-family:'Playfair Display',serif;font-style:italic}
+.qcard{background:var(--card);border:1px solid var(--bd);border-radius:15px;padding:18px 20px;margin-bottom:11px;animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--bll);border:1px solid var(--bl);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--blm)}
+.qct{font-size:9.5px;font-weight:700;color:var(--blm);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.qtext{font-family:'Playfair Display',serif;font-size:16px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--blm)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card2);border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'Outfit',sans-serif;line-height:1.5;transition:all .15s}
+.ch:hover:not(:disabled){border-color:var(--bl);background:var(--bll);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg3);border:1px solid var(--bd2);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);font-family:'JetBrains Mono',monospace;transition:all .2s}
+.ch.ok2{background:var(--grl);border-color:var(--grm)}.ch.ok2 .cl{background:var(--gr);border-color:var(--gr);color:white}
+.ch.ko{background:var(--rdl);border-color:var(--rdm);animation:shake .4s ease}.ch.ko .cl{background:var(--rd);border-color:var(--rd);color:white}
+.ch.mis{background:var(--grl);border-color:var(--grm);opacity:.6}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--grl);color:var(--grm);border-color:var(--gr)}.ctag-ko{background:var(--rdl);color:var(--rdm);border-color:var(--rd)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--grl);border-color:var(--grm)}.expb.ko{background:var(--rdl);border-color:var(--rdm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--grm)}.exptt.ko{color:var(--rdm)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--bg3);border-left:3px solid var(--bl);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--blm)}
+.nxt{width:100%;padding:12px;background:linear-gradient(135deg,var(--bl),var(--tl));border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 12px rgba(59,130,246,.35)}
+.nxt.on{display:block}.nxt:hover{box-shadow:0 4px 20px rgba(59,130,246,.5)}
+#qft{background:var(--card);border-top:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fs2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fs2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--orm);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'JetBrains Mono',monospace}
+/* PSE SCREEN */
+.pse-screen{background:#081208;border:2px solid #1a3a1a;border-radius:14px;padding:16px;box-shadow:0 0 30px rgba(16,185,129,.12),inset 0 0 20px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.pse-screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(16,185,129,.02) 2px,rgba(16,185,129,.02) 4px);pointer-events:none}
+.pse-display{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.pse-field{text-align:center}
+.pse-label{font-size:9px;color:#4ade80;text-transform:uppercase;letter-spacing:2px;font-family:'JetBrains Mono',monospace;margin-bottom:4px;opacity:.7}
+.pse-value{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:600;color:#4ade80;text-shadow:0 0 10px rgba(74,222,128,.5);letter-spacing:2px;min-height:36px;display:flex;align-items:center;justify-content:center}
+.pse-value.hl{color:#22d3ee;text-shadow:0 0 15px rgba(34,211,238,.6);animation:glow 1.5s infinite}
+.pse-value.uv{color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,.5)}
+.pse-status{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #1a3a1a;padding-top:9px}
+.pse-st-txt{font-size:8.5px;color:#4ade80;font-family:'JetBrains Mono',monospace;opacity:.7;letter-spacing:1px}
+.pse-leds{display:flex;gap:5px}
+.led{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.led-on{background:#4ade80;box-shadow:0 0 6px #4ade80}.led-off{background:#1a3a1a}.led-al{background:#ef4444;box-shadow:0 0 6px #ef4444;animation:blink .5s infinite}
+/* PHARMA mode */
+#s-pharma{background:var(--bg)}
+.ph-hdr{background:var(--card);border-bottom:1px solid var(--bd);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.ph-left{display:flex;align-items:center;gap:10px}
+.ph-title{font-size:13px;font-weight:700;color:var(--blm)}
+.ph-prog{font-size:11px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.ph-right{display:flex;align-items:center;gap:8px}
+.ph-score{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+.ph-body{max-width:900px;margin:0 auto;padding:18px 18px 50px;display:flex;flex-direction:column;gap:16px}
+.diff-tabs{display:flex;gap:5px}
+.diff-tab{padding:5px 11px;border:1px solid var(--bd);border-radius:20px;background:transparent;font-size:10.5px;font-weight:600;cursor:pointer;color:var(--t2);font-family:'Outfit',sans-serif;transition:all .18s}
+.diff-tab.on{border-color:var(--bl);color:var(--blm);background:var(--bll)}
+/* exo card */
+.exo-card{background:var(--card);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-bottom:4px}
+.exo-hdr{padding:13px 18px;background:var(--card2);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.exo-badge{display:flex;align-items:center;gap:5px;border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;border:1px solid;flex-shrink:0}
+.exo-title{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.exo-num{font-size:10px;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.scenario{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin:13px 18px 0;font-size:12.5px;color:var(--t2);line-height:1.75}
+.scenario strong{color:var(--text)}
+.stag2{display:inline-block;background:var(--bll);color:var(--blm);border:1px solid var(--bl);border-radius:5px;padding:1px 7px;font-size:9.5px;font-weight:700;margin-right:4px;font-family:'JetBrains Mono',monospace}
+.pse-wrap{padding:13px 18px 0}
+.ans-zone{padding:12px 18px 16px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.ans-q{font-size:12.5px;font-weight:700;color:var(--blm);padding:0 18px 10px;display:block}
+.ans-iw{display:flex;align-items:center;gap:7px;flex:1;min-width:180px}
+.ans-in{background:var(--bg3);border:2px solid var(--bd2);border-radius:10px;padding:9px 13px;font-size:20px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;width:130px;text-align:center;outline:none;transition:all .2s}
+.ans-in:focus{border-color:var(--bl);box-shadow:0 0 0 3px rgba(59,130,246,.2)}
+.ans-in.correct{border-color:var(--gr);background:var(--grl);color:var(--grm)}
+.ans-in.wrong{border-color:var(--rd);background:var(--rdl);color:var(--rdm);animation:shake .4s ease}
+.ans-unit{font-size:13px;color:var(--t2);font-family:'JetBrains Mono',monospace;font-weight:600}
+.ans-btn{padding:10px 18px;background:linear-gradient(135deg,var(--bl),var(--tl));border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;white-space:nowrap}
+.ans-btn:hover{box-shadow:0 4px 16px rgba(59,130,246,.5)}.ans-btn:disabled{opacity:.5;cursor:not-allowed}
+.sol-btn{padding:9px 14px;background:transparent;border:1px solid var(--bd2);border-radius:10px;color:var(--t2);font-size:11.5px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.sol-btn:hover{border-color:var(--pu);color:var(--pum)}
+.sol-box{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:13px 15px;margin:0 18px 16px;display:none;animation:up .2s ease}
+.sol-box.show{display:block}
+.sol-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pum);margin-bottom:9px}
+.sol-step{font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:6px;padding-left:4px}
+.sol-step .mn{font-family:'JetBrains Mono',monospace;color:var(--blm);background:var(--bll);padding:1px 5px;border-radius:4px;font-size:11px}
+.sol-result{background:var(--pul);border:1px solid var(--pum);border-radius:8px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:700;color:var(--pum);margin-top:8px;text-align:center}
+.sol-conseil{background:var(--bll);border:1px solid var(--bl);border-radius:7px;padding:8px 12px;font-size:11px;color:var(--t2);line-height:1.6;margin-top:8px}
+/* RÉSULTAT */
+.rb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.rh{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:26px;text-align:center;margin-bottom:12px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.rh::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bl),var(--tl),var(--gr))}
+.rg{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rs{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'Playfair Display',serif}
+.rsb{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rmen{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--card);border:1px solid var(--bd);border-radius:11px;padding:13px;text-align:center}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bkd{background:var(--card);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:12px}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:12px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd3{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errb{background:var(--rdl);border:1px solid var(--rdm);border-radius:13px;padding:14px;margin-bottom:12px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rdm);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsb{background:var(--bll);border:1px solid var(--bl);border-radius:13px;padding:14px;margin-bottom:12px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--blm);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rbtn{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s}
+.rbp{background:linear-gradient(135deg,var(--bl),var(--tl));color:white;box-shadow:0 2px 12px rgba(59,130,246,.35)}.rbp:hover{box-shadow:0 4px 20px rgba(59,130,246,.5)}
+.rbs{background:var(--card);border:1.5px solid var(--bd);color:var(--text)}.rbs:hover{border-color:var(--bl)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+</style>
+</head>
+<body>
+<!-- WELCOME -->
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hl"><div class="hico">⚡</div><div><div class="hn">NurseSimPro</div><div class="hs">Formation infirmière premium</div></div></div>
+    <div class="hbadge">⚡ PSE — Pousse-Seringue Électrique</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">⚡</div>
+      <div>
+        <div class="ht">Pousse-Seringue Électrique (PSE / SAP)</div>
+        <div class="hd">Anatomie du PSE, boutons et fonctions, protocole complet de mise en route, alarmes et conduites à tenir, relais de seringue, et 15 exercices de pharmacologie clinique réels avec simulateur d'écran PSE. Sources : IFSI Troyes · Nomade Éducation · efurgences.net · Omédit Normandie · ANSM 2024.</div>
+      </div>
+    </div>
+    <div class="alert">
+      <div class="ar"><div class="ai">🚨</div>
+        <div><div class="at">6 règles absolues — erreur = mise en danger du patient</div>
+          <ul class="al">
+            <li><strong>Prescription médicale qualitative ET quantitative obligatoire</strong> — nom, dosage, solvant, débit ou durée, voie. (Art. R.4311-7)</li>
+            <li><strong>Jamais mélanger deux médicaments</strong> dans la même seringue ou tubulure — incompatibilités physico-chimiques graves.</li>
+            <li><strong>Étiquetage obligatoire avant la pose</strong> : nom + dosage + dilution + débit en mL/h + heure + initiales préparateur.</li>
+            <li><strong>Vérifier compatibilité solvant</strong> — Cordarone® = G5% uniquement. Toujours lire la notice.</li>
+            <li><strong>Relais anticipé pour médicaments critiques</strong> (vasopresseurs++) — préparer à ~10-15 mL restants, lancer AVANT d'arrêter l'ancienne seringue.</li>
+            <li><strong>Purge via bouton PSE uniquement</strong> — jamais pousser manuellement le piston (perte de précision de dose).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="fc"><div class="fc-t">🔢 Formule de base</div><div class="fc-f">Débit (mL/h) = Volume (mL) ÷ Durée (h)<br><br>Ex : 50 mL / 2h = 25 mL/h</div></div>
+      <div class="fc"><div class="fc-t">🧬 Formule µg/kg/min → mL/h</div><div class="fc-f">① Dose/h (mg/h) = dose × kg × 60 / 1000<br>② Concentration = qtté / V_seringue<br>③ Débit = Dose/h ÷ Concentration</div></div>
+    </div>
+    <div class="stats">
+      <div class="stc"><div class="stv" style="color:var(--blm)">16</div><div class="stl">Étapes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--tlm)">4</div><div class="stl">Modes</div></div>
+      <div class="stc"><div class="stv" style="color:var(--orm)">15</div><div class="stl">Exercices</div></div>
+      <div class="stc"><div class="stv" style="color:var(--pum)">3</div><div class="stl">Niveaux</div></div>
+    </div>
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#3b82f6" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Référence</span>
+        <div class="mc-badge" style="background:var(--bll);border-color:var(--bl);color:var(--blm)">📋 RÉFÉRENCE</div>
+        <div class="mc-desc">Anatomie PSE, boutons, alarmes, incompatibilités, protocole 16 étapes, mémo calcul.</div>
+        <ul class="mc-ul" style="--mc:#3b82f6"><li>Anatomie et boutons du PSE</li><li>16 étapes commentées</li><li>Alarmes et conduites à tenir</li><li>Mémo formules et incompatibilités</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#06b6d4" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:var(--tll);border-color:var(--tl);color:var(--tlm)">⭐ DÉBUTANT</div>
+        <div class="mc-desc">16 étapes dans l'ordre. Question de validation à chaque étape. Pas de chrono.</div>
+        <ul class="mc-ul" style="--mc:#06b6d4"><li>Protocole complet dans l'ordre</li><li>Alarmes, relais, surveillance</li><li>Question de validation</li></ul>
+      </button>
+      <button class="mc" style="--mc:#f59e0b" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen Théorique</span>
+        <div class="mc-badge" style="background:var(--orl);border-color:var(--or);color:var(--orm)">⭐⭐ INTERMÉDIAIRE</div>
+        <div class="mc-desc">15 questions : boutons, alarmes, incompatibilités, relais, calculs simples. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#f59e0b"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#8b5cf6" onclick="setMode('pharma',this)">
+        <span class="mc-ico">🧮</span><span class="mc-name">Pharmacologie &amp; Calculs</span>
+        <div class="mc-badge" style="background:var(--pul);border-color:var(--pu);color:var(--pum)">⭐⭐⭐ EXPERT</div>
+        <div class="mc-desc">15 exercices cliniques réels avec simulateur écran PSE. Simple → Moyen → Complexe (µg/kg/min). Solutions pas à pas.</div>
+        <ul class="mc-ul" style="--mc:#8b5cf6"><li>Scénarios de réanimation, USIC, médecine</li><li>Simulateur écran PSE interactif</li><li>3 niveaux de difficulté</li><li>Solutions complètes pas à pas</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+<!-- FICHE -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📖</div><div><div class="hn">Fiche Référence — PSE</div><div class="hs">IFSI Troyes · Nomade Éducation · Omédit Normandie · ANSM 2024</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1px solid var(--bd);border-radius:20px;background:transparent;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Pousse-Seringue Électrique (PSE)</div><div class="fsub">Dispositif médical actif — Art. R.4311-7</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('fa',this)">🔩 Anatomie</button>
+        <button class="ftab" onclick="showFTab('fb2',this)">🎛️ Boutons</button>
+        <button class="ftab" onclick="showFTab('fal',this)">🚨 Alarmes</button>
+        <button class="ftab" onclick="showFTab('fp',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('fm',this)">🧠 Mémo</button>
+      </div>
+    </div>
+    <!-- ANATOMIE -->
+    <div class="fsec on" id="fa">
+      <div class="fst">🔩 Anatomie et composition</div>
+      <div style="background:var(--card2);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:14px">
+        <div style="font-size:11.5px;color:var(--t2);margin-bottom:12px;line-height:1.65">Le PSE (Pousse-Seringue Électrique) ou SAP (Seringue Auto-Poussée) est un dispositif médical actif qui administre un médicament à débit constant en poussant mécaniquement le piston d'une seringue. Il fonctionne sur secteur et/ou batterie (autonomie 4-8h selon les modèles).</div>
+        <div class="mg2">
+          <div class="mi"><div class="mi-ico">🖥️</div><div class="mt"><strong>Écran LCD / OLED</strong> — Affiche débit (mL/h), volume restant, temps restant, type de seringue, alarmes actives, état batterie.</div></div>
+          <div class="mi"><div class="mi-ico">⚙️</div><div class="mt"><strong>Moteur + vis sans fin</strong> — Pousse le chariot qui avance le piston de manière linéaire et précise.</div></div>
+          <div class="mi"><div class="mi-ico">🪣</div><div class="mt"><strong>Berceau de seringue</strong> — Reçoit le corps de la seringue. Capteur de détection du type (10, 20, 50/60 mL).</div></div>
+          <div class="mi"><div class="mi-ico">🔒</div><div class="mt"><strong>Griffes / chariot piston</strong> — S'accrochent à la collerette du piston. Vérifier l'accrochage avant mise en route.</div></div>
+          <div class="mi"><div class="mi-ico">🔋</div><div class="mt"><strong>Batterie rechargeable</strong> — Continuité lors des déplacements. Brancher sur secteur dès que possible.</div></div>
+          <div class="mi"><div class="mi-ico">📡</div><div class="mt"><strong>Interface communication</strong> — Connexion à station d'accueil pour surveillance à distance et relais automatique.</div></div>
+        </div>
+      </div>
+      <div style="background:var(--bll);border:1px solid var(--bl);border-radius:11px;padding:13px 15px;font-size:12px;color:var(--t2);line-height:1.7;margin-bottom:14px">
+        <strong style="color:var(--blm)">Seringues compatibles :</strong> 10 mL · 20 mL · 50/60 mL. La seringue doit être <strong>compatible avec ce PSE</strong> — une marque différente peut déclencher des erreurs ou un débit incorrect (le diamètre du piston détermine le volume poussé par tour de vis).<br><br>
+        <strong style="color:var(--blm)">Tubulures :</strong> longueur max <strong>1,50 m</strong>. Embout rouge = seringue, embout blanc = patient. Tubulures PVC incompatibles avec : <strong>Nitroglycérine, Amiodarone (Cordarone®), Insuline</strong>.
+      </div>
+    </div>
+    <!-- BOUTONS -->
+    <div class="fsec" id="fb2">
+      <div class="fst">🎛️ Boutons et fonctions</div>
+      <div class="btn-grid">
+        <div class="btn-card" style="border-color:var(--grm)"><div class="btn-ico">▶️</div><div class="btn-name" style="color:var(--grm)">MARCHE / START</div><div class="btn-desc">Lance la perfusion. Confirme les paramètres programmés. Bouton vert (le plus grand). Appuyer 2-3 sec pour allumer.</div></div>
+        <div class="btn-card" style="border-color:var(--rdm)"><div class="btn-ico">⏹️</div><div class="btn-name" style="color:var(--rdm)">ARRÊT / STOP</div><div class="btn-desc">Suspend la perfusion. L'appareil reste allumé et conserve les paramètres. Rouge ou orange selon les modèles.</div></div>
+        <div class="btn-card" style="border-color:var(--orm)"><div class="btn-ico">🔔</div><div class="btn-name" style="color:var(--orm)">SILENCE ALARME</div><div class="btn-desc">Coupe le son temporairement (2-5 min). N'éteint PAS l'alarme. Toujours identifier la cause avant de silencer.</div></div>
+        <div class="btn-card" style="border-color:var(--blm)"><div class="btn-ico">⬆️⬇️</div><div class="btn-name" style="color:var(--blm)">PARAMÈTRES ±</div><div class="btn-desc">Flèches ou touches numériques pour modifier le débit (mL/h), le volume (VTBI), le type de seringue.</div></div>
+        <div class="btn-card" style="border-color:var(--tlm)"><div class="btn-ico">💨</div><div class="btn-name" style="color:var(--tlm)">PURGE</div><div class="btn-desc">Purge la tubulure à vitesse rapide. Utiliser SYSTÉMATIQUEMENT — jamais pousser manuellement le piston.</div></div>
+        <div class="btn-card" style="border-color:var(--pum)"><div class="btn-ico">⚡</div><div class="btn-name" style="color:var(--pum)">BOLUS / KVO</div><div class="btn-desc">Bolus : volume supplémentaire rapide. KVO (Keep Vein Open) : débit minimal 0,1-0,5 mL/h pour maintenir la voie sans médicament.</div></div>
+        <div class="btn-card"><div class="btn-ico">✅</div><div class="btn-name">CONFIRMER / OK</div><div class="btn-desc">Valide un paramètre saisi. Confirme le type de seringue détecté. Indispensable après chaque modification.</div></div>
+        <div class="btn-card"><div class="btn-ico">🔓</div><div class="btn-name">VERROUILLAGE</div><div class="btn-desc">Bloque les touches pour empêcher les modifications accidentelles (patient conscient, domicile).</div></div>
+        <div class="btn-card"><div class="btn-ico">🔋</div><div class="btn-name">BATTERIE</div><div class="btn-desc">Voyant d'état. Vérifier systématiquement lors des transferts. Rebrancher sur secteur dès que possible.</div></div>
+      </div>
+      <div style="background:var(--orl);border:1px solid var(--orm);border-radius:11px;padding:13px 15px;font-size:12px;color:var(--orm);line-height:1.7">
+        ⚠️ <strong>Ordre de programmation standardisé :</strong><br>
+        1. Allumer → 2. Placer la seringue → 3. Vérifier la détection du type de seringue → 4. Saisir le débit (mL/h) → 5. Saisir le VTBI si disponible → 6. Confirmer → 7. Connecter au patient → 8. Appuyer sur MARCHE.
+      </div>
+    </div>
+    <!-- ALARMES -->
+    <div class="fsec" id="fal">
+      <div class="fst">🚨 Alarmes — Identification et conduite à tenir</div>
+      <div class="alist">
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">🔴</div><div><div class="alarm-name" style="color:var(--rdm)">OCCLUSION / PRESSION ↑</div><div class="alarm-desc">Résistance dans le circuit → débit nul. <strong>Causes :</strong> tubulure coudée, robinet fermé, cathéter bouché, voie infiltrée. <strong>Conduite :</strong> inspecter de la seringue vers le patient méthodiquement. Ne jamais forcer.</div></div></div>
+        <div class="alarm" style="border-color:var(--orm)"><div class="alarm-ico">🟠</div><div><div class="alarm-name" style="color:var(--orm)">FIN DE SERINGUE</div><div class="alarm-desc">Volume restant &lt; seuil prédéfini (2-5 mL). <strong>Conduite :</strong> pour médicaments critiques (vasopresseurs) lancer la nouvelle seringue AVANT que la précédente soit vide — chevauchement obligatoire.</div></div></div>
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">🫧</div><div><div class="alarm-name" style="color:var(--rdm)">BULLES D'AIR / AIR DÉTECTÉ</div><div class="alarm-desc">Air dans le circuit. <strong>Causes :</strong> seringue non purgée, connexion desserrée, seringue vide non changée. <strong>Conduite :</strong> arrêter, identifier la source, repurger. Jamais administrer si air visible.</div></div></div>
+        <div class="alarm" style="border-color:var(--orm)"><div class="alarm-ico">🔋</div><div><div class="alarm-name" style="color:var(--orm)">BATTERIE FAIBLE</div><div class="alarm-desc">Autonomie &lt;20-30 min. <strong>Conduite :</strong> brancher sur secteur immédiatement. Si impossible : prévoir PSE de remplacement.</div></div></div>
+        <div class="alarm" style="border-color:var(--rdm)"><div class="alarm-ico">💉</div><div><div class="alarm-name" style="color:var(--rdm)">SERINGUE MAL PLACÉE</div><div class="alarm-desc">Seringue non verrouillée ou incompatible. <strong>Conduite :</strong> retirer, replacer correctement, vérifier que le piston est bien accroché aux griffes et que la seringue est compatible.</div></div></div>
+        <div class="alarm" style="border-color:var(--pum)"><div class="alarm-ico">⚡</div><div><div class="alarm-name" style="color:var(--pum)">ERREUR DE PROGRAMMATION</div><div class="alarm-desc">Débit hors limites, incohérence paramètres. <strong>Conduite :</strong> vérifier et recalculer, reprendre la programmation depuis le début, contrôler la prescription.</div></div></div>
+      </div>
+      <div style="background:var(--bll);border:1px solid var(--bl);border-radius:11px;padding:13px 15px;font-size:12px;color:var(--t2);line-height:1.7">
+        💡 <strong style="color:var(--blm)">Règle absolue :</strong> Ne jamais couper une alarme sans en identifier et traiter la cause. Le silence est un outil transitoire (quelques minutes), pas une solution. Alarme non résolue en 5 min → escalader au médecin.
+      </div>
+    </div>
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="fp">
+      <div class="fst">📋 Protocole — 16 étapes</div>
+      <div id="proto-pse"></div>
+    </div>
+    <!-- MÉMO -->
+    <div class="fsec" id="fm">
+      <div class="fst">🧠 Mémo — Formules et règles</div>
+      <div class="memo" style="background:var(--rdl);border:1.5px solid var(--rdm);color:var(--rdm)">
+        <div class="mh" style="color:var(--rdm)">🚨 6 règles absolues</div>
+        • <strong>Prescription qualitative + quantitative</strong> obligatoire (Art. R.4311-7)<br>
+        • <strong>Jamais mélanger deux médicaments</strong> dans une seringue ou tubulure<br>
+        • <strong>Étiquetage obligatoire</strong> : nom + dose + dilution + débit + heure + initiales<br>
+        • <strong>Compatibilité solvant</strong> : Cordarone® = G5% uniquement<br>
+        • <strong>Relais anticipé</strong> médicaments critiques (vasopresseurs++) à ~10-15 mL restants<br>
+        • <strong>Purge via bouton PSE</strong>, jamais manuellement le piston
+      </div>
+      <div class="memo" style="background:var(--bll);border:1px solid var(--bl);color:var(--t2)">
+        <div class="mh" style="color:var(--blm)">🔢 Formules de calcul</div>
+        <span class="mono">Débit (mL/h) = Volume (mL) ÷ Durée (h)</span><br><br>
+        Pour prescription en <span class="mono">mg/h</span> :<br>
+        <span class="mono">Débit = Dose (mg/h) × V_seringue ÷ Qtté totale (mg)</span><br><br>
+        Pour prescription en <span class="mono">µg/kg/min</span> :<br>
+        ① <span class="mono">Dose/h (mg/h) = dose × poids × 60 ÷ 1000</span><br>
+        ② <span class="mono">Concentration (mg/mL) = qtté_totale ÷ V_seringue</span><br>
+        ③ <span class="mono">Débit (mL/h) = Dose/h ÷ Concentration</span><br><br>
+        Astuce 48 mL : <span class="mono">48 mL ÷ 24 h = 2 mL/h (calcul simplifié)</span>
+      </div>
+      <div class="memo" style="background:var(--pul);border:1px solid var(--pum);color:var(--pum)">
+        <div class="mh" style="color:var(--pum)">💊 Incompatibilités fréquentes</div>
+        • <strong>Cordarone® (Amiodarone)</strong> : G5% uniquement · tubulures PVC interdites<br>
+        • <strong>Insuline</strong> : tubulures PVC interdites (adsorption)<br>
+        • <strong>Nitroglycérine</strong> : tubulures PVC interdites<br>
+        • <strong>Bicarbonate de sodium</strong> : incompatible avec la majorité des médicaments<br>
+        • <strong>Furosémide</strong> : risque de précipité si pH &lt; 7 · administrer seul<br>
+        • Règle générale : toujours vérifier VIDAL + notice avant préparation
+      </div>
+      <div class="memo" style="background:var(--orl);border:1px solid var(--orm);color:var(--orm)">
+        <div class="mh" style="color:var(--orm)">⚡ Relais de seringue — Règle d'or</div>
+        Médicaments vasoactifs (Noradrénaline, Dopamine, Dobutamine, Loxen®, Insuline) :<br>
+        → Préparer la nouvelle seringue à <strong>10-15 mL restants</strong><br>
+        → Lancer la nouvelle <strong>avant</strong> d'arrêter l'ancienne (double perfusion quelques secondes)<br>
+        → Ne jamais laisser un patient vasopresseur-dépendant sans perfusion
+      </div>
+    </div>
+  </div>
+</div>
+<!-- QUIZ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-b">⚡</div><span class="tbl-t">PSE</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw"><div class="tbql" id="tbql">1/16</div><div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div></div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">⚡</div>
+      <div style="flex:1"><div class="ctx-sub" id="ctxsb">Étape</div><div class="ctx-title" id="ctxtl"></div><div class="ctx-body" id="ctxbd"></div></div>
+    </div>
+    <div class="qcard">
+      <div class="qtop"><div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div><span class="qnum" id="qnum">1</span></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fs2">✅ <strong id="scc">0</strong> correctes</div>
+    <div class="fs2">❌ <strong id="sww">0</strong> erreurs</div>
+    <div class="fs2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+<!-- PHARMACOLOGIE -->
+<div class="scr" id="s-pharma">
+  <div class="ph-hdr">
+    <div class="ph-left">
+      <div class="tbl-b">🧮</div>
+      <div class="ph-title">Pharmacologie &amp; Calculs PSE</div>
+      <div class="ph-prog" id="ph-prog">0/15</div>
+    </div>
+    <div class="ph-right">
+      <div style="font-size:11px;color:var(--t3)">Score :</div>
+      <div class="ph-score" id="ph-score" style="color:var(--grm)">0/0</div>
+      <button onclick="showScr('sw')" style="padding:5px 10px;border:1px solid var(--bd);border-radius:20px;background:transparent;cursor:pointer;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--t2)">← Menu</button>
+    </div>
+  </div>
+  <div style="background:var(--card);border-bottom:1px solid var(--bd);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <div class="diff-tabs">
+      <button class="diff-tab on" onclick="filterDiff('all',this)">Tous (15)</button>
+      <button class="diff-tab" onclick="filterDiff(1,this)">⭐ Simple (5)</button>
+      <button class="diff-tab" onclick="filterDiff(2,this)">⭐⭐ Moyen (5)</button>
+      <button class="diff-tab" onclick="filterDiff(3,this)">⭐⭐⭐ Complexe (5)</button>
+    </div>
+    <div style="font-size:11px;color:var(--t3)"><span id="ph-corr">0</span> réussis · <span id="ph-tot">0</span> tentés</div>
+  </div>
+  <div class="ph-body" id="ph-body"></div>
+</div>
+<!-- RÉSULTAT -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hl"><div class="hico">⚡</div><div><div class="hn">Rapport — PSE</div></div></div></div>
+  <div class="rb">
+    <div class="rh">
+      <span class="rg" id="rg">🎓</span>
+      <div class="rs" id="rs">--/20</div>
+      <div class="rsb" id="rsb">--</div>
+      <div class="rmen" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--orm)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--orm)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--blm)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--tlm)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errb" id="errb" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsb"><div class="cnst">💡 Conseils personnalisés</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rbtn rbs" onclick="showScr('sw')">← Menu</button>
+      <button class="rbtn rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+<script>
+const ST=[
+{n:1,cat:"Cadre légal & Prescription",ico:"📋",crit:false,att:true,
+ title:"Vérifier la prescription médicale complète",
+ what:"Le PSE est un <strong>soin infirmier sur prescription médicale qualitative ET quantitative</strong> (Art. R.4311-7). La prescription doit comporter : nom du médicament, dosage total, solvant et volume final, débit en mL/h OU durée, voie, date et signature. Vérifiez les <strong>5 B</strong>. Recherchez les <strong>incompatibilités</strong> avec les autres traitements.",
+ why:"Une prescription incomplète (sans débit, sans solvant) oblige à contacter le médecin AVANT de préparer. Une erreur de débit de PSE peut administrer une dose mortelle en quelques minutes.",
+ rule:"Prescription QUALITATIVE + QUANTITATIVE obligatoire. Doute = médecin d'abord.",
+ q:"La prescription indique : 'Morphine 1 mg/h en PSE'. C'est ?",
+ ch:["Complète — vous pouvez préparer","Incomplète — il manque le solvant, le volume et la durée. Contacter le médecin","Acceptable si protocole de service","Complète si le patient est sous protocole morphine"],
+ ok:1},
+{n:2,cat:"Matériel",ico:"🧰",crit:false,att:false,
+ title:"Préparer et vérifier le matériel",
+ what:"Matériel nécessaire : PSE (fonctionnel, batterie chargée), seringue <strong>compatible avec ce PSE</strong> (10, 20 ou 50/60 mL), tubulure PSE (longueur ≤ 1,50 m, vérifier compatibilité PVC si nécessaire), médicament et solvant (péremption, intégrité, aspect), étiquette vierge, SHA. Vérifier que le PSE est propre, désinfecté et fonctionnel.",
+ why:"Une seringue incompatible avec le PSE peut produire un débit incorrect — le PSE calcule le volume en fonction du diamètre du piston. Un PSE avec batterie faible peut s'arrêter lors d'une administration critique.",
+ rule:"Seringue compatible avec le PSE. Batterie suffisante pour la durée prévue.",
+ q:"Vous n'avez que des seringues de marque B mais le PSE est configuré pour marque A. Vous ?",
+ ch:["Utilisez la seringue B — la différence est négligeable","Cherchez des seringues compatibles — les seringues incompatibles peuvent causer des erreurs de dose","Demandez au PSE de se recalibrer","Corrigez manuellement le débit"],
+ ok:1},
+{n:3,cat:"Préparation du médicament",ico:"💊",crit:true,att:false,
+ title:"Préparer la seringue et l'étiqueter",
+ what:"SHA. Prélevez le médicament, diluez avec le solvant compatible (lire la notice). Mélangez doucement. Contrôle visuel : absence de précipité, cristaux, changement de couleur. <strong>Étiquetez immédiatement et obligatoirement</strong> : nom du médicament, dosage, dilution (concentration), débit en mL/h, heure de préparation, date de péremption de la solution, initiales préparateur. Ne jamais couvrir les graduations.",
+ why:"Un médicament non étiqueté doit être détruit — jamais administrer une seringue sans étiquette. Le contrôle visuel détecte les incompatibilités physiques (précipité = ne pas administrer).",
+ rule:"Étiqueter AVANT de quitter la salle de soins. Seringue sans étiquette = à détruire. Contrôle visuel obligatoire.",
+ q:"Vous avez préparé la seringue mais n'avez pas encore collé l'étiquette. Urgence dans la chambre. Vous ?",
+ ch:["Posez la seringue rapidement et partez — vous l'étiquetterez en revenant","Demandez à un collègue d'étiqueter","Détruisez la seringue si vous ne pouvez pas l'étiqueter immédiatement — une seringue sans étiquette ne s'administre jamais","Portez la seringue avec vous sans étiquette"],
+ ok:2},
+{n:4,cat:"Installation du PSE",ico:"🔩",crit:false,att:true,
+ title:"Installer la seringue dans le PSE",
+ what:"① Placez le corps de la seringue dans le berceau (encoche de blocage). ② Vérifiez que la <strong>collerette du piston est bien accrochée aux griffes du chariot</strong>. ③ Allumez le PSE. ④ Vérifiez que l'appareil a correctement <strong>détecté le type de seringue</strong> sur l'écran — confirmer si nécessaire. ⑤ Connectez la tubulure à la seringue. ⑥ Utilisez la <strong>fonction PURGE du PSE</strong> pour purger la tubulure.",
+ why:"Un piston mal accroché peut se décrocher en cours de perfusion et arrêter brutalement l'administration. La détection incorrecte du type de seringue provoque un débit erroné. Pousser manuellement le piston décale la mesure de référence.",
+ rule:"Piston bien accroché dans les griffes. Type de seringue confirmé sur l'écran. Purge via bouton PSE uniquement.",
+ q:"Après installation, l'écran affiche 'SYRINGE TYPE ERROR'. Vous ?",
+ ch:["Ignorez et appuyez sur MARCHE","Retirez et réinstallez correctement. Si persistance, vérifier la compatibilité de la seringue avec ce PSE et sélectionner manuellement le type","Changez le PSE","Appuyez sur SILENCE et continuez"],
+ ok:1},
+{n:5,cat:"Programmation du débit",ico:"⌨️",crit:true,att:false,
+ title:"Programmer le débit en mL/h",
+ what:"Saisissez le <strong>débit calculé en mL/h</strong>. Vérifiez le chiffre affiché AVANT de confirmer. Si disponible : saisir le VTBI (Volume To Be Infused) pour que le PSE s'arrête automatiquement en fin de seringue. <strong>Double contrôle obligatoire</strong> pour les médicaments à risque élevé : relisez le débit, comparez avec votre calcul et la prescription.",
+ why:"Une erreur de saisie (20 au lieu de 2 mL/h pour de la Noradrénaline) peut provoquer une surdose mortelle de vasopresseur. Le double contrôle par un second IDE est recommandé pour tous les médicaments à index thérapeutique étroit.",
+ rule:"Double contrôle : débit affiché = débit calculé = prescription. Confirmer avec OK avant MARCHE.",
+ q:"Vous programmez 5 mL/h pour du Loxen®. La prescription dit '5 mg/h'. Votre concentration est 0,5 mg/mL. Votre débit devrait être ?",
+ ch:["5 mL/h — correct","10 mL/h — la concentration de 0,5 mg/mL à 5 mg/h nécessite 10 mL/h. Votre saisie de 5 était fausse","8 mL/h","2,5 mL/h"],
+ ok:1},
+{n:6,cat:"Connexion au patient",ico:"🔗",crit:true,att:false,
+ title:"Connecter la tubulure au patient",
+ what:"Vérifiez l'accès veineux (perméabilité, absence d'inflammation ou d'infiltration). Connectez sur un <strong>robinet 3 voies</strong> — jamais directement sur l'embout sans robinet. <strong>Jamais deux médicaments sur le même robinet ou la même tubulure</strong> sans rinçage. Pour médicaments vasoactifs ou irritants : utiliser une <strong>voie veineuse centrale</strong> de préférence.",
+ why:"Un robinet 3 voies permet d'interrompre le PSE sans retirer la voie veineuse. Les vasopresseurs sur voie périphérique exposent au risque de nécrose cutanée grave en cas d'extravasation.",
+ rule:"Robinet 3 voies obligatoire. Vérifier perméabilité. Vasopresseurs/irritants → voie centrale préférable.",
+ q:"Vous devez administrer de la Noradrénaline en urgence sur voie périphérique. C'est ?",
+ ch:["Formellement interdit en toutes circonstances","Acceptable en urgence si voie centrale posée dans les 30 min. Surveiller le site en continu. Extravasation = arrêter immédiatement + médecin","Acceptable sans restriction en urgence","Acceptable uniquement en veine fémorale"],
+ ok:1},
+{n:7,cat:"Mise en marche",ico:"▶️",crit:false,att:false,
+ title:"Lancer la perfusion — Bouton MARCHE",
+ what:"Dernière vérification : seringue correcte, tubulure connectée, débit affiché = débit prescrit. Appuyez sur <strong>MARCHE / START</strong>. Vérifiez que le PSE est bien en cours : affichage 'RUNNING', voyant vert actif, <strong>avancement visible du piston</strong>. Informez le patient du traitement et de ce qu'il doit signaler.",
+ why:"Un PSE allumé peut ne pas être en marche si le bouton MARCHE n'a pas été pressé ou si une alarme non résolue bloque le démarrage. La confirmation visuelle du mouvement du piston est indispensable.",
+ rule:"Vérifier visuellement : voyant vert + RUNNING + avancement piston. Informer le patient.",
+ q:"Vous appuyez sur MARCHE et l'écran affiche 'OCCLUSION'. Le PSE ne démarre pas. 1ère vérification ?",
+ ch:["Appuyer plusieurs fois sur MARCHE","Vérifier l'ensemble du circuit : tubulure coudée ? Robinet fermé ? Cathéter bouché ?","Changer la seringue","Augmenter la limite de pression dans les paramètres"],
+ ok:1},
+{n:8,cat:"Surveillance en cours",ico:"👁️",crit:true,att:false,
+ title:"Surveiller régulièrement en cours de perfusion",
+ what:"Surveillance régulière : <br>① <strong>PSE</strong> : débit affiché, volume restant, alarmes actives.<br>② <strong>Site d'injection</strong> : absence d'infiltration, inflammation, douleur.<br>③ <strong>Patient</strong> : paramètres vitaux selon le médicament (TA pour vasopresseurs, glycémie pour insuline, EVA pour morphine).<br>④ <strong>Tubulure</strong> : absence de coudure ou déconnexion.<br>⑤ <strong>Niveau de seringue</strong> : anticiper le changement.",
+ why:"Le PSE peut afficher un débit correct même si la tubulure est partiellement coudée. Seule la surveillance clinique du patient confirme l'efficacité réelle du traitement.",
+ rule:"Surveiller PSE + site + patient + tubulure. La surveillance clinique prime sur les chiffres du PSE.",
+ q:"Le PSE perfuse la morphine à 2 mL/h mais le patient a des douleurs intenses identiques à avant. Vous ?",
+ ch:["Augmentez le débit sans prévenir le médecin","Vérifiez le circuit complet (tubulure, robinet, site veineux) puis contactez le médecin pour réévaluation","Changez la seringue","Rassurez le patient — la morphine prend du temps"],
+ ok:1},
+{n:9,cat:"Alarmes — Conduite",ico:"🚨",crit:true,att:false,
+ title:"Répondre aux alarmes sans jamais silencer sans investiguer",
+ what:"Face à toute alarme :<br>① Lire le message sur l'écran.<br>② <strong>Identifier la cause avant de silencer</strong>.<br>③ Traiter la cause.<br>④ Silencer seulement en mesure transitoire.<br>⑤ Cause non identifiée en 5 min → escalader au médecin.<br><br>Alarme OCCLUSION : inspecter tubulure de la seringue vers le patient.<br>Alarme FIN DE SERINGUE : préparer le relais (immédiatement pour vasopresseurs).<br>Alarme AIR : arrêter, purger le circuit.",
+ why:"Silencer une alarme sans traiter la cause = administration arrêtée sans que l'équipe le sache. Pour les vasopresseurs, quelques minutes sans perfusion peuvent provoquer un effondrement hémodynamique.",
+ rule:"Identifier la cause AVANT de silencer. Non résolue en 5 min = médecin. Toute alarme a une cause.",
+ q:"L'alarme FIN DE SERINGUE de Noradrénaline sonne. Il reste 3 mL. 1ère action ?",
+ ch:["Couper l'alarme et terminer les 3 mL tranquillement","Lancer immédiatement la nouvelle seringue pré-préparée — pour les vasopresseurs, le relais doit être instantané sans rupture","Changer lentement — 3 mL dure encore quelques minutes","Informer le médecin et attendre ses instructions"],
+ ok:1},
+{n:10,cat:"Relais de seringue",ico:"🔄",crit:true,att:false,
+ title:"Réaliser le relais de seringue pour médicaments critiques",
+ what:"Médicaments NON critiques : arrêter PSE → retirer l'ancienne → installer la nouvelle → vérifier débit → relancer.<br><br>Médicaments <strong>CRITIQUES</strong> (vasopresseurs, sédatifs, insuline) :<br>① Préparer la nouvelle seringue à ~10-15 mL restants dans l'ancienne.<br>② Installer sur un <strong>2ème PSE</strong> en parallèle sur le même robinet.<br>③ Lancer la nouvelle seringue.<br>④ Arrêter l'ancienne APRÈS que la nouvelle soit à plein débit (quelques secondes de chevauchement).<br>⑤ Retirer l'ancienne.",
+ why:"Toute rupture de perfusion de vasopresseur (même 1 minute) peut provoquer une hypotension sévère. Le relais en chevauchement garantit la continuité absolue de l'administration.",
+ rule:"Médicaments critiques : relais en chevauchement. Nouvelle seringue lancée AVANT d'arrêter l'ancienne. Préparer à ~10-15 mL restants.",
+ q:"Lors du relais de Noradrénaline, votre 2ème PSE ne fonctionne pas. Vous ?",
+ ch:["Attendez que la 1ère seringue soit vide","Alertez l'équipe immédiatement, obtenez un PSE de remplacement en urgence, surveillez les paramètres vitaux en continu","Faites le relais rapidement avec les deux mains sur le même PSE","Administrez en bolus manuel pendant le changement"],
+ ok:1},
+{n:11,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Tracer dans le dossier patient",
+ what:"Documenter : <strong>médicament + concentration préparée, débit programmé (mL/h), heure de début, heure de fin prévue, volume total, accès veineux utilisé, tolérance du patient, nom et signature.</strong> Tracer les modifications de débit (heure, nouveau débit, justification médicale). Tracer les alarmes survenues et les mesures prises.",
+ why:"La traçabilité assure la continuité des soins (transmission correcte), la sécurité (double administration évitée) et la protection juridique du soignant.",
+ rule:"Tracer : médicament + concentration + débit + heure début/fin + voie + tolérance + signature. Modifications = traçabilité en temps réel.",
+ q:"Vous modifiez le débit de Loxen® de 5 à 3 mL/h sur instruction téléphonique du médecin. Vous documentez ?",
+ ch:["Rien — instruction orale non tracée","L'heure, le nouveau débit (3 mL/h), le médecin prescripteur, la raison, votre signature","Uniquement le nouveau débit","Attendez la prescription écrite avant de changer"],
+ ok:1},
+{n:12,cat:"Incompatibilités",ico:"⚠️",crit:true,att:false,
+ title:"Vérifier les incompatibilités physico-chimiques",
+ what:"<strong>Règle absolue : jamais mélanger deux médicaments dans la même seringue ou tubulure.</strong><br>Vérifier toujours :<br>• <strong>Solvant</strong> (notice) : Cordarone® = G5% uniquement · Furosémide = NaCl 0,9% · Insuline = NaCl 0,9%<br>• <strong>Tubulures PVC</strong> : incompatibles avec Cordarone®, Insuline, Nitroglycérine<br>• <strong>Médicaments entre eux</strong> : rinçage intermédiaire si même tubulure<br>• Consulter le VIDAL ou pharmacie en cas de doute",
+ why:"Les incompatibilités créent des précipités (administrés = dangereux), réduisent l'efficacité, ou créent des produits toxiques. Cordarone® dans NaCl précipite et bouche la tubulure.",
+ rule:"Cordarone® = G5% UNIQUEMENT. Jamais mélanger. PVC contre-indiqué pour Cordarone®, Insuline, Nitroglycérine.",
+ q:"Vous devez passer de l'Amiodarone (Cordarone®) en PSE. Quel solvant ?",
+ ch:["NaCl 0,9% — solvant universel","G5% uniquement — seul solvant compatible avec la Cordarone®","L'un ou l'autre indifféremment","Eau pour préparation injectable"],
+ ok:1},
+{n:13,cat:"Médicaments photosensibles",ico:"☀️",crit:false,att:true,
+ title:"Protéger les médicaments photosensibles",
+ what:"Médicaments se dégradant à la lumière : <strong>Nitroglycérine, Furosémide, Amiodarone (Cordarone®), Dobutamine, Insuline, Midazolam (Hypnovel®)</strong>. Utiliser des <strong>seringues et tubulures opaques</strong> (amber/orange). Protéger la seringue de la lumière directe. Instructions spécifiques sur la notice du médicament.",
+ why:"L'exposition à la lumière dégrade l'activité pharmacologique de ces médicaments (pertes pouvant aller jusqu'à 50% en quelques heures). Une nitroglycérine dégradée ne contrôle plus la PA.",
+ rule:"Cordarone®, Nitro, Furosémide, Dobutamine, Midazolam : seringues et tubulures opaques. Protéger de la lumière directe.",
+ q:"Vous préparez du Furosémide (Lasilix®) en PSE. Vous utilisez ?",
+ ch:["Seringue et tubulure transparentes standards","Seringue opaque (amber) et tubulure protégée — le Furosémide est photosensible","Aucune précaution particulière","Seringue opaque uniquement"],
+ ok:1},
+{n:14,cat:"Fin de perfusion",ico:"⏹️",crit:false,att:false,
+ title:"Arrêter la perfusion en fin de traitement",
+ what:"① Appuyer sur STOP. ② Fermer le robinet côté PSE. ③ Déconnecter la tubulure avec une compresse stérile imbibée d'antiseptique. ④ Poser un bouchon stérile sur le robinet. ⑤ Retirer la seringue et l'éliminer en DASRI. ⑥ Nettoyer et désinfecter le PSE. ⑦ Tracer l'heure d'arrêt dans le dossier.",
+ why:"Fermer le robinet avant de déconnecter évite le reflux de sang et la contamination du site. La déconnexion aseptique prévient les infections liées aux cathéters.",
+ rule:"STOP → fermer robinet → déconnecter avec compresse antiseptique → bouchon stérile → DASRI → désinfecter PSE → tracer.",
+ q:"Comment déconnectez-vous la tubulure en fin de traitement sur voie veineuse centrale ?",
+ ch:["Tirez sur la tubulure et fermez avec un bouchon","Fermez le robinet côté PSE, déconnectez avec compresse imbibée d'antiseptique, posez un bouchon stérile","Laissez la tubulure débranchée ouverte","Rincez avec 20 mL NaCl à vitesse maximale avant de déconnecter"],
+ ok:1},
+{n:15,cat:"Sécurité & Erreurs",ico:"🛡️",crit:true,att:false,
+ title:"Prévention des erreurs médicamenteuses au PSE",
+ what:"Principaux risques :<br>• <strong>Surdosage</strong> : débit saisi 10× trop fort (20 au lieu de 2 mL/h)<br>• <strong>Mauvais médicament</strong> : seringues non étiquetées échangées<br>• <strong>Débit nul non détecté</strong> : PSE sur STOP, occlusion non traitée<br>• <strong>Incompatibilité</strong> : deux médicaments dans la même tubulure<br><br>Mesures de prévention : double contrôle systématique pour médicaments à risque élevé, étiquetage couleur, traçabilité en temps réel.",
+ why:"Les erreurs liées aux PSE sont parmi les plus graves des erreurs médicamenteuses. La grande majorité est évitable par des procédures de double contrôle et d'étiquetage.",
+ rule:"Double contrôle pour médicaments à index thérapeutique étroit. Étiqueter chaque seringue. Traçabilité en temps réel.",
+ q:"Un collègue vous tend une seringue étiquetée 'Hypnovel 2 mg/h'. Vous ?",
+ ch:["Utilisez-la — votre collègue est fiable","Vérifiez l'étiquette (concentration, heure de préparation) et faites le double contrôle avec la prescription avant utilisation","Utilisez-la si elle vient d'être préparée","Refusez — vous ne pouvez utiliser que les seringues que vous avez préparées vous-même"],
+ ok:1},
+{n:16,cat:"KVO & Maintenance",ico:"⚙️",crit:false,att:false,
+ title:"KVO, maintenance et entretien du PSE",
+ what:"<strong>KVO (Keep Vein Open)</strong> : débit minimal (0,1-1 mL/h) qui maintient la voie ouverte sans médicament, en attente du prochain traitement. Ne pas laisser en KVO des heures sans indication médicale.<br><br><strong>Maintenance :</strong> nettoyer le PSE après chaque patient (lingette désinfectante), vérifier mensuellement le bon fonctionnement, signaler les anomalies au biomédical, recharger les batteries régulièrement.",
+ why:"Le KVO ne doit pas être utilisé comme solution de confort pour 'garder la veine'. La maintenance préventive évite les pannes en cours d'utilisation sur des médicaments critiques.",
+ rule:"KVO sur indication uniquement. Nettoyer le PSE entre chaque patient. Signaler les anomalies techniques au biomédical.",
+ q:"En fin de poste, vous rangez le PSE sans le nettoyer car 'il n'a pas été en contact direct avec le patient'. C'est ?",
+ ch:["Acceptable — seule la seringue touche le médicament","Acceptable si même patient","Incorrect — nettoyer avec une lingette désinfectante après chaque utilisation, même sans contact direct (contamination environnementale)","Acceptable en service non infectieux"],
+ ok:2},
+];
+const QE=[
+{cat:"Cadre légal",q:"Le PSE relève de ?",ch:["Rôle propre infirmier","Prescription médicale qualitative ET quantitative (Art. R.4311-7)","Protocole de service suffit","Délégation médicale en réanimation uniquement"],ok:1,ek:"Le PSE nécessite une prescription qualitative (nom, voie) ET quantitative (dose, débit/durée, solvant).",ee:"Pas en rôle propre.",r:"<strong>PSE = prescription médicale qualitative + quantitative.</strong>",xp:10},
+{cat:"Formule débit",q:"Un médicament doit passer 120 mL en 4 heures. Débit PSE ?",ch:["20 mL/h","30 mL/h","40 mL/h","60 mL/h"],ok:1,ek:"Débit = 120 / 4 = 30 mL/h.",ee:"120 ÷ 4 = 30.",r:"<strong>Débit = Volume ÷ Durée. 120/4 = 30 mL/h.</strong>",xp:10},
+{cat:"Incompatibilités",q:"L'Amiodarone (Cordarone®) doit être diluée dans ?",ch:["NaCl 0,9%","G5% uniquement","L'un ou l'autre","Eau pour préparation injectable"],ok:1,ek:"Cordarone® incompatible avec NaCl 0,9% (précipitation). G5% uniquement.",ee:"NaCl + Cordarone® = précipité = occlusion.",r:"<strong>Cordarone® = G5% UNIQUEMENT.</strong>",xp:12},
+{cat:"Incompatibilités PVC",q:"Quels médicaments sont incompatibles avec les tubulures PVC ?",ch:["Morphine, Furosémide, KCl","Nitroglycérine, Amiodarone, Insuline","Antibiotiques, Antifongiques","Héparine, Paracétamol"],ok:1,ek:"Nitroglycérine, Amiodarone (Cordarone®) et Insuline s'adsorbent sur le PVC. Utiliser tubulures polyéthylène.",ee:"Morphine et furosémide ne posent pas de problème avec le PVC.",r:"<strong>PVC incompatible : Nitroglycérine + Amiodarone + Insuline.</strong>",xp:12},
+{cat:"Purge PSE",q:"Pourquoi ne jamais pousser manuellement le piston avant de placer la seringue ?",ch:["Contamination du médicament","Pousser manuellement décale la référence de position du piston — mesure de volume restant faussée, débit potentiellement incorrect","Le piston peut se casser","Pour éviter les bulles d'air"],ok:1,ek:"Le PSE calcule le volume restant selon la position du piston. Pousser manuellement décale cette mesure de référence.",ee:"La purge du piston est réservée au bouton PURGE du PSE.",r:"<strong>Purge = bouton PURGE du PSE. Jamais manuellement.</strong>",xp:12},
+{cat:"Alarme OCCLUSION",q:"L'alarme OCCLUSION sonne. 1ère vérification ?",ch:["Appuyer sur SILENCE et observer","Inspecter le circuit de la seringue vers le patient : tubulure coudée, robinet fermé, cathéter bouché, infiltration","Augmenter la limite de pression dans les paramètres","Changer la seringue"],ok:1,ek:"OCCLUSION = résistance dans le circuit. Inspecter méthodiquement de la seringue vers le patient.",ee:"Augmenter la limite d'alarme masque le problème.",r:"<strong>OCCLUSION : inspecter tout le circuit seringue → patient.</strong>",xp:12},
+{cat:"Relais seringue",q:"Pour les vasopresseurs (Noradrénaline), quand préparer la nouvelle seringue ?",ch:["Quand la seringue est vide","Quand il reste 10-15 mL — lancer la nouvelle AVANT d'arrêter l'ancienne","À l'heure programmée de fin","Le relais n'est pas nécessaire si débit faible"],ok:1,ek:"Vasopresseurs : préparer à ~10-15 mL restants. Lancer la nouvelle avant d'arrêter l'ancienne (chevauchement). Toute rupture = risque vital.",ee:"Attendre la seringue vide = rupture de perfusion = chute tensionnelle.",r:"<strong>Vasopresseurs : relais à 10-15 mL restants, chevauchement obligatoire.</strong>",xp:15},
+{cat:"Étiquetage",q:"Informations MINIMUM obligatoires sur l'étiquette d'une seringue PSE ?",ch:["Nom du médicament uniquement","Nom + dose + dilution + débit (mL/h) + heure de préparation + initiales préparateur","Nom + heure de pose","Nom + dose + heure"],ok:1,ek:"Étiquetage minimal : nom, dosage, dilution (concentration), débit en mL/h, heure de préparation, péremption de la solution, initiales préparateur.",ee:"Étiquetage incomplet ne permet pas le contrôle par un autre soignant.",r:"<strong>Étiquette : nom + dose + dilution + débit + heure + initiales.</strong>",xp:12},
+{cat:"Formule débit",q:"50 mg Midazolam dans 48 mL. Prescription : 3 mg/h. Débit PSE ?",ch:["2,88 mL/h","3 mL/h","2,5 mL/h","6 mL/h"],ok:0,ek:"Concentration = 50/48 ≈ 1,042 mg/mL. Débit = 3/1,042 ≈ 2,88 mL/h.",ee:"3 mL/h serait exact seulement si concentration = 1 mg/mL exactement.",r:"<strong>Débit = Dose/h ÷ Concentration. 3 / (50/48) = 2,88 mL/h.</strong>",xp:15},
+{cat:"Batterie PSE",q:"Le voyant batterie indique 15 min d'autonomie restante. Vous ?",ch:["Rien — 15 min suffisent pour finir le tour","Brancher immédiatement sur secteur. Si impossible : prévenir l'équipe et prévoir un PSE de remplacement","Baisser le débit pour économiser","Arrêter pour recharger puis reprendre"],ok:1,ek:"15 min d'autonomie peut sembler suffisant mais le PSE peut s'arrêter à tout moment. Brancher sur secteur immédiatement.",ee:"Un tour de soins peut durer 30-60 min. 15 min est une urgence.",r:"<strong>Batterie faible = brancher sur secteur immédiatement.</strong>",xp:10},
+{cat:"KVO",q:"Que signifie KVO sur un PSE ?",ch:["Kilolitres Volume Opéré","Keep Vein Open — débit minimal pour maintenir la voie ouverte sans médicament","Kit Veineux d'Occasion","Contrôle Volume Optimal"],ok:1,ek:"KVO = Keep Vein Open. Débit très faible (0,1-1 mL/h) entre deux traitements. Ne pas utiliser sans indication.",ee:"KVO est une fonction standard des PSE modernes.",r:"<strong>KVO = Keep Vein Open. Débit minimal de maintien de voie.</strong>",xp:8},
+{cat:"Mélange médicaments",q:"Vous devez administrer deux médicaments simultanément. Vous ?",ch:["Les mélangez dans la même seringue","Les passez dans des seringues PSE séparées sur des voies ou robinets différents","Les passez dans la même tubulure l'un après l'autre sans rinçage","Les mélangez s'ils sont dans le même solvant"],ok:1,ek:"Jamais mélanger deux médicaments dans la même seringue. Utiliser deux PSE séparés ou deux lumières différentes du cathéter.",ee:"Même dans le même solvant, les médicaments peuvent réagir entre eux.",r:"<strong>Jamais mélanger. 2 médicaments = 2 seringues séparées.</strong>",xp:12},
+{cat:"Photosensibilité",q:"Quel médicament est photosensible et nécessite une tubulure opaque ?",ch:["Morphine","Vancomycine","Amiodarone (Cordarone®)","Amoxicilline"],ok:2,ek:"L'Amiodarone (Cordarone®) est photosensible. Tubulures opaques obligatoires, protéger de la lumière.",ee:"La morphine n'est pas photosensible.",r:"<strong>Cordarone® = photosensible = tubulure opaque.</strong>",xp:10},
+{cat:"Seringue incompatible",q:"Le PSE affiche 'SYRINGE ERROR'. Que signifie cette alarme ?",ch:["Seringue presque vide","Seringue non reconnue ou incompatible avec ce PSE","Médicament périmé","Débit trop élevé pour cette seringue"],ok:1,ek:"SYRINGE ERROR = PSE ne reconnaît pas la seringue (diamètre incorrect, marque incompatible, mauvaise installation). Retirer et réinstaller. Si persistance : vérifier la compatibilité.",ee:"Forcer une seringue incompatible peut produire un débit erroné.",r:"<strong>SYRINGE ERROR = seringue incompatible ou mal installée. Ne pas forcer.</strong>",xp:10},
+{cat:"Double contrôle",q:"Pour quel type de médicament le double contrôle PSE est-il particulièrement indispensable ?",ch:["Antibiotiques classiques (amoxicilline)","Médicaments à index thérapeutique étroit : vasopresseurs, anticoagulants, insuline, morphine, sédatifs","Tous les médicaments indifféremment","Seulement en réanimation"],ok:1,ek:"Double contrôle prioritaire pour les médicaments à index thérapeutique étroit. Une erreur de débit sur ces produits peut être mortelle.",ee:"Les antibiotiques communs ont une marge thérapeutique large.",r:"<strong>Double contrôle obligatoire pour médicaments à index thérapeutique étroit.</strong>",xp:12},
+];
+const EX=[
+/* ── NIVEAU 1 : SIMPLE ── */
+{id:'p1',diff:1,title:"Vancomycine — Infection à SARM",
+ scen:`<span class="stag2">Infectiologie</span> <span class="stag2">SARM</span><br>
+Mme Dupont, 68 ans. Prescription : <strong>Vancomycine 1,5 g dans 50 mL de NaCl 0,9% en 3 heures au PSE.</strong>`,
+ q:"Quel débit (mL/h) programmez-vous sur le PSE ?",unit:"mL/h",ans:16.7,tol:0.3,
+ pse:{med:"Vancomycine 1,5g",vol:"50 mL",dur:"3 h"},
+ sol:[{t:"Volume total",f:"50 mL"},{t:"Durée",f:"3 heures"},{t:"Calcul",f:"50 ÷ 3 = 16,7 mL/h"}],
+ conseil:"La Vancomycine doit passer lentement (≥ 1h/g) pour éviter le Red Man Syndrome. Un débit trop rapide provoque une histaminolibération : érythème, prurit, flush. Surveiller TA et fréquence cardiaque."},
+{id:'p2',diff:1,title:"Furosémide — OAP",
+ scen:`<span class="stag2">Urgences</span> <span class="stag2">OAP</span><br>
+M. Martin, 74 ans, œdème aigu pulmonaire. Prescription : <strong>Furosémide 80 mg dans 80 mL NaCl 0,9% en 2 heures au PSE.</strong>`,
+ q:"Quel débit (mL/h) programmez-vous sur le PSE ?",unit:"mL/h",ans:40,tol:0,
+ pse:{med:"Furosémide 80 mg",vol:"80 mL",dur:"2 h"},
+ sol:[{t:"Volume total",f:"80 mL"},{t:"Durée",f:"2 heures"},{t:"Calcul",f:"80 ÷ 2 = 40 mL/h"}],
+ conseil:"Le Furosémide est photosensible — protéger de la lumière. Surveiller la diurèse, la kaliémie et la TA. En OAP, l'objectif est une diurèse abondante et rapide."},
+{id:'p3',diff:1,title:"Morphine — Douleur post-opératoire",
+ scen:`<span class="stag2">Chirurgie</span> <span class="stag2">Analgésie</span><br>
+Mme Bernard, prothèse totale de hanche. Prescription : <strong>Morphine 30 mg dans 30 mL NaCl 0,9% en 24 heures au PSE.</strong>`,
+ q:"Quel débit (mL/h) programmez-vous sur le PSE ?",unit:"mL/h",ans:1.25,tol:0.1,
+ pse:{med:"Morphine 30 mg",vol:"30 mL",dur:"24 h"},
+ sol:[{t:"Volume total",f:"30 mL"},{t:"Durée",f:"24 heures"},{t:"Calcul",f:"30 ÷ 24 = 1,25 mL/h"}],
+ conseil:"Concentration = 1 mg/mL → la patiente reçoit 1,25 mg/h. Surveiller sédation (Ramsay), fréquence respiratoire, saturation. Naloxone disponible. EVA toutes les 4h."},
+{id:'p4',diff:1,title:"KCl — Hypokaliémie sévère",
+ scen:`<span class="stag2">Réanimation</span> <span class="stag2">Hypokaliémie</span><br>
+M. Leroy, kaliémie à 2,8 mmol/L. Prescription : <strong>KCl 2 g dans 100 mL NaCl 0,9% en 2 heures au PSE.</strong>`,
+ q:"Quel débit (mL/h) programmez-vous sur le PSE ?",unit:"mL/h",ans:50,tol:0,
+ pse:{med:"KCl 2 g",vol:"100 mL",dur:"2 h"},
+ sol:[{t:"Volume total",f:"100 mL"},{t:"Durée",f:"2 heures"},{t:"Calcul",f:"100 ÷ 2 = 50 mL/h"}],
+ conseil:"⚠️ KCl pur IV direct = arrêt cardiaque. Toujours dilué et passé lentement. Débit max recommandé : 20 mmol/h en service, 40 mmol/h en réanimation sous scope."},
+{id:'p5',diff:1,title:"Héparine sodique — Embolie pulmonaire",
+ scen:`<span class="stag2">Médecine interne</span> <span class="stag2">Embolie pulmonaire</span><br>
+Mme Petit, embolie pulmonaire confirmée. Prescription : <strong>Héparine 25 000 UI / 24h au PSE dans 50 mL NaCl 0,9% (volume total = 50 mL).</strong>`,
+ q:"Quel débit (mL/h) programmez-vous ? (Volume total = 50 mL sur 24h)",unit:"mL/h",ans:2.1,tol:0.1,
+ pse:{med:"Héparine 25 000 UI",vol:"50 mL",dur:"24 h"},
+ sol:[{t:"Volume total",f:"50 mL"},{t:"Durée",f:"24 heures"},{t:"Calcul",f:"50 ÷ 24 ≈ 2,1 mL/h"}],
+ conseil:"Concentration = 25 000 UI/50 mL = 500 UI/mL. À 2,1 mL/h ≈ 1 050 UI/h. Adapter selon le TCA (objectif : 2-3× témoin). TCA à H4 puis toutes les 6-8h."},
+/* ── NIVEAU 2 : MOYEN ── */
+{id:'p6',diff:2,title:"Midazolam (Hypnovel®) — Sédation réanimation",
+ scen:`<span class="stag2">Réanimation</span> <span class="stag2">Sédation</span><br>
+M. Garcia, 55 ans, intubé ventilé. Prescription : <strong>Midazolam 18 mg / 24h au PSE.</strong><br>
+Disponible : ampoules Midazolam 50 mg/10 mL. Protocole : seringue de 48 mL pour 24h.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:2,tol:0.1,
+ pse:{med:"Midazolam 18 mg",vol:"48 mL",dur:"24 h"},
+ sol:[
+  {t:"① Quantité à injecter",f:"18 mg pour 24h"},
+  {t:"② Volume à prélever",f:"50 mg / 10 mL → 1 mg = 0,2 mL\n18 mg × 0,2 = 3,6 mL"},
+  {t:"③ Volume total seringue",f:"48 mL (3,6 mL Midazolam + 44,4 mL NaCl 0,9%)"},
+  {t:"④ Débit",f:"48 ÷ 24 = 2 mL/h"},
+ ],
+ conseil:"On utilise 48 mL (pas 50) pour avoir un débit entier sur 24h. Concentration ≈ 0,375 mg/mL. Surveiller le score de Ramsay (objectif 4-5 en réanimation). Le Midazolam est photosensible."},
+{id:'p7',diff:2,title:"Nicardipine (Loxen®) — HTA sévère",
+ scen:`<span class="stag2">USIC</span> <span class="stag2">HTA urgente</span><br>
+Mme Thomas, TA = 210/120 mmHg. Prescription : <strong>Nicardipine (Loxen®) 5 mg/h au PSE.</strong><br>
+Protocole du service : dilution dans G5% à 0,1 mg/mL.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:50,tol:0,
+ pse:{med:"Loxen® 5 mg/h",vol:"100 mL",dur:"Continu"},
+ sol:[
+  {t:"① Dose prescrite",f:"5 mg/h"},
+  {t:"② Concentration de la solution",f:"0,1 mg/mL (protocole du service)"},
+  {t:"③ Calcul",f:"Débit = 5 mg/h ÷ 0,1 mg/mL = 50 mL/h"},
+ ],
+ conseil:"Le Loxen® est titré sur la TA. Départ classique : 3-5 mg/h, adapter toutes les 5-15 min selon la réponse. Ne pas baisser trop vite (risque d'hypotension). Surveiller FC et TA toutes les 5 min au début."},
+{id:'p8',diff:2,title:"Amiodarone (Cordarone®) — FA rapide",
+ scen:`<span class="stag2">Urgences cardio</span> <span class="stag2">Fibrillation auriculaire</span><br>
+M. Dubois, FA rapide. Prescription : <strong>Amiodarone 300 mg en dose de charge en 30 minutes dans G5% QSP 30 mL.</strong>`,
+ q:"Quel débit (mL/h) programmez-vous pour cette dose de charge ?",unit:"mL/h",ans:60,tol:0,
+ pse:{med:"Cordarone® 300 mg",vol:"30 mL",dur:"30 min"},
+ sol:[
+  {t:"① Volume total",f:"QSP 30 mL = 30 mL"},
+  {t:"② Durée en heures",f:"30 min = 0,5 h"},
+  {t:"③ Calcul",f:"30 mL ÷ 0,5 h = 60 mL/h"},
+ ],
+ conseil:"⚠️ Cordarone® = G5% uniquement. Tubulures PVC incompatibles. Après dose de charge 300 mg/30 min → entretien 600 mg/24h. Surveillance ECG continue. Voie centrale préférable pour durée >24h (phlébite)."},
+{id:'p9',diff:2,title:"Noradrénaline — Choc septique",
+ scen:`<span class="stag2">Réanimation</span> <span class="stag2">Choc septique</span><br>
+M. Renard, 72 ans. Prescription : <strong>Noradrénaline 2 mg/h au PSE.</strong><br>
+Protocole : concentration 0,5 mg/mL dans G5%.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:4,tol:0,
+ pse:{med:"Noradrénaline 2 mg/h",vol:"48 mL",dur:"Titré"},
+ sol:[
+  {t:"① Dose prescrite",f:"2 mg/h"},
+  {t:"② Concentration (protocole)",f:"0,5 mg/mL"},
+  {t:"③ Calcul",f:"2 mg/h ÷ 0,5 mg/mL = 4 mL/h"},
+ ],
+ conseil:"La Noradrénaline est titrée sur la TAM (cible > 65 mmHg en sepsis). Voie centrale OBLIGATOIRE (nécrose sur extravasation). Relais anticipé à 10-15 mL restants. Jamais interrompre."},
+{id:'pa',diff:2,title:"Esoméprazole — Hémorragie digestive",
+ scen:`<span class="stag2">Gastroentérologie</span> <span class="stag2">Ulcère hémorragique</span><br>
+M. Fontaine, hémorragie digestive post-endoscopie. Prescription : <strong>Esoméprazole 8 mg/h en continu au PSE.</strong><br>
+Protocole : 1 flacon 40 mg reconstitué dans 100 mL NaCl 0,9%.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:20,tol:0,
+ pse:{med:"Esoméprazole 8 mg/h",vol:"100 mL",dur:"5 h / seringue"},
+ sol:[
+  {t:"① Concentration",f:"40 mg dans 100 mL → 0,4 mg/mL"},
+  {t:"② Dose prescrite",f:"8 mg/h"},
+  {t:"③ Calcul",f:"8 mg/h ÷ 0,4 mg/mL = 20 mL/h"},
+  {t:"④ Durée d'une seringue",f:"100 mL ÷ 20 mL/h = 5h par seringue"},
+ ],
+ conseil:"L'Esoméprazole IV continu post-endoscopie réduit significativement le risque de re-saignement. 100 mL dure 5h → prévoir environ 14-15 changements pour 72h. Compatible NaCl 0,9% ou G5%."},
+/* ── NIVEAU 3 : COMPLEXE ── */
+{id:'pb',diff:3,title:"Dobutamine — Choc cardiogénique",
+ scen:`<span class="stag2">Cardiologie</span> <span class="stag2">Choc cardiogénique</span><br>
+Mme Moreau, 67 ans, <strong>68 kg</strong>. Prescription : <strong>Dobutamine 5 µg/kg/min au PSE.</strong><br>
+Disponible : flacons 250 mg/50 mL. Volume total seringue = 50 mL dans G5%.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:4.1,tol:0.3,
+ pse:{med:"Dobutamine 5 µg/kg/min",vol:"50 mL",dur:"~12 h"},
+ sol:[
+  {t:"① Dose par minute",f:"5 µg/kg/min × 68 kg = 340 µg/min"},
+  {t:"② Convertir en mg/h",f:"340 µg/min × 60 min/h ÷ 1000 = 20,4 mg/h"},
+  {t:"③ Concentration de la seringue",f:"250 mg ÷ 50 mL = 5 mg/mL"},
+  {t:"④ Calcul du débit",f:"20,4 mg/h ÷ 5 mg/mL = 4,08 mL/h ≈ 4,1 mL/h"},
+ ],
+ conseil:"Formule générale µg/kg/min : Débit = dose × poids × 60 × V_seringue / (Quantité totale mg × 1000). Dobutamine = inotrope positif. Titration sur TAS, FC, index cardiaque. Risque de tachycardie à doses élevées."},
+{id:'pc',diff:3,title:"Dopamine — Choc septique réfractaire",
+ scen:`<span class="stag2">Réanimation</span> <span class="stag2">Choc septique</span><br>
+M. Girard, <strong>89 kg</strong>. Prescription : <strong>Dopamine 5 µg/kg/min pour 12 heures.</strong><br>
+Ampoules : Dopamine 200 mg/10 mL. Volume total seringue = 48 mL (débit = 4 mL/h sur 12h).`,
+ q:"Quelle quantité de Dopamine (mg) mettre dans la seringue de 48 mL ?",unit:"mg",ans:320,tol:8,
+ pse:{med:"Dopamine ~320 mg",vol:"48 mL",dur:"12 h"},
+ sol:[
+  {t:"① Dose en mg/h",f:"5 µg/kg/min × 89 kg × 60 min/h ÷ 1000 = 26,7 mg/h"},
+  {t:"② Dose totale 12h",f:"26,7 × 12 = 320,4 mg ≈ 320 mg"},
+  {t:"③ Vérification avec débit 4 mL/h",f:"Concentration = 320 mg ÷ 48 mL = 6,67 mg/mL\n26,7 mg/h ÷ 6,67 mg/mL ≈ 4 mL/h ✓"},
+  {t:"④ Préparation",f:"320 mg ÷ 200 mg/amp = 1,6 amp = 16 mL d'ampoule\nCompléter avec 32 mL G5%"},
+ ],
+ conseil:"La Dopamine a des effets dose-dépendants : < 5 µg/kg/min = effet rénal ; 5-10 = inotrope ; > 10 = vasoconstricteur. De moins en moins utilisée au profit de la Noradrénaline en réanimation moderne."},
+{id:'pd',diff:3,title:"Morphine — Analyse de seringue en cours",
+ scen:`<span class="stag2">Chirurgie</span> <span class="stag2">Lecture PSE</span><br>
+M. Petit, retour de bloc à 8h00. Seringue placée pleine à <strong>40 mL</strong>. Concentration : <strong>1 mg / 2 mL (0,5 mg/mL)</strong>. Débit PSE : <strong>4 mL/h</strong>.<br>
+Il est maintenant <strong>11h30</strong> et le PSE indique qu'il reste <strong>26 mL</strong>.`,
+ q:"Combien de mg de Morphine le patient a-t-il reçu depuis le début ?",unit:"mg",ans:7,tol:0.5,
+ pse:{med:"Morphine 20 mg",vol:"40 mL",dur:"Analyse en cours"},
+ sol:[
+  {t:"① Volume perfusé",f:"40 mL (départ) - 26 mL (restant) = 14 mL perfusés"},
+  {t:"② Concentration",f:"1 mg / 2 mL = 0,5 mg/mL"},
+  {t:"③ Dose reçue",f:"14 mL × 0,5 mg/mL = 7 mg de morphine"},
+  {t:"④ Vérification par le temps",f:"11h30 - 8h00 = 3h30 = 3,5h\n4 mL/h × 3,5h = 14 mL → 7 mg ✓"},
+ ],
+ conseil:"Lire le volume restant sur le PSE permet de vérifier la cohérence : volume perfusé doit correspondre au temps écoulé × débit. Un écart important signale une occlusion intermittente ou une erreur de débit."},
+{id:'pe',diff:3,title:"Noradrénaline — Calcul complet µg/kg/min",
+ scen:`<span class="stag2">Réanimation</span> <span class="stag2">Calcul complet</span><br>
+Patient en choc septique, <strong>75 kg</strong>. Prescription : <strong>Noradrénaline 0,1 µg/kg/min.</strong><br>
+Protocole du service : concentration cible = 0,5 mg/mL dans G5%.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:0.9,tol:0.1,
+ pse:{med:"Noradrénaline 0,1 µg/kg/min",vol:"48 mL",dur:"~53 h"},
+ sol:[
+  {t:"① Convertir en mg/h",f:"0,1 µg/kg/min × 75 kg × 60 min/h ÷ 1000 = 0,45 mg/h"},
+  {t:"② Concentration (protocole)",f:"0,5 mg/mL"},
+  {t:"③ Calcul",f:"0,45 mg/h ÷ 0,5 mg/mL = 0,9 mL/h"},
+  {t:"④ Préparation",f:"48 mL × 0,5 mg/mL = 24 mg Noradrénaline\n24 ÷ 8 mg/amp = 3 amp (12 mL)\nCompléter avec 36 mL G5%"},
+ ],
+ conseil:"0,9 mL/h est un débit très faible — vérifier que le PSE peut le gérer avec précision. À 0,1 µg/kg/min, c'est une dose faible. Le choc septique peut nécessiter jusqu'à 1-3 µg/kg/min."},
+{id:'pf',diff:3,title:"Insuline — Acidocétose diabétique",
+ scen:`<span class="stag2">USIC / Réanimation</span> <span class="stag2">Acidocétose</span><br>
+M. Fournier, <strong>80 kg</strong>, glycémie à 32 mmol/L en acidocétose. Prescription : <strong>Insuline rapide (Actrapid®) 0,1 UI/kg/h en PSE IV continu.</strong><br>
+Protocole : seringue de 50 mL à 1 UI/mL dans NaCl 0,9%.`,
+ q:"Quel débit (mL/h) programmez-vous ?",unit:"mL/h",ans:8,tol:0,
+ pse:{med:"Insuline 0,1 UI/kg/h",vol:"50 mL",dur:"~6 h"},
+ sol:[
+  {t:"① Dose en UI/h",f:"0,1 UI/kg/h × 80 kg = 8 UI/h"},
+  {t:"② Concentration",f:"1 UI/mL (protocole du service)"},
+  {t:"③ Calcul",f:"8 UI/h ÷ 1 UI/mL = 8 mL/h"},
+  {t:"④ Durée seringue",f:"50 mL ÷ 8 mL/h ≈ 6,25h"},
+ ],
+ conseil:"⚠️ Insuline IV : surveiller la glycémie toutes les heures. Objectif en réa : 8-10 mmol/L (correction progressive). Risque d'hypokaliémie (l'insuline fait entrer K+ dans les cellules). Tubulures NON-PVC obligatoires."},
+];
+/* ── FICHE BUILD ── */
+const PHASES=[
+  {l:'📋 Phase 1 — Préparation (1-3)',steps:[1,2,3],c:'#3b82f6'},
+  {l:'🔩 Phase 2 — Installation PSE (4-5)',steps:[4,5],c:'#06b6d4'},
+  {l:'🔗 Phase 3 — Connexion et lancement (6-7)',steps:[6,7],c:'#10b981'},
+  {l:'👁️ Phase 4 — Surveillance et alarmes (8-10)',steps:[8,9,10],c:'#ef4444'},
+  {l:'📝 Phase 5 — Fin de soin et sécurité (11-16)',steps:[11,12,13,14,15,16],c:'#f59e0b'},
+];
+const SERR={
+  3:"Administrer une seringue sans étiquette — identification impossible, risque de confusion médicamenteuse.",
+  5:"Programmer un débit erroné sans double contrôle — surdose potentiellement mortelle (ex : 20 au lieu de 2 mL/h vasopresseur).",
+  6:"Passer un vasopresseur sur voie périphérique sans surveillance rapprochée — risque de nécrose cutanée sévère.",
+  9:"Silencer une alarme vasopresseur sans traiter la cause — rupture de perfusion → effondrement hémodynamique.",
+  10:"Ne pas faire le relais en chevauchement pour les vasopresseurs — rupture de perfusion → hypotension sévère.",
+  12:"Mélanger Cordarone® avec NaCl 0,9% — précipité. Mélanger deux médicaments — incompatibilité physico-chimique.",
+};
+const SCONS={
+  1:"Pour le PSE, l'unité est toujours mL/h. La prescription peut être en mg/h, µg/kg/min — toujours convertir en mL/h.",
+  2:"Avant de placer une seringue dans un PSE : lire le nom et numéro de lot, comparer à la prescription.",
+  5:"Double contrôle : avant MARCHE, un second IDE lit le débit affiché et confirme avec la prescription.",
+  9:"Règle des 5 minutes : toute alarme non résolue en 5 min → escalader au médecin.",
+  11:"Prescription orale par téléphone = traçable en mentionnant 'sur ordre du Dr X par téléphone' en attendant la prescription écrite.",
+  15:"Protocole SIGAPS pour médicaments à risque : Source (prescription), Identité (patient), Gravité, Allergies, Préparation, Surveillance.",
+};
+function buildFicheProto(){
+  const c=document.getElementById('proto-pse');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,var(--bld),var(--bll));border:1px solid var(--bl);border-radius:11px;padding:13px 15px;margin-bottom:15px;font-size:12px;line-height:1.75;color:var(--t2)';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:var(--blm);font-weight:700;margin-bottom:5px">⚡ Avant toute utilisation du PSE</div><span style="color:var(--text)"><strong>Prescription médicale qualitative + quantitative obligatoire (Art. R.4311-7).</strong></span><br><strong>Rappels absolus :</strong> jamais mélanger deux médicaments · étiqueter AVANT la pose · purge via bouton PSE · relais vasopresseurs anticipé.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');pd.className='ph';pd.style.cssText=`color:${ph.c};border-color:${ph.c}`;pd.textContent=ph.l;c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':'';
+      let tags='';
+      if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';
+      if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      const d=document.createElement('div');d.className=`sc2 ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sn2">${n}</div><div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div>
+        <div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c"><div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div><div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div></div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-pse .sc2').forEach(x=>x.classList.add('open'));
+}
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='fp')buildFicheProto();
+}
+/* ── PHARMACOLOGIE ── */
+let phCorr=0,phTot=0,curDiff='all';
+function buildPharma(){
+  const body=document.getElementById('ph-body');
+  if(!body)return;
+  const exos=curDiff==='all'?EX:EX.filter(e=>e.diff===curDiff);
+  body.innerHTML='';
+  exos.forEach(ex=>{
+    const dc=['','#10b981','#f59e0b','#8b5cf6'][ex.diff];
+    const db=['','#052e16','#451a03','#2e1065'][ex.diff];
+    const ds=['','⭐ Simple','⭐⭐ Moyen','⭐⭐⭐ Complexe'][ex.diff];
+    const idx=EX.indexOf(ex)+1;
+    const card=document.createElement('div');card.className='exo-card';card.id='exo-'+ex.id;
+    card.innerHTML=`
+      <div class="exo-hdr">
+        <div class="exo-badge" style="background:${db};border-color:${dc};color:${dc}">${ds}</div>
+        <div class="exo-title">${ex.title}</div>
+        <div class="exo-num">EX.${idx}</div>
+      </div>
+      <div class="pse-wrap">
+        <div class="pse-screen">
+          <div class="pse-display">
+            <div class="pse-field"><div class="pse-label">Médicament</div><div class="pse-value" style="font-size:12px;letter-spacing:0">${ex.pse.med}</div></div>
+            <div class="pse-field"><div class="pse-label">Débit (mL/h)</div><div class="pse-value hl" id="psv-${ex.id}">_ _ . _</div></div>
+            <div class="pse-field"><div class="pse-label">Volume</div><div class="pse-value" style="font-size:14px">${ex.pse.vol}</div></div>
+          </div>
+          <div class="pse-status"><div class="pse-st-txt" id="pst-${ex.id}">PSE PRÊT · EN ATTENTE DE PROGRAMMATION</div>
+            <div class="pse-leds"><div class="led led-on"></div><div class="led led-off" id="led2-${ex.id}"></div><div class="led led-off"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="scenario">${ex.scen}</div>
+      <div class="ans-q">❓ ${ex.q}</div>
+      <div class="ans-zone">
+        <div class="ans-iw">
+          <input class="ans-in" id="inp-${ex.id}" type="number" step="0.1" min="0" placeholder="_ _._"
+            oninput="upPSE('${ex.id}',this.value)"
+            onkeydown="if(event.key==='Enter')checkAns('${ex.id}')"/>
+          <div class="ans-unit">${ex.unit}</div>
+        </div>
+        <button class="ans-btn" id="btn-${ex.id}" onclick="checkAns('${ex.id}')">Valider →</button>
+        <button class="sol-btn" onclick="toggleSol('${ex.id}')">Solution</button>
+      </div>
+      <div class="sol-box" id="sol-${ex.id}">
+        <div class="sol-title">📐 Solution détaillée pas à pas</div>
+        ${ex.sol.map(s=>`<div class="sol-step"><strong style="color:var(--blm)">${s.t} :</strong><br>${s.f.split('\n').map(l=>`<span class="mn">${l}</span>`).join('<br>')}</div>`).join('')}
+        <div class="sol-result">✅ Réponse : ${ex.ans} ${ex.unit}</div>
+        ${ex.conseil?`<div class="sol-conseil">💡 <strong style="color:var(--blm)">Conseil clinique :</strong> ${ex.conseil}</div>`:''}
+      </div>`;
+    body.appendChild(card);
+  });
+  updatePhProg();
+}
+function upPSE(id,val){
+  const el=document.getElementById('psv-'+id);if(!el)return;
+  if(!val||isNaN(parseFloat(val))){el.textContent='_ _._';el.className='pse-value hl';return;}
+  el.textContent=parseFloat(val).toFixed(1);el.className='pse-value uv';
+}
+function checkAns(id){
+  const ex=EX.find(e=>e.id===id);if(!ex)return;
+  const inp=document.getElementById('inp-'+id);
+  const btn=document.getElementById('btn-'+id);
+  const psv=document.getElementById('psv-'+id);
+  const pst=document.getElementById('pst-'+id);
+  const led=document.getElementById('led2-'+id);
+  if(!inp||inp.disabled)return;
+  const val=parseFloat(inp.value);
+  if(isNaN(val)){inp.focus();return;}
+  phTot++;
+  const ok=Math.abs(val-ex.ans)<=(ex.tol||0);
+  if(ok){
+    phCorr++;
+    inp.classList.add('correct');
+    psv.textContent=val.toFixed(1);psv.className='pse-value hl';
+    if(led)led.className='led led-on';
+    if(pst)pst.textContent='✓ PERFUSION EN COURS · '+val.toFixed(1)+' mL/h';
+    btn.textContent='✓ Correct !';btn.style.background='var(--gr)';
+    setTimeout(()=>toggleSol(id),400);
+  } else {
+    inp.classList.add('wrong');
+    btn.textContent='✗ Incorrect';btn.style.background='var(--rd)';
+    setTimeout(()=>{inp.classList.remove('wrong');},500);
+    setTimeout(()=>toggleSol(id),600);
+  }
+  inp.disabled=true;btn.disabled=true;
+  updatePhProg();
+}
+function toggleSol(id){const s=document.getElementById('sol-'+id);if(s)s.classList.toggle('show');}
+function filterDiff(d,btn){
+  curDiff=d;
+  document.querySelectorAll('.diff-tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');buildPharma();
+}
+function updatePhProg(){
+  const prog=document.getElementById('ph-prog');const sc=document.getElementById('ph-score');
+  const corr=document.getElementById('ph-corr');const tot=document.getElementById('ph-tot');
+  if(prog)prog.textContent=phTot+'/'+EX.length;
+  if(sc){const p=phTot?Math.round(phCorr/phTot*100):0;
+    sc.textContent=phCorr+'/'+phTot;
+    sc.style.color=p>=80?'var(--grm)':p>=50?'var(--orm)':'var(--rdm)';}
+  if(corr)corr.textContent=phCorr;if(tot)tot.textContent=phTot;
+}
+/* ── STATE QUIZ ── */
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+function setMode(m,btn){document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');mode=m;}
+function launch(){
+  if(mode==='fiche'){buildFicheProto();showScr('sf');showFTab('fa',document.querySelector('.ftab'));return;}
+  if(mode==='pharma'){phCorr=0;phTot=0;buildPharma();showScr('s-pharma');return;}
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else{qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  showScr('sq');loadQ();
+}
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  const tot=qs.length;
+  document.getElementById('tbpf').style.width=(qi/tot*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q);else loadStd(q);
+  startTimer();
+}
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.4);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'Outfit',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStep(i,b,s);c.appendChild(b);});
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{const b=document.createElement('button');b.className='ch';b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;b.onclick=()=>ansStd(i,b,q);c.appendChild(b);});
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}});
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+function nextQ(){qi++;loadQ();}
+function startTimer(){
+  clearInterval(tiv);let dur=mode==='exam'?30:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--bl)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;arc.style.strokeDashoffset=((dur-tleft)/dur*220);num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--rd)';}
+    if(tleft<=0){clearInterval(tiv);if(!ans){ans=true;wrng++;score=Math.max(0,score-15);
+      document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+      updateUI();document.getElementById('nxt').classList.add('on');}}
+  },1000);
+}
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;document.getElementById('xpn').textContent=xp;
+  document.getElementById('scc').textContent=corr;document.getElementById('sww').textContent=wrng;
+  document.getElementById('scn').textContent=score;document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+function showResult(){
+  clearInterval(tiv);const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:'📚 Apprentissage — 16 étapes PSE',exam:'📝 Examen — Questions théoriques PSE'};
+  const gd=[{m:18,g:'🏆',t:'Excellent',bc:'#052e16',tc:'#34d399',bd:'#10b981'},{m:14,g:'✅',t:'Bien',bc:'#1e3a5f',tc:'#60a5fa',bd:'#3b82f6'},{m:10,g:'⚠️',t:'Passable — À consolider',bc:'#451a03',tc:'#fbbf24',bd:'#f59e0b'},{m:0,g:'❌',t:'Insuffisant',bc:'#450a0a',tc:'#f87171',bd:'#ef4444'}].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];document.getElementById('rxp').textContent=xp;document.getElementById('rstr').textContent=bstr;document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{const p=s.t?Math.round(s.c/s.t*100):0;const c=p>=80?'#10b981':p>=50?'#f59e0b':'#ef4444';bd.innerHTML+=`<div class="bki"><div class="bd3" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;});
+  const eb=document.getElementById('errb');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole PSE bien assimilé. Passez au mode Examen puis testez-vous en Pharmacologie & Calculs.");
+  if(mode==='exam'&&note>=16)cs.push("🧮 Excellent ! Lancez-vous dans le mode Pharmacologie & Calculs pour vous entraîner aux situations réelles.");
+  if(note<10)cs.push("📖 Repassez par la Fiche Référence puis l'Apprentissage.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : Cordarone® = G5° · étiquetage · purge bouton PSE · relais vasopresseurs anticipé.");
+  Object.entries(cats).forEach(([cat,s])=>{if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Incompat'))cs.push("🧪 Incompatibilités : Cordarone® = G5% UNIQUEMENT. Jamais mélanger deux médicaments dans une seringue.");
+    if(cat.includes('Relais'))cs.push("🔄 Relais vasopresseurs : préparation à 10-15 mL restants, lancement AVANT d'arrêter l'ancienne.");
+    if(cat.includes('Étique')||cat.includes('Prépa'))cs.push("🏷️ Étiqueter AVANT la pose : nom + dose + dilution + débit + heure + initiales. Seringue sans étiquette = à détruire.");
+    if(cat.includes('Alarme'))cs.push("🚨 Toute alarme a une cause. Identifier avant de silencer. Non résolue en 5 min = médecin.");
+    if(cat.includes('Formule')||cat.includes('débit'))cs.push("🔢 Formule : Débit = Volume ÷ Durée. Pour µg/kg/min : dose × poids × 60 ÷ 1000 = mg/h, puis ÷ concentration.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. PSE maîtrisé.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+function restart(){launch();}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>

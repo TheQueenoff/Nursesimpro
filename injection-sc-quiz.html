@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>NurseSimPro — Injection SC</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f6fa;--w:#fff;
+  --tl:#0f766e;--tld:#134e4a;--tll:#f0fdfa;--tlm:#5eead4;
+  --bl:#1e40af;--bll:#eff6ff;--blm:#93c5fd;
+  --rd:#dc2626;--rdl:#fef2f2;--rdm:#fca5a5;
+  --or:#b45309;--orl:#fffbeb;--orm:#fde68a;
+  --pu:#6d28d9;--pul:#f5f3ff;--pum:#c4b5fd;
+  --gr:#15803d;--grl:#f0fdf4;--grm:#86efac;
+  --text:#111827;--t2:#4b5563;--t3:#9ca3af;
+  --bd:#e5e7eb;--bd2:#d1d5db;
+  --sh:0 1px 3px rgba(0,0,0,.07),0 2px 8px rgba(0,0,0,.04);
+  --shm:0 4px 20px rgba(0,0,0,.1);
+}
+html,body{min-height:100vh;font-family:'Sora',sans-serif;background:var(--bg);color:var(--text)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@keyframes shake{0%,100%{transform:translateX(0)}30%,70%{transform:translateX(-4px)}50%{transform:translateX(4px)}}
+@keyframes xpf{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-28px)}}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.45}}
+.scr{display:none;min-height:100vh;flex-direction:column}.scr.on{display:flex}
+
+/* HDR */
+.hdr{background:var(--w);border-bottom:1px solid var(--bd);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--sh)}
+.hl{display:flex;align-items:center;gap:9px}
+.hico{width:34px;height:34px;background:var(--tld);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.hn{font-size:14px;font-weight:700;color:var(--tld)}
+.hs{font-size:10px;color:var(--t3)}
+.hbadge{background:var(--tll);color:var(--tl);border:1px solid var(--tlm);border-radius:20px;padding:4px 11px;font-size:10px;font-weight:700}
+
+/* WELCOME */
+.wb{max-width:800px;margin:0 auto;padding:24px 18px 50px;animation:up .4s ease}
+.hero{background:var(--w);border:1px solid var(--bd);border-radius:16px;padding:20px;margin-bottom:18px;box-shadow:var(--sh);display:flex;gap:15px;align-items:center}
+.hero-ico{font-size:38px;flex-shrink:0}
+.ht{font-family:'Playfair Display',serif;font-size:20px;color:var(--tld);margin-bottom:4px}
+.hd{font-size:12.5px;color:var(--t2);line-height:1.65}
+
+/* Alerte */
+.alert{background:linear-gradient(135deg,#fff5f5,#fef9f0);border:2px solid var(--rdm);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.ar{display:flex;gap:10px;align-items:flex-start}
+.ai{font-size:20px;flex-shrink:0;margin-top:1px}
+.at{font-size:12px;font-weight:700;color:var(--rd);margin-bottom:5px}
+.al{list-style:none}
+.al li{font-size:11.5px;color:#7f1d1d;display:flex;gap:6px;align-items:flex-start;line-height:1.55;margin-bottom:3px}
+.al li::before{content:'⚠️';font-size:10px;flex-shrink:0;margin-top:1px}
+
+/* Nuances box */
+.nuance-box{background:var(--pul);border:1.5px solid var(--pum);border-radius:12px;padding:13px 15px;margin-bottom:18px}
+.nb-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--pu);margin-bottom:8px}
+.nb-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:560px){.nb-grid{grid-template-columns:1fr}}
+.nb-item{background:var(--w);border:1px solid var(--pum);border-radius:9px;padding:10px 11px;font-size:11px;color:#4c1d95;line-height:1.55}
+.nb-item strong{display:block;margin-bottom:3px;font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Stats */
+.stats{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:12px;margin-bottom:18px;display:grid;grid-template-columns:repeat(4,1fr);text-align:center}
+.si{padding:5px;border-right:1px solid var(--bd)}.si:last-child{border:none}
+.sv{font-size:19px;font-weight:800;color:var(--tld);margin-bottom:1px}
+.sl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+
+/* Modes */
+.mlbl{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:10px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+@media(max-width:560px){.mgrid{grid-template-columns:1fr}}
+.mc{background:var(--w);border:2px solid var(--bd);border-radius:14px;padding:17px 15px;cursor:pointer;text-align:left;transition:all .2s;position:relative;overflow:hidden}
+.mc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--tl));border-radius:14px 14px 0 0;opacity:0;transition:opacity .2s}
+.mc:hover,.mc.sel{border-color:var(--mc,var(--tl));box-shadow:var(--shm);transform:translateY(-2px)}
+.mc:hover::before,.mc.sel::before{opacity:1}
+.mc.sel{background:var(--mb,var(--tll))}
+.mc-ico{font-size:24px;margin-bottom:8px;display:block}
+.mc-name{font-size:13px;font-weight:700;display:block;margin-bottom:4px}
+.mc-badge{display:inline-flex;border-radius:20px;padding:2px 8px;font-size:9px;font-weight:700;margin-bottom:7px;border:1px solid}
+.mc-desc{font-size:11px;color:var(--t2);line-height:1.55}
+.mc-ul{list-style:none;margin-top:7px}
+.mc-ul li{font-size:10.5px;color:var(--t2);padding:1.5px 0;display:flex;align-items:center;gap:4px}
+.mc-ul li::before{content:'✓';color:var(--mc,var(--tl));font-weight:700;flex-shrink:0}
+
+.launch{width:100%;padding:15px;background:var(--tld);border:none;border-radius:13px;color:white;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s;box-shadow:0 4px 14px rgba(19,78,74,.35)}
+.launch:hover{background:var(--tl);transform:translateY(-2px)}
+
+/* FICHE */
+.fb{max-width:820px;margin:0 auto;padding:22px 18px 50px;animation:up .4s ease}
+.fh{background:var(--w);border:1px solid var(--bd);border-radius:14px;padding:15px 20px;margin-bottom:15px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.ft{font-size:17px;font-family:'Playfair Display',serif;color:var(--tld)}
+.fsub{font-size:10.5px;color:var(--t3);margin-top:2px}
+.ftabs{display:flex;gap:5px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border:1.5px solid var(--bd);border-radius:20px;background:var(--w);font-size:10.5px;font-weight:700;cursor:pointer;color:var(--t2);font-family:'Sora',sans-serif;transition:all .18s}
+.ftab:hover{border-color:var(--tl);color:var(--tl)}
+.ftab.on{background:var(--tld);border-color:var(--tld);color:white}
+.fsec{display:none}.fsec.on{display:block;animation:up .2s ease}
+.fst{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--tl);font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.fst::after{content:'';flex:1;height:1px;background:var(--tlm)}
+
+/* Matériel */
+.mg2{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+@media(max-width:480px){.mg2{grid-template-columns:1fr}}
+.mi{background:var(--w);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;display:flex;align-items:flex-start;gap:7px;font-size:11.5px;color:var(--t2);line-height:1.5;box-shadow:var(--sh)}
+.mi-ico{font-size:15px;flex-shrink:0}
+.mi.crit{background:var(--rdl);border-color:var(--rdm)}.mi.crit .mt{color:#7f1d1d}
+.mi.warn{background:var(--orl);border-color:var(--orm)}.mi.warn .mt{color:var(--or)}
+.mi.ok{background:var(--grl);border-color:var(--grm)}.mi.ok .mt{color:#14532d}
+.mi.pu{background:var(--pul);border-color:var(--pum)}.mi.pu .mt{color:#4c1d95}
+
+/* Sites */
+.sites-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:480px){.sites-g{grid-template-columns:1fr}}
+.site-card{background:var(--w);border:1px solid var(--bd);border-radius:12px;padding:13px;box-shadow:var(--sh)}
+.site-card.pref{border-color:var(--tlm);border-width:2px}
+.site-card.warn{border-color:var(--orm)}
+.sc-h{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.sc-ico{font-size:18px}
+.sc-name{font-size:12px;font-weight:700;color:var(--text)}
+.sc-badge{font-size:8.5px;font-weight:700;padding:1px 6px;border-radius:20px;border:1px solid;margin-top:2px;display:inline-block}
+.bg-t{background:var(--tll);border-color:var(--tlm);color:var(--tl)}
+.bg-o{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.bg-g{background:var(--grl);border-color:var(--grm);color:var(--gr)}
+.sc-body{font-size:11px;color:var(--t2);line-height:1.65}
+.sc-vol{display:inline-flex;gap:4px;background:var(--bg);border-radius:6px;padding:3px 7px;font-size:9.5px;font-weight:700;color:var(--t3);margin-top:5px}
+
+/* Étapes */
+.ph{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 10px 5px 12px;border-left:3px solid;margin:16px 0 9px}
+.sc2{background:var(--w);border:1px solid var(--bd);border-radius:12px;overflow:hidden;box-shadow:var(--sh);margin-bottom:7px}
+.sc2.crit{border-color:var(--rdm);border-width:2px}
+.sc2.att{border-color:var(--orm);border-width:1.5px}
+.sc2.nuan{border-color:var(--pum);border-width:1.5px}
+.sh2{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;user-select:none;transition:background .15s}
+.sh2:hover{background:var(--bg)}
+.sn2{width:24px;height:24px;border-radius:50%;background:var(--tld);color:white;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sc2.crit .sn2{background:var(--rd)}
+.sc2.att .sn2{background:var(--or)}
+.sc2.nuan .sn2{background:var(--pu)}
+.si2{flex:1}
+.stxt{font-size:12.5px;font-weight:700;color:var(--text)}
+.stags{display:flex;gap:3px;margin-top:3px;flex-wrap:wrap}
+.stag{display:inline-flex;border-radius:20px;padding:1px 6px;font-size:8.5px;font-weight:700;border:1px solid}
+.tc{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.ta{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.tn{background:var(--pul);border-color:var(--pum);color:var(--pu)}
+.tg{background:var(--grl);border-color:var(--grm);color:var(--gr)}
+.schev{font-size:9px;color:var(--t3);transition:transform .2s;flex-shrink:0}
+.sc2.open .schev{transform:rotate(180deg)}
+.sbody{display:none;padding:0 14px 13px 48px}
+.sc2.open .sbody{display:block;animation:up .2s ease}
+.sgeste{font-size:12px;color:var(--t2);line-height:1.75;margin-bottom:9px}
+.s2c{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+@media(max-width:460px){.s2c{grid-template-columns:1fr}}
+.swhy{background:var(--pul);border-left:3px solid var(--pu);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:#4c1d95;line-height:1.6}
+.srule{background:var(--orl);border-left:3px solid var(--or);border-radius:0 7px 7px 0;padding:8px 11px;font-size:11px;color:var(--or);line-height:1.6}
+.serr{background:var(--rdl);border:1.5px solid var(--rdm);border-radius:7px;padding:7px 11px;font-size:11px;color:#7f1d1d;line-height:1.55;margin-top:6px}
+.snuan{background:var(--pul);border:1px solid var(--pum);border-radius:7px;padding:7px 11px;font-size:11px;color:#4c1d95;line-height:1.55;margin-top:6px}
+.scons{background:var(--bll);border:1px solid var(--blm);border-radius:7px;padding:7px 11px;font-size:11px;color:var(--bl);line-height:1.55;margin-top:6px}
+
+/* Complications */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+@media(max-width:480px){.cg{grid-template-columns:1fr}}
+.cc{padding:12px 13px;border-radius:11px;font-size:11.5px;line-height:1.65}
+.cc-h{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.cc-r{background:var(--rdl);border:1px solid var(--rdm);color:#7f1d1d}.cc-r .cc-h{color:var(--rd)}
+.cc-o{background:var(--orl);border:1px solid var(--orm);color:var(--or)}.cc-o .cc-h{color:var(--or)}
+.cc-t{background:var(--tll);border:1px solid var(--tlm);color:var(--tld)}.cc-t .cc-h{color:var(--tl)}
+.cc-p{background:var(--pul);border:1px solid var(--pum);color:#4c1d95}.cc-p .cc-h{color:var(--pu)}
+
+/* Mémo */
+.memo{border-radius:11px;padding:13px 15px;font-size:12px;line-height:1.8;margin-bottom:10px}
+.mh{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+
+/* QUIZ */
+#stb{background:var(--w);border-bottom:1px solid var(--bd);padding:9px 18px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+.tbl{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tbl-b{width:26px;height:26px;background:var(--tld);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.tbl-t{font-size:12px;font-weight:700;color:var(--tld)}
+.tbm{background:var(--tll);color:var(--tl);border:1px solid var(--tlm);border-radius:20px;padding:3px 9px;font-size:9.5px;font-weight:700;flex-shrink:0}
+.tbpw{flex:1;position:relative;padding-top:11px}
+.tbpb{height:6px;background:var(--bg);border-radius:3px;overflow:hidden;border:1px solid var(--bd)}
+.tbpf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--tl),var(--bl));transition:width .5s ease}
+.tbql{position:absolute;top:0;right:0;font-size:8.5px;color:var(--t3);font-weight:600}
+.tbr{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.pill{display:flex;align-items:center;gap:3px;border-radius:20px;padding:3px 9px;font-size:11.5px;font-weight:700;border:1px solid}
+.pxp{background:var(--orl);border-color:var(--orm);color:var(--or)}
+.pst{background:var(--bll);border-color:var(--blm);color:var(--bl)}
+.pst.hot{background:var(--orl);border-color:var(--orm);color:var(--or);animation:blink 1s infinite}
+.plv{background:var(--rdl);border-color:var(--rdm);color:var(--rd)}
+.tiw{position:relative;width:38px;height:38px;flex-shrink:0}
+.tiw svg{transform:rotate(-90deg)}
+.tib{fill:none;stroke:var(--bd);stroke-width:3.5}
+.tia{fill:none;stroke:var(--tl);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:220}
+.tin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--text)}.tin.warn{color:var(--rd)}
+
+#qb{flex:1;padding:16px;max-width:680px;width:100%;margin:0 auto}
+.ctx{background:linear-gradient(135deg,var(--tld),var(--tl));border-radius:15px;padding:16px 18px;margin-bottom:13px;display:flex;align-items:flex-start;gap:13px;animation:up .3s ease;color:white;box-shadow:0 4px 18px rgba(19,78,74,.28)}
+.ctx-ico{font-size:24px;flex-shrink:0;background:rgba(255,255,255,.12);width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ctx-sub{font-size:9px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:2px}
+.ctx-title{font-size:13.5px;font-weight:800;margin-bottom:2px}
+.ctx-body{font-size:12px;color:rgba(255,255,255,.82);line-height:1.65;font-family:'Playfair Display',serif;font-style:italic}
+.qcard{background:var(--w);border:1px solid var(--bd);border-radius:15px;padding:18px 20px;margin-bottom:11px;box-shadow:var(--sh);animation:in .3s ease}
+.qtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;gap:9px}
+.qcp{display:flex;align-items:center;gap:5px;background:var(--tll);border:1px solid var(--tlm);border-radius:20px;padding:3px 9px;flex-shrink:0}
+.qcd{width:5px;height:5px;border-radius:50%;background:var(--tl)}
+.qct{font-size:9.5px;font-weight:700;color:var(--tl);text-transform:uppercase;letter-spacing:.8px}
+.qnum{font-size:10.5px;font-weight:600;color:var(--t3)}
+.qill{float:right;margin:0 0 9px 13px;border-radius:9px;overflow:hidden;border:1px solid var(--bd);box-shadow:var(--sh)}
+.qtext{font-family:'Playfair Display',serif;font-size:16.5px;line-height:1.6;color:var(--text)}.qtext strong{color:var(--tld)}
+.chs{display:flex;flex-direction:column;gap:7px;margin-bottom:11px}
+.ch{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:var(--w);border:1.5px solid var(--bd);border-radius:10px;padding:11px 13px;cursor:pointer;color:var(--text);font-size:12.5px;font-family:'Sora',sans-serif;line-height:1.5;transition:all .15s;box-shadow:var(--sh)}
+.ch:hover:not(:disabled){border-color:var(--tl);background:var(--tll);transform:translateX(3px)}
+.ch:disabled{cursor:not-allowed;transform:none}
+.cl{width:26px;height:26px;border-radius:7px;background:var(--bg);border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:var(--t2);transition:all .2s}
+.ch.ok2{background:var(--grl);border-color:var(--grm)}.ch.ok2 .cl{background:var(--gr);border-color:var(--gr);color:white}
+.ch.ko{background:var(--rdl);border-color:var(--rdm);animation:shake .4s ease}.ch.ko .cl{background:var(--rd);border-color:var(--rd);color:white}
+.ch.mis{background:#f0fdf4;border-color:#86efac;opacity:.65}
+.ctag{margin-left:auto;font-size:9.5px;padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0;border:1px solid}
+.ctag-ok{background:var(--grl);color:var(--gr);border-color:var(--grm)}
+.ctag-ko{background:var(--rdl);color:var(--rd);border-color:var(--rdm)}
+.expb{display:none;border-radius:13px;padding:14px 16px;margin-bottom:11px;animation:up .3s ease;border:1.5px solid}
+.expb.on{display:block}.expb.ok2{background:var(--grl);border-color:var(--grm)}.expb.ko{background:var(--rdl);border-color:var(--rdm)}
+.exph{display:flex;align-items:center;gap:7px;margin-bottom:9px}
+.expi{font-size:17px}.exptt{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px}
+.exptt.ok2{color:var(--gr)}.exptt.ko{color:var(--rd)}
+.expbd{font-size:12.5px;color:var(--t2);line-height:1.75}.expbd strong{color:var(--text)}
+.exprule{margin-top:9px;background:var(--w);border-left:3px solid var(--tl);border-radius:0 7px 7px 0;padding:8px 12px;font-size:11.5px;color:var(--t2);line-height:1.55;display:none}.exprule strong{color:var(--tld)}
+.nxt{width:100%;padding:12px;background:var(--tld);border:none;border-radius:10px;color:white;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s;display:none;box-shadow:0 2px 8px rgba(19,78,74,.25)}
+.nxt.on{display:block}.nxt:hover{background:var(--tl)}
+#qft{background:var(--w);border-top:1px solid var(--bd);padding:9px 18px;display:flex;justify-content:center;gap:18px;flex-shrink:0;flex-wrap:wrap}
+.fs2{display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--t3)}.fs2 strong{color:var(--text);font-weight:700}
+.xpfl{position:fixed;font-weight:800;color:var(--or);pointer-events:none;animation:xpf .9s ease forwards;z-index:999;font-family:'Sora',sans-serif}
+
+/* RÉSULTAT */
+.rb{max-width:600px;margin:0 auto;padding:20px 18px 44px;animation:up .5s ease}
+.rh{background:var(--w);border:1px solid var(--bd);border-radius:18px;padding:26px;text-align:center;margin-bottom:12px;box-shadow:var(--shm);position:relative;overflow:hidden}
+.rh::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--tl),var(--bl))}
+.rg{font-size:48px;display:block;margin-bottom:7px;animation:pop .5s ease .3s both}
+.rs{font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;font-family:'Playfair Display',serif}
+.rsb{font-size:12.5px;color:var(--t2);margin-bottom:13px}
+.rm{display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid}
+.rmode{margin-top:9px;font-size:10.5px;color:var(--t3)}
+.rsg{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+@media(max-width:460px){.rsg{grid-template-columns:1fr 1fr}}
+.rsc{background:var(--w);border:1px solid var(--bd);border-radius:11px;padding:13px;text-align:center;box-shadow:var(--sh)}
+.rsv{font-size:21px;font-weight:800;margin-bottom:2px}.rsl{font-size:8.5px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bkd{background:var(--w);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
+.bkdh{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--t3);font-weight:700;margin-bottom:12px}
+.bki{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.bd2{width:7px;height:7px;border-radius:50%;flex-shrink:0}.bkl{font-size:11.5px;flex:1;color:var(--t2);font-weight:500}
+.bkbg{width:100px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}.bkbf{height:100%;border-radius:3px;transition:width 1.2s ease}
+.bks{font-size:11.5px;font-weight:800;width:28px;text-align:right}
+.errb{background:var(--rdl);border:1px solid var(--rdm);border-radius:13px;padding:14px;margin-bottom:12px}
+.errt{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--rd);font-weight:700;margin-bottom:9px}
+.erri{display:flex;align-items:flex-start;gap:7px;margin-bottom:7px;font-size:12px;color:var(--t2);line-height:1.55}
+.cnsb{background:var(--bll);border:1px solid var(--blm);border-radius:13px;padding:14px;margin-bottom:12px}
+.cnst{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--bl);font-weight:700;margin-bottom:9px}
+.cnsi{font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:6px;padding-left:3px}
+.ract{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.rbtn{padding:12px;border:none;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s}
+.rbp{background:var(--tld);color:white;box-shadow:0 2px 9px rgba(19,78,74,.28)}.rbp:hover{background:var(--tl)}
+.rbs{background:var(--w);border:1.5px solid var(--bd);color:var(--text)}.rbs:hover{border-color:var(--tlm)}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+</style>
+</head>
+<body>
+
+<!-- ══ WELCOME ══ -->
+<div class="scr on" id="sw">
+  <div class="hdr">
+    <div class="hl"><div class="hico">💊</div><div><div class="hn">NurseSimPro</div><div class="hs">Formation infirmière premium</div></div></div>
+    <div class="hbadge">💊 Injection sous-cutanée</div>
+  </div>
+  <div class="wb">
+    <div class="hero">
+      <div class="hero-ico">💊</div>
+      <div>
+        <div class="ht">Injection sous-cutanée (SC)</div>
+        <div class="hd">Insuline, HBPM, vaccins, morphine, biothérapies… Maîtrisez le pli cutané, les angles d'injection, la rotation des sites, les nuances héparine/insuline et la prévention des lipodystrophies. Sources : Réussis ton IFSI 2023 · CHUV 2023 · Infirmier.net · Cairn IFSI 2023 · SF2H 2024 · ANSM.</div>
+      </div>
+    </div>
+
+    <div class="alert">
+      <div class="ar">
+        <div class="ai">🚨</div>
+        <div>
+          <div class="at">6 règles absolues — erreur = faute grave</div>
+          <ul class="al">
+            <li><strong>Insuline = JAMAIS d'alcool pour la désinfection</strong> — l'alcool est hypoglycémiant et peut fausser l'effet de l'insuline. Utiliser une compresse sèche ou laisser sécher complètement.</li>
+            <li><strong>Héparine / HBPM = JAMAIS masser après l'injection</strong> — le massage provoque un hématome. Également vrai pour l'insuline (accélération de l'absorption imprévisible).</li>
+            <li><strong>HBPM seringue prête à l'emploi = NE PAS purger la bulle d'air</strong> — la bulle pousse le produit, garantit la dose complète. La purger = sous-dosage.</li>
+            <li><strong>Pas de reflux à rechercher</strong> pour insuline et HBPM — l'injection d'une petite quantité dans un vaisseau est sans conséquence clinique pour ces produits. L'aspiration augmente la douleur sans bénéfice.</li>
+            <li><strong>Rotation des sites obligatoire</strong> — injection au même endroit = lipodystrophie (41,8 % de prévalence chez les diabétiques). Absorption imprévisible dans ces zones.</li>
+            <li><strong>DASRI immédiatement — jamais recapuchonner</strong>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="nuance-box">
+      <div class="nb-title">🔬 3 nuances techniques clés selon le médicament</div>
+      <div class="nb-grid">
+        <div class="nb-item"><strong>💉 Insuline</strong>Pas d'alcool · pas de reflux · pli cutané · attendre 10 sec avant retrait · pas de massage · rotation stricte · purger 2 unités si stylo · ne pas compenser une fuite</div>
+        <div class="nb-item"><strong>🩸 HBPM (Clexane®, Lovenox®…)</strong>Ne pas purger la bulle · abdomen préféré · pas de reflux · pas de massage+++ · pli maintenu · 90°</div>
+        <div class="nb-item"><strong>💊 Autres SC (morphine, vaccin, biothérapie…)</strong>Reflux recommandé selon produit · 45° si aiguille &gt;6 mm · vérifier les instructions du fabricant · purger l'air</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="si"><div class="sv">16</div><div class="sl">Étapes</div></div>
+      <div class="si"><div class="sv">4</div><div class="sl">Modes</div></div>
+      <div class="si"><div class="sv">45°/90°</div><div class="sl">Angles</div></div>
+      <div class="si"><div class="sv">4 sites</div><div class="sl">Rotation</div></div>
+    </div>
+
+    <div class="mlbl">Choisissez votre mode</div>
+    <div class="mgrid">
+      <button class="mc" style="--mc:#134e4a;--mb:#f0fdfa" onclick="setMode('fiche',this)">
+        <span class="mc-ico">📖</span><span class="mc-name">Fiche Protocole</span>
+        <div class="mc-badge" style="background:#f0fdfa;border-color:#5eead4;color:#0f766e">📋 Référence</div>
+        <div class="mc-desc">Matériel complet, 4 sites avec schémas de rotation, 16 étapes commentées, nuances insuline/HBPM/autres, complications.</div>
+        <ul class="mc-ul" style="--mc:#134e4a"><li>Sites et rotation des injections</li><li>16 étapes + erreurs critiques</li><li>Nuances insuline / HBPM</li><li>Lipodystrophies et prévention</li></ul>
+      </button>
+      <button class="mc sel" style="--mc:#0f766e;--mb:#f0fdfa" onclick="setMode('learn',this)">
+        <span class="mc-ico">📚</span><span class="mc-name">Apprentissage</span>
+        <div class="mc-badge" style="background:#f0fdfa;border-color:#5eead4;color:#0f766e">⭐ Débutant</div>
+        <div class="mc-desc">Les 16 étapes dans l'ordre. Pli cutané, angle, reflux, attente, DASRI. Question de validation à chaque étape.</div>
+        <ul class="mc-ul" style="--mc:#0f766e"><li>Protocole dans l'ordre</li><li>Nuances insuline/HBPM intégrées</li><li>Question de validation</li><li>Pas de chrono</li></ul>
+      </button>
+      <button class="mc" style="--mc:#b45309;--mb:#fffbeb" onclick="setMode('exam',this)">
+        <span class="mc-ico">📝</span><span class="mc-name">Examen</span>
+        <div class="mc-badge" style="background:#fffbeb;border-color:#fde68a;color:#b45309">⭐⭐ Intermédiaire</div>
+        <div class="mc-desc">15 questions sur le protocole. Angles, sites, reflux, bulle d'air HBPM, lipodystrophie, alcool insuline. Chrono 30s.</div>
+        <ul class="mc-ul" style="--mc:#b45309"><li>15 questions variées</li><li>Chrono 30 secondes</li><li>Rapport détaillé</li></ul>
+      </button>
+      <button class="mc" style="--mc:#6d28d9;--mb:#f5f3ff" onclick="setMode('survival',this)">
+        <span class="mc-ico">💀</span><span class="mc-name">Survie</span>
+        <div class="mc-badge" style="background:#f5f3ff;border-color:#c4b5fd;color:#6d28d9">⭐⭐⭐ Expert</div>
+        <div class="mc-desc">Pièges sur la bulle HBPM purgée, l'alcool pour insuline, le massage après héparine, l'injection dans une lipodystrophie. 3 vies. Chrono 25s.</div>
+        <ul class="mc-ul" style="--mc:#6d28d9"><li>10 pièges cliniques graves</li><li>3 vies · Chrono 25s</li></ul>
+      </button>
+    </div>
+    <button class="launch" onclick="launch()">Commencer →</button>
+  </div>
+</div>
+
+<!-- ══ FICHE ══ -->
+<div class="scr" id="sf">
+  <div class="hdr">
+    <div class="hl"><div class="hico">📖</div><div><div class="hn">Fiche Protocole — Injection SC</div><div class="hs">Réussis ton IFSI 2023 · CHUV 2023 · Infirmier.net · Cairn 2023 · SF2H 2024 · ANSM</div></div></div>
+    <button onclick="showScr('sw')" style="padding:6px 12px;border:1.5px solid var(--bd);border-radius:20px;background:white;cursor:pointer;font-size:10.5px;font-weight:700;font-family:'Sora',sans-serif;color:var(--t2)">← Retour</button>
+  </div>
+  <div class="fb">
+    <div class="fh">
+      <div><div class="ft">Injection sous-cutanée (SC)</div><div class="fsub">Soin infirmier sur prescription médicale — Art. R.4311-7 · Rôle propre Art. R.4311-5 pour certaines indications</div></div>
+      <div class="ftabs">
+        <button class="ftab on" onclick="showFTab('f-mat',this)">🧰 Matériel</button>
+        <button class="ftab" onclick="showFTab('f-sites',this)">🗺️ Sites</button>
+        <button class="ftab" onclick="showFTab('f-proto',this)">📋 Protocole</button>
+        <button class="ftab" onclick="showFTab('f-compl',this)">⚠️ Complications</button>
+        <button class="ftab" onclick="showFTab('f-memo',this)">🧠 Mémo</button>
+      </div>
+    </div>
+
+    <!-- MATÉRIEL -->
+    <div class="fsec on" id="f-mat">
+      <div class="fst">🧰 Matériel</div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#134e4a;margin-bottom:6px;padding:3px 9px;background:#ccfbf1;border-radius:5px;display:inline-block">EPI</div>
+      <div class="mg2" style="margin-bottom:14px">
+        <div class="mi"><div class="mi-ico">🧤</div><div class="mt"><strong>Gants non stériles à usage unique</strong> — protection du soignant. Ce soin n'est pas stérile.</div></div>
+        <div class="mi"><div class="mi-ico">😷</div><div class="mt"><strong>Masque si risque de projection</strong> (biothérapies, produits irritants).</div></div>
+      </div>
+      <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:#1e40af;margin-bottom:6px;padding:3px 9px;background:#dbeafe;border-radius:5px;display:inline-block">Matériel d'injection</div>
+      <div class="mg2" style="margin-bottom:14px">
+        <div class="mi"><div class="mi-ico">💉</div><div class="mt"><strong>Seringue adaptée</strong> — seringue à insuline (unités UI) pour insuline, ou seringue 1-3 mL pour autres SC. Dispositif prêt à l'emploi (HBPM, héparine calcique).</div></div>
+        <div class="mi"><div class="mi-ico">🪡</div><div class="mt"><strong>Aiguille SC</strong> — Orange 25G (0,5×16 mm) · Courtes 4-6 mm pour insuline et stylos. Plus l'aiguille est courte et fine, moins c'est douloureux.</div></div>
+        <div class="mi crit"><div class="mi-ico">🧴</div><div class="mt"><strong>Antiseptique : ATTENTION selon le produit</strong><br>• Alcool 70° : OK pour HBPM, vaccins, autres SC<br>• <strong>Insuline : alcool INTERDIT</strong> → compresse sèche OU laisser sécher complètement l'alcool (>30 sec) avant injection</div></div>
+        <div class="mi"><div class="mi-ico">📋</div><div class="mt"><strong>Compresses non stériles</strong> ou boules de coton pour désinfection et pression post-injection.</div></div>
+        <div class="mi crit"><div class="mi-ico">🗑️</div><div class="mt"><strong>Container DASRI piquants/tranchants</strong> — à portée de main avant le soin. Jamais recapuchonner.</div></div>
+        <div class="mi ok"><div class="mi-ico">💊</div><div class="mt"><strong>Médicament prescrit vérifié</strong> — 5 B. Pour l'insuline : type (rapide/lente/mixte), dose en unités, couleur et aspect. Stylo = personnel et nominatif.</div></div>
+      </div>
+      <div style="background:var(--pul);border:1px solid var(--pum);border-radius:10px;padding:12px 14px;font-size:12px;color:#4c1d95;line-height:1.6">
+        🔬 <strong>Insuline : types et aspects à vérifier avant injection :</strong><br>
+        • Insulines rapides (Humalog®, NovoRapid®, Apidra®) : <strong>transparentes</strong> — ne jamais injecter si trouble ou cristaux<br>
+        • Insulines NPH (Insulatard®, Huminsuline Basal®) : <strong>laiteuses / opaques</strong> — rouler doucement entre les paumes 10x avant injection (jamais agiter violemment)<br>
+        • Insulines lentes (Lantus®, Levemir®, Toujeo®) : <strong>transparentes</strong>
+      </div>
+    </div>
+
+    <!-- SITES -->
+    <div class="fsec" id="f-sites">
+      <div class="fst">🗺️ Sites d'injection SC</div>
+      <div class="sites-g">
+        <div class="site-card pref">
+          <div class="sc-h"><div class="sc-ico">🫃</div><div><div class="sc-name">Abdomen (péri-ombilical)</div><div class="sc-badge bg-t">Site privilégié</div></div></div>
+          <div class="sc-body">
+            <strong>Zone :</strong> ceinture abdominale entre le rebord costal et la crête iliaque. Exclure les <strong>5 cm (2 doigts) autour du nombril</strong> (réseau vasculaire plus dense) et la ligne blanche.<br>
+            <strong>Insuline rapide :</strong> absorption la plus rapide → préférer l'abdomen.<br>
+            <strong>HBPM :</strong> site de référence recommandé.<br>
+            <strong>Rotation :</strong> alterner droite/gauche et progresser en lignes parallèles, 1 cm (1 doigt) entre chaque point.
+          </div>
+          <div class="sc-vol">📏 Vol. max 1-2 mL · Zone la plus utilisée</div>
+        </div>
+        <div class="site-card">
+          <div class="sc-h"><div class="sc-ico">💪</div><div><div class="sc-name">Bras (face externe)</div><div class="sc-badge bg-g">Vaccins · Insuline</div></div></div>
+          <div class="sc-body">
+            <strong>Zone :</strong> face externe du bras, milieu. Tissu adipeux souvent moins épais → attention à l'angle (risque IM si tissu mince).<br>
+            <strong>Absorption insuline :</strong> intermédiaire entre abdomen et cuisse.<br>
+            <strong>Avantage :</strong> site accessible pour l'auto-injection en l'absence d'aide.
+          </div>
+          <div class="sc-vol">📏 Vol. max 1-1,5 mL</div>
+        </div>
+        <div class="site-card">
+          <div class="sc-h"><div class="sc-ico">🦵</div><div><div class="sc-name">Cuisse (face antéro-externe)</div><div class="sc-badge bg-g">Insuline lente</div></div></div>
+          <div class="sc-body">
+            <strong>Zone :</strong> face antérieure et externe de la cuisse, milieu. Exclure la face interne (nombreux vaisseaux).<br>
+            <strong>Absorption insuline :</strong> la plus lente → préférer pour insuline basale/lente.<br>
+            <strong>Pratique :</strong> site facilement accessible pour l'auto-injection.
+          </div>
+          <div class="sc-vol">📏 Vol. max 1-2 mL</div>
+        </div>
+        <div class="site-card">
+          <div class="sc-h"><div class="sc-ico">🦴</div><div><div class="sc-name">Fesse / Omoplate</div><div class="sc-badge bg-g">Insuline · Biothérapies</div></div></div>
+          <div class="sc-body">
+            <strong>Zone :</strong> partie supérieure externe de la fesse ou région de l'omoplate.<br>
+            <strong>Absorption insuline :</strong> lente, similaire à la cuisse.<br>
+            <strong>Note :</strong> site moins accessible en auto-injection. Tissue adipeux généralement suffisant. Utile pour les patients avec peu de tissu adipeux aux autres sites.
+          </div>
+          <div class="sc-vol">📏 Vol. max 1-2 mL</div>
+        </div>
+      </div>
+      <div style="background:var(--pul);border:1.5px solid var(--pum);border-radius:12px;padding:14px;font-size:12px;color:#4c1d95;line-height:1.7">
+        <strong>🔄 Schéma de rotation recommandé :</strong><br>
+        Mnémotechnique <strong>BAC</strong> : <strong>B</strong>ras · <strong>A</strong>bdomen · <strong>C</strong>uisse (+ fesse).<br>
+        • <strong>Dans chaque zone :</strong> se déplacer de 1 cm (1 doigt) entre chaque injection, en lignes parallèles ou en spirale.<br>
+        • <strong>Insuline :</strong> rester dans le même groupe de sites sur une même journée pour l'insuline basale (absorption constante). Changer de zone le lendemain.<br>
+        • <strong>Jamais injecter dans une lipodystrophie</strong> (bosse ou induration palpable) — absorption imprévisible.
+      </div>
+    </div>
+
+    <!-- PROTOCOLE -->
+    <div class="fsec" id="f-proto">
+      <div class="fst">📋 Protocole — 16 étapes</div>
+      <div id="proto-sc-steps"></div>
+    </div>
+
+    <!-- COMPLICATIONS -->
+    <div class="fsec" id="f-compl">
+      <div class="fst">⚠️ Complications</div>
+      <div class="cg">
+        <div class="cc cc-o"><div class="cc-h">⚠️ Lipodystrophie (lipohypertrophie)</div>Complication la plus fréquente : 41,8% chez les diabétiques sous insuline. Amas graisseux induisant une absorption imprévisible → variabilité glycémique inexpliquée. <strong>Cause : injections répétées au même site.</strong> <strong>Prévention : rotation stricte, 1 cm entre chaque point.</strong> Si lipodystrophie identifiée : ne plus injecter dans cette zone + réduire la dose de 20% si changement vers zone saine (risque hypoglycémie).</div>
+        <div class="cc cc-r"><div class="cc-h">🚨 Hypoglycémie (insuline)</div>Complication grave si surdosage, injection dans une zone à absorption rapide non prévue (ex : lipodystrophie puis zone saine), ou si le patient ne mange pas après l'injection. <strong>Signes :</strong> sueurs, tremblement, pâleur, confusion. <strong>Conduite :</strong> 15 g de sucres rapides, attendre 15 min, resucrer si besoin, glycémie capillaire. L'hypoglycémie n'est pas une CI à injecter — corriger l'hypo puis injecter.</div>
+        <div class="cc cc-r"><div class="cc-h">⚠️ Hématome (HBPM)</div>Saignement sous-cutané après injection d'anticoagulant. <strong>Cause fréquente : massage post-injection.</strong> Prévention : compression douce et longue, jamais masser. Le site préféré (abdomen) est choisi car le tissu adipeux abdominal réduit le risque par rapport à d'autres sites.</div>
+        <div class="cc cc-t"><div class="cc-h">ℹ️ Abcès / infection locale</div>Rare si asepsie correcte. Signes : rougeur, chaleur, induration, douleur, fièvre. Prévention : antisepsie systématique, rotation des sites, ne jamais injecter sur une zone infectée ou lésée.</div>
+        <div class="cc cc-o"><div class="cc-h">⚠️ Injection intramusculaire accidentelle</div>Surtout chez les patients minces ou avec peu de tissu adipeux. Conséquences : absorption plus rapide, risque d'hématome si anticoagulant, douleur accrue. <strong>Prévention :</strong> pli cutané adapté, aiguille courte (4-6 mm), angle adapté à la corpulence.</div>
+        <div class="cc cc-r"><div class="cc-h">🚨 Choc anaphylactique</div>Rare mais possible. Surveiller 15-30 min après toute nouvelle molécule SC (biothérapies notamment). Signes : urticaire, bronchospasme, hypotension. Chariot d'urgence accessible.</div>
+      </div>
+    </div>
+
+    <!-- MÉMO -->
+    <div class="fsec" id="f-memo">
+      <div class="fst">🧠 Mémo rapide</div>
+      <div class="memo" style="background:var(--rdl);border:2px solid var(--rdm);color:#7f1d1d">
+        <div class="mh" style="color:var(--rd)">🚨 6 règles absolues</div>
+        • <strong>Insuline = PAS d'alcool</strong> (hypoglycémiant) — compresse sèche ou alcool séché &gt;30 sec<br>
+        • <strong>HBPM seringue prête = PAS purger la bulle d'air</strong> — sous-dosage sinon<br>
+        • <strong>PAS de massage</strong> après injection (HBPM+++ = hématome, insuline = absorption imprévisible)<br>
+        • <strong>PAS de reflux</strong> à rechercher pour insuline et HBPM<br>
+        • <strong>Rotation des sites</strong> obligatoire — prévention lipodystrophie<br>
+        • <strong>DASRI immédiatement — jamais recapuchonner</strong>
+      </div>
+      <div class="memo" style="background:var(--pul);border:1px solid var(--pum);color:#4c1d95">
+        <div class="mh" style="color:var(--pu)">📐 Angles d'injection — à retenir</div>
+        • Aiguille <strong>courte ≤ 6 mm</strong> (stylos insuline, HBPM) : <strong>90°</strong>, pli cutané selon la corpulence<br>
+        • Aiguille <strong>standard 16 mm (orange 25G)</strong> : <strong>45°</strong> si patient mince, 90° si tissu adipeux suffisant<br>
+        • Pli cutané : <strong>maintenir pendant TOUTE l'injection</strong>, relâcher après retrait de l'aiguille<br>
+        • Biseau de l'aiguille orienté vers le haut
+      </div>
+      <div class="memo" style="background:var(--tll);border:1px solid var(--tlm);color:var(--tld)">
+        <div class="mh" style="color:var(--tl)">💉 Insuline — particularités</div>
+        • Stylo à insuline : purger <strong>2 unités</strong> avant chaque injection (vérifier écoulement à la pointe)<br>
+        • Insulines NPH (laiteuses) : rouler 10x entre les paumes, ne jamais agiter<br>
+        • Attendre <strong>10 secondes</strong> avant de retirer l'aiguille<br>
+        • En cas de fuite lors de l'injection : <strong>ne pas compenser</strong> par une nouvelle injection<br>
+        • Vérifier la glycémie capillaire avant injection<br>
+        • Sites selon type : rapide = abdomen · lente = cuisse ou fesse
+      </div>
+      <div class="memo" style="background:var(--orl);border:1px solid var(--orm);color:var(--or)">
+        <div class="mh" style="color:var(--or)">🩸 HBPM — particularités</div>
+        • Site préféré : <strong>abdomen</strong> (entre rebord costal et crête iliaque, sauf 5 cm autour du nombril et ligne blanche)<br>
+        • Ne jamais purger la bulle d'air des seringues prêtes à l'emploi (Clexane®, Lovenox®, Innohep®…)<br>
+        • Injecter à <strong>90°</strong> avec pli cutané<br>
+        • Compression après retrait, <strong>jamais masser</strong> — hématome sinon<br>
+        • Alterner abdomen droit/gauche à distance du nombril
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="scr" id="sq">
+  <div id="stb">
+    <div class="tbl"><div class="tbl-b">💊</div><span class="tbl-t">Injection SC</span></div>
+    <div class="tbm" id="tbm">Apprentissage</div>
+    <div class="tbpw"><div class="tbql" id="tbql">Étape 1/16</div><div class="tbpb"><div class="tbpf" id="tbpf" style="width:0%"></div></div></div>
+    <div class="tbr">
+      <div class="pill pst" id="strkp">🔥 <span id="strkn">0</span></div>
+      <div class="pill pxp">⚡ <span id="xpn">0</span></div>
+      <div class="pill plv" id="livp" style="display:none">❤️ <span id="livn">3</span></div>
+      <div class="tiw" id="tiw" style="display:none">
+        <svg width="38" height="38" viewBox="0 0 36 36"><circle class="tib" cx="18" cy="18" r="14"/><circle class="tia" id="tia" cx="18" cy="18" r="14" stroke-dashoffset="0"/></svg>
+        <div class="tin" id="tin">30</div>
+      </div>
+    </div>
+  </div>
+  <div id="qb">
+    <div class="ctx" id="ctx" style="display:none">
+      <div class="ctx-ico" id="ctxic">📋</div>
+      <div style="flex:1"><div class="ctx-sub" id="ctxsb">Étape</div><div class="ctx-title" id="ctxtl"></div><div class="ctx-body" id="ctxbd"></div></div>
+    </div>
+    <div class="qcard">
+      <div class="qtop"><div class="qcp"><div class="qcd"></div><span class="qct" id="qcat">—</span></div><span class="qnum" id="qnum">1</span></div>
+      <div id="qill"></div>
+      <div class="qtext" id="qtxt">Chargement...</div>
+    </div>
+    <div class="chs" id="chs"></div>
+    <div class="expb" id="expb">
+      <div class="exph"><span class="expi" id="expi">✅</span><span class="exptt" id="exptt">Bonne réponse</span></div>
+      <div class="expbd" id="expbd"></div>
+      <div class="exprule" id="exprule"></div>
+    </div>
+    <button class="nxt" id="nxt" onclick="nextQ()">Suivant →</button>
+  </div>
+  <div id="qft">
+    <div class="fs2">✅ <strong id="sc">0</strong> correctes</div>
+    <div class="fs2">❌ <strong id="sw2">0</strong> erreurs</div>
+    <div class="fs2">Score : <strong id="scn">100</strong>/100</div>
+  </div>
+</div>
+
+<!-- ══ RÉSULTAT ══ -->
+<div class="scr" id="sres">
+  <div class="hdr"><div class="hl"><div class="hico">💊</div><div><div class="hn">Rapport — Injection SC</div></div></div></div>
+  <div class="rb">
+    <div class="rh">
+      <span class="rg" id="rg">🎓</span>
+      <div class="rs" id="rs">--/20</div>
+      <div class="rsb" id="rsb">--</div>
+      <div class="rm" id="rm">--</div>
+      <div class="rmode" id="rmd"></div>
+    </div>
+    <div class="rsg">
+      <div class="rsc"><div class="rsv" id="rxp" style="color:var(--or)">0</div><div class="rsl">XP</div></div>
+      <div class="rsc"><div class="rsv" id="rstr" style="color:var(--or)">0</div><div class="rsl">Série max</div></div>
+      <div class="rsc"><div class="rsv" id="rtim" style="color:var(--tl)">0s</div><div class="rsl">Tps/Q</div></div>
+      <div class="rsc"><div class="rsv" id="rsc2" style="color:var(--tld)">0</div><div class="rsl">Score</div></div>
+    </div>
+    <div class="bkd"><div class="bkdh">Résultats par catégorie</div><div id="bkitems"></div></div>
+    <div class="errb" id="errb" style="display:none"><div class="errt">❌ Points à retravailler</div><div id="errlist"></div></div>
+    <div class="cnsb"><div class="cnst">💡 Conseils personnalisés</div><div id="cnslist"></div></div>
+    <div class="ract">
+      <button class="rbtn rbs" onclick="showScr('sw')">← Changer de mode</button>
+      <button class="rbtn rbp" onclick="restart()">🔄 Recommencer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   DONNÉES — 16 ÉTAPES
+   Sources vérifiées et croisées :
+   Réussis ton IFSI (2023) · CHUV 2023 · Infirmier.net ·
+   Cairn IFSI 2023 · SF2H Avis 04/2024 · ANSM · 
+   Anticoag-pass-s2d.fr · Omédit Centre-Val de Loire 2023 ·
+   SFD paramédical 2012 · Pharmpic.ch 12/2025
+══════════════════════════════════════════════════════ */
+const ST = [
+{n:1,cat:"Prescription & CI",ico:"📋",crit:false,att:true,
+ title:"Vérifier la prescription médicale et les 5 B",
+ what:"L'injection SC est un <strong>soin infirmier sur prescription médicale</strong> (Art. R.4311-7). Certaines situations relèvent du rôle propre (protocoles infirmiers validés). Vérifiez les <strong>5 B</strong> : bon patient (identité), bon médicament (nom, type), bonne dose (unités pour insuline), bonne voie (SC), bon moment (timing lié aux repas pour l'insuline). Vérifiez les <strong>allergies</strong> au médicament. Pour l'insuline : vérifiez la glycémie capillaire avant injection.",
+ why:"Le type d'insuline, la dose et le moment de l'injection sont directement liés aux repas et à la glycémie. Une erreur de type (ex : insuline rapide à la place de lente) peut provoquer une hypoglycémie sévère.",
+ rule:"5 B obligatoires. Insuline : glycémie capillaire avant injection. Hypoglycémie = corriger d'abord, injecter ensuite.",
+ q:"Vous venez de mesurer une glycémie capillaire à 2,8 mmol/L (hypoglycémie) chez un patient qui doit recevoir son insuline rapide. Que faites-vous ?",
+ ch:["Injecter l'insuline normalement — le médecin a prescrit l'injection","Corriger l'hypoglycémie (15 g de sucres rapides), attendre 15 minutes, contrôler la glycémie, puis injecter l'insuline selon le protocole","Reporter définitivement l'injection jusqu'au lendemain","Injecter la moitié de la dose prescrite pour compenser"],
+ ok:1},
+
+{n:2,cat:"Matériel & Préparation",ico:"🧰",crit:false,att:false,
+ title:"Préparer le matériel et le médicament",
+ what:"Désinfectez le plan de travail avec des gants non stériles → retirez-les → SHA. Vérifiez l'intégrité et la péremption du médicament. Pour l'insuline : <strong>vérifier l'aspect</strong> — insuline rapide/lente doit être limpide et transparente, NPH est laiteuse (rouler entre les paumes 10× si NPH). Pour les stylos à insuline : <strong>purger 2 unités</strong> avant chaque injection. Pour HBPM prête à l'emploi : <strong>NE PAS purger la bulle d'air</strong>.",
+ why:"Une insuline trouble ou cristallisée ne doit pas être injectée. Agiter violemment détruit les protéines de l'insuline. La bulle d'air des seringues HBPM prêtes à l'emploi est une caractéristique technique du dispositif : elle pousse le produit hors de l'aiguille et garantit la dose complète — la purger crée un sous-dosage.",
+ rule:"Insuline NPH : rouler 10× entre les paumes, jamais agiter. HBPM seringue prête : ne jamais purger la bulle. Stylo insuline : purger 2 unités.",
+ q:"Vous préparez une seringue d'HBPM Clexane® prête à l'emploi. Vous constatez une petite bulle d'air dans la seringue. Que faites-vous ?",
+ ch:["Éliminer la bulle en tenant la seringue verticalement et en poussant le piston — l'air ne doit pas être injecté","Laisser la bulle — elle fait partie du dispositif et pousse le produit, la purger créerait un sous-dosage","Agiter pour répartir la bulle","Utiliser une autre seringue sans bulle"],
+ ok:1},
+
+{n:3,cat:"Choix et inspection du site",ico:"🗺️",crit:false,att:true,
+ title:"Choisir et inspecter le site d'injection",
+ what:"Sélectionnez le site selon l'indication : <strong>abdomen</strong> (préféré pour HBPM, insuline rapide) · <strong>cuisse</strong> (insuline lente) · <strong>bras</strong> (vaccins, insuline) · <strong>fesse/omoplate</strong> (insuline, biothérapies). <strong>Inspectez et palpez le site</strong> : exclure toute zone présentant œdème, cicatrice, lésion cutanée, induration, ou <strong>lipodystrophie</strong> (bosse palpable). Interrogez le patient sur ses sites habituels et respectez le schéma de rotation.",
+ why:"Injecter dans une lipodystrophie est dangereux : l'absorption de l'insuline y est erratique et imprévisible, exposant à des hypoglycémies ou hyperglycémies inexplicables. C'est la complication la plus fréquente liée à une mauvaise rotation (prévalence 41,8% chez les diabétiques).",
+ rule:"Inspecter et palper avant chaque injection. Jamais injecter dans une lipodystrophie, une cicatrice, une zone œdémateuse ou lésée. Respecter le schéma de rotation.",
+ svg:`<svg viewBox="0 0 120 80" width="120" height="80"><ellipse cx="60" cy="44" rx="36" ry="28" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.5"/><circle cx="60" cy="44" r="8" fill="white" stroke="#9ca3af" stroke-width="1"/><text x="60" y="47.5" text-anchor="middle" font-size="8" fill="#9ca3af" font-family="sans-serif">Nombril</text><text x="60" y="22" text-anchor="middle" font-size="7" fill="#0f766e" font-family="sans-serif" font-weight="700">Zone valide →</text><circle cx="48" cy="35" r="4" fill="#5eead4" opacity=".8"/><circle cx="72" cy="35" r="4" fill="#5eead4" opacity=".8"/><circle cx="44" cy="50" r="4" fill="#5eead4" opacity=".8"/><circle cx="76" cy="50" r="4" fill="#5eead4" opacity=".8"/><circle cx="50" cy="62" r="4" fill="#5eead4" opacity=".8"/><circle cx="70" cy="62" r="4" fill="#5eead4" opacity=".8"/><circle cx="52" cy="28" r="6" fill="#fde68a" stroke="#b45309" stroke-width="1.5" opacity=".9"/><text x="52" y="20" text-anchor="middle" font-size="7" fill="#b45309" font-family="sans-serif">Exclure</text><text x="97" y="30" text-anchor="middle" font-size="7" fill="#5eead4" font-family="sans-serif" font-weight="700">✓ Valide</text><text x="97" y="40" text-anchor="middle" font-size="7" fill="#b45309" font-family="sans-serif" font-weight="700">⚠ Exclure</text></svg>`,
+ q:"Vous palpez l'abdomen du patient et détectez une zone indurée de 3 cm où il injecte son insuline depuis des semaines. Que faites-vous ?",
+ ch:["Injecter normalement à cet endroit — le patient a l'habitude","Injecter dans cette zone en réduisant légèrement la dose","Éviter cette lipodystrophie, injecter dans une zone saine — et informer le médecin pour adaptation de la dose (risque hypoglycémie si changement de zone)","Injecter dans la lipodystrophie mais masser après pour améliorer l'absorption"],
+ ok:2},
+
+{n:4,cat:"SHA & Gants",ico:"🤲",crit:false,att:false,
+ title:"SHA + Gants non stériles",
+ what:"Effectuez une <strong>friction SHA</strong>. Enfilez des <strong>gants non stériles à usage unique</strong>. Ce soin n'est pas stérile — les gants non stériles sont adaptés. Selon l'avis SF2H d'avril 2024, le port de gants est recommandé mais son obligation varie selon les contextes (certains établissements peuvent avoir des protocoles sans gants pour les auto-injections guidées).",
+ why:"Les gants protègent le soignant d'un éventuel contact avec le sang lors du retrait de l'aiguille. Ce n'est pas un soin stérile — des gants non stériles suffisent.",
+ rule:"SHA + gants non stériles. Soin non stérile.",
+ q:"Quel type de gants utilise-t-on pour une injection SC ?",
+ ch:["Gants stériles — tout soin avec aiguille exige la stérilité","Gants non stériles à usage unique — ce soin n'est pas stérile","Pas de gants si l'asepsie de la peau est correcte","Gants stériles uniquement pour l'insuline"],
+ ok:1},
+
+{n:5,cat:"Désinfection cutanée",ico:"🧴",crit:true,att:false,
+ title:"Désinfecter le site — ATTENTION alcool et insuline",
+ what:"Désinfectez la peau avec une compresse imbibée d'antiseptique alcoolique (alcool 70° ou chlorhexidine alcoolique). Mouvement circulaire escargot du centre vers l'extérieur. <strong>Laisser sécher spontanément (&gt;30 secondes) avant de piquer.</strong><br><strong>⚠️ Exception INSULINE :</strong> utiliser une <strong>compresse sèche</strong> ou attendre que l'alcool soit totalement évaporé (>30 sec). L'alcool n'est pas encore totalement sec au moment de l'injection = risque de passage d'alcool dans le sous-cutané = effet hypoglycémiant + douleur de brûlure.",
+ why:"L'alcool introduit sous la peau avec l'aiguille peut avoir un effet hypoglycémiant et provoquer une brûlure locale. Pour les autres produits SC, l'alcool ne pose pas ce problème si séchage complet.",
+ rule:"Insuline : compresse SÈCHE ou alcool séché >30 sec avant injection. HBPM et autres SC : alcool normal + séchage spontané avant ponction.",
+ q:"Vous désinfectez le site avec de l'alcool avant une injection d'insuline. L'alcool est encore visible et humide sur la peau. Que faites-vous ?",
+ ch:["Piquez immédiatement — l'alcool protège contre l'infection","Essuyez l'alcool avec une compresse propre puis piquez","Attendez que l'alcool sèche spontanément (>30 sec) avant de piquer — ou utilisez une compresse sèche dès le départ pour l'insuline","Soufflez sur la peau pour accélérer le séchage"],
+ ok:2},
+
+{n:6,cat:"Pli cutané",ico:"✋",crit:true,att:false,
+ title:"Former et maintenir le pli cutané",
+ what:"Pincez la peau entre <strong>pouce et index (éventuellement le majeur)</strong> en soulevant <strong>uniquement la peau et l'hypoderme</strong> — sans embarquer le muscle sous-jacent. Visez un pli de <strong>2-3 cm d'épaisseur</strong>. <strong>Maintenir le pli pendant TOUTE l'injection</strong> — relâcher avant ou pendant l'injection peut faire remonter l'aiguille dans le muscle. Le pli est indispensable avec les aiguilles de 16 mm (25G orange). Avec les aiguilles courtes (4-6 mm) chez un adulte de corpulence normale : pli peut être facultatif.",
+ why:"Le pli cutané éloigne le muscle de l'aiguille et garantit que le produit est injecté dans l'hypoderme (sous-cutané) et non dans le muscle. Une injection IM accidentelle d'héparine ou d'insuline peut créer un hématome, une absorption trop rapide imprévisible, et de la douleur.",
+ rule:"Pli : pouce + index, 2-3 cm, soulever peau et hypoderme sans muscle. Maintenir pendant toute l'injection. Relâcher après retrait de l'aiguille.",
+ svg:`<svg viewBox="0 0 110 80" width="110" height="80"><path d="M10 55 Q30 40 55 42 Q80 44 100 55" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M15 50 Q30 32 55 34 Q80 36 95 50" fill="#fef3c7" stroke="#c07850" stroke-width="1.5" stroke-dasharray="4,2"/><circle cx="25" cy="38" r="7" fill="#e8b890" stroke="#c07850" stroke-width="1"/><text x="25" y="42" text-anchor="middle" font-size="8" fill="#7f1d1d" font-family="sans-serif" font-weight="700">✋</text><circle cx="85" cy="42" r="7" fill="#e8b890" stroke="#c07850" stroke-width="1"/><text x="85" y="46" text-anchor="middle" font-size="8" fill="#7f1d1d" font-family="sans-serif" font-weight="700">✋</text><line x1="55" y1="5" x2="55" y2="34" stroke="#0f766e" stroke-width="3.5" stroke-linecap="round"/><polygon points="50,29 55,38 60,29" fill="#0f766e"/><text x="55" y="4" text-anchor="middle" font-size="8" fill="#0f766e" font-family="sans-serif" font-weight="700">Pli maintenu</text></svg>`,
+ q:"À quel moment relâche-t-on le pli cutané lors d'une injection SC ?",
+ ch:["Dès que l'aiguille est introduite, pour libérer la main et injecter","Au moment d'injecter le produit pour permettre la diffusion","Après avoir retiré complètement l'aiguille — relâcher avant peut faire passer l'aiguille dans le muscle","On maintient le pli tout le temps, même après retrait de l'aiguille"],
+ ok:2},
+
+{n:7,cat:"Angle d'injection",ico:"📐",crit:true,att:false,
+ title:"Choisir l'angle adapté : 45° ou 90°",
+ what:"L'angle dépend de la <strong>longueur de l'aiguille et de la corpulence du patient</strong> :<br>• <strong>Aiguilles courtes ≤ 6 mm</strong> (stylos insuline, seringues HBPM) : <strong>90°</strong> chez l'adulte<br>• <strong>Aiguilles standard 16 mm (25G orange)</strong> : <strong>45°</strong> si patient mince ou peu de tissu adipeux · 90° si tissu adipeux suffisant avec pli<br>Le biseau de l'aiguille est toujours <strong>orienté vers le haut</strong>. Introduction d'un geste <strong>rapide et ferme</strong> au centre du pli.",
+ why:"L'objectif est d'atteindre l'hypoderme sans traverser le muscle. Une aiguille de 16 mm à 90° chez un patient mince traverserait le sous-cutané et atteindrait le muscle. À 45°, la distance parcourue dans le tissu est plus grande, ce qui garantit de rester dans l'hypoderme.",
+ rule:"≤6 mm → 90° chez adulte. 16 mm → 45° si patient mince, 90° si tissu adipeux avec pli suffisant. Biseau vers le haut. Geste rapide et ferme.",
+ svg:`<svg viewBox="0 0 110 76" width="110" height="76"><ellipse cx="55" cy="64" rx="50" ry="12" fill="#e8b890" stroke="#c07850" stroke-width="1.5"/><path d="M15 64 Q35 52 55 54 Q75 56 95 64" fill="none" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,2"/><g transform="rotate(-45,70,64)"><line x1="70" y1="64" x2="70" y2="28" stroke="#0f766e" stroke-width="3.5" stroke-linecap="round"/><polygon points="66,30 70,20 74,30" fill="#0f766e"/></g><text x="80" y="28" font-size="7.5" fill="#0f766e" font-family="sans-serif" font-weight="700">45° ✓</text><text x="80" y="37" font-size="7" fill="#9ca3af" font-family="sans-serif">(aiguille 16mm)</text><line x1="32" y1="64" x2="32" y2="20" stroke="#1e40af" stroke-width="3.5" stroke-linecap="round"/><polygon points="28,22 32,12 36,22" fill="#1e40af"/><text x="8" y="25" font-size="7.5" fill="#1e40af" font-family="sans-serif" font-weight="700">90° ✓</text><text x="8" y="34" font-size="7" fill="#9ca3af" font-family="sans-serif">(aiguille ≤6mm)</text></svg>`,
+ q:"Vous injectez l'insuline d'un patient mince avec une seringue orange 25G (aiguille 16 mm). Quel angle choisissez-vous ?",
+ ch:["90° avec pli cutané — angle standard","45° avec pli cutané — l'aiguille de 16 mm à 90° traverserait l'hypoderme et atteindrait le muscle chez un patient mince","45° sans pli — le pli n'est pas nécessaire avec une aiguille orange","30° — le plus bas possible pour rester dans le sous-cutané"],
+ ok:1},
+
+{n:8,cat:"Test de reflux",ico:"🔴",crit:true,att:false,
+ title:"Test de reflux — Exception insuline et HBPM",
+ what:"Pour la plupart des médicaments SC : aspirez légèrement pour vérifier l'absence de sang. <strong>Exception importante — Insuline et HBPM :</strong> le test de reflux <strong>n'est pas nécessaire</strong> et est <strong>déconseillé</strong>. Pour ces produits, une injection IV accidentelle minime est sans conséquence clinique significative. L'aspiration augmente la douleur et l'inconfort sans bénéfice. <strong>Recommandations actuelles (Réussis ton IFSI 2023, Infirmier.net) : aspiration abandonnée pour l'insuline et l'HBPM.</strong>",
+ why:"L'aspiration avant injection SC d'insuline ou d'HBPM n'a aucun intérêt démontré. Ces molécules ont un profil de sécurité qui tolère un passage IV accidentel minime. L'aspiration augmente la douleur et l'inconfort du patient sans apporter de bénéfice clinique.",
+ rule:"Insuline et HBPM : pas d'aspiration. Autres produits SC (morphine, biothérapies...) : aspiration recommandée selon le produit.",
+ q:"Vous injectez une HBPM sous-cutanée. Devez-vous vérifier l'absence de reflux sanguin ?",
+ ch:["Oui — toujours pour toute injection avec une aiguille","Non — pour l'insuline et l'HBPM, le test de reflux n'est pas recommandé et augmente la douleur sans bénéfice","Oui mais uniquement si le patient est sous anticoagulants","Non seulement si l'injection est abdominale"],
+ ok:1},
+
+{n:9,cat:"Injection lente",ico:"💊",crit:false,att:true,
+ title:"Injecter lentement le produit",
+ what:"Injectez le produit <strong>lentement et régulièrement</strong> (environ 10-30 secondes selon le volume). Observez le site pendant l'injection : l'apparition d'une petite papule blanchâtre sous la peau est normale et signifie que le produit est bien dans le sous-cutané. Ne pas injecter rapidement — pression tissulaire élevée = douleur et risque de diffusion sous-optimale.",
+ why:"Une injection lente répartit progressivement le médicament dans le tissu adipeux, limitant la douleur et optimisant l'absorption. Une papule est le signe que le produit reste dans le sous-cutané et ne part pas dans une veine.",
+ rule:"Injection lente (10-30 sec). Papule = normal = produit en SC. Observer le site pendant l'injection.",
+ q:"En injectant l'insuline, vous voyez apparaître une petite papule blanchâtre sous la peau. C'est ?",
+ ch:["Un signe d'allergie — arrêter l'injection immédiatement","Une infection locale en cours de formation","Un signe normal que le produit est bien injecté dans le tissu sous-cutané","Un signe que l'aiguille est dans un vaisseau"],
+ ok:2},
+
+{n:10,cat:"Attente avant retrait — Insuline",ico:"⏱️",crit:false,att:true,
+ title:"Attendre 10 secondes avant de retirer (insuline)",
+ what:"Pour l'insuline : <strong>attendre 10 secondes après la fin de l'injection avant de retirer l'aiguille</strong>, en maintenant le piston enfoncé. Pour les HBPM et autres SC : retrait possible rapidement. Le temps d'attente permet au médicament de commencer à se répartir dans le tissu. Retirez ensuite l'aiguille <strong>d'un geste rapide dans l'axe d'insertion</strong> (45° ou 90°).",
+ why:"Si l'aiguille est retirée immédiatement après l'injection d'insuline, une goutte d'insuline peut s'écouler par le trajet de l'aiguille et être perdue dans le sous-cutané superficiel ou à la surface de la peau. Ce phénomène, appelé 'fuite', entraîne un sous-dosage. Les 10 secondes permettent la diffusion initiale.",
+ rule:"Insuline : attendre 10 secondes, piston maintenu, avant retrait. En cas de fuite malgré tout : NE PAS compenser par une nouvelle injection.",
+ q:"Lors du retrait de l'aiguille après une injection d'insuline, vous constatez une petite goutte d'insuline qui s'écoule. Que faites-vous ?",
+ ch:["Réinjecter 2-3 unités pour compenser la fuite","Ne pas compenser — ne pas faire de nouvelle injection. La quantité perdue est estimée et une nouvelle injection créerait un risque de surdosage","Injecter 1 unité supplémentaire — compensation raisonnable","Appeler le médecin pour demander une correction de dose"],
+ ok:1},
+
+{n:11,cat:"Pression & Massage",ico:"🩹",crit:true,att:false,
+ title:"Comprimer le site — NE PAS MASSER (HBPM et insuline)",
+ what:"Après retrait de l'aiguille : appliquez une <strong>légère pression avec une compresse sèche</strong> sur le site pendant quelques secondes. <strong>⚠️ Ne pas masser le point d'injection :</strong><br>• <strong>HBPM : massager = hématome</strong> — le massage provoque une extravasation du produit anticoagulant dans les capillaires superficiels<br>• <strong>Insuline : massager = absorption accélérée imprévisible</strong> — le massage accélère le passage de l'insuline dans la circulation, pouvant déclencher une hypoglycémie rapide non anticipée<br>Pas de massage non plus pour les autres produits SC selon les recommandations actuelles.",
+ why:"Le massage après injection SC crée une pression mécanique qui disperse le produit dans les capillaires superficiels. Pour l'héparine : hématome. Pour l'insuline : pic d'absorption rapide non prévu dans la pharmacocinétique du schéma d'insulinothérapie.",
+ rule:"Légère pression sèche. PAS DE MASSAGE après injection SC — ni pour l'insuline, ni pour l'héparine, ni pour les autres SC selon les recommandations actuelles.",
+ q:"Après une injection d'HBPM, votre patient masse énergiquement son site d'injection 'pour répartir le médicament'. Que lui dites-vous ?",
+ ch:["Laissez-le faire — le massage améliore la diffusion de l'héparine","Lui demander d'arrêter immédiatement — le massage après héparine provoque un hématome","Lui demander de masser plus doucement — c'est acceptable si ce n'est pas vigoureux","Le massage est utile pour l'héparine mais pas pour l'insuline"],
+ ok:1},
+
+{n:12,cat:"DASRI & AES",ico:"🗑️",crit:true,att:false,
+ title:"DASRI immédiatement — jamais recapuchonner",
+ what:"<strong>Immédiatement après le retrait de l'aiguille</strong>, jetez l'aiguille montée sur la seringue <strong>directement dans le container DASRI piquants/tranchants, SANS jamais recapuchonner</strong>. Container à portée de main avant le soin. Pour les stylos à insuline : le stylo est <strong>personnel et nominatif</strong> — ne jamais l'utiliser pour un autre patient.",
+ why:"Recapuchonner = première cause d'AES. Le stylo à insuline partagé entre patients est une faute grave — transmission possible de pathogènes viraux (VHB très résistant). Chaque patient a son propre stylo, remis à sa sortie ou jeté.",
+ rule:"DASRI immédiatement sans recapuchonner. Stylo à insuline = personnel, nominatif, jamais partagé.",
+ q:"Un patient est transféré dans un autre service. Son stylo à insuline est encore dans la chambre. Une collègue propose de l'utiliser pour un autre patient diabétique. C'est ?",
+ ch:["Acceptable si on change l'aiguille entre les patients","Acceptable si les deux patients ont le même type d'insuline","Formellement interdit — le stylo est personnel et nominatif. Risque de transmission de pathogènes (VHB notamment). Chaque patient doit avoir son propre stylo","Acceptable si le stylo est désinfecté à l'alcool avant usage"],
+ ok:2},
+
+{n:13,cat:"Rotation des sites",ico:"🔄",crit:true,att:false,
+ title:"Tracer et respecter le schéma de rotation",
+ what:"Notez systématiquement le <strong>site utilisé dans le dossier infirmier</strong> et communiquez avec l'équipe. Utilisez le schéma de rotation en divisant chaque zone en points d'injection espacés d'<strong>au moins 1 cm (1 doigt)</strong> les uns des autres. Mnémotechnique <strong>BAC</strong> : <strong>B</strong>ras · <strong>A</strong>bdomen · <strong>C</strong>uisse (+ fesse). Pour l'insuline : rester dans le même groupe de sites sur une même journée pour l'insuline basale (ex : toujours abdomen pour l'insuline rapide d'une journée), changer de zone le lendemain.",
+ why:"La lipodystrophie (prévalence 41,8% chez les diabétiques) se forme uniquement par des injections répétées au même endroit. Elle est indolore et peut passer inaperçue si non palpée. L'injection dans une lipodystrophie donne une absorption erratique de l'insuline — cause fréquente de déséquilibre glycémique inexpliqué.",
+ rule:"1 cm minimum entre deux points d'injection. Tracer le site dans le dossier. Mnémotechnique BAC. Même zone de sites pour une même journée d'insulinothérapie.",
+ q:"Pourquoi est-il dangereux d'injecter de l'insuline dans une lipodystrophie ?",
+ ch:["La douleur est plus importante dans ces zones","L'absorption est erratique et imprévisible — risque de variabilité glycémique, d'hypoglycémies ou d'hyperglycémies inexplicables","Le médicament ne pénètre pas dans la lipodystrophie","Les lipodystrophies sont uniquement esthétiques, sans conséquence clinique"],
+ ok:1},
+
+{n:14,cat:"Surveillance post-injection",ico:"👁️",crit:false,att:true,
+ title:"Surveiller le site et le patient après l'injection",
+ what:"Observez le site d'injection : absence d'hématome (HBPM), de rougeur, de gonflement. Pour l'insuline : surveillez l'<strong>apparition de signes d'hypoglycémie</strong> (sueurs, tremblements, pâleur, confusion) dans les 30-60 minutes selon le type d'insuline. Vérifiez que le patient mange son repas après l'injection de l'insuline rapide. Pour les nouvelles molécules (biothérapies) : surveiller 15-30 min pour réaction allergique.",
+ why:"L'insuline rapide doit être injectée juste avant le repas (15-30 min selon la molécule). Si le patient ne mange pas après l'injection, l'hypoglycémie est inévitable. La surveillance post-injection est une étape de soin à part entière.",
+ rule:"Insuline rapide = s'assurer que le patient va manger dans les 15-30 min. Surveiller les signes d'hypoglycémie. HBPM = vérifier absence d'hématome.",
+ q:"Vous venez d'injecter l'insuline rapide d'un patient. Celui-ci refuse son plateau-repas 'parce qu'il n'a pas faim'. Que faites-vous ?",
+ ch:["Laisser le plateau — le patient a le droit de refuser","Contacter le médecin et surveiller étroitement le patient — l'insuline rapide est déjà injectée, un repas est nécessaire pour éviter l'hypoglycémie","Injecter du glucagon en prévention","Prendre une glycémie capillaire puis laisser le patient décider"],
+ ok:1},
+
+{n:15,cat:"Réinstallation & SHA",ico:"🤲",title:"Retirer les gants + SHA + réinstaller le patient",
+ crit:false,att:false,
+ what:"Retirez les gants. Effectuez une <strong>friction SHA</strong>. Réinstallez confortablement le patient. Éliminez les déchets dans les bonnes filières. Informez le patient de ce qu'il doit surveiller (signes d'hypoglycémie, hématome, douleur persistante au site) et de la prochaine injection.",
+ why:"L'éducation du patient est une composante du soin infirmier — un patient informé des signes à surveiller peut alerter plus rapidement en cas de complication.",
+ rule:"SHA après retrait des gants. Éduquer le patient sur les signes à surveiller.",
+ q:"Quel signe après une injection d'insuline rapide doit alerter et conduire à vérifier la glycémie immédiatement ?",
+ ch:["Légère rougeur au site d'injection — signe d'allergie locale","Sueurs, tremblements, pâleur, faim subite, sensation de faiblesse — signes d'hypoglycémie","Légère douleur au site — signe d'injection intramusculaire","Papule visible sous la peau — signe d'infection"],
+ ok:1},
+
+{n:16,cat:"Traçabilité",ico:"📝",crit:false,att:false,
+ title:"Tracer dans le dossier patient",
+ what:"Documentez : <strong>heure d'injection, médicament et dosage (en unités pour l'insuline), site d'injection utilisé, glycémie capillaire pré-injection (insuline), tolérance du patient, votre nom et signature.</strong> La notation du site est obligatoire pour assurer la rotation entre les soignants. Pour les protocoles d'insulinothérapie : reporter sur la feuille de surveillance glycémique.",
+ why:"La traçabilité du site permet à tous les soignants de respecter la rotation et de prévenir les lipodystrophies. Sans traçabilité du site, chaque soignant injecte au même endroit. La feuille de surveillance glycémique permet d'adapter les doses.",
+ rule:"Tracer : heure + médicament + dose + site utilisé + glycémie pré-injection (insuline) + tolérance + signature.",
+ q:"Pourquoi est-il indispensable de noter le site d'injection SC dans le dossier infirmier ?",
+ ch:["C'est une obligation administrative uniquement","Pour permettre la rotation des sites entre tous les soignants et prévenir les lipodystrophies","Pour calculer la posologie de la prochaine injection","Pour informer le médecin du nombre d'injections réalisées"],
+ ok:1},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE EXAMEN — 15 questions
+══════════════════════════════════════════════════ */
+const QE = [
+{cat:"HBPM — Bulle",q:"Pour une HBPM prête à l'emploi (Clexane®), la bulle d'air dans la seringue doit être ?",
+ ch:["Éliminée en tenant la seringue verticalement avant injection","Laissée en place — elle pousse le produit et garantit la dose complète","Réduite à moins de 0,1 mL avant injection","Éliminée si elle dépasse la moitié de la seringue"],
+ ok:1,ek:"La bulle d'air dans une seringue HBPM prête à l'emploi ne doit JAMAIS être purgée. Elle est volontairement incluse dans le dispositif pour pousser le produit hors de l'aiguille et garantir que la totalité de la dose est administrée.",ee:"Purger cette bulle = sous-dosage de l'anticoagulant.",r:"<strong>HBPM seringue prête : bulle d'air = ne jamais purger.</strong>",xp:15},
+{cat:"Insuline — Alcool",q:"Pourquoi l'alcool est-il contre-indiqué comme antiseptique pour l'injection d'insuline ?",
+ ch:["L'alcool détruit l'insuline en contact direct","L'alcool a un effet hypoglycémiant et peut provoquer une brûlure lors du passage sous-cutané","L'alcool augmente le pH de l'insuline et la rend inactive","L'alcool est interdit pour toute injection SC"],
+ ok:1,ek:"L'alcool introduit sous la peau avec l'aiguille lors de l'injection peut avoir un effet hypoglycémiant local et provoquer une sensation de brûlure. Pour l'insuline : utiliser une compresse sèche ou laisser l'alcool sécher complètement (>30 sec).",ee:"L'alcool n'est pas interdit pour toutes les SC — uniquement à éviter pour l'insuline si pas séché.",r:"<strong>Insuline = compresse sèche ou alcool séché >30 sec avant injection.</strong>",xp:12},
+{cat:"Massage post-injection",q:"Après une injection d'HBPM sous-cutanée, que faites-vous sur le site ?",
+ ch:["Masser vigoureusement pour répartir le produit","Masser doucement pour améliorer la diffusion","Légère pression sèche sans massage — le massage provoque un hématome avec l'héparine","Rien — le pansement occlusif suffit"],
+ ok:2,ek:"Après HBPM : compression douce sans massage. Le massage provoque une extravasation de l'héparine dans les capillaires superficiels, créant un hématome douloureux.",ee:"Masser après héparine = hématome. Règle absolue.",r:"<strong>Après HBPM : légère pression, JAMAIS masser.</strong>",xp:12},
+{cat:"Test de reflux",q:"Faut-il vérifier l'absence de reflux avant une injection d'insuline SC ?",
+ ch:["Oui — toujours pour toute injection avec aiguille","Oui — uniquement si le patient est diabétique de type 1","Non — l'aspiration n'est pas recommandée pour l'insuline et l'HBPM. Elle augmente la douleur sans bénéfice","Non — uniquement si aiguille courte (≤6 mm)"],
+ ok:2,ek:"L'aspiration avant injection SC d'insuline ou d'HBPM est abandonnée dans les recommandations actuelles. Ces molécules tolèrent un passage IV accidentel minime sans conséquence clinique. L'aspiration augmente la douleur inutilement.",ee:"Recommandations actuelles : pas d'aspiration pour insuline et HBPM.",r:"<strong>Insuline et HBPM : pas d'aspiration — pratique abandonnée.</strong>",xp:10},
+{cat:"Pli cutané",q:"Le pli cutané doit être maintenu ?",
+ ch:["Jusqu'au moment de piquer, puis relâché","Pendant la ponction seulement","Pendant toute l'injection, relâché uniquement après retrait complet de l'aiguille","Pas nécessaire avec les seringues prêtes à l'emploi HBPM"],
+ ok:2,ek:"Le pli cutané doit être maintenu pendant toute l'injection. Le relâcher avant ou pendant l'injection peut déplacer l'aiguille dans le muscle.",ee:"Relâcher le pli trop tôt = risque d'injection IM accidentelle.",r:"<strong>Pli cutané : maintenir pendant TOUTE l'injection, relâcher après retrait.</strong>",xp:10},
+{cat:"Angle d'injection",q:"Quel angle utilise-t-on avec une aiguille de 16 mm (25G orange) chez un patient mince ?",
+ ch:["90° avec pli","45° avec pli — l'aiguille de 16 mm à 90° atteindrait le muscle chez un patient mince","30° — le plus superficiel possible","90° sans pli"],
+ ok:1,ek:"Aiguille 16 mm + patient mince = 45° avec pli cutané. À 90°, l'aiguille traverserait tout le sous-cutané (peu épais chez un patient mince) et atteindrait le muscle.",ee:"L'angle s'adapte à la longueur de l'aiguille ET à la corpulence.",r:"<strong>16 mm + patient mince = 45°. Courtes ≤6 mm = 90° chez adulte.</strong>",xp:10},
+{cat:"Lipodystrophie",q:"Pourquoi ne doit-on pas injecter dans une lipodystrophie ?",
+ ch:["La douleur est insupportable dans ces zones","L'absorption est erratique et imprévisible, source de variabilité glycémique et d'hypoglycémies inexplicables","La lipodystrophie bloque le passage de l'aiguille","Ces zones ne sont que cosmétiques, sans impact clinique"],
+ ok:1,ek:"La lipodystrophie modifie la structure du tissu adipeux sous-cutané, rendant l'absorption de l'insuline imprévisible. C'est une cause fréquente de déséquilibre glycémique inexpliqué.",ee:"Les lipodystrophies ont un impact clinique direct et documenté.",r:"<strong>Lipodystrophie = absorption imprévisible = jamais injecter dedans.</strong>",xp:12},
+{cat:"Stylo insuline",q:"Avant d'injecter avec un stylo à insuline, que fait-on systématiquement ?",
+ ch:["Rien — le stylo est prêt à l'emploi","Injecter 1 unité de test dans l'air","Purger 2 unités à l'air pour vérifier que l'aiguille est perméable et le stylo fonctionnel","Retirer l'aiguille et la replacer"],
+ ok:2,ek:"Le stylo à insuline se purge de 2 unités à l'air avant chaque injection pour vérifier que l'aiguille est bien perméable, qu'il n'y a pas de bulle, et que le stylo fonctionne correctement.",ee:"Sans purge préalable, une bulle d'air dans le stylo pourrait provoquer un sous-dosage.",r:"<strong>Stylo insuline : purger 2 unités avant chaque injection.</strong>",xp:10},
+{cat:"Insuline NPH",q:"Comment prépare-t-on une insuline NPH (laiteuse/opaque) avant injection ?",
+ ch:["Agiter vigoureusement jusqu'à obtenir une solution homogène","Chauffer entre les mains 30 secondes","Rouler doucement entre les paumes 10 fois pour homogénéiser sans détruire les protéines","Ne pas manipuler — injecter directement"],
+ ok:2,ek:"L'insuline NPH est une suspension : les cristaux d'insuline se déposent au fond. Il faut rouler doucement le stylo ou la seringue 10× entre les paumes pour homogénéiser. Agiter violemment détruit les protéines d'insuline et crée des bulles.",ee:"Agiter violemment détruit les protéines d'insuline. Rouler = correct.",r:"<strong>Insuline NPH = rouler 10× entre les paumes, jamais agiter violemment.</strong>",xp:10},
+{cat:"Sites HBPM",q:"Quel est le site d'injection privilégié pour les HBPM ?",
+ ch:["Face externe du bras — plus accessible","Cuisse — tissu adipeux épais","Abdomen (entre rebord costal et crête iliaque, sauf 5 cm autour du nombril)","Omoplate — tissu adipeux profond"],
+ ok:2,ek:"L'abdomen est le site de référence pour les HBPM. Zone définie : entre le rebord costal et la crête iliaque, en excluant 5 cm autour du nombril (zone plus vascularisée) et la ligne blanche.",ee:"Le bras et la cuisse sont moins recommandés pour les HBPM.",r:"<strong>HBPM = abdomen, à distance du nombril (&gt;5 cm).</strong>",xp:10},
+{cat:"Fuite insuline",q:"Lors du retrait de l'aiguille, vous constatez une fuite d'insuline. Que faites-vous ?",
+ ch:["Réinjecter immédiatement la quantité estimée perdue","Ne pas compenser — ne pas faire de nouvelle injection. Une surinjection entraînerait une hypoglycémie","Injecter 1-2 unités supplémentaires — compensation raisonnable","Appeler le médecin pour demander une correction de dose"],
+ ok:1,ek:"En cas de fuite d'insuline : ne jamais compenser par une nouvelle injection. La quantité perdue est difficile à estimer précisément et une surinjection expose à une hypoglycémie. Surveiller la glycémie plus fréquemment.",ee:"Compenser une fuite d'insuline = risque de surdosage et d'hypoglycémie.",r:"<strong>Fuite insuline = ne pas compenser + surveillance glycémique renforcée.</strong>",xp:12},
+{cat:"Rotation sites",q:"À quelle distance minimum espace-t-on deux points d'injection successifs sur un même site ?",
+ ch:["5 cm — pour éviter tout chevauchement","2 cm — distance de sécurité","1 cm (1 largeur de doigt)","Pas de règle précise si on reste dans la même zone"],
+ ok:2,ek:"1 cm (1 largeur de doigt) est la distance minimale entre deux points d'injection successifs sur un même site pour prévenir les lipodystrophies.",ee:"5 cm est trop grand — cela limiterait trop les points disponibles.",r:"<strong>1 cm minimum entre deux points d'injection successifs.</strong>",xp:8},
+{cat:"Stylo — Personnel",q:"Un patient est transféré avec son stylo à insuline. Une autre patient en a besoin. Que faites-vous ?",
+ ch:["Utiliser le stylo en changeant l'aiguille — l'aiguille neuve assure la sécurité","Utiliser le stylo si les deux patients ont le même type d'insuline","Ne jamais partager un stylo à insuline — il est personnel et nominatif. Risque de transmission de pathogènes","Désinfecter l'embout du stylo à l'alcool avant utilisation"],
+ ok:2,ek:"Le stylo à insuline est strictement personnel et nominatif. Même avec une aiguille neuve, l'intérieur du stylo peut être contaminé (sang reflué lors d'injections précédentes). Risque de transmission du VHB notamment.",ee:"Changer l'aiguille ne suffit pas — l'intérieur du stylo reste potentiellement contaminé.",r:"<strong>Stylo insuline = personnel, nominatif, jamais partagé.</strong>",xp:15},
+{cat:"Pression post-injection",q:"Après l'injection SC, pourquoi ne masse-t-on pas le site pour l'insuline ?",
+ ch:["Le massage serait douloureux après injection","Le massage accélère l'absorption de façon imprévisible, pouvant déclencher une hypoglycémie non anticipée","Le massage déplace l'aiguille vers un vaisseau","Le massage n'a aucun effet sur l'insuline"],
+ ok:1,ek:"Pour l'insuline : le massage accélère l'absorption et crée un pic d'insulinémie non prévu dans le schéma thérapeutique, exposant à une hypoglycémie. Légère pression sèche suffisante.",ee:"Le massage a un effet documenté sur l'absorption de l'insuline.",r:"<strong>Pas de massage après insuline SC — accélération de l'absorption imprévisible.</strong>",xp:10},
+{cat:"Surveillance insuline",q:"Après injection d'insuline rapide, quand doit avoir lieu le repas du patient ?",
+ ch:["Dans les 2 heures — large fenêtre thérapeutique","Pas de contrainte — l'insuline s'adapte","Dans les 15-30 minutes — sans repas, hypoglycémie quasi certaine","Après 1 heure — pour laisser l'insuline agir"],
+ ok:2,ek:"L'insuline rapide a un délai d'action de 15-30 minutes. Le repas doit impérativement avoir lieu dans cet intervalle. Sans repas, l'insuline agit sur une glycémie non compensée par les glucides du repas → hypoglycémie.",ee:"15-30 min est la fenêtre standard. Sans repas dans ce délai = hypoglycémie.",r:"<strong>Insuline rapide + repas dans les 15-30 min. Surveiller si refus alimentaire.</strong>",xp:10},
+];
+
+/* ══════════════════════════════════════════════════
+   MODE SURVIE — 10 pièges
+══════════════════════════════════════════════════ */
+const QS = [
+{cat:"Piège — Bulle HBPM",q:"Votre collègue purge la bulle d'air d'une seringue de Clexane® avant d'injecter 'par réflexe, c'est ce qu'on a appris'. C'est ?",
+ ch:["Correct — l'air ne doit jamais être injecté en SC","Correct seulement si la bulle est grande (&gt;0,2 mL)","Incorrect — la bulle d'air est volontairement présente dans les seringues HBPM prêtes à l'emploi pour pousser le produit. La purger provoque un sous-dosage de l'anticoagulant","Correct si le patient est sous traitement anticoagulant"],
+ ok:2,ek:"La bulle d'air dans une seringue HBPM prête à l'emploi n'est pas un défaut — c'est une conception technique intentionnelle. Elle assure que la totalité du médicament sort de l'aiguille. Purger cette bulle = perte d'une fraction de la dose.",ee:"Cette erreur est fréquente car elle va à l'encontre du réflexe général 'éliminer les bulles'. Mais ce réflexe s'applique aux voies IV, pas aux HBPM prêtes à l'emploi.",r:"<strong>Bulle HBPM seringue prête = ne pas purger = dose complète garantie.</strong>",xp:25},
+{cat:"Piège — Alcool insuline",q:"Vous désinfectez rapidement avec de l'alcool et piquez immédiatement l'insuline car vous êtes pressé. Le patient se plaint d'une brûlure et sa glycémie baisse plus vite que prévu. Cause probable ?",
+ ch:["Allergie locale à l'insuline","Lipodystrophie non détectée au site d'injection","L'alcool non séché introduit sous la peau a un effet hypoglycémiant et accélère l'absorption de l'insuline","La glycémie était trop basse avant l'injection"],
+ ok:2,ek:"L'alcool non séché introduit sous la peau avec l'aiguille contribue à un effet hypoglycémiant local et peut accélérer l'absorption de l'insuline. Pour l'insuline : compresse sèche ou alcool complètement évaporé avant injection.",ee:"C'est une erreur technique fréquente que les étudiants ignorent souvent.",r:"<strong>Alcool non séché + insuline = brûlure + effet hypoglycémiant. Toujours sécher ou utiliser compresse sèche.</strong>",xp:25},
+{cat:"Piège — Massage héparine",q:"Votre patient masse son abdomen après son injection d'HBPM 'pour que ça ne fait pas une boule'. Vous ?",
+ ch:["Laissez-le faire — le massage répartit l'héparine et évite les hématomes","Demandez-lui de masser plus doucement","Lui expliquez immédiatement d'arrêter — le massage après héparine SC provoque un hématome en dispersant l'anticoagulant dans les capillaires superficiels","Le massage est utile pour disperser les HBPM à longue durée d'action"],
+ ok:2,ek:"Le massage après HBPM est une erreur fréquente des patients non éduqués. Le mécanisme : la pression mécanique du massage disperse le médicament dans les capillaires superficiels, provoquant des micro-hémorragies → hématome visible et douloureux.",ee:"'Pour que ça ne fait pas une boule' est un réflexe naturel mais contre-productif. L'hématome apparaît précisément à cause du massage.",r:"<strong>HBPM : jamais masser. Légère pression sèche uniquement.</strong>",xp:20},
+{cat:"Piège — Lipodystrophie",q:"Un patient diabétique déséquilibré (hyperglycémies inexpliquées) vous montre son site d'injection : une zone indurée de 4 cm qu'il utilise depuis 6 mois. Il dit 'c'est là que j'injecte toujours, ça ne fait plus mal'. Vous ?",
+ ch:["C'est positif — il a trouvé un site 'habitué' qui n'est plus douloureux","La zone indurée est normale avec l'insuline, pas de problème","Identifiez une lipodystrophie — l'injection dans cette zone crée une absorption imprévisible. Ne plus injecter ici, informer le médecin pour ajuster la dose (risque hypoglycémie en changeant de zone)","Augmenter la dose d'insuline pour compenser la mauvaise absorption"],
+ ok:2,ek:"L'absence de douleur dans une lipodystrophie est un signe que le tissu est modifié. Les déséquilibres glycémiques inexplicables chez ce patient sont probablement liés à l'absorption erratique dans cette zone. Il faut arrêter d'y injecter et informer le médecin pour une adaptation de dose.",ee:"'Ça ne fait plus mal' est un faux signe de sécurité. C'est au contraire le signe que le tissu est lésé.",r:"<strong>Lipodystrophie = arrêter d'injecter + médecin + adapter la dose lors du changement de zone.</strong>",xp:20},
+{cat:"Piège — Relâcher le pli",q:"Vous injectez l'insuline d'un patient mince. Après avoir piqué, vous relâchez le pli cutané 'pour avoir la main libre et injecter plus facilement'. Risque principal ?",
+ ch:["Aucun risque — l'aiguille est déjà dans le bon tissu","Risque de douleur accrue","L'aiguille peut se déplacer dans le muscle — l'injection IM accidentelle d'insuline chez un patient mince accélère considérablement l'absorption","Risque de contamination de l'aiguille"],
+ ok:2,ek:"Chez un patient mince, le tissu sous-cutané est peu épais. Le pli cutané maintenu est le seul rempart entre l'hypoderme et le muscle. Le relâcher pendant l'injection permet à l'aiguille de migrer vers le muscle — absorption trop rapide de l'insuline et hypoglycémie.",ee:"Le pli cutané n'est pas juste un repérage — c'est une protection mécanique active pendant toute l'injection.",r:"<strong>Pli cutané = maintenir jusqu'au retrait complet de l'aiguille. Crucial chez le patient mince.</strong>",xp:20},
+{cat:"Piège — Stylo partagé",q:"En urgence, un patient diabétique a oublié son stylo. Son voisin de chambre lui propose le sien (même insuline). Vous étiez absent. Que faites-vous en découvrant la situation ?",
+ ch:["C'est acceptable car même type d'insuline","C'est acceptable car ils ont changé l'aiguille","Signalez l'incident — le stylo à insuline est nominatif et ne peut jamais être partagé. Risque de transmission du VHB notamment. Déclarer l'événement indésirable et informer le médecin","Rien si les patients semblent en bonne santé"],
+ ok:2,ek:"Le partage de stylo à insuline est un incident à déclarer. Même avec une aiguille neuve, le sang du premier utilisateur peut refluer dans le stylo lors de l'injection. Le VHB est particulièrement résistant et peut survivre plusieurs jours sur une surface. Incident à déclarer.",ee:"Même insuline + aiguille neuve ne protège pas. L'intérieur du stylo peut être contaminé.",r:"<strong>Stylo partagé = incident à déclarer. Jamais partager, même en urgence.</strong>",xp:25},
+{cat:"Piège — Compensation fuite",q:"Vous injectez 10 unités d'insuline. En retirant l'aiguille, 2-3 unités semblent s'être écoulées sur la peau. Votre collègue dit 'réinjecte 3 unités pour compenser'. Vous ?",
+ ch:["Réinjectez 3 unités — compensation logique","Réinjectez la moitié, soit 1-2 unités — compromis raisonnable","Refusez — ne jamais compenser une fuite d'insuline. Impossible d'estimer précisément la perte. Risque de surdosage. Surveiller la glycémie plus fréquemment","Appelez le médecin pour une prescription de dose supplémentaire"],
+ ok:2,ek:"La quantité d'insuline perdue lors d'une fuite est impossible à estimer précisément. Une compensation expose au risque de surdosage et d'hypoglycémie. La conduite recommandée : noter l'incident, surveiller la glycémie, et ne pas injecter de dose supplémentaire.",ee:"'2-3 unités semblent s'être écoulées' est une estimation visuelle peu fiable. Ne jamais compenser.",r:"<strong>Fuite insuline = ne jamais compenser. Surveiller la glycémie.</strong>",xp:25},
+{cat:"Piège — Angle",q:"Votre infirmière référente vous dit 'pour les SC, on injecte toujours à 45°'. Elle injecte le Clexane® à 45°. C'est ?",
+ ch:["Correct — 45° est l'angle universel de toutes les injections SC","Correct pour les patients minces uniquement","Incorrect pour les HBPM — l'héparine prête à l'emploi s'administre à 90° avec pli cutané. L'angle de 45° est pour les aiguilles longues chez les patients minces","L'angle n'a pas d'importance en SC si le pli est correct"],
+ ok:2,ek:"L'HBPM se fait à 90° avec pli cutané selon les recommandations. L'angle 45° est recommandé pour les aiguilles longues (16 mm) chez les patients minces. Les seringues HBPM ont des aiguilles courtes adaptées à une injection à 90°.",ee:"Il n'existe pas d'angle universel pour toutes les SC. L'angle dépend de la longueur de l'aiguille et de la corpulence.",r:"<strong>HBPM seringue prête = 90° avec pli. 45° = aiguille longue chez patient mince.</strong>",xp:20},
+{cat:"Piège — Même site répété",q:"Une aide-soignante déléguée pour l'insuline injecte toujours au même endroit 'parce que le patient dit que c'est là que ça fait le moins mal'. Vous ?",
+ ch:["Laissez faire — respecter la préférence du patient réduit la douleur et améliore l'observance","C'est acceptable si le site reste propre et non infect","Intervenez — l'absence de douleur peut signaler une lipodystrophie déjà présente. La rotation est obligatoire pour prévenir ou éviter d'aggraver une lipodystrophie existante","Laissez faire si le patient est diabétique de type 2 (moins de risque de lipodystrophie)"],
+ ok:2,ek:"'Ça fait moins mal' à un endroit précis peut être le signe d'une lipodystrophie (tissu modifié, moins innervé). Continuer d'y injecter aggrave la lésion et crée une absorption de plus en plus imprévisible. La rotation est obligatoire.",ee:"Le confort du patient ne justifie pas d'abandonner la rotation des sites.",r:"<strong>Même site = lipodystrophie aggravée. Rotation obligatoire même si 'ça fait moins mal'.</strong>",xp:20},
+{cat:"Piège — Insuline rapide sans repas",q:"Vous venez d'injecter l'insuline rapide du petit-déjeuner. L'aide-soignante vous dit que le patient est parti en scanner et ne mangera pas avant 1h30. C'est ?",
+ ch:["Pas grave — l'insuline basale compensera","Acceptable si vous donnez un verre de jus d'orange","Urgence — l'insuline rapide a déjà été injectée et va agir dans 15-30 min. Contacter le médecin immédiatement pour une prescription de sucre rapide. Surveiller la glycémie toutes les 15 min. Préparer du glucagon","Inutile d'agir si le patient est actuellement asymptomatique"],
+ ok:2,ek:"Insuline rapide injectée + repas décalé de 1h30 = hypoglycémie quasi certaine dans les 30-60 min. C'est une situation d'urgence relative. Il faut agir immédiatement : contacter le médecin, apporter des sucres rapides (si patient conscient et disponible), surveiller la glycémie.",ee:"'Il est asymptomatique maintenant' ne signifie pas qu'il le restera. L'insuline va agir sur une glycémie sans apport glucidique.",r:"<strong>Insuline rapide injectée + repas impossible = urgence. Contacter médecin + sucres rapides + surveillance glycémique.</strong>",xp:25},
+];
+
+/* ══════════════════════════════════════════════════
+   FICHE — PHASES ET BUILD
+══════════════════════════════════════════════════ */
+const PHASES=[
+  {l:'📋 Phase 1 — Vérifications initiales (1-3)',steps:[1,2,3],c:'#1e40af'},
+  {l:'🧤 Phase 2 — Asepsie et technique (4-8)',steps:[4,5,6,7,8],c:'#0f766e'},
+  {l:'💉 Phase 3 — Injection (9-11)',steps:[9,10,11],c:'#dc2626'},
+  {l:'📝 Phase 4 — Fin de soin et traçabilité (12-16)',steps:[12,13,14,15,16],c:'#b45309'},
+];
+const SERR={
+  2:"Purger la bulle d'air d'une HBPM prête à l'emploi = sous-dosage de l'anticoagulant.",
+  5:"Injecter l'insuline avec de l'alcool non séché = effet hypoglycémiant + brûlure locale.",
+  6:"Relâcher le pli pendant l'injection = risque d'injection IM accidentelle (surtout chez patient mince).",
+  11:"Masser après HBPM = hématome. Masser après insuline = pic d'absorption imprévisible = hypoglycémie.",
+  12:"Partager un stylo à insuline même en changeant l'aiguille = risque de transmission VHB.",
+};
+const SNUAN={
+  8:"La recommandation 'pas d'aspiration' pour l'insuline et l'HBPM est officielle (Réussis ton IFSI 2023, Infirmier.net). Cependant pour les autres produits SC (morphine, biothérapies), l'aspiration peut être recommandée selon le fabricant.",
+  10:"La règle '10 secondes avant retrait' est spécifique à l'insuline pour prévenir la fuite. Pour les HBPM et autres SC, ce délai n'est pas requis.",
+};
+const SCONS={
+  3:"Astuce pour détecter une lipodystrophie : palper avec le bout des doigts en cherchant une zone plus ferme ou plus épaisse que les tissus environnants. Les patients ne la signalent souvent pas spontanément.",
+  7:"Pour les stylos à insuline modernes avec aiguilles de 4-5-6 mm : l'injection à 90° sans pli est possible chez l'adulte de corpulence normale. Le pli reste recommandé chez les patients maigres.",
+  13:"Pour l'insuline basale : un bon schéma = 4 quadrants abdominaux en rotation quotidienne. Documenter : 'quadrant supérieur droit (abd)', 'quadrant inférieur gauche (abd)', etc.",
+  15:"Pour sensibiliser les patients diabétiques : expliquer que 'injecter au même endroit pour éviter la douleur' est contre-productif car la zone devient endommagée et l'insuline mal absorbée.",
+};
+
+function buildFicheProto(){
+  const c=document.getElementById('proto-sc-steps');
+  if(!c||c.children.length>0)return;
+  const intro=document.createElement('div');
+  intro.style.cssText='background:linear-gradient(135deg,#134e4a,#0f766e);border-radius:11px;padding:13px 15px;margin-bottom:15px;color:white;font-size:12px;line-height:1.75';
+  intro.innerHTML='<div style="font-size:9.5px;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.55);font-weight:700;margin-bottom:5px">⚡ Avant toute injection SC</div><strong>Prescription + 5 B + identité patient.</strong><br><strong>Rappels absolus :</strong> insuline = pas d\'alcool · HBPM seringue prête = pas purger la bulle · pas de massage · pas de reflux pour insuline/HBPM · rotation des sites obligatoire.';
+  c.appendChild(intro);
+  PHASES.forEach(ph=>{
+    const pd=document.createElement('div');
+    pd.className='ph';pd.style.cssText=`color:${ph.c};border-color:${ph.c}`;
+    pd.textContent=ph.l;c.appendChild(pd);
+    ph.steps.forEach(n=>{
+      const s=ST.find(x=>x.n===n);if(!s)return;
+      const cls=s.crit?'crit':s.att?'att':SNUAN[n]?'nuan':'';
+      let tags='';
+      if(s.crit)tags+='<span class="stag tc">⚠ CRITIQUE</span>';
+      if(s.att&&!s.crit)tags+='<span class="stag ta">⚡ Attention</span>';
+      if(SNUAN[n])tags+='<span class="stag tn">🔬 Nuance</span>';
+      const d=document.createElement('div');d.className=`sc2 ${cls}`;
+      d.innerHTML=`<div class="sh2" onclick="this.parentElement.classList.toggle('open')">
+        <div class="sn2">${n}</div>
+        <div class="si2"><div class="stxt">${s.ico} ${s.title}</div><div class="stags">${tags}</div></div>
+        <div class="schev">▼</div></div>
+        <div class="sbody">
+          <div class="sgeste">${s.what}</div>
+          <div class="s2c">
+            <div class="swhy"><strong>🧠 Pourquoi :</strong> ${s.why}</div>
+            <div class="srule"><strong>📌 Règle :</strong> ${s.rule}</div>
+          </div>
+          ${SERR[n]?`<div class="serr">🚨 <strong>Erreur critique :</strong> ${SERR[n]}</div>`:''}
+          ${SNUAN[n]?`<div class="snuan">🔬 <strong>Nuance :</strong> ${SNUAN[n]}</div>`:''}
+          ${SCONS[n]?`<div class="scons">💡 <strong>Conseil :</strong> ${SCONS[n]}</div>`:''}
+        </div>`;
+      c.appendChild(d);
+    });
+  });
+  document.querySelectorAll('#proto-sc-steps .sc2').forEach(x=>x.classList.add('open'));
+}
+
+function showFTab(id,btn){
+  document.querySelectorAll('.fsec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='f-proto')buildFicheProto();
+}
+
+/* ══════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════ */
+let mode='learn',qs=[],qi=0;
+let xp=0,streak=0,bstr=0,corr=0,wrng=0,lives=3;
+let tiv=null,tleft=30,ttot=0,ans=false;
+let cats={},errs=[],score=100;
+
+function setMode(m,btn){
+  document.querySelectorAll('.mc').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');mode=m;
+}
+
+function launch(){
+  if(mode==='fiche'){buildFicheProto();showScr('sf');showFTab('f-mat',document.querySelector('.ftab'));return;}
+  xp=0;streak=0;bstr=0;corr=0;wrng=0;lives=3;ttot=0;ans=false;cats={};errs=[];score=100;qi=0;
+  if(mode==='learn'){qs=[...ST];document.getElementById('tbm').textContent='📚 Apprentissage';document.getElementById('livp').style.display='none';}
+  else if(mode==='exam'){qs=[...QE].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='📝 Examen';document.getElementById('livp').style.display='none';}
+  else{qs=[...QS].sort(()=>Math.random()-.5);document.getElementById('tbm').textContent='💀 Survie';document.getElementById('livp').style.display='flex';document.getElementById('livn').textContent=3;}
+  showScr('sq');loadQ();
+}
+
+function loadQ(){
+  if(qi>=qs.length){showResult();return;}
+  const q=qs[qi];ans=false;
+  const tot=qs.length;
+  document.getElementById('tbpf').style.width=(qi/tot*100)+'%';
+  document.getElementById('expb').classList.remove('on','ok2','ko');
+  document.getElementById('nxt').classList.remove('on');
+  if(mode==='learn')loadStep(q);else loadStd(q);
+  startTimer();
+}
+
+function loadStep(s){
+  const tot=qs.length;
+  document.getElementById('ctx').style.display='flex';
+  document.getElementById('ctxic').textContent=s.ico;
+  document.getElementById('ctxsb').textContent=`Étape ${s.n} sur ${tot}`;
+  document.getElementById('ctxtl').textContent=s.title;
+  document.getElementById('ctxbd').innerHTML=`${s.what}<br><span style="display:block;margin-top:5px;font-size:10.5px;color:rgba(255,255,255,.5);font-style:normal">⚠️ ${s.why}</span>`;
+  document.getElementById('tbql').textContent=`Étape ${qi+1}/${tot}`;
+  document.getElementById('qnum').textContent=`${qi+1}`;
+  document.getElementById('qcat').textContent=s.cat;
+  document.getElementById('qill').innerHTML=s.svg?`<div class="qill">${s.svg}</div>`:'';
+  document.getElementById('qtxt').innerHTML=`<span style="display:block;font-size:11px;color:var(--t3);font-family:'Sora',sans-serif;font-style:normal;margin-bottom:7px">✅ Question de validation :</span>${s.q}`;
+  const c=document.getElementById('chs');c.innerHTML='';
+  s.ch.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='ch';
+    b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;
+    b.onclick=()=>ansStep(i,b,s);c.appendChild(b);
+  });
+  if(!cats[s.cat])cats[s.cat]={c:0,t:0};cats[s.cat].t++;
+  document.getElementById('nxt').textContent=qi===tot-1?'Voir mon rapport →':`Étape suivante → ${qi+2}/${tot}`;
+}
+
+function ansStep(idx,btn,s){
+  if(ans)return;ans=true;
+  const ok=idx===s.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===s.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}
+  });
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=8*(streak>=3?2:1);xp+=e;cats[s.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Correct !',`<strong>Règle :</strong> ${s.rule}`);}
+  else{wrng++;streak=0;score=Math.max(0,score-10);errs.push({q:s.title,ok:s.ch[s.ok]});showExp('ko','❌','Attention',`Bonne réponse : <strong>${s.ch[s.ok]}</strong><br><br><strong>Règle :</strong> ${s.rule}`);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function loadStd(q){
+  document.getElementById('ctx').style.display='none';
+  document.getElementById('tbql').textContent=`Q${qi+1}/${qs.length}`;
+  document.getElementById('qnum').textContent=`Q${qi+1}`;
+  document.getElementById('qcat').textContent=q.cat;
+  document.getElementById('qill').innerHTML='';
+  document.getElementById('qtxt').innerHTML=q.q;
+  const c=document.getElementById('chs');c.innerHTML='';
+  q.ch.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='ch';
+    b.innerHTML=`<span class="cl">${'ABCD'[i]}</span>${t}`;
+    b.onclick=()=>ansStd(i,b,q);c.appendChild(b);
+  });
+  if(!cats[q.cat])cats[q.cat]={c:0,t:0};cats[q.cat].t++;
+  document.getElementById('nxt').textContent='Suivant →';
+}
+
+function ansStd(idx,btn,q){
+  if(ans)return;ans=true;clearInterval(tiv);
+  const ok=idx===q.ok;
+  document.querySelectorAll('.ch').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===q.ok){b.classList.add('ok2');b.innerHTML+=`<span class="ctag ctag-ok">✓</span>`;}
+    else if(i===idx&&!ok){b.classList.add('ko');b.innerHTML+=`<span class="ctag ctag-ko">✗</span>`;}
+  });
+  if(ok){corr++;streak++;if(streak>bstr)bstr=streak;const e=(q.xp||10)*(streak>=3?2:1);xp+=e;cats[q.cat].c++;floatXP(e,streak>=3);showExp('ok2','✅','Bonne réponse !',q.ek,q.r);}
+  else{wrng++;streak=0;score=Math.max(0,score-15);errs.push({q:q.q.replace(/<[^>]+>/g,'').substring(0,80),ok:q.ch[q.ok]});if(mode==='survival'){lives--;document.getElementById('livn').textContent=lives;if(lives<=0){updateUI();setTimeout(showResult,1400);return;}}showExp('ko','❌','Erreur',q.ee,q.r);}
+  updateUI();document.getElementById('nxt').classList.add('on');
+}
+
+function showExp(type,ico,title,body,rule){
+  const eb=document.getElementById('expb');eb.classList.add('on',type);
+  document.getElementById('expi').textContent=ico;
+  const et=document.getElementById('exptt');et.textContent=title;et.className=`exptt ${type}`;
+  document.getElementById('expbd').innerHTML=body;
+  const er=document.getElementById('exprule');
+  if(rule){er.style.display='block';er.innerHTML=rule;}else er.style.display='none';
+}
+
+function nextQ(){qi++;loadQ();}
+
+function startTimer(){
+  clearInterval(tiv);
+  let dur=mode==='exam'?30:mode==='survival'?25:0;
+  if(!dur){document.getElementById('tiw').style.display='none';tiv=setInterval(()=>ttot++,1000);return;}
+  tleft=dur;document.getElementById('tiw').style.display='block';
+  const arc=document.getElementById('tia'),num=document.getElementById('tin');
+  arc.style.stroke='var(--tl)';num.className='tin';arc.style.strokeDashoffset='0';
+  tiv=setInterval(()=>{
+    tleft--;ttot++;
+    arc.style.strokeDashoffset=((dur-tleft)/dur*220);
+    num.textContent=tleft;
+    if(tleft<=8){num.classList.add('warn');arc.style.stroke='var(--rd)';}
+    if(tleft<=0){
+      clearInterval(tiv);
+      if(!ans){
+        ans=true;wrng++;score=Math.max(0,score-15);
+        document.querySelectorAll('.ch').forEach((b,i)=>{b.disabled=true;if(i===qs[qi].ok)b.classList.add('mis');});
+        updateUI();document.getElementById('nxt').classList.add('on');
+      }
+    }
+  },1000);
+}
+
+function updateUI(){
+  document.getElementById('strkn').textContent=streak;
+  document.getElementById('xpn').textContent=xp;
+  document.getElementById('sc').textContent=corr;
+  document.getElementById('sw2').textContent=wrng;
+  document.getElementById('scn').textContent=score;
+  document.getElementById('strkp').classList.toggle('hot',streak>=3);
+}
+
+function floatXP(n,d){
+  const el=document.createElement('div');el.className='xpfl';
+  el.textContent=(d?'⚡×2 +':'+')+n+' XP';
+  el.style.cssText=`right:22px;top:58px;font-size:${d?15:12}px`;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),900);
+}
+
+function showResult(){
+  clearInterval(tiv);
+  const tot=qs.length;
+  const note=Math.max(0,Math.round((corr/tot)*20));
+  const ml={learn:'📚 Apprentissage — 16 étapes',exam:'📝 Examen — Questions protocole',survival:'💀 Survie — Questions pièges'};
+  const gd=[
+    {m:18,g:'🏆',t:'Excellent',bc:'#f0fdfa',tc:'#0f766e',bd:'#5eead4'},
+    {m:14,g:'✅',t:'Bien',bc:'#f0fdfa',tc:'#0f766e',bd:'#5eead4'},
+    {m:10,g:'⚠️',t:'Passable — À consolider',bc:'#fffbeb',tc:'#b45309',bd:'#fde68a'},
+    {m:0, g:'❌',t:'Insuffisant',bc:'#fef2f2',tc:'#dc2626',bd:'#fca5a5'},
+  ].find(x=>note>=x.m);
+  document.getElementById('rg').textContent=gd.g;
+  document.getElementById('rs').textContent=`${note}/20`;document.getElementById('rs').style.color=gd.tc;
+  document.getElementById('rsb').textContent=`${tot} questions · ${corr} correctes · ${wrng} erreurs`;
+  const rm=document.getElementById('rm');rm.textContent=gd.t;
+  rm.style.cssText=`background:${gd.bc};color:${gd.tc};border-color:${gd.bd};border-radius:30px;padding:6px 16px;font-size:12.5px;font-weight:700;border:1.5px solid;display:inline-flex;align-items:center`;
+  document.getElementById('rmd').textContent=ml[mode];
+  document.getElementById('rxp').textContent=xp;
+  document.getElementById('rstr').textContent=bstr;
+  document.getElementById('rtim').textContent=tot?Math.round(ttot/tot)+'s':'0s';
+  document.getElementById('rsc2').textContent=score;
+  const bd=document.getElementById('bkitems');bd.innerHTML='';
+  Object.entries(cats).forEach(([cat,s])=>{
+    const p=s.t?Math.round(s.c/s.t*100):0;
+    const c=p>=80?'#059669':p>=50?'#b45309':'#dc2626';
+    bd.innerHTML+=`<div class="bki"><div class="bd2" style="background:${c}"></div><div class="bkl">${cat}</div><div class="bkbg"><div class="bkbf" style="width:${p}%;background:${c}"></div></div><div class="bks" style="color:${c}">${s.c}/${s.t}</div></div>`;
+  });
+  const eb=document.getElementById('errb');
+  if(errs.length){eb.style.display='block';document.getElementById('errlist').innerHTML=errs.slice(0,5).map(e=>`<div class="erri"><span>❌</span><div><div style="font-weight:600;color:var(--text);margin-bottom:1px">${e.q}${e.q.length>=80?'...':''}</div><div style="color:var(--t3)">→ ${e.ok}</div></div></div>`).join('');}
+  else eb.style.display='none';
+  const cs=[];
+  if(mode==='learn'&&note>=16)cs.push("📝 Protocole bien assimilé. Passez au mode Examen pour tester sans aide.");
+  if(mode==='exam'&&note>=16)cs.push("💀 Excellent ! Le mode Survie vous attend — bulle HBPM, alcool insuline, massage héparine, lipodystrophie...");
+  if(mode==='survival'&&note>=18)cs.push("🏆 Maîtrise experte de l'injection SC. Protocole et pièges maîtrisés.");
+  if(note<10)cs.push("📖 Commencez par la Fiche Protocole puis repassez en Apprentissage. Concentrez-vous sur les nuances insuline vs HBPM.");
+  if(note>=10&&note<18)cs.push("🔄 Recommencez jusqu'au 18/20. Points clés : bulle HBPM · alcool insuline · pas de massage · pas de reflux · rotation sites.");
+  Object.entries(cats).forEach(([cat,s])=>{
+    if(!s.t||s.c/s.t>=.6)return;
+    if(cat.includes('Bulle')||cat.includes('HBPM'))cs.push("🩸 HBPM seringue prête : NE JAMAIS purger la bulle d'air. Elle fait partie du dispositif.");
+    if(cat.includes('Alcool')||cat.includes('Insuline'))cs.push("💉 Insuline : compresse SÈCHE ou alcool séché >30 sec. Jamais d'alcool humide.");
+    if(cat.includes('Massage'))cs.push("🙅 Après SC : jamais masser. HBPM = hématome. Insuline = absorption imprévisible.");
+    if(cat.includes('Reflux'))cs.push("🔴 Insuline et HBPM : pas d'aspiration. Recommandation abandonnée.");
+    if(cat.includes('Rotation')||cat.includes('Lipodystrophie'))cs.push("🔄 Rotation obligatoire, 1 cm entre chaque point. Lipodystrophie = jamais injecter dedans.");
+    if(cat.includes('Pli'))cs.push("✋ Pli cutané maintenu pendant TOUTE l'injection, relâché après retrait de l'aiguille.");
+  });
+  if(!cs.length)cs.push("🎯 Excellent niveau sur tous les axes. Protocole injection SC maîtrisé.");
+  document.getElementById('cnslist').innerHTML=cs.map(c=>`<div class="cnsi">${c}</div>`).join('');
+  showScr('sres');
+}
+
+function restart(){launch();}
+function showScr(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('nxt').classList.contains('on'))nextQ();});
+</script>
+</body>
+</html>
