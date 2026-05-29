@@ -200,6 +200,104 @@ html,body{min-height:100vh;font-family:'Nunito',sans-serif;background:var(--bg);
 .modal-cancel{background:none;border:none;color:var(--ink3);font-size:12px;font-weight:600;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:10px;width:100%}
 
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+
+/* ─── FIX MOBILE IFRAME WIX ─── */
+@media (max-width: 800px) {
+  body { padding: 8px !important; overflow-x: hidden !important; }
+  * { max-width: 100% !important; box-sizing: border-box !important; }
+  .container, .wrap, main, .sim-wrap {
+    max-width: 100% !important;
+    padding: 8px !important;
+  }
+}
+@media (max-width: 500px) {
+  body { font-size: 14px !important; padding: 6px !important; }
+  h1 { font-size: 24px !important; }
+  h2 { font-size: 18px !important; }
+}
+
+/* ─── FIX MOBILE FLASHCARDS — Affichage en flux normal ─── */
+@media (max-width: 800px) {
+  /* Card area : pas de centrage forcé, flux normal */
+  .card-area { 
+    flex: none !important;
+    justify-content: flex-start !important;
+    padding: 12px !important;
+    perspective: none !important;
+    min-height: auto !important;
+  }
+  .card-scene { max-width: 100% !important; }
+  
+  /* Carte : pas de 3D flip sur mobile, flux normal */
+  .flip-card { 
+    min-height: auto !important;
+    transform: none !important;
+    transition: none !important;
+    transform-style: flat !important;
+    cursor: pointer;
+    position: relative !important;
+  }
+  .flip-card.flipped { transform: none !important; }
+  
+  /* Faces : flux normal, pas absolute */
+  .card-face {
+    position: relative !important;
+    inset: auto !important;
+    transform: none !important;
+    backface-visibility: visible !important;
+    min-height: auto !important;
+    padding: 22px !important;
+    border-radius: 18px !important;
+  }
+  .card-back {
+    transform: none !important;
+    margin-top: 12px;
+    display: none;
+  }
+  /* Quand la carte est révélée, on affiche la face arrière dans le flux */
+  .flip-card.flipped .card-back { display: flex !important; }
+  .flip-card.flipped .card-hint { display: none !important; }
+  
+  /* Texte de la question : tailles adaptées */
+  .card-question { font-size: 17px !important; line-height: 1.4 !important; }
+  .card-answer { font-size: 15px !important; line-height: 1.55 !important; }
+  .card-complement { font-size: 12px !important; padding: 10px 12px !important; margin-top: 12px !important; }
+  
+  /* Boutons d'évaluation : sticky en bas pour toujours visibles */
+  .eval-row {
+    margin-top: 14px !important;
+    gap: 8px !important;
+    max-width: 100% !important;
+  }
+  .eval-btn {
+    padding: 14px 8px !important;
+    font-size: 13px !important;
+    max-width: 100% !important;
+  }
+  .nxt-btn { 
+    width: 100% !important;
+    padding: 14px !important;
+  }
+  
+  /* Boutons duel */
+  .reveal-btn {
+    padding: 14px 20px !important;
+    font-size: 12px !important;
+    width: 100%;
+    max-width: 100%;
+  }
+  .duel-actions { width: 100%; }
+}
+
+@media (max-width: 500px) {
+  body { padding: 0 !important; }
+  .card-area { padding: 8px !important; }
+  .card-face { padding: 18px !important; }
+  .card-question { font-size: 16px !important; }
+  .card-answer { font-size: 14px !important; }
+  .card-complement { font-size: 11.5px !important; }
+  .eval-btn { font-size: 12px !important; padding: 12px 6px !important; }
+}
 </style>
 </head>
 <body>
@@ -760,14 +858,18 @@ function loadCard() {
 }
 
 function flipCard() {
-  if (gameMode === 'duel' && !duelRevealed) return; // Duel: only via button
+  // AUTO_SCROLL_FIX
+  if (gameMode === 'duel' && !duelRevealed) return;
   if (flipped) return;
   flipped = true;
   document.getElementById('flip-card').classList.add('flipped');
 
   if (gameMode === 'solo') {
     setTimeout(() => {
-      document.getElementById('solo-eval').style.display = 'flex';
+      const evalEl = document.getElementById('solo-eval');
+      evalEl.style.display = 'flex';
+      // Scroll smooth vers les boutons d'évaluation
+      evalEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 400);
   }
 }
@@ -780,7 +882,14 @@ function evalCard(knew) {
   else { sessionUnknown++; }
   updateHomeStats();
   cardIdx++;
-  setTimeout(loadCard, 180);
+  setTimeout(() => {
+    loadCard();
+    // Scroll vers le haut de la nouvelle carte
+    setTimeout(() => {
+      const cardEl = document.querySelector('.card-area');
+      if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }, 180);
 }
 
 /* ── DUEL ── */
@@ -826,7 +935,15 @@ function duelScore(correct) {
   setTimeout(loadCard, 200);
 }
 
-function nextCard() { cardIdx++; loadCard(); }
+function nextCard() { 
+  cardIdx++; 
+  loadCard();
+  // Scroll smooth vers le haut de la nouvelle carte
+  setTimeout(() => {
+    const cardEl = document.querySelector('.card-area');
+    if (cardEl) cardEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
 
 /* ══════════════════════════════════════
    RÉSULTAT
