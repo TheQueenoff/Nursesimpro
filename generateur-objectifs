@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Générateur d'Objectifs de Stage · L'École des Infirmiers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --navy: #0a1929;
+    --navy-soft: #1e3a5f;
+    --navy-light: #e8eef5;
+    --white: #ffffff;
+    --cream: #faf8f3;
+    --gold: #c8a85b;
+    --gold-light: #f5e6b8;
+    --green: #2d7a4f;
+    --green-light: #d4f1e0;
+    --grey: #6b7280;
+    --grey-light: #d1d5db;
+    --serif: 'Fraunces', Georgia, serif;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+  
+  body {
+    font-family: var(--sans);
+    background: var(--cream);
+    color: var(--navy);
+    min-height: 100vh;
+    padding: 20px 16px 60px;
+    line-height: 1.5;
+  }
+  .container { max-width: 780px; margin: 0 auto; }
+  
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--grey-light);
+  }
+  .brand {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--navy);
+    padding: 6px 14px;
+    border: 1px solid var(--navy);
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 8px;
+  }
+  h1 em { font-style: italic; color: var(--gold); font-weight: 400; }
+  .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--grey);
+    font-size: 16px;
+    margin-top: 8px;
+  }
+  .free-badge {
+    display: inline-block;
+    background: var(--green);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-top: 14px;
+  }
+  
+  /* CARD */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--grey-light);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
+  }
+  .card-subtitle {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--grey);
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  /* FIELDS */
+  .field { margin-bottom: 18px; }
+  .field label {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--grey-light);
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 15px;
+    color: var(--navy);
+    background: var(--white);
+    transition: all 0.15s;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--navy);
+    background: var(--cream);
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  
+  /* COMPETENCES CHIPS */
+  .comp-chips { display: flex; flex-direction: column; gap: 8px; }
+  .comp-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--cream);
+    border: 1.5px solid var(--grey-light);
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .comp-chip:hover { border-color: var(--navy); }
+  .comp-chip.checked { border-color: var(--green); background: var(--green-light); }
+  .comp-chip-box {
+    width: 22px; height: 22px;
+    border: 2px solid var(--grey-light);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: var(--white);
+    transition: all 0.15s; margin-top: 1px;
+  }
+  .comp-chip.checked .comp-chip-box { background: var(--green); border-color: var(--green); }
+  .comp-chip-num {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 2px;
+  }
+  .comp-chip-text { font-size: 13px; line-height: 1.4; }
+  
+  /* BUTTON */
+  .btn {
+    width: 100%;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 16px 24px;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--navy-soft); transform: translateY(-1px); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: var(--gold-light); }
+  
+  /* RESULTS */
+  .results { display: none; }
+  .results.show { display: block; }
+  
+  .results-header {
+    background: var(--navy);
+    color: var(--white);
+    border-radius: 6px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+  .results-header-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .results-header-meta {
+    font-size: 13px;
+    color: rgba(255,255,255,0.75);
+  }
+  
+  .obj-group { margin-bottom: 24px; }
+  .obj-group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .obj-badge {
+    background: var(--navy);
+    color: var(--white);
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-weight: 600; font-size: 15px;
+    flex-shrink: 0;
+  }
+  .obj-group-title {
+    font-size: 13px; font-weight: 600; line-height: 1.3;
+  }
+  
+  .obj-item {
+    background: var(--white);
+    border: 1px solid var(--grey-light);
+    border-left: 4px solid var(--gold);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .obj-phase {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 5px;
+  }
+  .obj-text {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--navy);
+  }
+  .obj-smart {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--grey);
+    font-style: italic;
+    font-family: var(--serif);
+  }
+  
+  /* ACTES CONCRETS */
+  .actes-box {
+    background: var(--navy-light);
+    border: 1px solid var(--navy-soft);
+    border-radius: 4px;
+    padding: 16px 18px;
+    margin-top: 12px;
+  }
+  .actes-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .actes-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .acte-item {
+    font-size: 12.5px;
+    color: var(--navy);
+    padding: 8px 10px 8px 26px;
+    background: var(--white);
+    border-radius: 3px;
+    position: relative;
+    line-height: 1.35;
+  }
+  .acte-item::before {
+    content: '○';
+    position: absolute;
+    left: 10px;
+    top: 8px;
+    color: var(--gold);
+    font-weight: 700;
+  }
+  @media (max-width: 600px) {
+    .actes-list { grid-template-columns: 1fr; }
+  }
+  
+  /* PREMIUM CTA */
+  .premium-cta {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-soft) 100%);
+    color: var(--white);
+    padding: 28px 24px;
+    border-radius: 6px;
+    margin-top: 28px;
+    text-align: center;
+  }
+  .premium-cta-label {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    padding: 5px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    margin-bottom: 14px;
+  }
+  .premium-cta-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+  .premium-cta-title em { color: var(--gold); font-style: italic; }
+  .premium-cta-desc {
+    font-family: var(--serif);
+    font-style: italic;
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    margin-bottom: 18px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .premium-features-mini {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    max-width: 440px;
+    margin: 0 auto 20px;
+    text-align: left;
+  }
+  .premium-feature-mini {
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .premium-feature-mini::before { content: '✦'; color: var(--gold); }
+  
+  .actions-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .btn-secondary {
+    flex: 1;
+    background: var(--white);
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+    padding: 14px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.15s;
+  }
+  .btn-secondary:hover { background: var(--navy-light); }
+  
+  /* DISCLAIMER */
+  .disclaimer {
+    background: var(--green-light);
+    border: 1px solid var(--green);
+    border-left: 4px solid var(--green);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #14532d;
+    line-height: 1.6;
+    border-radius: 2px;
+  }
+  .disclaimer strong {
+    display: block;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  
+  /* FOOTER */
+  .footer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--grey-light);
+    text-align: center;
+    font-size: 11px;
+    color: var(--grey);
+    line-height: 1.7;
+  }
+  
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    body { padding: 16px 12px 40px; }
+    h1 { font-size: 30px; }
+    .card { padding: 18px 16px; }
+    .field-row { grid-template-columns: 1fr; }
+    .premium-features-mini { grid-template-columns: 1fr; }
+    .actions-row { flex-direction: column; }
+  }
+  @media (max-width: 400px) {
+    body { padding: 12px 8px 30px; overflow-x: hidden; }
+    * { max-width: 100%; box-sizing: border-box; }
+    h1 { font-size: 25px; }
+    .premium-cta-title { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header class="header">
+    <div class="brand">L'École des Infirmiers</div>
+    <h1>Générateur d'<em>Objectifs</em> de Stage</h1>
+    <div class="tagline">« Des objectifs SMART prêts pour ton portfolio, en 30 secondes »</div>
+    <div class="free-badge">✦ 100% Gratuit</div>
+  </header>
+
+  <!-- FORMULAIRE -->
+  <div id="form-screen">
+    <div class="disclaimer">
+      <strong>📔 Comment ça marche</strong>
+      Indique ton lieu de stage, sa durée et les compétences que tu veux valider. On te génère des <strong>objectifs personnalisés au format SMART</strong> (Spécifique, Mesurable, Atteignable, Réaliste, Temporel), prêts à recopier dans ton portfolio. Aucune inscription, rien n'est enregistré.<br><br>
+      <span style="font-size:11px;opacity:0.85;">📌 Basé sur le <strong>référentiel 2009</strong> (10 compétences) — celui des étudiants entrés avant septembre 2026. La version nouveau référentiel (13 compétences) arrive pour la rentrée.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ton stage</div>
+      <div class="card-subtitle">Quelques infos pour personnaliser tes objectifs</div>
+      
+      <div class="field">
+        <label>Type de service</label>
+        <select id="f-service">
+          <optgroup label="Court séjour — Médecine">
+            <option value="medecine">Médecine générale / interne</option>
+            <option value="cardiologie">Cardiologie</option>
+            <option value="pneumologie">Pneumologie</option>
+            <option value="neurologie">Neurologie</option>
+            <option value="oncologie">Oncologie / Hématologie</option>
+            <option value="nephrologie">Néphrologie</option>
+            <option value="diabetologie">Endocrinologie / Diabétologie</option>
+            <option value="gastro">Gastro-entérologie</option>
+          </optgroup>
+          <optgroup label="Court séjour — Chirurgie">
+            <option value="chirurgie">Chirurgie (générale)</option>
+            <option value="chirurgie_ambu">Chirurgie ambulatoire</option>
+            <option value="orthopedie">Orthopédie / Traumatologie</option>
+            <option value="bloc">Bloc opératoire</option>
+          </optgroup>
+          <optgroup label="Soins critiques & Urgences">
+            <option value="urgences">Urgences</option>
+            <option value="reanimation">Réanimation / Soins intensifs</option>
+          </optgroup>
+          <optgroup label="Mère & Enfant">
+            <option value="maternite">Maternité / Obstétrique</option>
+            <option value="pediatrie">Pédiatrie</option>
+            <option value="neonatologie">Néonatologie</option>
+            <option value="pedopsychiatrie">Pédopsychiatrie</option>
+          </optgroup>
+          <optgroup label="Personnes âgées & Rééducation (longue durée)">
+            <option value="geriatrie">Gériatrie</option>
+            <option value="ehpad">EHPAD</option>
+            <option value="ssr">SSR / Rééducation</option>
+            <option value="soins_palliatifs">Soins palliatifs</option>
+          </optgroup>
+          <optgroup label="Santé mentale">
+            <option value="psychiatrie">Psychiatrie</option>
+            <option value="addictologie">Addictologie</option>
+          </optgroup>
+          <optgroup label="Lieux de vie & Soins de ville">
+            <option value="domicile">Soins à domicile</option>
+            <option value="ssiad">SSIAD</option>
+            <option value="liberal">Cabinet libéral</option>
+            <option value="hemodialyse">Centre de dialyse</option>
+            <option value="sante_travail">Santé au travail / scolaire</option>
+          </optgroup>
+          <optgroup label="Autre">
+            <option value="autre">Autre service</option>
+          </optgroup>
+        </select>
+      </div>
+      
+      <div class="field-row">
+        <div class="field">
+          <label>Durée (semaines)</label>
+          <input type="number" id="f-duree" placeholder="10" min="1" max="20" value="10" />
+        </div>
+        <div class="field">
+          <label>Ton année</label>
+          <select id="f-annee">
+            <option value="1">1ère année (S1-S2)</option>
+            <option value="2" selected>2ème année (S3-S4)</option>
+            <option value="3">3ème année (S5-S6)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Compétences à valider</div>
+      <div class="card-subtitle">Coche celles que tu veux travailler (1 à 4 recommandé)</div>
+      <div class="comp-chips" id="comp-chips"></div>
+    </div>
+
+    <button class="btn btn-gold" onclick="generate()">✨ Générer mes objectifs de stage</button>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="results" id="results-screen">
+    <div class="results-header">
+      <div class="results-header-title">Tes objectifs de stage</div>
+      <div class="results-header-meta" id="results-meta">—</div>
+    </div>
+
+    <div id="objectives-container"></div>
+
+    <!-- PREMIUM CTA -->
+    <div class="premium-cta">
+      <div class="premium-cta-label">Va plus loin</div>
+      <div class="premium-cta-title">Et si on t'accompagnait <em>tout au long</em> de ton stage ?</div>
+      <div class="premium-cta-desc">Ces objectifs ne sont qu'un début. Le Carnet de Stage complet te guide jour après jour pour les atteindre.</div>
+      <div class="premium-features-mini">
+        <div class="premium-feature-mini">Carnet de bord quotidien</div>
+        <div class="premium-feature-mini">Suivi de tes compétences</div>
+        <div class="premium-feature-mini">100 actes par compétence</div>
+        <div class="premium-feature-mini">Bilan mi-stage ajustable</div>
+        <div class="premium-feature-mini">Compte-rendu final PDF</div>
+        <div class="premium-feature-mini">Suivi de ton bien-être</div>
+      </div>
+      <button class="btn btn-gold" onclick="goToSite()" style="max-width:340px;margin:0 auto;">Découvrir NurseSimPro →</button>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="window.print()">📥 Imprimer mes objectifs</button>
+      <button class="btn-secondary" onclick="restart()">↻ Recommencer</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <strong>L'École des Infirmiers · NurseSimPro</strong><br>
+    Générateur d'objectifs · Méthode SMART · Référentiel infirmier 2009<br>
+    Outil pédagogique gratuit · Aucune donnée enregistrée
+  </footer>
+
+</div>
+
+<script>
+  // ═══════════════════════════════════════════
+  // LES 10 COMPÉTENCES
+  // ═══════════════════════════════════════════
+  const COMPETENCES = {
+    1: "Évaluer une situation clinique et établir un diagnostic infirmier",
+    2: "Concevoir et conduire un projet de soins infirmiers",
+    3: "Accompagner une personne dans ses soins quotidiens",
+    4: "Mettre en œuvre des actions diagnostiques et thérapeutiques",
+    5: "Initier et mettre en œuvre des soins éducatifs et préventifs",
+    6: "Communiquer et conduire une relation dans un contexte de soins",
+    7: "Analyser la qualité des soins et améliorer sa pratique",
+    8: "Rechercher et traiter des données professionnelles et scientifiques",
+    9: "Organiser et coordonner des interventions soignantes",
+    10: "Informer et former des professionnels et personnes en formation"
+  };
+
+  // ═══════════════════════════════════════════
+  // BANQUE D'OBJECTIFS — par compétence × service
+  // Format SMART (verbe d'action + critère + délai)
+  // ═══════════════════════════════════════════
+  // Chaque objectif a : {action, mesure, contexte par service}
+  
+  // Contexte clinique par service (pour personnaliser)
+  const SERVICE_CONTEXT = {
+    medecine: { nom: "médecine", patients: "patients polypathologiques", actes: "perfusions, surveillance, traitements per os" },
+    cardiologie: { nom: "cardiologie", patients: "patients cardiaques", actes: "ECG, surveillance scope, gestion des anticoagulants" },
+    pneumologie: { nom: "pneumologie", patients: "patients insuffisants respiratoires", actes: "oxygénothérapie, aérosols, surveillance SpO2" },
+    neurologie: { nom: "neurologie", patients: "patients neurologiques (AVC, SEP, Parkinson)", actes: "surveillance neurologique, score de Glasgow, prévention des complications" },
+    oncologie: { nom: "oncologie / hématologie", patients: "patients atteints de cancer", actes: "chimiothérapie, chambre implantable, soins de support" },
+    nephrologie: { nom: "néphrologie / dialyse", patients: "patients insuffisants rénaux", actes: "surveillance de dialyse, gestion des abords vasculaires, bilan hydrique" },
+    diabetologie: { nom: "endocrinologie / diabétologie", patients: "patients diabétiques", actes: "glycémies, insulinothérapie, éducation thérapeutique" },
+    gastro: { nom: "gastro-entérologie", patients: "patients digestifs", actes: "surveillance de sonde, soins de stomie, préparation aux examens" },
+    chirurgie: { nom: "chirurgie", patients: "patients en pré et post-opératoire", actes: "pansements, surveillance post-op, gestion de la douleur" },
+    chirurgie_ambu: { nom: "chirurgie ambulatoire", patients: "patients opérés en ambulatoire", actes: "préparation pré-op, surveillance post-op courte, éducation à la sortie" },
+    orthopedie: { nom: "orthopédie / traumatologie", patients: "patients opérés de l'appareil locomoteur", actes: "surveillance de plâtre/attelle, prévention thrombo-embolique, rééducation précoce" },
+    maternite: { nom: "maternité / obstétrique", patients: "femmes enceintes et jeunes mamans", actes: "surveillance materno-fœtale, soins post-partum, accompagnement à l'allaitement" },
+    urgences: { nom: "urgences", patients: "patients en situation aiguë", actes: "tri, gestes d'urgence, surveillance rapprochée" },
+    reanimation: { nom: "réanimation / soins intensifs", patients: "patients en défaillance vitale", actes: "surveillance scope, gestion de ventilation, soins techniques lourds" },
+    pediatrie: { nom: "pédiatrie", patients: "enfants et leurs familles", actes: "calculs de doses pédiatriques, communication adaptée" },
+    neonatologie: { nom: "néonatologie", patients: "nouveau-nés", actes: "surveillance du nourrisson, soins de développement, accompagnement parental" },
+    geriatrie: { nom: "gériatrie", patients: "personnes âgées dépendantes", actes: "prévention des chutes, soins d'hygiène, autonomie" },
+    ehpad: { nom: "EHPAD", patients: "résidents âgés", actes: "soins quotidiens, prévention des chutes, accompagnement de la dépendance" },
+    ssr: { nom: "SSR / rééducation", patients: "patients en convalescence", actes: "rééducation, réautonomisation, suivi pluridisciplinaire" },
+    soins_palliatifs: { nom: "soins palliatifs", patients: "patients en fin de vie", actes: "gestion de la douleur, soins de confort, accompagnement de fin de vie" },
+    psychiatrie: { nom: "psychiatrie", patients: "patients en souffrance psychique", actes: "entretien d'aide, observation clinique, relation thérapeutique" },
+    pedopsychiatrie: { nom: "pédopsychiatrie", patients: "enfants et adolescents en souffrance psychique", actes: "observation clinique, médiation thérapeutique, travail avec les familles" },
+    addictologie: { nom: "addictologie", patients: "patients en situation d'addiction", actes: "entretien motivationnel, surveillance de sevrage, accompagnement" },
+    domicile: { nom: "soins à domicile", patients: "patients à domicile", actes: "organisation des tournées, coordination, autonomie" },
+    ssiad: { nom: "SSIAD", patients: "patients suivis à domicile", actes: "soins d'hygiène, surveillance, coordination du maintien à domicile" },
+    liberal: { nom: "cabinet libéral", patients: "patients en soins de ville", actes: "pansements, injections, prises de sang, coordination" },
+    sante_travail: { nom: "santé au travail / scolaire", patients: "salariés ou élèves", actes: "prévention, dépistage, éducation à la santé" },
+    bloc: { nom: "bloc opératoire", patients: "patients opérés", actes: "asepsie chirurgicale, instrumentation, surveillance" },
+    hemodialyse: { nom: "centre de dialyse", patients: "patients dialysés chroniques", actes: "branchement/débranchement de dialyse, surveillance, éducation" },
+    autre: { nom: "ce service", patients: "patients", actes: "soins techniques, relationnels et éducatifs" }
+  };
+
+  // Objectifs par compétence (gabarits qui s'adaptent au service)
+  const OBJECTIFS = {
+    1: [
+      { phase: "Début de stage", template: "Recueillir les données cliniques de {n} {patients} de manière structurée d'ici la fin de la 2ème semaine, en utilisant une trame de recueil." },
+      { phase: "Début de stage", template: "Apprendre à prendre l'ensemble des constantes vitales et à les reporter correctement dans le dossier de soins dès la 1ère semaine." },
+      { phase: "Milieu de stage", template: "Être capable d'évaluer la douleur avec une échelle adaptée (EVA, EN, Algoplus) et d'interpréter les constantes vitales en {service}, à mi-stage." },
+      { phase: "Milieu de stage", template: "Identifier les signes de gravité ou d'aggravation chez {n} {patients} et savoir alerter de manière pertinente, à mi-stage." },
+      { phase: "Fin de stage", template: "Poser un raisonnement clinique complet sur une situation rencontrée en {service} et le présenter à mon tuteur avant la fin du stage." },
+      { phase: "Fin de stage", template: "Formuler un diagnostic infirmier argumenté à partir d'un recueil de données, en fin de stage." }
+    ],
+    2: [
+      { phase: "Début de stage", template: "Participer à l'élaboration d'au moins {n} projets de soins personnalisés avec l'équipe d'ici la 3ème semaine." },
+      { phase: "Début de stage", template: "Identifier les objectifs de soins fixés pour {n} {patients} et comprendre leur justification, en début de stage." },
+      { phase: "Milieu de stage", template: "Planifier et prioriser les soins d'un groupe de {patients} sur une demi-journée, sous supervision, à mi-stage." },
+      { phase: "Milieu de stage", template: "Participer activement à un staff ou une transmission pluridisciplinaire en proposant des éléments du projet de soins, à mi-stage." },
+      { phase: "Fin de stage", template: "Réévaluer un projet de soins en fonction de l'évolution clinique d'un patient avant la fin du stage." },
+      { phase: "Fin de stage", template: "Adapter un projet de soins face à un refus ou une difficulté du patient, en fin de stage." }
+    ],
+    3: [
+      { phase: "Début de stage", template: "Réaliser les soins d'hygiène et de confort en respectant l'autonomie et la dignité des {patients} dès la 1ère semaine." },
+      { phase: "Début de stage", template: "Apprendre à installer confortablement un patient selon sa pathologie et à prévenir les points d'appui, en début de stage." },
+      { phase: "Milieu de stage", template: "Accompagner {n} {patients} dans la réalisation de leurs soins quotidiens en favorisant leur participation, à mi-stage." },
+      { phase: "Milieu de stage", template: "Mettre en œuvre les mesures de prévention des escarres et de la dénutrition pour {n} {patients}, à mi-stage." },
+      { phase: "Fin de stage", template: "Adapter mes soins quotidiens au degré de dépendance de chaque patient en {service} en fin de stage." },
+      { phase: "Fin de stage", template: "Accompagner un patient dans la reprise progressive de son autonomie, en fin de stage." }
+    ],
+    4: [
+      { phase: "Début de stage", template: "Réaliser {n} préparations et administrations de médicaments en respectant la règle des 5B, sous supervision, d'ici la 2ème semaine." },
+      { phase: "Début de stage", template: "Apprendre à calculer un débit de perfusion et à régler une pompe / un PSE correctement, en début de stage." },
+      { phase: "Milieu de stage", template: "Être capable de réaliser une perfusion en autonomie supervisée après {n} réalisations accompagnées, à mi-stage." },
+      { phase: "Milieu de stage", template: "Réaliser un pansement en respectant rigoureusement les règles d'asepsie, sous supervision, à mi-stage." },
+      { phase: "Fin de stage", template: "Maîtriser les actes techniques fréquents en {service} ({actes}) en respectant l'asepsie, avant la fin du stage." },
+      { phase: "Fin de stage", template: "Surveiller et entretenir un dispositif médical (sonde, drain, cathéter) en toute sécurité, en fin de stage." }
+    ],
+    5: [
+      { phase: "Début de stage", template: "Observer et participer à {n} actions d'éducation thérapeutique auprès des {patients} d'ici la 3ème semaine." },
+      { phase: "Début de stage", template: "Identifier les besoins éducatifs d'un patient et les supports disponibles dans le service, en début de stage." },
+      { phase: "Milieu de stage", template: "Mener un temps d'information adapté auprès d'un patient sur son traitement ou sa pathologie, à mi-stage." },
+      { phase: "Milieu de stage", template: "Réaliser une démonstration d'un geste d'auto-soin (auto-injection, autosurveillance) à un patient, à mi-stage." },
+      { phase: "Fin de stage", template: "Évaluer la compréhension d'un patient après une action éducative et réajuster mon message avant la fin du stage." },
+      { phase: "Fin de stage", template: "Conseiller un patient sur l'hygiène de vie et la prévention d'un risque adapté à sa situation, en fin de stage." }
+    ],
+    6: [
+      { phase: "Début de stage", template: "Mener {n} entretiens d'accueil avec des {patients} en pratiquant l'écoute active, d'ici la 2ème semaine." },
+      { phase: "Début de stage", template: "Observer et reproduire une posture relationnelle professionnelle dans les interactions avec les {patients}, en début de stage." },
+      { phase: "Milieu de stage", template: "Adapter ma communication à un patient anxieux ou en difficulté en {service}, à mi-stage." },
+      { phase: "Milieu de stage", template: "Gérer une situation de tension ou de communication difficile en gardant une posture professionnelle, à mi-stage." },
+      { phase: "Fin de stage", template: "Établir une relation de confiance soignant-soigné et savoir communiquer avec les familles avant la fin du stage." },
+      { phase: "Fin de stage", template: "Communiquer avec un patient présentant des troubles de la communication (cognitifs, sensoriels, barrière de langue), en fin de stage." }
+    ],
+    7: [
+      { phase: "Début de stage", template: "Identifier et appliquer les protocoles d'hygiène et les précautions standard du service dès la 1ère semaine." },
+      { phase: "Début de stage", template: "Comprendre le circuit de signalement des événements indésirables du service, en début de stage." },
+      { phase: "Milieu de stage", template: "Repérer un écart entre une pratique et un protocole, et savoir le signaler de manière constructive, à mi-stage." },
+      { phase: "Milieu de stage", template: "Vérifier systématiquement la traçabilité de {n} soins que j'ai réalisés, à mi-stage." },
+      { phase: "Fin de stage", template: "Auto-évaluer ma pratique sur {n} soins réalisés et identifier mes axes d'amélioration avant la fin du stage." },
+      { phase: "Fin de stage", template: "Participer à une analyse de pratique (réflexion sur une situation vécue) avec recul critique, en fin de stage." }
+    ],
+    8: [
+      { phase: "Début de stage", template: "Apprendre à utiliser le dossier patient informatisé et les transmissions ciblées du service d'ici la 2ème semaine." },
+      { phase: "Début de stage", template: "Localiser les ressources documentaires du service (protocoles, classeurs, accès Vidal/BCB), en début de stage." },
+      { phase: "Milieu de stage", template: "Rechercher une information fiable (protocole, Vidal, reco HAS) pour sécuriser un soin en {service}, à mi-stage." },
+      { phase: "Milieu de stage", template: "Utiliser la méthode des transmissions ciblées (DAR) pour {n} situations, à mi-stage." },
+      { phase: "Fin de stage", template: "Réaliser des transmissions écrites et orales précises et synthétiques avant la fin du stage." },
+      { phase: "Fin de stage", template: "Synthétiser les informations clés d'un patient pour une relève claire et complète, en fin de stage." }
+    ],
+    9: [
+      { phase: "Début de stage", template: "Observer l'organisation d'une journée type en {service} et identifier le rôle de chaque professionnel d'ici la 2ème semaine." },
+      { phase: "Début de stage", template: "Apprendre à préparer le matériel nécessaire avant chaque soin de manière anticipée, en début de stage." },
+      { phase: "Milieu de stage", template: "Organiser ma prise en charge de {n} {patients} en gérant les priorités, sous supervision, à mi-stage." },
+      { phase: "Milieu de stage", template: "Collaborer avec un aide-soignant sur un soin en répartissant clairement les rôles, à mi-stage." },
+      { phase: "Fin de stage", template: "Coordonner un soin avec un autre professionnel (AS, kiné, médecin) et assurer la continuité des transmissions en fin de stage." },
+      { phase: "Fin de stage", template: "Participer à l'organisation d'une sortie ou d'un transfert de patient, en fin de stage." }
+    ],
+    10: [
+      { phase: "Début de stage", template: "Observer comment l'équipe encadre et transmet ses connaissances en {service} d'ici la 3ème semaine." },
+      { phase: "Début de stage", template: "Identifier les situations où je peux partager une information utile avec l'équipe, en début de stage." },
+      { phase: "Milieu de stage", template: "Présenter une situation clinique rencontrée à l'équipe ou à mon tuteur, à mi-stage." },
+      { phase: "Milieu de stage", template: "Expliquer un geste technique simple à un pair ou un stagiaire plus jeune, à mi-stage." },
+      { phase: "Fin de stage", template: "Expliquer un geste ou une connaissance à un pair / un patient de façon claire avant la fin du stage." },
+      { phase: "Fin de stage", template: "Rédiger un document professionnel (fiche, transmission écrite structurée) utile au service, en fin de stage." }
+    ]
+  };
+
+  // ═══════════════════════════════════════════
+  // ACTES CONCRETS qui valident chaque compétence
+  // Certains s'adaptent au service via {actesService}
+  // ═══════════════════════════════════════════
+  const ACTES = {
+    1: [
+      "Prise des constantes (TA, FC, FR, SpO2, température)",
+      "Évaluation de la douleur (EVA, EN, Algoplus)",
+      "Recueil de données à l'entrée d'un patient",
+      "Mesure de la glycémie capillaire",
+      "Évaluation de l'autonomie (grille type AGGIR)",
+      "Repérage des risques : chute, escarre, dénutrition",
+      "Lecture et interprétation d'un bilan biologique",
+      "Surveillance de l'état de conscience (score de Glasgow)"
+    ],
+    2: [
+      "Participation à l'élaboration d'un projet de soins",
+      "Planification des soins d'un patient sur une journée",
+      "Participation à un staff / réunion pluridisciplinaire",
+      "Rédaction d'objectifs de soins dans le dossier",
+      "Réévaluation d'un projet de soins",
+      "Priorisation des soins selon l'urgence"
+    ],
+    3: [
+      "Toilette complète au lit / aide à la douche",
+      "Aide à l'habillage et au déshabillage",
+      "Aide à la prise des repas",
+      "Réfection de lit occupé",
+      "Prévention d'escarre (changements de position, effleurage)",
+      "Soins de bouche",
+      "Aide à l'élimination (bassin, change, étui pénien)",
+      "Mobilisation et transfert (lit-fauteuil)"
+    ],
+    4: [
+      "Préparation et administration de médicaments per os",
+      "Pose de voie veineuse périphérique (VVP)",
+      "Préparation et administration d'une injection IM / SC",
+      "Calcul de débit et réglage d'une perfusion",
+      "Réfection de pansement simple",
+      "Réfection de pansement complexe (sous supervision)",
+      "Surveillance d'une seringue électrique (PSE/SAP)",
+      "Prélèvement sanguin veineux / hémoculture",
+      "Pose et surveillance d'une sonde urinaire",
+      "Surveillance de drain / redon / cathéter"
+    ],
+    5: [
+      "Information d'un patient sur son traitement",
+      "Animation d'un temps d'éducation thérapeutique",
+      "Éducation d'un patient diabétique à l'autosurveillance",
+      "Démonstration d'une auto-injection (insuline, anticoagulant)",
+      "Conseil en hygiène de vie / prévention d'un risque",
+      "Évaluation de la compréhension d'un patient"
+    ],
+    6: [
+      "Entretien d'accueil d'un patient",
+      "Écoute active lors d'un entretien",
+      "Communication avec un patient anxieux",
+      "Communication avec un patient désorienté / troubles cognitifs",
+      "Communication avec les familles",
+      "Gestion d'une situation de tension / agressivité",
+      "Accompagnement relationnel en fin de vie"
+    ],
+    7: [
+      "Application des précautions standard d'hygiène",
+      "Friction hydro-alcoolique aux moments clés",
+      "Vérification de la traçabilité d'un soin",
+      "Signalement d'un événement indésirable",
+      "Identification d'un écart à un protocole",
+      "Auto-évaluation d'un soin réalisé"
+    ],
+    8: [
+      "Utilisation du dossier patient informatisé",
+      "Transmissions ciblées (méthode DAR)",
+      "Recherche d'information sur un médicament (Vidal / BCB)",
+      "Consultation d'un protocole de service",
+      "Consultation d'une recommandation HAS",
+      "Rédaction de transmissions écrites précises"
+    ],
+    9: [
+      "Organisation de sa journée de soins",
+      "Préparation anticipée du matériel de soin",
+      "Collaboration avec un aide-soignant sur un soin",
+      "Transmission orale lors des relèves",
+      "Coordination d'un examen / transport patient",
+      "Participation à l'organisation d'une sortie"
+    ],
+    10: [
+      "Accueil et information d'un nouveau stagiaire",
+      "Explication d'un geste technique à un pair",
+      "Présentation d'une situation clinique à l'équipe",
+      "Encadrement ponctuel d'un étudiant plus jeune",
+      "Rédaction d'un document professionnel (fiche)",
+      "Retour constructif à un pair"
+    ]
+  };
+
+  let selectedComps = [];
+
+  // ═══════════════════════════════════════════
+  // RENDER COMPÉTENCES
+  // ═══════════════════════════════════════════
+  function renderComps() {
+    const container = document.getElementById('comp-chips');
+    container.innerHTML = Object.entries(COMPETENCES).map(([num, text]) => `
+      <label class="comp-chip" id="chip-${num}" onclick="toggleChip(${num})">
+        <div class="comp-chip-box">✓</div>
+        <div>
+          <div class="comp-chip-num">Compétence ${num}</div>
+          <div class="comp-chip-text">${text}</div>
+        </div>
+      </label>
+    `).join('');
+  }
+
+  function toggleChip(num) {
+    const el = document.getElementById('chip-' + num);
+    const idx = selectedComps.indexOf(num);
+    if (idx > -1) {
+      selectedComps.splice(idx, 1);
+      el.classList.remove('checked');
+    } else {
+      selectedComps.push(num);
+      el.classList.add('checked');
+    }
+  }
+
+  // ═══════════════════════════════════════════
+  // CALCUL DU NOMBRE D'ACTES SELON DURÉE
+  // ═══════════════════════════════════════════
+  function getMesure(duree) {
+    // Plus le stage est long, plus le nombre d'actes attendu est élevé
+    if (duree <= 5) return 2;
+    if (duree <= 10) return 3;
+    return 5;
+  }
+
+  // ═══════════════════════════════════════════
+  // GÉNÉRATION
+  // ═══════════════════════════════════════════
+  function generate() {
+    if (selectedComps.length === 0) {
+      alert("Coche au moins une compétence à valider.");
+      return;
+    }
+
+    const service = document.getElementById('f-service').value;
+    const duree = parseInt(document.getElementById('f-duree').value) || 10;
+    const annee = document.getElementById('f-annee').value;
+    const ctx = SERVICE_CONTEXT[service];
+    const n = getMesure(duree);
+
+    // Meta
+    document.getElementById('results-meta').textContent = 
+      `Stage de ${ctx.nom} · ${duree} semaines · ${selectedComps.length} compétence(s) ciblée(s)`;
+
+    // Générer les objectifs
+    const comps = [...selectedComps].sort((a,b) => a-b);
+    const container = document.getElementById('objectives-container');
+    
+    container.innerHTML = comps.map(num => {
+      const objs = OBJECTIFS[num] || [];
+      const items = objs.map(obj => {
+        let text = obj.template
+          .replace(/{n}/g, n)
+          .replace(/{patients}/g, ctx.patients)
+          .replace(/{service}/g, ctx.nom)
+          .replace(/{actes}/g, ctx.actes);
+        return `
+          <div class="obj-item">
+            <div class="obj-phase">${obj.phase}</div>
+            <div class="obj-text">${text}</div>
+            <div class="obj-smart">✓ Objectif SMART : spécifique, mesurable, temporel</div>
+          </div>
+        `;
+      }).join('');
+
+      // Actes concrets pour cette compétence
+      const actes = ACTES[num] || [];
+      const actesHtml = actes.length ? `
+        <div class="actes-box">
+          <div class="actes-title">🩺 Actes concrets qui valident cette compétence</div>
+          <div class="actes-list">
+            ${actes.map(a => `<div class="acte-item">${a}</div>`).join('')}
+          </div>
+        </div>
+      ` : '';
+
+      return `
+        <div class="obj-group">
+          <div class="obj-group-head">
+            <div class="obj-badge">${num}</div>
+            <div class="obj-group-title">${COMPETENCES[num]}</div>
+          </div>
+          ${items}
+          ${actesHtml}
+        </div>
+      `;
+    }).join('');
+
+    // Afficher résultats
+    document.getElementById('form-screen').style.display = 'none';
+    document.getElementById('results-screen').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function restart() {
+    document.getElementById('results-screen').classList.remove('show');
+    document.getElementById('form-screen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToSite() {
+    window.open('https://nursesim-pro.com', '_blank');
+  }
+
+  // INIT
+  renderComps();
+</script>
+
+</body>
+</html>
